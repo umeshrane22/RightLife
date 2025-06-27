@@ -70,12 +70,16 @@ class YouMayAlsoLikeAdapter(
 
             if (item?.contentType.equals("TEXT", ignoreCase = true)) {
                 imageContentType.setImageResource(R.drawable.ic_text_content)
+                tvLeftTime.text = (item?.readingTime ?: "0").toString()+ " min read"
             } else if (item?.contentType.equals("VIDEO", ignoreCase = true)) {
                 imageContentType.setImageResource(R.drawable.ic_video_content)
+                tvLeftTime.text = DateTimeUtils.formatDuration(item?.meta?.duration ?: 0)
             } else if (item?.contentType.equals("SERIES", ignoreCase = true)) {
                 imageContentType.setImageResource(R.drawable.ic_series_content)
+                tvLeftTime.text = (item?.episodeCount ?: "0").toString()+ " Epi"
             } else {
                 imageContentType.setImageResource(R.drawable.ic_audio_content)
+                tvLeftTime.text = DateTimeUtils.formatDuration(item?.meta?.duration ?: 0)
             }
         }
 

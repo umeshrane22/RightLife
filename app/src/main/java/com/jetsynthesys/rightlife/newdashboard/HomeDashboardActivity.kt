@@ -1436,7 +1436,7 @@ private fun checkTimeAndSetVisibility(module: UpdatedModule) {
     // Check if currentHour is between 18 (6 PM) and 1 (1 AM)
     // OR if currentHour is 0 (12 AM) or 1 (1 AM) or 2 (2 AM) for the next day
     val isVisible = (currentHour >= 18 && currentHour <= 23) || // 6 PM to 11 PM
-            (currentHour >= 0 && currentHour <= 2)      // 12 AM (midnight) to 2 AM
+            (currentHour >= 0 && currentHour <= 3)      // 12 AM (midnight) to 2 AM
 
     if (isVisible) {
         binding.cardSleepMainIdeal.visibility = View.VISIBLE

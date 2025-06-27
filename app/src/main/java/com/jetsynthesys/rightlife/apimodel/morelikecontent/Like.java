@@ -98,6 +98,10 @@ public class Like {
     @Expose
     private String shareUrl;
 
+        @SerializedName("readingTime")
+    @Expose
+    private String readingTime;
+
     public String getId() {
         return id;
     }
@@ -338,4 +342,11 @@ public class Like {
         this.shareUrl = shareUrl;
     }
 
+    public String getReadingTime() {
+        return readingTime;
+    }
+
+    public void setReadingTime(String readingTime) {
+        this.readingTime = readingTime;
+    }
 }

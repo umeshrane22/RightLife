@@ -131,18 +131,21 @@ class HeartRateAdapter(
             else -> R.drawable.ic_db_report_normal
         }
     }
-    private fun getReportIconByType(type: String): Int {
-        return when (type) {
-            "BMI_CALC" -> R.drawable.ic_db_report_bmi
-            "BP_RPP" -> R.drawable.ic_db_report_cardiak_workload
-            "BP_SYSTOLIC" -> R.drawable.ic_db_report_bloodpressure
-            "BP_CVD" -> R.drawable.ic_db_report_cvdrisk
-            "MSI" -> R.drawable.ic_db_report_stresslevel
-            "BR_BPM" -> R.drawable.ic_db_report_respiratory_rate
-            "HRV_SDNN" -> R.drawable.ic_db_report_heart_variability
-            else -> R.drawable.ic_db_report_heart_rate
-        }
-    }
+
+   private fun getReportIconByType(type: String): Int {
+       return when (type) {
+           "BMI_CALC" -> R.drawable.ic_db_report_bmi
+           "BP_RPP" -> R.drawable.ic_db_report_cardiak_workload
+           "BP_SYSTOLIC" -> R.drawable.ic_db_report_bloodpressure
+           "BP_DIASTOLIC" -> R.drawable.ic_db_report_bloodpressure
+           "BP_CVD" -> R.drawable.ic_db_report_cvdrisk
+           "MSI" -> R.drawable.ic_db_report_stresslevel
+           "BR_BPM" -> R.drawable.ic_db_report_respiratory_rate
+           "HRV_SDNN" -> R.drawable.ic_db_report_heart_variability
+           "HEALTH_SCORE" -> R.drawable.ic_wellness_man
+           else -> R.drawable.ic_db_report_heart_rate
+       }
+   }
 
 
     private fun setupStackedBarChart(
