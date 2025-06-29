@@ -635,7 +635,7 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
         })
     }
 
-    private fun extractNumericValues(input: String): Pair<String, String> {
+    /*private fun extractNumericValues(input: String): Pair<String, String> {
         val parts = input.split("/") // Splitting by '/'
 
         if (parts.size < 2) {
@@ -646,7 +646,20 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
         val secondValue = parts[1].trim().replace(Regex("[^0-9]"), "")
 
         return Pair(firstValue, secondValue)
+    }*/
+    private fun extractNumericValues(input: String): Pair<String, String> {
+        val parts = input.split("/")
+
+        if (parts.size < 2) {
+            throw IllegalArgumentException("Invalid format: $input")
+        }
+
+        val firstValue = parts[0].trim().replace(Regex("[^0-9.]"), "")
+        val secondValue = parts[1].trim().replace(Regex("[^0-9.]"), "")
+
+        return Pair(firstValue, secondValue)
     }
+
 
     fun calculatePercentage(current: Int, total: Int): Int {
         if (total == 0) return 0 // Avoid division by zero
@@ -803,6 +816,16 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                             binding.halfCurveProgressBar.setValues(curent.toInt(), max.toInt())
                             val percentage = calculatePercentage(curent.toInt(), max.toInt())
                             binding.halfCurveProgressBar.setProgress(percentage.toFloat())*/
+                        val (curentStr, maxStr) = extractNumericValues(module.calories.toString())
+
+                        val current = curentStr.toDoubleOrNull()?.toInt() ?: 0
+                        val max = maxStr.toDoubleOrNull()?.toInt() ?: 0
+
+                        binding.halfCurveProgressBar.setValues(current, max)
+
+                        val percentage = calculatePercentage(current, max)
+                        binding.halfCurveProgressBar.setProgress(percentage.toFloat())
+
 
                         setIfNotNullOrBlank(
                             binding.tvModuleValueEatright,
@@ -996,8 +1019,19 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                 binding.progressBarOnboarding.max = maxValue
                 binding.progressBarOnboarding.progress = progressValue
 
-                val percentage =
-                    binding.progressBarOnboarding.progress / binding.progressBarOnboarding.max.toFloat()
+                val calorieBurnTarget = module.burned?.toDouble() ?: 0.0
+
+                val rangeStart = module.calorieRange?.getOrNull(0)?.toDouble()
+                val rangeEnd = module.calorieRange?.getOrNull(1)?.toDouble()
+
+                val percentage = if (rangeStart != null && rangeEnd != null && rangeEnd != rangeStart) {
+                    ((calorieBurnTarget - rangeStart) / (rangeEnd - rangeStart)).toFloat()
+                } else {
+                    0f
+                }
+
+
+                //val percentage = binding.progressBarOnboarding.progress / binding.progressBarOnboarding.max.toFloat()
                 val value = (percentage / 10)
                 val overlayPositionPercentage: Float = String.format("%.1f", value).toFloat()
 
@@ -1010,6 +1044,27 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                 constraintSet.setGuidelinePercent(R.id.circleIndicatorGuideline, progressPercentage)
                 constraintSet.setGuidelinePercent(R.id.overlayGuideline, overlayPositionPercentage)
                 constraintSet.applyTo(binding.progressBarLayout)
+
+                binding.transparentOverlay.let { overlay ->
+                    // Use the progressBarLayout width to calculate proportional widths
+                    val parentWidth = binding.progressBarOnboarding.width
+                    var isWeightGainZone = false
+                    if (rangeStart!=null) {
+                        val isWeightGainZone = calorieBurnTarget < rangeStart
+                    }
+                    val overlayWidth = if (isWeightGainZone) {
+                        binding.weightLossZoneText.text = "Weight Gain Zone"
+                        (parentWidth * 0.6).toInt() // 40% of parent width for Weight Gain Zone
+                    } else {
+                        binding.weightLossZoneText.text = "Weight Loss Zone"
+                        (parentWidth * 0.08).toInt() // 20% of parent width for Weight Loss Zone
+                    }
+                    // Update the layout params to set the new width
+                    val layoutParams = overlay.layoutParams
+                    layoutParams.width = overlayWidth
+                    overlay.layoutParams = layoutParams
+                    overlay.visibility = View.VISIBLE // Ensure overlay is visible
+                }
             }
         })
 
@@ -1293,6 +1348,7 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
             if (permissions.values.all { it }) {
                 lifecycleScope.launch {
                     // fetchAllHealthData()
+                    getDashboardChecklist("")
                 }
                 Toast.makeText(this, "Permissions Granted", Toast.LENGTH_SHORT).show()
             } else {
