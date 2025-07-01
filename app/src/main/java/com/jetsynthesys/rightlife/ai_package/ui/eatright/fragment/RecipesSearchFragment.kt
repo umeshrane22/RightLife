@@ -105,76 +105,50 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
             if (position < tabContentAdapter.itemCount) {
                 when (currentFragmentTag) {
                     "Meal Type" -> {
-                        if (isClose){
-                            tabContentAdapter.deselectedUpdateItems(mealTypeList,-1)
-                            refreshRecipesList()
+                        if (isClose) {
+                            tabContentAdapter.deselectedUpdateItems(mealTypeList, -1)
                             selectedMealType = null
-                            getFilterRecipesList(selectedMealType, null, null)
-                            Log.d("RecipesSearchFragment", "Selected Meal Type: $selectedMealType")
-                            updateTabColors(false)
-//                            val fragment = RecipesSearchFragment()
-//                            val args = Bundle()
-//                            fragment.arguments = args
-//                            requireActivity().supportFragmentManager.beginTransaction().apply {
-//                                replace(R.id.flFragment, fragment, "landing")
-//                                addToBackStack("landing")
-//                                commit()
-//                            }
-                        }else{
+                            getFilterRecipesList(null, selectedFoodType, selectedCuisine)
+                            updateTabColors(false) // Update colors when deselected
+                            Log.d("RecipesSearchFragment", "Deselected Meal Type")
+                        } else {
                             selectedMealType = item
-                            getFilterRecipesList(selectedMealType, null, null)
+                            getFilterRecipesList(selectedMealType, selectedFoodType, selectedCuisine)
+                            updateTabColors(true) // Update colors when selected
                             Log.d("RecipesSearchFragment", "Selected Meal Type: $selectedMealType")
-                            updateTabColors(true)
                         }
                     }
-                    "Food Type" -> {
-                        if (isClose){
-                            tabContentAdapter.deselectedUpdateItems(foodTypeList,-1)
-                            refreshRecipesList()
-                            selectedFoodType = null
-                            getFilterRecipesList(selectedFoodType, null, null)
-                            Log.d("RecipesSearchFragment", "Selected Food Type: $selectedFoodType")
-                            updateTabColors(false)
-//                            val fragment = RecipesSearchFragment()
-//                            val args = Bundle()
-//                            fragment.arguments = args
-//                            requireActivity().supportFragmentManager.beginTransaction().apply {
-//                                replace(R.id.flFragment, fragment, "landing")
-//                                addToBackStack("landing")
-//                                commit()
-//                            }
-                        }else{
-                            selectedFoodType = item
-                            getFilterRecipesList(null, selectedFoodType, null)
-                            Log.d("RecipesSearchFragment", "Selected Food Type: $selectedFoodType")
-                            updateTabColors(true)
-                        }
+
+                        "Food Type" -> {
+                    if (isClose) {
+                        tabContentAdapter.deselectedUpdateItems(foodTypeList, -1)
+                        selectedFoodType = null
+                        getFilterRecipesList(selectedMealType, null, selectedCuisine)
+                        updateTabColors(false) // Update colors when deselected
+                        Log.d("RecipesSearchFragment", "Deselected Food Type")
+                    } else {
+                        selectedFoodType = item
+                        getFilterRecipesList(selectedMealType, selectedFoodType, selectedCuisine)
+                        updateTabColors(true) // Update colors when selected
+                        Log.d("RecipesSearchFragment", "Selected Food Type: $selectedFoodType")
                     }
+                }
                     "Cuisine" -> {
-                        if (isClose){
-                            tabContentAdapter.deselectedUpdateItems(cuisineList,-1)
-                            refreshRecipesList()
+                        if (isClose) {
+                            tabContentAdapter.deselectedUpdateItems(cuisineList, -1)
                             selectedCuisine = null
-                            getFilterRecipesList(selectedCuisine, null, null)
-                            Log.d("RecipesSearchFragment", "Selected Cuisine: $selectedCuisine")
-                            updateTabColors(false)
-//                            val fragment = RecipesSearchFragment()
-//                            val args = Bundle()
-//                            fragment.arguments = args
-//                            requireActivity().supportFragmentManager.beginTransaction().apply {
-//                                replace(R.id.flFragment, fragment, "landing")
-//                                addToBackStack("landing")
-//                                commit()
-//                            }
-                        }else{
+                            getFilterRecipesList(selectedMealType, selectedFoodType, null)
+                            updateTabColors(false) // Update colors when deselected
+                            Log.d("RecipesSearchFragment", "Deselected Cuisine")
+                        } else {
                             selectedCuisine = item
-                            getFilterRecipesList(null, null, selectedCuisine)
+                            getFilterRecipesList(selectedMealType, selectedFoodType, selectedCuisine)
+                            updateTabColors(true) // Update colors when selected
                             Log.d("RecipesSearchFragment", "Selected Cuisine: $selectedCuisine")
-                            updateTabColors(true)
                         }
                     }
                 }
-                tabContentAdapter.setSelectedPosition(position)
+                tabContentAdapter.setSelectedPosition(if (isClose) -1 else position)
                 refreshRecipesList()
             }
         }
@@ -197,15 +171,14 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
                 tab?.position?.let { position ->
                     val tag = tabTitles[position]
                     currentFragmentTag = tag
-                    if (selectedMealType != null && currentFragmentTag.equals("Meal Type")){
-                        updateTabColors(true)
-                    }else if (selectedFoodType != null && currentFragmentTag.equals("Food Type")){
-                        updateTabColors(true)
-                    }else if (selectedCuisine != null && currentFragmentTag.equals("Cuisine")){
-                        updateTabColors(true)
-                    }else{
-                        updateTabColors(false)
+                    // Check if the selected tab has content selected
+                    val isContentSelected = when (tag) {
+                        "Meal Type" -> selectedMealType != null
+                        "Food Type" -> selectedFoodType != null
+                        "Cuisine" -> selectedCuisine != null
+                        else -> false
                     }
+                    updateTabColors(isContentSelected)
                     tabContentCard.visibility = View.VISIBLE
                     updateCardViewContent(tag)
                 }
@@ -216,13 +189,21 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
             override fun onTabReselected(tab: TabLayout.Tab?) {
                 tab?.position?.let { position ->
                     val tag = tabTitles[position]
+                    currentFragmentTag = tag
                     if (tabContentCard.isVisible) {
                         tabContentCard.visibility = View.GONE
                     } else {
                         tabContentCard.visibility = View.VISIBLE
                         updateCardViewContent(tag)
                     }
-                    updateTabColors(false)
+                    // Check if the reselected tab has content selected
+                    val isContentSelected = when (tag) {
+                        "Meal Type" -> selectedMealType != null
+                        "Food Type" -> selectedFoodType != null
+                        "Cuisine" -> selectedCuisine != null
+                        else -> false
+                    }
+                    updateTabColors(isContentSelected)
                 }
             }
         })
@@ -334,7 +315,7 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun updateTabColors(isTabContentSelected : Boolean) {
+    private fun updateTabColors(isTabContentSelected: Boolean) {
         for (i in 0 until tabLayout.tabCount) {
             val tab = tabLayout.getTabAt(i)
             val customView = tab?.customView
@@ -342,33 +323,41 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
             val circleText = customView?.findViewById<TextView>(R.id.circleText)
             val imageArrow = customView?.findViewById<ImageView>(R.id.imageArrow)
 
+            // Determine if the tab has selected content
+            val isContentSelected = when (tabTitles[i]) {
+                "Meal Type" -> selectedMealType != null
+                "Food Type" -> selectedFoodType != null
+                "Cuisine" -> selectedCuisine != null
+                else -> false
+            }
+
             if (tab?.isSelected == true) {
                 tabText?.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
                 val typeface = resources.getFont(R.font.dmsans_bold)
                 tabText?.typeface = typeface
-                if (isTabContentSelected){
-                    circleText?.setBackgroundResource(R.drawable.circle_white_background)
-                    circleText?.visibility = View.VISIBLE
-                }else{
-                    circleText?.visibility = View.GONE
-                }
                 tabSelectedTitle.text = tabText?.text.toString()
                 imageArrow?.setImageResource(R.drawable.ic_chevron_up)
-               // val drawable = ContextCompat.getDrawable(requireContext(), R.drawable.ic_up)
-//                drawable?.setTint(ContextCompat.getColor(requireContext(), R.color.white))
-//                imageArrow?.setImageDrawable(drawable)
+
+                // Show circle only if content is selected for this tab
+                if (isContentSelected) {
+                    circleText?.setBackgroundResource(R.drawable.circle_white_background)
+                    circleText?.visibility = View.VISIBLE
+                } else {
+                    circleText?.visibility = View.GONE
+                }
             } else {
                 val typeface = resources.getFont(R.font.dmsans_regular)
                 tabText?.typeface = typeface
                 tabText?.setTextColor(ContextCompat.getColor(requireContext(), R.color.tab_unselected_text))
-                circleText?.setBackgroundResource(R.drawable.green_circle_background)
-//                if (isTabContentSelected){
-//                    circleText?.setBackgroundResource(R.drawable.circle_white_background)
-//                    circleText?.visibility = View.VISIBLE
-//                }else{
-//                    circleText?.visibility = View.GONE
-//                }
                 imageArrow?.setImageResource(R.drawable.ic_chevron_down)
+
+                // Show circle for unselected tabs if they have selected content
+                if (isContentSelected) {
+                    circleText?.setBackgroundResource(R.drawable.green_circle_background)
+                    circleText?.visibility = View.VISIBLE
+                } else {
+                    circleText?.visibility = View.GONE
+                }
             }
         }
     }
