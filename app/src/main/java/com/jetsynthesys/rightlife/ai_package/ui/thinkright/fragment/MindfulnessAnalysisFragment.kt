@@ -465,6 +465,7 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
 
         val barData = BarData(dataSet)
         barData.barWidth = 0.4f
+        barData.setDrawValues(false)
 
         chart.data = barData
         val customRenderer = MindfullChartRenderer(chart, chart.animator, chart.viewPortHandler)
@@ -523,6 +524,7 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
         dataSet.valueTextSize = 12f
 
         val barData = BarData(dataSet)
+        barData.setDrawValues(false)
         chart.data = barData
         val customRenderer = MindfullChartRenderer(chart, chart.animator, chart.viewPortHandler)
         customRenderer.initBuffers()
@@ -548,6 +550,12 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
             setDrawGridLines(false)
             labelRotationAngle = 0f
             textSize = 10f
+        }
+        chart.axisLeft.apply {
+            axisMinimum = 0f      // bottom
+            axisMaximum = 25f     // top
+            granularity = 5f      // distance between ticks
+            setLabelCount(6, true)
         }
 
         chart.axisLeft.axisMinimum = 0f
