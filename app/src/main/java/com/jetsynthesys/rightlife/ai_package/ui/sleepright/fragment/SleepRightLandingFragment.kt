@@ -1065,49 +1065,57 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         call.enqueue(object : Callback<SleepSoundResponse> {
             override fun onResponse(call: Call<SleepSoundResponse>, response: Response<SleepSoundResponse>) {
                 if (response.isSuccessful) {
-                    btnSleepSound.visibility = View.GONE
-                    sleepSoundCardView.visibility = View.VISIBLE
                     sleepSoundResponse = response.body()!!
                     if (sleepSoundResponse.sleepSoundData != null){
-                        view?.findViewById<TextView>(R.id.tv_sleep_sound)?.text = "Your Playlist"
-                        view?.findViewById<TextView>(R.id.tv_sleep_sound_save)?.text = ""+ sleepSoundResponse.sleepSoundData?.services?.size + " Sleep sounds saved"
-                        if (sleepSoundResponse.sleepSoundData?.services?.size == 1){
-                            soundPlay1.visibility = View.VISIBLE
-                            soundPlay2.visibility = View.GONE
-                            soundPlay3.visibility = View.GONE
-                            Glide.with(requireContext())
-                                .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(0)?.image)
-                                .placeholder(R.drawable.sleep_pillow)
-                                .into(soundPlay1)
-                        }else if (sleepSoundResponse.sleepSoundData?.services?.size == 2){
-                            soundPlay1.visibility = View.VISIBLE
-                            soundPlay2.visibility = View.VISIBLE
-                            soundPlay3.visibility = View.GONE
-                            Glide.with(requireContext())
-                                .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(0)?.image)
-                                .placeholder(R.drawable.sleep_pillow)
-                                .into(soundPlay1)
-                            Glide.with(requireContext())
-                                .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(1)?.image)
-                                .placeholder(R.drawable.sleep_pillow)
-                                .into(soundPlay2)
-                        }else if (sleepSoundResponse.sleepSoundData?.services?.size == 3){
-                            soundPlay1.visibility = View.VISIBLE
-                            soundPlay2.visibility = View.VISIBLE
-                            soundPlay3.visibility = View.VISIBLE
-                            Glide.with(requireContext())
-                                .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(0)?.image)
-                                .placeholder(R.drawable.sleep_pillow)
-                                .into(soundPlay1)
-                            Glide.with(requireContext())
-                                .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(1)?.image)
-                                .placeholder(R.drawable.sleep_pillow)
-                                .into(soundPlay2)
-                            Glide.with(requireContext())
-                                .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(2)?.image)
-                                .placeholder(R.drawable.sleep_pillow)
-                                .into(soundPlay3)
+                        if (sleepSoundResponse.sleepSoundData?.services!!.size > 0){
+                            btnSleepSound.visibility = View.GONE
+                            sleepSoundCardView.visibility = View.VISIBLE
+                            view?.findViewById<TextView>(R.id.tv_sleep_sound)?.text = "Your Playlist"
+                            view?.findViewById<TextView>(R.id.tv_sleep_sound_save)?.text = ""+ sleepSoundResponse.sleepSoundData?.services?.size + " Sleep sounds saved"
+                            if (sleepSoundResponse.sleepSoundData?.services?.size == 1){
+                                soundPlay1.visibility = View.VISIBLE
+                                soundPlay2.visibility = View.GONE
+                                soundPlay3.visibility = View.GONE
+                                Glide.with(requireContext())
+                                    .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(0)?.image)
+                                    .placeholder(R.drawable.sleep_pillow)
+                                    .into(soundPlay1)
+                            }else if (sleepSoundResponse.sleepSoundData?.services?.size == 2){
+                                soundPlay1.visibility = View.VISIBLE
+                                soundPlay2.visibility = View.VISIBLE
+                                soundPlay3.visibility = View.GONE
+                                Glide.with(requireContext())
+                                    .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(0)?.image)
+                                    .placeholder(R.drawable.sleep_pillow)
+                                    .into(soundPlay1)
+                                Glide.with(requireContext())
+                                    .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(1)?.image)
+                                    .placeholder(R.drawable.sleep_pillow)
+                                    .into(soundPlay2)
+                            }else if (sleepSoundResponse.sleepSoundData?.services?.size == 3){
+                                soundPlay1.visibility = View.VISIBLE
+                                soundPlay2.visibility = View.VISIBLE
+                                soundPlay3.visibility = View.VISIBLE
+                                Glide.with(requireContext())
+                                    .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(0)?.image)
+                                    .placeholder(R.drawable.sleep_pillow)
+                                    .into(soundPlay1)
+                                Glide.with(requireContext())
+                                    .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(1)?.image)
+                                    .placeholder(R.drawable.sleep_pillow)
+                                    .into(soundPlay2)
+                                Glide.with(requireContext())
+                                    .load("https://d1sacaybzizpm5.cloudfront.net/"+sleepSoundResponse.sleepSoundData?.services?.getOrNull(2)?.image)
+                                    .placeholder(R.drawable.sleep_pillow)
+                                    .into(soundPlay3)
+                            }
+                        }else {
+                            btnSleepSound.visibility = View.VISIBLE
+                            sleepSoundCardView.visibility = View.GONE
                         }
+                    }else {
+                        btnSleepSound.visibility = View.VISIBLE
+                        sleepSoundCardView.visibility = View.GONE
                     }
                 } else {
                     btnSleepSound.visibility = View.VISIBLE
