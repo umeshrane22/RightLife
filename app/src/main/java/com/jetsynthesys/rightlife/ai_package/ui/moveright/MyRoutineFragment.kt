@@ -69,6 +69,7 @@ class MyRoutineFragment : BaseFragment<FragmentMyRoutineBinding>() {
         myRoutineRecyclerView.layoutManager = LinearLayoutManager(context)
         myRoutineRecyclerView.adapter = myRoutineListAdapter
 
+
         layoutBtnLogWorkout.setOnClickListener {
             openAddWorkoutFragment()
         }
