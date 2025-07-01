@@ -3,6 +3,7 @@ package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab
 import android.graphics.PorterDuff
 import android.os.Build
 import android.os.Bundle
+import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -87,6 +88,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         view.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.meal_log_background))
+
         tabLayout = view.findViewById<TabLayout>(R.id.tabLayout)
         backIc = view.findViewById(R.id.backIc)
         searchLayout = view.findViewById(R.id.searchLayout)
