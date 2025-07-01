@@ -119,12 +119,12 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
             val ldt1         = LocalDateTime.parse(formatWakeDate)      // parses without zone
             val instantEnd     = ldt1.atZone(deviceZone).toInstant().toString()
             val utcOdt   = OffsetDateTime.parse(instantStart)    // parse as an OffsetDateTime (UTC)
-            val istZone  = ZoneId.of("Asia/Kolkata")       // or ZoneId.systemDefault()
-            val istOdt   = utcOdt.atZoneSameInstant(istZone)   // same instant, new zone
+            val systemZone1: ZoneId = ZoneId.systemDefault()       // or ZoneId.systemDefault()
+            val istOdt   = utcOdt.atZoneSameInstant(systemZone1)   // same instant, new zone
             val startSleepTime  = istOdt.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
             val utcOdt1   = OffsetDateTime.parse(instantEnd)    // parse as an OffsetDateTime (UTC)
-            val istZone1  = ZoneId.of("Asia/Kolkata")       // or ZoneId.systemDefault()
-            val istOdt1   = utcOdt1.atZoneSameInstant(istZone1)   // same instant, new zone
+            val systemZone: ZoneId = ZoneId.systemDefault()     // or ZoneId.systemDefault()
+            val istOdt1   = utcOdt1.atZoneSameInstant(systemZone)   // same instant, new zone
             val endSleepTime  = istOdt1.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
             logNap(startSleepTime,endSleepTime)
         }
