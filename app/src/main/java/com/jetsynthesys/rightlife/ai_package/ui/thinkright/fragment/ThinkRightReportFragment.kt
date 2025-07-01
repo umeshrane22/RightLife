@@ -151,6 +151,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     private var toolsGridArray : ArrayList<ToolGridData> = arrayListOf()
     private lateinit var mindfullResponse : MindfullResponse
     private lateinit var journalResponse : JournalAnswerResponse
+    private lateinit var breathingResponse : BreathingResponse
     private lateinit var journalAnswerData : JournalAnswerData
     private var mindfullData : ArrayList<MindfullData> = arrayListOf()
     private lateinit var toolsAdapter: ToolsAdapter
@@ -164,6 +165,12 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     private lateinit var emotionLabel: TextView
     private lateinit var emotionTime: TextView
     private lateinit var emotionDescription: TextView
+    private lateinit var tvBreathingTitle1: TextView
+    private lateinit var tvBreathingTitle2: TextView
+    private lateinit var tvBreathingDuration1: TextView
+    private lateinit var tvBreathingDuration2: TextView
+    private lateinit var lytBreathing1: ConstraintLayout
+    private lateinit var lytBreathing2: ConstraintLayout
     private lateinit var emotionIcon: ImageView
     private lateinit var editEmotionIcon: ImageView
     private lateinit var imgBack: ImageView
@@ -190,6 +197,12 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         emotionCardNoData = view.findViewById(R.id.lyt_feel)
         cardAffirmations = view.findViewById(R.id.card_affirmations)
         tvJournalDate = view.findViewById(R.id.tv_journaling_date)
+        lytBreathing1 = view.findViewById(R.id.lyt_breathing_1)
+        lytBreathing2 = view.findViewById(R.id.lyt_breathing_2)
+        tvBreathingTitle1 = view.findViewById(R.id.tv_breathing_title1)
+        tvBreathingTitle2 = view.findViewById(R.id.tv_breathing_title2)
+        tvBreathingDuration1 = view.findViewById(R.id.tv_breathing_duration1)
+        tvBreathingDuration2 = view.findViewById(R.id.tv_breathing_duration2)
         tvJournalDesc = view.findViewById(R.id.tv_journaling_desc)
         tvJournalTime = view.findViewById(R.id.tv_journaling_time)
         affirmationCount = view.findViewById(R.id.tv_affirmation_count)
@@ -652,7 +665,25 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         call.enqueue(object : Callback<BreathingResponse> {
             override fun onResponse(call: Call<BreathingResponse>, response: Response<BreathingResponse>) {
                 if (response.isSuccessful) {
-                    breathingCard.visibility = View.VISIBLE
+                    breathingResponse = response.body()!!
+                    if (breathingResponse.data.isNotEmpty()) {
+                        breathingCard.visibility = View.VISIBLE
+                        if (breathingResponse.data.size == 1){
+                            lytBreathing1.visibility = View.VISIBLE
+                            lytBreathing2.visibility = View.GONE
+                            tvBreathingDuration1.setText(breathingResponse.data.getOrNull(0)?.duration.toString())
+                            tvBreathingTitle1.setText(breathingResponse.data.getOrNull(0)?.title.toString())
+                        }else if (breathingResponse.data.size == 2){
+                            lytBreathing1.visibility = View.VISIBLE
+                            lytBreathing2.visibility = View.VISIBLE
+                            tvBreathingDuration1.setText(breathingResponse.data.getOrNull(0)?.duration.toString())
+                            tvBreathingTitle1.setText(breathingResponse.data.getOrNull(0)?.title.toString())
+                            tvBreathingTitle2.setText(breathingResponse.data.getOrNull(1)?.title.toString())
+                            tvBreathingDuration2.setText(breathingResponse.data.getOrNull(1)?.duration.toString())
+                        }
+                    }else{
+                        breathingCard.visibility = View.GONE
+                    }
                     if (isAdded  && view != null){
                         requireActivity().runOnUiThread {
                             dismissLoader(requireView())
