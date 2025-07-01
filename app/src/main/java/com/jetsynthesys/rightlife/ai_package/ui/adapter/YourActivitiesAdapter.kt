@@ -1,6 +1,10 @@
 package com.jetsynthesys.rightlife.ai_package.ui.adapter
 
 import android.content.Context
+import android.graphics.Typeface
+import android.text.SpannableStringBuilder
+import android.text.style.AbsoluteSizeSpan
+import android.text.style.StyleSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -32,8 +36,10 @@ class YourActivitiesAdapter(
 
         // Bind data to views
         holder.mealTitle.text = item.activityType
-        holder.servesCount.text = item.duration
-        holder.calValue.text = item.caloriesBurned
+        val formattedTime = formatTimeString(item.duration)
+        holder.servesCount.text = formattedTime
+        val formattedCalories = formatCalorieString( item.caloriesBurned)
+        holder.calValue.text = formattedCalories
         holder.subtractionValue.text = item.intensity
         holder.mealName.visibility = View.GONE
         holder.delete.visibility = View.GONE
@@ -96,4 +102,107 @@ class YourActivitiesAdapter(
         }
         notifyDataSetChanged()
     }
+    private fun formatCalorieString(calorieString: String): SpannableStringBuilder {
+        // Step 1: Parse the input string (e.g., "488 kcal" -> 488)
+        val calories = calorieString.replace(" kcal", "").toIntOrNull() ?: 0
+        val formattedText = "$calories kcal"
+
+        // Step 2: Create SpannableStringBuilder for styling
+        val spannable = SpannableStringBuilder(formattedText)
+
+        // Step 3: Apply bold and 18sp to the number
+        val numberLength = calories.toString().length
+        spannable.setSpan(
+            StyleSpan(Typeface.BOLD),
+            0,
+            numberLength,
+            SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+        spannable.setSpan(
+            AbsoluteSizeSpan(18, true), // 18sp
+            0,
+            numberLength,
+            SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+
+        // Step 4: Apply normal and 12sp to "kcal"
+        spannable.setSpan(
+            AbsoluteSizeSpan(12, true), // 12sp
+            numberLength,
+            formattedText.length, // " kcal"
+            SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+
+        return spannable
+    }
+    private fun formatTimeString(timeString: String): SpannableStringBuilder {
+        // Step 1: Parse the input string (e.g., "61 min" -> 61)
+        val minutes = timeString.replace(" min", "").toIntOrNull() ?: 0
+
+        // Step 2: Convert minutes to hours and minutes
+        val hours = minutes / 60
+        val remainingMinutes = minutes % 60
+
+        // Step 3: Build the formatted string (e.g., "1 hr 1 min")
+        val formattedText = buildString {
+            if (hours > 0) {
+                append("$hours hr ")
+            }
+            append("$remainingMinutes min")
+        }
+
+        // Step 4: Create SpannableStringBuilder for styling
+        val spannable = SpannableStringBuilder(formattedText)
+
+        // Apply bold and 18sp to numbers
+        if (hours > 0) {
+            // Style the hours number
+            spannable.setSpan(
+                StyleSpan(Typeface.BOLD),
+                0,
+                hours.toString().length,
+                SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            spannable.setSpan(
+                AbsoluteSizeSpan(18, true), // 18sp
+                0,
+                hours.toString().length,
+                SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            // Style the "hr" unit (normal, 12sp)
+            spannable.setSpan(
+                AbsoluteSizeSpan(12, true), // 12sp
+                hours.toString().length,
+                hours.toString().length + 3, // " hr "
+                SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        }
+
+        // Style the minutes number
+        val minutesStart = if (hours > 0) hours.toString().length + 4 else 0
+        val minutesEnd = minutesStart + remainingMinutes.toString().length
+        spannable.setSpan(
+            StyleSpan(Typeface.BOLD),
+            minutesStart,
+            minutesEnd,
+            SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+        spannable.setSpan(
+            AbsoluteSizeSpan(18, true), // 18sp
+            minutesStart,
+            minutesEnd,
+            SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+
+        // Style the "min" unit (normal, 12sp)
+        spannable.setSpan(
+            AbsoluteSizeSpan(12, true), // 12sp
+            minutesEnd,
+            formattedText.length, // " min"
+            SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+
+        return spannable
+    }
+
 }
