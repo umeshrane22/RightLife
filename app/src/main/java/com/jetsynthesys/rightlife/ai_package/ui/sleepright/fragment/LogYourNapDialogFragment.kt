@@ -30,6 +30,7 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.Instant
 import java.time.LocalDateTime
+import java.time.OffsetDateTime
 import java.time.ZoneId
 
 class LogYourNapDialogFragment(private val requireContext: Context, private val listener: OnLogYourNapSelectedListener) : BottomSheetDialogFragment() {
@@ -117,7 +118,15 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
             val formatWakeDate = "$selectedDate"+"T"+"$time24h1"
             val ldt1         = LocalDateTime.parse(formatWakeDate)      // parses without zone
             val instantEnd     = ldt1.atZone(deviceZone).toInstant().toString()
-            logNap(instantStart,instantEnd)
+            val utcOdt   = OffsetDateTime.parse(instantStart)    // parse as an OffsetDateTime (UTC)
+            val istZone  = ZoneId.of("Asia/Kolkata")       // or ZoneId.systemDefault()
+            val istOdt   = utcOdt.atZoneSameInstant(istZone)   // same instant, new zone
+            val startSleepTime  = istOdt.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+            val utcOdt1   = OffsetDateTime.parse(instantEnd)    // parse as an OffsetDateTime (UTC)
+            val istZone1  = ZoneId.of("Asia/Kolkata")       // or ZoneId.systemDefault()
+            val istOdt1   = utcOdt1.atZoneSameInstant(istZone1)   // same instant, new zone
+            val endSleepTime  = istOdt1.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+            logNap(startSleepTime,endSleepTime)
         }
         view.findViewById<View>(R.id.btnClose).setOnClickListener {
             dismiss()
