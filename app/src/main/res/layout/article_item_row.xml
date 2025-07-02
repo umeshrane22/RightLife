@@ -19,6 +19,8 @@
         android:text="Consuming adequate magnesium may enhance mood and promote healthy sleep. Additionally, it might lessen your chance of migraines and cardiovascular problems. Magnesium is necessary for your body to carry out over 300 enzymatic activities. A lack of magnesium in the body could have a significant negative impact on your health. \n\nEven though a wide range of foods contain magnesium, taking supplements can be beneficial, especially for those with low intake. However, selecting a magnesium supplement can be challenging because they come in a multitude of shapes and sizes. \n \n This article describes the many kinds and dosages of magnesium supplements and examines their advantages and disadvantages."
         android:textColor="@color/txt_color_header"
         android:textSize="@dimen/textsize_medium"
+        android:linksClickable="true"
+        android:textColorLink="@color/blue_bar"
         android:visibility="visible" />
 
     <ImageView

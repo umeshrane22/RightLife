@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Build;
 import android.text.Html;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,11 +48,26 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
         Article article = articleList.get(position);
 
         //holder.binding.txtArticleContent.setText(article.getHtmlContent());
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            holder.binding.txtArticleContent.setText(Html.fromHtml(article.getHtmlContent(), Html.FROM_HTML_MODE_COMPACT));
+       /* if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            holder.binding.txtArticleContent.setText(Html.fromHtml("<p>Read more on <a href=\"https://example.com\">this page</a>.</p>", Html.FROM_HTML_MODE_COMPACT));
         } else {
-            holder.binding.txtArticleContent.setText(Html.fromHtml(article.getHtmlContent()));
+            holder.binding.txtArticleContent.setText(Html.fromHtml("<p>Read more on <a href=\"https://example.com\">this page</a>.</p>"));
+        }*/
+
+        Spanned spanned;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            spanned = Html.fromHtml(article.getHtmlContent(), Html.FROM_HTML_MODE_LEGACY);
+        } else {
+            spanned = Html.fromHtml(article.getHtmlContent());
         }
+
+        holder.binding.txtArticleContent.setText(spanned);
+
+// VERY IMPORTANT: enable link clicks
+        holder.binding.txtArticleContent.setMovementMethod(LinkMovementMethod.getInstance());
+        holder.binding.txtArticleContent.setLinksClickable(true);
+
         Glide.with(context).load(ApiClient.CDN_URL_QA + article.getThumbnail())
                 .transform(new RoundedCorners(1))
                 .placeholder(R.drawable.rl_placeholder)
