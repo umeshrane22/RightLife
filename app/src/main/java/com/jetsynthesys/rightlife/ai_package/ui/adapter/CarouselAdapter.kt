@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.model.CardItem
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.graphs.LineGraphViewWorkout
@@ -41,6 +42,7 @@ class CarouselAdapter(
         private val cardTitle: TextView = itemView.findViewById(R.id.functional_strength_heading)
         private val durationText: TextView = itemView.findViewById(R.id.duration_text)
         private val caloriesText: TextView = itemView.findViewById(R.id.calories_text)
+        private val workout_function_icon: ImageView = itemView.findViewById(R.id.workout_function_icon)
         private val avgHeartRateText: TextView = itemView.findViewById(R.id.avg_heart_rate_text_value)
         private val lineGraph: LineGraphViewWorkout = itemView.findViewById(R.id.line_graph_workout)
         private val noDataIcon: ImageView = itemView.findViewById(R.id.no_data_workout_icon)
@@ -102,6 +104,10 @@ class CarouselAdapter(
                 noDataText.visibility = View.VISIBLE
                 noDataTextWorkoutLoggedManually.visibility = View.VISIBLE
             }
+            Glide.with(itemView.context)
+                .load(item.icon)
+                .placeholder(R.drawable.workout_function_icon)
+                .into(workout_function_icon)
 
             lineGraph.setOnClickListener {
                 onGraphClick(item, position)

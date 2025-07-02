@@ -17,6 +17,7 @@ data class WorkoutData(
     @SerializedName("duration") val duration: Int,
     @SerializedName("weight_kg") val weightKg: Float,
     @SerializedName("age") val age: Int,
+    @SerializedName("icon") val icon: String,
     @SerializedName("intensity") val intensity: String,
     @SerializedName("gender") val gender: String,
     @SerializedName("activity_factor") val activityFactor: Float,

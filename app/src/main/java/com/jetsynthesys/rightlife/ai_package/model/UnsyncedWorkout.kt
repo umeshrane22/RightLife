@@ -54,7 +54,8 @@ data class UnsyncedWorkout(
 
     @SerializedName("_id")
     val id: String,
-
+    @SerializedName("icon")
+    val icon: String,
     @SerializedName("user_id")
     val userId: String,
 

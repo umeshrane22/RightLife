@@ -303,6 +303,7 @@ class WorkoutAnalyticsFragment : BaseFragment<FragmentWorkoutAnalyticsBinding>()
                                     duration = durationText,
                                     caloriesBurned = caloriesText,
                                     avgHeartRate = avgHeartRate,
+                                    icon = "",
                                     heartRateData = workout.heartRateData,
                                     heartRateZones = workout.heartRateZones,
                                     heartRateZoneMinutes = workout.heartRateZoneMinutes,

@@ -9,6 +9,7 @@ data class ActivityModel(
     val activity_id: String,
     val duration: String,
     val caloriesBurned: String,
+    val icon: String,
     val intensity: String,
     val calorieId: String,
     val userId :String
