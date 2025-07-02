@@ -24,6 +24,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -86,6 +87,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
     private var tooltipRunnable1: Runnable? = null
     private var tooltipRunnable2: Runnable? = null
     private var isTooltipShown = false
+    private var lastDayOfCurrentWeek : String = ""
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentYourActivityBinding
         get() = FragmentYourActivityBinding::inflate
@@ -209,18 +211,38 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         getWorkoutLogHistory(formattedDate)
 
         workoutWeeklyDayList = getWeekFrom(currentWeekStart)
+        lastDayOfCurrentWeek = workoutWeeklyDayList.get(workoutWeeklyDayList.size - 1).fullDate.toString()
         onWorkoutLogWeeklyDayList(workoutWeeklyDayList, workoutLogHistory)
+        val current = LocalDate.parse(formattedDate, formatter)
+        val updated = LocalDate.parse(lastDayOfCurrentWeek, formatter)
+        if (current > updated){
+            nextWeekBtn.setImageResource(R.drawable.forward_activity)
+        }else{
+            nextWeekBtn.setImageResource(R.drawable.right_arrow_grey)
+        }
         prevWeekBtn.setOnClickListener {
             currentWeekStart = currentWeekStart.minusWeeks(1)
             workoutWeeklyDayList = getWeekFrom(currentWeekStart)
+            lastDayOfCurrentWeek = workoutWeeklyDayList.get(workoutWeeklyDayList.size - 1).fullDate.toString()
             onWorkoutLogWeeklyDayList(workoutWeeklyDayList, workoutLogHistory)
             getWorkoutLogHistory(currentWeekStart.toString())
+            nextWeekBtn.setImageResource(R.drawable.forward_activity)
         }
         nextWeekBtn.setOnClickListener {
-            currentWeekStart = currentWeekStart.plusWeeks(1)
-            workoutWeeklyDayList = getWeekFrom(currentWeekStart)
-            onWorkoutLogWeeklyDayList(workoutWeeklyDayList, workoutLogHistory)
-            getWorkoutLogHistory(currentWeekStart.toString())
+            val current = LocalDate.parse(formattedDate, formatter)
+            val updated = LocalDate.parse(lastDayOfCurrentWeek, formatter)
+            if (current > updated){
+                currentWeekStart = currentWeekStart.plusWeeks(1)
+                workoutWeeklyDayList = getWeekFrom(currentWeekStart)
+                lastDayOfCurrentWeek = workoutWeeklyDayList.get(workoutWeeklyDayList.size - 1).fullDate.toString()
+                onWorkoutLogWeeklyDayList(workoutWeeklyDayList, workoutLogHistory)
+                getWorkoutLogHistory(currentWeekStart.toString())
+                nextWeekBtn.setImageResource(R.drawable.forward_activity)
+            }else{
+                Toast.makeText(context, "Not selected future date", Toast.LENGTH_SHORT).show()
+                nextWeekBtn.setImageResource(R.drawable.right_arrow_grey)
+            }
+
         }
         fetchCalories(formattedDate)
 
