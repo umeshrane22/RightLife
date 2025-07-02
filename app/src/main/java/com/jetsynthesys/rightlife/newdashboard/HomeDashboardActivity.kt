@@ -1538,7 +1538,8 @@ private fun checkTimeAndSetVisibility(module: UpdatedModule) {
                     DateTimeUtils.formatSleepDuration(
                         it
                     )
-                }?: "0 hr"//(module.sleepDuration ?: "0min").toString()
+                }?: (module.totalSleepDurationMinutes?.let { DateTimeUtils.formatSleepDurationforidealSleep(it) }
+                        ?: "0min").toString()
                 binding.tvPerformSleepPercent.text =
                     (module.sleepPerformanceDetail?.sleepPerformanceData?.sleepPerformance?: "0").toString()
                     //(module.sleepDuration ?: "0").toString()
