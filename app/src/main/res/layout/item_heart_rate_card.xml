@@ -107,7 +107,8 @@
                 android:layout_height="20dp"
                 android:layout_below="@id/tvValue"
                 android:layout_marginTop="10dp"
-                android:src="@drawable/breathing_green_tick" />
+                android:background="@drawable/circle_shape"
+                 />
 
             <TextView
                 android:id="@+id/tvWarning"

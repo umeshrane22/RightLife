@@ -8,5 +8,6 @@ data class ScanData(
     @SerializedName("value") val value: Double?,
     @SerializedName("indicator") val indicator: String?,
     @SerializedName("unit") val unit: String?,
+    @SerializedName("colour") val colour: String?,
     @SerializedName("parameter") val parameter: String?
 )
