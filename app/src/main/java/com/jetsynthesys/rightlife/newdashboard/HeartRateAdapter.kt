@@ -4,22 +4,23 @@ package com.jetsynthesys.rightlife.newdashboard
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.jetsynthesys.rightlife.R
-import com.jetsynthesys.rightlife.databinding.ItemHeartRateCardBinding
-import com.jetsynthesys.rightlife.newdashboard.model.FacialScan
-import com.jetsynthesys.rightlife.newdashboard.model.ScanData
-import com.jetsynthesys.rightlife.ui.utility.DateConverter
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.*
+import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.databinding.ItemHeartRateCardBinding
+import com.jetsynthesys.rightlife.newdashboard.model.FacialScan
+import com.jetsynthesys.rightlife.newdashboard.model.ScanData
 import com.jetsynthesys.rightlife.ui.healthcam.ParameterModel
+import com.jetsynthesys.rightlife.ui.utility.DateConverter
+import com.jetsynthesys.rightlife.ui.utility.Utils
 import java.io.Serializable
-
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -44,16 +45,16 @@ class HeartRateAdapter(
         val binding = holder.binding
 
         if (item != null) {
-            binding.tvValue.text = item.avgValue.toString()
+            binding.tvValue.text = item.data?.get(0)?.value.toString()
         }
         if (item != null) {
             binding.tvDate.text = DateConverter.convertToDate(item.data?.get(0)?.createdAt)
         }
         if (item != null) {
-            binding.tvUnit.text = item.avgUnit
+            binding.tvUnit.text = item.data?.get(0)?.unit
         }
         if (item != null) {
-            binding.tvHeartRate.text = item.avgParameter
+            binding.tvHeartRate.text = item.data?.get(0)?.parameter
         }
         // show date
         val dateFormat = SimpleDateFormat("dd MMM", Locale.getDefault())
@@ -62,7 +63,7 @@ class HeartRateAdapter(
 
 
         if (item != null) {
-            binding.tvWarning.text = item.avgIndicator
+            binding.tvWarning.text = item.data?.get(0)?.indicator
         }
         // Show warning if heart rate is above normal
       /*  if (item.heartRate > 100) {
@@ -74,7 +75,11 @@ class HeartRateAdapter(
             //binding.tvWarning.visibility = android.view.View.GONE
         }*/
         val iconRes = getWarningIconByType(item?.avgIndicator.toString())
-        binding.ivWarning.setImageResource(iconRes)
+        //binding.ivWarning.setImageResource(iconRes)
+        if (item != null) {
+            binding.ivWarning.setBackgroundTintList(ColorStateList.valueOf(Utils.getColorFromColorCode(item.data?.get(0)?.colour
+                ?: "#FFFFFF")))
+        }
 
         val iconResReport = getReportIconByType(item?.key.toString())
         binding.ivHeartIcon.setImageResource(iconResReport)
