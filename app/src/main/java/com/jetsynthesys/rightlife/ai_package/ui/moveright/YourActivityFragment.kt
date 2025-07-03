@@ -332,7 +332,8 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                     val caloriesResponse = response.body()
                     Log.d("FetchCalories", "Date: $formattedDate, Received ${caloriesResponse?.data?.size ?: 0} workouts")
 
-                    val newActivities = mutableListOf<ActivityModel>()
+                    // Create ArrayList to match adapter's expected type
+                    val newActivities = ArrayList<ActivityModel>()
                     caloriesResponse?.data?.forEachIndexed { index, workout ->
                         Log.d("FetchCalories", "Workout $index - Type: ${workout.workoutType}, Duration: ${workout.duration}, Calories: ${workout.caloriesBurned}, ID: ${workout.activity_id}")
                         val activity = ActivityModel(
@@ -340,6 +341,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                             activity_id = workout.activity_id,
                             duration = "${workout.duration} min",
                             caloriesBurned = "${workout.caloriesBurned.toInt()} kcal",
+                            icon = workout.icon,
                             intensity = workout.intensity,
                             calorieId = workout.id,
                             userId = userId
@@ -359,15 +361,26 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
 
                         Log.d("FetchCalories", "Updated activityList with ${activityList.size} activities for date $formattedDate")
 
+                        // Clear adapter (fallback if clear() is not available)
+                       /* try {
+                            myActivityAdapter.clear() // Try calling clear() if it exists
+                        } catch (e: NoSuchMethodError) {
+                            Log.w("FetchCalories", "Adapter clear() method not found, clearing manually")
+                            myActivityAdapter.addAll(ArrayList(), -1, null, false) // Pass empty list to clear
+                        }*/
+
+                        // Update adapter with new data
+                        myActivityAdapter.addAll(newActivities, -1, null, false)
+                        myActivityAdapter.notifyDataSetChanged()
+
+                        // Update RecyclerView visibility
                         if (activityList.isNotEmpty()) {
                             myActivityRecyclerView.visibility = View.VISIBLE
                             btnLogMeal.visibility = View.VISIBLE
-                            myActivityAdapter.addAll(activityList, -1, null, false)
-                            myActivityAdapter.notifyDataSetChanged() // Force adapter refresh
-                            Log.d("FetchCalories", "Adapter updated with ${activityList.size} activities for date $formattedDate")
+                            Log.d("FetchCalories", "Adapter updated with ${newActivities.size} activities, RecyclerView visible for date $formattedDate")
                         } else {
-                            btnLogMeal.visibility = View.GONE
                             myActivityRecyclerView.visibility = View.GONE
+                            btnLogMeal.visibility = View.GONE
                             Log.d("FetchCalories", "No activities to display for date $formattedDate")
                         }
 

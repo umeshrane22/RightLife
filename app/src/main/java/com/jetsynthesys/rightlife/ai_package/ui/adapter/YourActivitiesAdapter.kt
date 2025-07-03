@@ -12,6 +12,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.model.ActivityModel
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.DeleteWorkoutBottomSheet
@@ -58,6 +59,9 @@ class YourActivitiesAdapter(
         holder.circlePlus.setOnClickListener {
             onCirclePlusClick(item, position)
         }
+        Glide.with(context)
+            .load(item.icon) // <-- your image URL string
+            .into(holder.main_heading_icon)
 
         // Set up item click listener
        /* holder.itemView.setOnClickListener {
@@ -81,6 +85,7 @@ class YourActivitiesAdapter(
         val cal: ImageView = itemView.findViewById(R.id.image_cal)
         val calValue: TextView = itemView.findViewById(R.id.tv_cal_value)
         val calUnit: TextView = itemView.findViewById(R.id.tv_cal_unit)
+        val main_heading_icon: ImageView = itemView.findViewById(R.id.main_heading_icon)
         val subtraction: ImageView = itemView.findViewById(R.id.image_subtraction)
         val subtractionValue: TextView = itemView.findViewById(R.id.tv_subtraction_value)
         val subtractionUnit: TextView = itemView.findViewById(R.id.tv_subtraction_unit)

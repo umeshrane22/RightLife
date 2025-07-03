@@ -347,7 +347,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
             if (durationMinutes > 0) {
                 val activityId = if (edit == "edit") activityModel?.activity_id else if (edit_routine.equals("edit_routine")) workoutModel?.activityId else workout?._id
                 if (activityId != null) {
-                    caloriesText.text = "Calculating..."
+                    //caloriesText.text = "Calculating..."
                     calculateUserCalories(durationMinutes, selectedIntensity, activityId)
                     addLog.isEnabled = true
                 } else {
@@ -624,7 +624,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                                     moduleName = it.title
                                 )
                             }
-                            caloriesText.text = "N/A"
+                            //caloriesText.text = "N/A"
                            // Toast.makeText(requireContext(), "No calories data received", Toast.LENGTH_SHORT).show()
                             // Navigate even if API response is empty, as lastWorkoutRecord is set
                             if (navigateToRoutine) {
@@ -644,7 +644,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                         }
                         val errorBody = response.errorBody()?.string()
                         Log.e("CalculateCalories", "Error: ${response.code()} - ${response.message()}, Body: $errorBody")
-                        caloriesText.text = "Error"
+                        //caloriesText.text = "Error"
                         Toast.makeText(
                             requireContext(),
                             "Error: ${response.code()} - ${response.message()}\nDetails: $errorBody",
@@ -668,7 +668,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                     )
                 }
                 withContext(Dispatchers.Main) {
-                    caloriesText.text = "Error"
+                    //caloriesText.text = "Error"
                     Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
                     // Navigate even if an exception occurs, as lastWorkoutRecord is set
                     if (navigateToRoutine) {
