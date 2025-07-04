@@ -23,6 +23,8 @@ public class ApiClient {
     private static final String BASE_URL3 = "http://18.159.113.191:8080/app/api/"; // Your API URL
     private static final String BASE_URL_FAST_API = BuildConfig.BASE_URL_AI;
     public static final String CDN_URL_QA = BuildConfig.CDN_URL;//"https://d1sacaybzizpm5.cloudfront.net/"; // Your API URL
+    public static final String VIDEO_CDN_URL = BuildConfig.VIDEO_CDN_URL;//"https://d1sacaybzizpm5.cloudfront.net/"; // Your API URL
+
     public static final String CDN_URL_PROD = "https://d1uxs9zd0apq85.cloudfront.net/"; // Your API URL
 
     private static Retrofit retrofit = null;

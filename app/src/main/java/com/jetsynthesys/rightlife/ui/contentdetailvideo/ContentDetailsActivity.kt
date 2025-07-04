@@ -361,7 +361,7 @@ class ContentDetailsActivity : BaseActivity() {
         player?.playWhenReady = true
         binding.exoPlayerView.player = player
 
-        val fullVideoUrl = ApiClient.CDN_URL_QA + previewUrl // Re-integrating your original URL logic
+        val fullVideoUrl = ApiClient.VIDEO_CDN_URL + previewUrl // Re-integrating your original URL logic
         val videoUri = Uri.parse(fullVideoUrl)
 
         Log.d("ExoPlayerInit", "Attempting to play URL: $videoUri")
