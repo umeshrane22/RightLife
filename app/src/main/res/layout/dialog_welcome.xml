@@ -39,6 +39,6 @@
         android:fontFamily="@font/dmsans_regular"
         android:textSize="20sp"
         android:textColor="@color/txt_color_header"
-        android:text="Join over 40,000 people who are\n living the RightLife."/>
+        android:text="Join over 5000+ people who are\n living the RightLife."/>
 
 </LinearLayout>

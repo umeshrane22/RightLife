@@ -273,6 +273,11 @@ class BreathworkPracticeActivity : BaseActivity() {
 
     private fun callPostMindFullDataAPI() {
         val endDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
-        CommonAPICall.postMindFullData(this, "Journaling", startDate, endDate)
+        CommonAPICall.postMindFullData(
+            this,
+            breathingData?.title ?: "Breathing",
+            startDate,
+            endDate
+        )
     }
 }
