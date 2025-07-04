@@ -31,4 +31,8 @@ class FacialScanRange {
     @SerializedName("homeScreen")
     @Expose
     var homeScreen: String? = null
+
+    @SerializedName("value")
+    @Expose
+    var value: String? = null
 }

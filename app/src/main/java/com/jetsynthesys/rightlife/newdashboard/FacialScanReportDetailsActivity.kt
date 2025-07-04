@@ -27,6 +27,7 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.apimodel.newreportfacescan.HealthCamItem
 import com.jetsynthesys.rightlife.databinding.ActivityFacialScanReportDetailsBinding
 import com.jetsynthesys.rightlife.newdashboard.model.FacialScanRange
+import com.jetsynthesys.rightlife.newdashboard.model.FacialScanReport
 import com.jetsynthesys.rightlife.newdashboard.model.FacialScanReportData
 import com.jetsynthesys.rightlife.newdashboard.model.FacialScanReportDataWrapper
 import com.jetsynthesys.rightlife.newdashboard.model.FacialScanReportResponse
@@ -289,9 +290,11 @@ class FacialScanReportDetailsActivity : BaseActivity() {
 
                     selectedRange?.let { plotGraph2(graphData, binding, it) }
 
-                    if (reportList.isNotEmpty() && reportList.size >= 1) {
+                    var firstReport: FacialScanRange? = null
+                    val rangeList = responseBody.data?.range?.toMutableList()
+                    if (rangeList?.isNotEmpty() == true) {
                         // Set bottom card data
-                        val firstReport = reportList[reportList.size - 1]
+                        firstReport = rangeList[0]
                         binding.indicator.text = firstReport.indicator
                         binding.tvIndicatorExplain.text =
                             Html.fromHtml(firstReport.implication, Html.FROM_HTML_MODE_COMPACT)
@@ -305,7 +308,19 @@ class FacialScanReportDetailsActivity : BaseActivity() {
                         val colorStateList = ColorStateList.valueOf(colorInt)
                         binding.tvIndicatorValueBg.backgroundTintList = colorStateList
                     }
-                    SetupBottomCard(responseBody.data?.range)
+
+                    if (firstReport != null && rangeList != null) {
+                        val iterator = rangeList.iterator()
+                        while (iterator.hasNext()) {
+                            val item = iterator.next()
+                            if (item.indicator == firstReport.indicator) {
+                                iterator.remove() // safe removal
+                                break
+                            }
+                        }
+                    }
+
+                    setupBottomCard(rangeList)
                     HandleContinueWatchUI(responseBody.data)
                 } else {
                     showToast("Server Error: ${response.code()}")
@@ -319,33 +334,11 @@ class FacialScanReportDetailsActivity : BaseActivity() {
         })
     }
 
-    private fun SetupBottomCard(rangeList: List<FacialScanRange>?) {
-        if (rangeList != null && rangeList.isNotEmpty()) {
-            val secondReport = rangeList.get(0)
-            binding.indicatorRange2.text = secondReport.indicator
-            binding.tvIndicatorExplainRange2.text =
-                Html.fromHtml(secondReport.implication, Html.FROM_HTML_MODE_COMPACT)
-
-            binding.tvIndicatorValueBgRange2.text =
-                "${secondReport.lowerRange}-${secondReport.upperRange} ${secondReport.unit}"
-
-            val colorHexString1 = "#" + secondReport.colour // Construct the correct hex string
-            val colorInt1 = Color.parseColor(colorHexString1)
-            val colorStateList1 = ColorStateList.valueOf(colorInt1)
-            binding.tvIndicatorValueBgRange2.backgroundTintList = colorStateList1
-
-            val thirdReport = rangeList.get(1)
-            binding.indicatorRange3.text = thirdReport.indicator
-            binding.tvIndicatorExplainRange3.text =
-                Html.fromHtml(thirdReport.implication, Html.FROM_HTML_MODE_COMPACT)
-            binding.tvIndicatorValueBgRange3.text =
-                "${thirdReport.lowerRange}-${thirdReport.upperRange} ${thirdReport.unit}"
-
-            val colorHexString = "#" + thirdReport.colour // Construct the correct hex string
-            val colorInt = Color.parseColor(colorHexString)
-            val colorStateList = ColorStateList.valueOf(colorInt)
-            binding.tvIndicatorValueBgRange3.backgroundTintList = colorStateList
-        }
+    private fun setupBottomCard(rangeList: List<FacialScanRange>?) {
+        val adapter = FaceScanRangesAdapter(rangeList)
+        binding.recyclerViewRanges.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        binding.recyclerViewRanges.adapter = adapter
     }
 
 
