@@ -108,7 +108,7 @@ class UserInterestActivity : BaseActivity() {
             // Section Layout
             val titleLayout = LinearLayout(this@UserInterestActivity).apply {
                 orientation = LinearLayout.HORIZONTAL
-                setPadding(0, 16, 0, 8)
+                setPadding(0, 16, 0, 12)
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
@@ -137,7 +137,7 @@ class UserInterestActivity : BaseActivity() {
             val titleView = TextView(this@UserInterestActivity).apply {
                 text = userInterest.title
                 setTextAppearance(android.R.style.TextAppearance_Medium)
-                setPadding(0, 16, 0, 8)
+                setPadding(0, 16, 0, 12)
                 setTypeface(typeface, Typeface.BOLD)
                 textSize = 18F
             }
@@ -150,7 +150,8 @@ class UserInterestActivity : BaseActivity() {
             val chipGroup = ChipGroup(this@UserInterestActivity).apply {
                 isSingleLine = false
                 chipSpacingHorizontal = 8
-                chipSpacingVertical = 2
+                chipSpacingVertical = 12
+                setPadding(0,0,0,0)
             }
 
             userInterest.topics?.forEach { topic ->
@@ -171,8 +172,9 @@ class UserInterestActivity : BaseActivity() {
                         R.color.dark_red
                     )
                     textSize = 12f
+                    setEnsureMinTouchTargetSize(false)
 
-                    val heightInDp = 50 // or whatever height you want
+                    val heightInDp = 35 // or whatever height you want
                     val heightInPx = TypedValue.applyDimension(
                         TypedValue.COMPLEX_UNIT_DIP,
                         heightInDp.toFloat(),
@@ -198,8 +200,6 @@ class UserInterestActivity : BaseActivity() {
                         )
                     )
 
-                    //Utils.getModuleColor(context, interest.moduleName)
-
                     val textColorStateList = ColorStateList(
                         arrayOf(
                             intArrayOf(android.R.attr.state_checked),
@@ -216,8 +216,6 @@ class UserInterestActivity : BaseActivity() {
                     setOnCheckedChangeListener { _, isChecked ->
                         if (isChecked) selectedInterests.add(topic)
                         else selectedInterests.remove(topic)
-
-                        Log.d("AAAA", "Selected Interest Size = " + selectedInterests.size)
 
                         binding.btnSaveInterest.backgroundTintList =
                             if (selectedInterests.size >= 2) colorStateListSelected else colorStateListNonSelected

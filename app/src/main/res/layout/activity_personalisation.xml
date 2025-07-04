@@ -204,7 +204,7 @@
                     android:layout_marginEnd="16dp"
                     android:fontFamily="@font/dmsans_regular"
                     android:gravity="center"
-                    android:text="94% of user have completed their profile in 2 minutes"
+                    android:text="94% of user have completed their profile in 2 minutes."
                     android:textColor="@color/txt_color_header"
                     android:textSize="12sp" />
 
