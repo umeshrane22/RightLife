@@ -1,5 +1,6 @@
 package com.jetsynthesys.rightlife.subscriptions.adapter
 
+import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,8 +23,10 @@ class SubscriptionPlanAdapter(
             binding.planTitle.text = plan.title?: ""
             binding.planName.text = plan.desc?: ""
             binding.tvPlanAmmount.text = "₹" + plan.price?.inr.toString()
-            binding.planOffer.text = "₹" + plan.discountPrice?.inr.toString()+
-                    " (${plan.discountPercent ?: 0}% OFF)"
+            binding.planOffer.text = "₹" + plan.discountPrice?.inr.toString()
+            binding.planOffer.paintFlags = binding.planOffer.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+
+            binding.planOfferDiscount.text =  " (${plan.discountPercent ?: 0}% OFF)"
             if (plan.status != null && plan.status!!.isNotEmpty()) {
                 binding.tvCurrentPlan.visibility = View.VISIBLE
                 binding.tvCurrentPlan.text = plan.status
