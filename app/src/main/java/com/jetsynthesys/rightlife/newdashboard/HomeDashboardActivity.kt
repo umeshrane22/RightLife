@@ -672,6 +672,17 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
             textView.text = value
         }
     }
+    private fun setIfNotNullOrBlankWithCalories(textView: TextView, value: String?) {
+        if (!value.isNullOrBlank()) {
+            val formattedValue = if (value.contains("kcal", ignoreCase = true)) {
+                value
+            } else {
+                "$value Kcal"
+            }
+            textView.text = formattedValue
+        }
+    }
+
 
     private fun handleDescoverList(aiDashboardResponseMain: AiDashboardResponseMain?) {
         if (aiDashboardResponseMain?.data?.discoverData != null) {
@@ -742,7 +753,7 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                         binding.tvCaloryIntake.text = module.intake.toString()
                         binding.tvCaloryBurn.text = module.burned.toString()
 
-                        setIfNotNullOrBlank(
+                        setIfNotNullOrBlankWithCalories(
                             binding.tvModuleValueEatright,
                             module.calories?.toString()
                         )
@@ -752,7 +763,7 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                         setIfNotNullOrBlank(
                             binding.tvModuleValueThinkright, module.mindfulTime?.toString()
                         )
-                        setIfNotNullOrBlank(
+                        setIfNotNullOrBlankWithCalories(
                             binding.tvModuleValueMoveright, module.activeBurn?.toString()
                         )
 
@@ -768,7 +779,7 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                         binding.tvMinutesTextValue.text = module.mindfulnessMinutes
                         binding.tvDaysTextValue.text = module.wellnessDays
 
-                        setIfNotNullOrBlank(
+                        setIfNotNullOrBlankWithCalories(
                             binding.tvModuleValueEatright,
                             module.calories?.toString()
                         )
@@ -778,7 +789,7 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                         setIfNotNullOrBlank(
                             binding.tvModuleValueThinkright, module.mindfulTime?.toString()
                         )
-                        setIfNotNullOrBlank(
+                        setIfNotNullOrBlankWithCalories(
                             binding.tvModuleValueMoveright, module.activeBurn?.toString()
                         )
                     }
@@ -828,7 +839,7 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                         binding.halfCurveProgressBar.setProgress(percentage.toFloat())
 
 
-                        setIfNotNullOrBlank(
+                        setIfNotNullOrBlankWithCalories(
                             binding.tvModuleValueEatright,
                             module.calories?.toString()
                         )
@@ -838,7 +849,7 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                         setIfNotNullOrBlank(
                             binding.tvModuleValueThinkright, module.mindfulTime?.toString()
                         )
-                        setIfNotNullOrBlank(
+                        setIfNotNullOrBlankWithCalories(
                             binding.tvModuleValueMoveright, module.activeBurn?.toString()
                         )
                     }
@@ -851,7 +862,7 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                         }
 
 
-                        setIfNotNullOrBlank(
+                        setIfNotNullOrBlankWithCalories(
                             binding.tvModuleValueEatright,
                             module.calories?.toString()
                         )
@@ -861,7 +872,7 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                         setIfNotNullOrBlank(
                             binding.tvModuleValueThinkright, module.mindfulTime?.toString()
                         )
-                        setIfNotNullOrBlank(
+                        setIfNotNullOrBlankWithCalories(
                             binding.tvModuleValueMoveright, module.activeBurn?.toString()
                         )
 
