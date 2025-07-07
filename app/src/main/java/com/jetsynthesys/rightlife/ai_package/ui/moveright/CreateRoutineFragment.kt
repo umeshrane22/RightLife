@@ -25,7 +25,6 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.ActivityModel
-import com.jetsynthesys.rightlife.ai_package.model.AssignRoutineRequest
 import com.jetsynthesys.rightlife.ai_package.model.CreateRoutineRequest
 import com.jetsynthesys.rightlife.ai_package.model.RoutineWorkoutDisplayModel
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutSessionRecord
@@ -44,6 +43,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
     private lateinit var editText: EditText
     private lateinit var textViewRoutine: TextView
     private lateinit var createRoutineBackButton: ImageView
+    private lateinit var edit_icon_create_routine: ImageView
     private lateinit var createRoutineRecyclerView: RecyclerView
     private lateinit var layoutBtnLog: LinearLayoutCompat
     private lateinit var addBtnLog: LinearLayoutCompat
@@ -61,7 +61,8 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
         RoutineWorkoutListAdapter(
             requireContext(),
             arrayListOf(),
-            ::onWorkoutItemClick
+            ::onWorkoutItemClick,
+            ::onWorkoutItemRemove // Pass the new callback
         )
     }
 
@@ -84,6 +85,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
 
         createRoutineRecyclerView = view.findViewById(R.id.recyclerview_my_meals_item)
         editText = view.findViewById(R.id.editText)
+        edit_icon_create_routine = view.findViewById(R.id.edit_icon_create_routine)
         textViewRoutine = view.findViewById(R.id.name_routine_text_view)
         layoutBtnLog = view.findViewById(R.id.layout_btn_log)
         createRoutineBackButton = view.findViewById(R.id.back_button)
@@ -91,6 +93,11 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
         addBtnLog = view.findViewById(R.id.add_btn_log)
         save_workout_routine_btn = view.findViewById(R.id.save_workout_routine_btn)
         createListRoutineLayout = view.findViewById(R.id.list_create_routine_layout)
+        edit_icon_create_routine.setOnClickListener {
+            addNameLayout.visibility = View.VISIBLE
+            createListRoutineLayout.visibility = View.GONE
+            editText.setText(textViewRoutine.text.toString())
+        }
 
         // Show/hide layouts based on routine mode
         if (routine == "routine") {
@@ -182,12 +189,10 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
         }
     }
 
-    // Function to map ActivityModel to WorkoutSessionRecord by iterating over activityList
+    // Function to map ActivityModel to WorkoutSessionRecord
     private fun mapActivityModelToWorkoutSessionRecord(activityList: ArrayList<ActivityModel>) {
         activityList.forEach { activity ->
-            // Extract numeric part from duration (e.g., "61 min" -> 61)
             val durationValue = activity.duration.replace(Regex("[^0-9]"), "").toIntOrNull() ?: 0
-            // Extract numeric part from caloriesBurned (e.g., "125 kcal" -> 125.0)
             val caloriesValue = activity.caloriesBurned.replace(Regex("[^0-9.]"), "").toDoubleOrNull()
 
             val workoutRecord = WorkoutSessionRecord(
@@ -195,11 +200,11 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
                 activityId = activity.activity_id,
                 durationMin = durationValue,
                 intensity = activity.intensity,
-                sessions = 1, // Default value, as not present in ActivityModel
+                sessions = 1,
                 moduleName = activity.activityType,
                 caloriesBurned = caloriesValue,
-                message = null, // Response field, not applicable
-                activityFactor = null // Response field, not applicable
+                message = null,
+                activityFactor = null
             )
             workoutList.add(workoutRecord)
             Log.d("CreateRoutineFragment", "Added workout: ${workoutRecord.moduleName} to workoutList")
@@ -218,6 +223,23 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
                 intensity = record.intensity
             )
         }.toCollection(ArrayList())
+    }
+
+    // New function to handle item removal from workoutList
+    private fun onWorkoutItemRemove(position: Int) {
+        if (position >= 0 && position < workoutList.size) {
+            workoutList.removeAt(position)
+            Log.d("CreateRoutineFragment", "Removed workout at position $position, new workoutList size: ${workoutList.size}")
+            // Update adapter with new mapped list
+            val routineWorkoutModels = mapWorkoutSessionRecordsToRoutineWorkoutModels(workoutList)
+            routineWorkoutListAdapter.setData(routineWorkoutModels)
+            // Update UI visibility
+            if (workoutList.isEmpty()) {
+                createRoutineRecyclerView.visibility = View.GONE
+            }
+        } else {
+            Log.e("CreateRoutineFragment", "Invalid position for removal: $position")
+        }
     }
 
     private fun onWorkoutItemClick(workoutModel: RoutineWorkoutDisplayModel, position: Int) {
@@ -266,7 +288,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
                         ).show()
                         val fragment = SearchWorkoutFragment()
                         val bundle = Bundle().apply {
-                            putInt("selectedTab", 1) // 👈 My Routine tab
+                            putInt("selectedTab", 1) // My Routine tab
                         }
                         fragment.arguments = bundle
                         navigateToFragment(fragment, "SearchWorkoutFragment")

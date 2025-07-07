@@ -10,12 +10,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.model.RoutineWorkoutDisplayModel
-import com.jetsynthesys.rightlife.ai_package.ui.moveright.DeleteWorkoutBottomSheet
+import com.jetsynthesys.rightlife.ai_package.ui.moveright.RemoveWorkoutBottomSheet
 
 class RoutineWorkoutListAdapter(
     private val context: Context,
     private var dataList: ArrayList<RoutineWorkoutDisplayModel>,
-    private val onItemClick: (RoutineWorkoutDisplayModel, Int) -> Unit
+    private val onItemClick: (RoutineWorkoutDisplayModel, Int) -> Unit,
+    private val onItemRemove: (Int) -> Unit // New callback for removing item from parent fragment
 ) : RecyclerView.Adapter<RoutineWorkoutListAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -39,8 +40,15 @@ class RoutineWorkoutListAdapter(
 
         // Set up edit button click listener
         holder.edit.setOnClickListener {
-            val bottomSheet = DeleteWorkoutBottomSheet()
-            bottomSheet.show((context as AppCompatActivity).supportFragmentManager, "EditWorkoutBottomSheet")
+            val bottomSheet = RemoveWorkoutBottomSheet.newInstance(position)
+            // Set callback to remove item from list
+            bottomSheet.setOnRemoveSuccessListener {
+                dataList.removeAt(position)
+                notifyItemRemoved(position)
+                notifyItemRangeChanged(position, dataList.size)
+                onItemRemove(position) // Notify parent fragment to remove from workoutList
+            }
+            bottomSheet.show((context as AppCompatActivity).supportFragmentManager, "RemoveWorkoutBottomSheet")
         }
 
         // Set up item click listener
