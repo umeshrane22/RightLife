@@ -2346,7 +2346,7 @@
                                 <TextView
                                     android:id="@+id/tv_module_value_moveright"
                                     android:layout_width="100dp"
-                                    android:layout_height="wrap_content"
+                                    android:layout_height="40dp"
                                     android:layout_centerVertical="true"
                                     android:fontFamily="@font/dmsans_bold"
                                     android:gravity="center"
@@ -2442,7 +2442,7 @@
                                 <TextView
                                     android:id="@+id/tv_module_value_eatright"
                                     android:layout_width="100dp"
-                                    android:layout_height="wrap_content"
+                                    android:layout_height="40dp"
                                     android:layout_centerVertical="true"
                                     android:fontFamily="@font/dmsans_bold"
                                     android:gravity="center"
@@ -2527,7 +2527,7 @@
                                 <TextView
                                     android:id="@+id/tv_module_value_sleepright"
                                     android:layout_width="100dp"
-                                    android:layout_height="wrap_content"
+                                    android:layout_height="40dp"
                                     android:layout_centerVertical="true"
                                     android:fontFamily="@font/dmsans_bold"
                                     android:gravity="center"
@@ -2600,7 +2600,7 @@
                                 <TextView
                                     android:id="@+id/tv_module_value_thinkright"
                                     android:layout_width="100dp"
-                                    android:layout_height="wrap_content"
+                                    android:layout_height="40dp"
                                     android:layout_centerVertical="true"
                                     android:fontFamily="@font/dmsans_bold"
                                     android:gravity="center"
