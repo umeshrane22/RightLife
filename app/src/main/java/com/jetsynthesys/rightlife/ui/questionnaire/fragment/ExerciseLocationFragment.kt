@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.databinding.FragmentExcerciseLocationBinding
 import com.jetsynthesys.rightlife.databinding.FragmentFastfoodPreferenceBinding
 import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireEatRightActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.adapter.ScheduleOptionAdapter
@@ -16,7 +17,7 @@ import com.jetsynthesys.rightlife.ui.questionnaire.pojo.ScheduleOption
 
 class ExerciseLocationFragment : Fragment() {
 
-    private var _binding: FragmentFastfoodPreferenceBinding? = null
+    private var _binding: FragmentExcerciseLocationBinding? = null
     private val binding get() = _binding!!
 
     private val scheduleOptions = listOf(
@@ -51,7 +52,7 @@ class ExerciseLocationFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentFastfoodPreferenceBinding.inflate(inflater, container, false)
+        _binding = FragmentExcerciseLocationBinding.inflate(inflater, container, false)
         return binding.root
     }
 
