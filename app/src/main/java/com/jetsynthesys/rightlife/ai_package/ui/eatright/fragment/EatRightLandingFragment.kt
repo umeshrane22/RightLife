@@ -1,9 +1,14 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment
 
 import android.animation.ValueAnimator
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
+import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -65,7 +70,9 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
@@ -157,7 +164,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
     private val todayMealLogAdapter by lazy { TodayMealLogEatLandingAdapter(requireContext(), arrayListOf(), -1,
         null, false, ::onTodayMealLogItem) }
     private val otherRecipeAdapter by lazy { OtherRecipeEatLandingAdapter(requireContext(), arrayListOf(), -1,
-        null, false, ::onOtherRecipeItem) }
+        null, false, ::onOtherRecipeItem, :: onOtherRecipeLogItem) }
     private val mealSuggestionAdapter by lazy { MealSuggestionListAdapter(requireContext(), arrayListOf(),
         -1, null, false, ::onMealSuggestionItem) }
     private val breakfastMealLogsAdapter by lazy { YourBreakfastMealLogsAdapter(requireContext(), arrayListOf(), -1,
@@ -485,6 +492,21 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
     }
 
     private fun onOtherRecipeItem(recipesModel: OtherRecipe, position: Int, isRefresh: Boolean) {
+
+        requireActivity().supportFragmentManager.beginTransaction().apply {
+            val snapMealFragment = RecipeDetailsFragment()
+            val args = Bundle()
+            args.putString("searchType", "EatRight")
+            args.putString("mealType", "")
+            args.putString("recipeId", recipesModel._id)
+            snapMealFragment.arguments = args
+            replace(R.id.flFragment, snapMealFragment, "Steps")
+            addToBackStack(null)
+            commit()
+        }
+    }
+
+    private fun onOtherRecipeLogItem(recipesModel: OtherRecipe, position: Int, isRefresh: Boolean) {
 
         val selectMealTypeEatLandingBottomSheet = SelectMealTypeEatLandingBottomSheet()
         selectMealTypeEatLandingBottomSheet.isCancelable = true

@@ -1,6 +1,7 @@
 package com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment
 
 import android.annotation.SuppressLint
+import android.app.DatePickerDialog
 import android.app.Dialog
 import android.content.Context
 import android.content.res.ColorStateList
@@ -22,6 +23,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.jetsynthesys.rightlife.R
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 class TimePickerDialogFragment(
     val requireContext: Context, private val initialHour: Int,
@@ -29,6 +31,9 @@ class TimePickerDialogFragment(
     val onTimeSelected1: Int,
     private val onTimeSelected: (hour: Int, minute: Int) -> Unit
 )  : BottomSheetDialogFragment() {
+
+    private var mSelectedDate: LocalDate = LocalDate.now().minusDays(1)
+    private lateinit var tvDate: TextView
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme)
@@ -48,10 +53,15 @@ class TimePickerDialogFragment(
         val timePicker = view.findViewById<TimePicker>(R.id.timePicker)
         val btnLeft = view.findViewById<ImageView>(R.id.btnArrowLeft)
         val btnRight = view.findViewById<ImageView>(R.id.btnArrowRight)
+        tvDate = view.findViewById(R.id.tvDate)
         timePicker.setIs24HourView(false)
         timePicker.hour = initialHour
         timePicker.minute = initialMinute
-
+        if (SleepRightLandingFragment.dialogDate == mSelectedDate) {
+            tvDate.text = mSelectedDate.format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
+        }else{
+            tvDate.text = SleepRightLandingFragment.dialogDate.format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
+        }
         setTimePickerTextColor(timePicker,R.color.blue_bar)
 
         view.findViewById<TextView>(R.id.btnConfirm).setOnClickListener {
@@ -72,6 +82,9 @@ class TimePickerDialogFragment(
                 }
             }
         }
+        view.findViewById<View>(R.id.btnDatePicker).setOnClickListener {
+            showDatePicker()
+        }
 
         btnLeft.setOnClickListener {
             val currentHour = timePicker.hour
@@ -86,6 +99,25 @@ class TimePickerDialogFragment(
         view.findViewById<ImageView>(R.id.btnClose).setOnClickListener {
             dismiss()
         }
+    }
+
+    private fun showDatePicker() {
+        val datePicker = DatePickerDialog(
+            requireContext(),
+            { _, year, month, day ->
+                mSelectedDate = LocalDate.of(year, month + 1, day)
+                tvDate.text = mSelectedDate.format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
+                SleepRightLandingFragment.dialogDate = mSelectedDate
+            },
+            mSelectedDate.year,
+            mSelectedDate.monthValue - 1,
+            mSelectedDate.dayOfMonth
+        )
+        val today = System.currentTimeMillis()
+        val sevenDaysAgo = today - 6 * 24 * 60 * 60 * 1000L // 6 days ago in milliseconds
+        datePicker.datePicker.maxDate = today
+        datePicker.datePicker.minDate = sevenDaysAgo
+        datePicker.show()
     }
 
     @SuppressLint("PrivateApi")

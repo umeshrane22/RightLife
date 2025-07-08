@@ -36,10 +36,18 @@ class MyRecipeAdapter(private val context: Context, private var dataLists: Array
         }
         holder.mealTitle.text = item.recipe_name
         holder.servesCount.text = item.servings.toString()
-        holder.calValue.text = item.calories.toInt().toString()
-        holder.subtractionValue.text = item.protein.toInt().toString()
-        holder.baguetteValue.text = item.carbs.toInt().toString()
-        holder.dewpointValue.text = item.fat.toInt().toString()
+        if (item.servings != null && item.servings > 0){
+            val servingsCount = item.servings
+            holder.calValue.text = item.calories.times(servingsCount).toInt().toString()
+            holder.subtractionValue.text = item.protein.times(servingsCount).toInt().toString()
+            holder.baguetteValue.text = item.carbs.times(servingsCount).toInt().toString()
+            holder.dewpointValue.text = item.fat.times(servingsCount).toInt().toString()
+        }else{
+            holder.calValue.text = item.calories.toInt().toString()
+            holder.subtractionValue.text = item.protein.toInt().toString()
+            holder.baguetteValue.text = item.carbs.toInt().toString()
+            holder.dewpointValue.text = item.fat.toInt().toString()
+        }
 //        if (item.status == true) {
 //            holder.mealDay.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
 //            holder.mealDate.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
