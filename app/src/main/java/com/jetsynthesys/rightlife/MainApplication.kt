@@ -34,4 +34,9 @@ class MainApplication : Application() {
             }
         )
     }
+
+    override fun attachBaseContext(base: Context) {
+        // Just pass base here; do not wrap yet.
+        super.attachBaseContext(base)
+    }
 }

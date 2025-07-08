@@ -282,8 +282,9 @@ class PractiseAffirmationPlaylistActivity : BaseActivity() {
             watchedResponse?.data?.get(position)?.duration.toString()
         dialogBinding.tvDialogTotalSessions.text =
             watchedResponse?.data?.get(position)?.totalSession.toString()
-
-        dialog.show()
+        if (!(this.isFinishing || this.isDestroyed)) {
+            dialog.show()
+        }
     }
 
     private fun setupReminderBottomSheet() {

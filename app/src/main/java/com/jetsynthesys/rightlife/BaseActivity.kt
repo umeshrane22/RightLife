@@ -1,5 +1,7 @@
 package com.jetsynthesys.rightlife
 
+import android.content.Context
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -44,5 +46,17 @@ open class BaseActivity : AppCompatActivity() {
         }*/
         if (e is IOException)
             e.message?.let { showCustomToast(it) }
+    }
+
+    override fun attachBaseContext(newBase: Context) {
+        val context = FontScaleContextWrapper.wrap(newBase)
+        super.attachBaseContext(context)
+    }
+
+    override fun applyOverrideConfiguration(overrideConfiguration: Configuration?) {
+        if (overrideConfiguration != null) {
+            overrideConfiguration.fontScale = 1.0f
+        }
+        super.applyOverrideConfiguration(overrideConfiguration)
     }
 }

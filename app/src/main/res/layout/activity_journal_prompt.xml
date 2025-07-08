@@ -40,7 +40,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Choose a prompt"
-        android:textSize="28sp"
+        android:textSize="26sp"
         android:fontFamily="@font/dmsans_bold"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"

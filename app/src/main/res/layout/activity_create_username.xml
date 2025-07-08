@@ -63,7 +63,9 @@
             android:gravity="center"
             android:maxLength="20"
             android:textColor="@color/txt_color_header"
-            android:textSize="30sp" />
+            android:textSize="30sp"
+            android:singleLine="true"
+            android:imeOptions="actionDone"/>
 
     </LinearLayout>
 

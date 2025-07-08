@@ -1,18 +1,18 @@
 package com.jetsynthesys.rightlife.ui.drawermenu
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.databinding.ActivityThemeBinding
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 
-class ThemeActivity : AppCompatActivity() {
+class ThemeActivity : BaseActivity() {
     private lateinit var binding: ActivityThemeBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityThemeBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setChildContentView(binding.root)
 
         val appMode = SharedPreferenceManager.getInstance(this).appMode
 
@@ -41,7 +41,7 @@ class ThemeActivity : AppCompatActivity() {
         }
 
         binding.rvTheme.layoutManager =
-            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         binding.rvTheme.adapter = adapter
 
     }
