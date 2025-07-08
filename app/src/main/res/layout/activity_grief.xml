@@ -118,6 +118,8 @@
         android:layout_height="50dp"
         android:text="Save"
         android:layout_margin="16dp"
+        android:fontFamily="@font/dmsans_regular"
+        android:textSize="18sp"
         android:backgroundTint="#FFDD80"
         android:textColor="#FFBFBFBF"
         android:enabled="false"

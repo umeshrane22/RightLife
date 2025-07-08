@@ -5,17 +5,16 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.databinding.ActivityGriefBinding
 import com.jetsynthesys.rightlife.ui.showBalloonWithDim
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 
-class GriefJournalActivity : AppCompatActivity() {
+class GriefJournalActivity : BaseActivity() {
 
     private lateinit var binding: ActivityGriefBinding
-    private lateinit var sharedPreferenceManager: SharedPreferenceManager
     private var journalItem: JournalItem? = JournalItem()
     private var journalEntry: JournalEntry? = JournalEntry()
     private var questionsList: ArrayList<Question>? = ArrayList()
@@ -25,7 +24,7 @@ class GriefJournalActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityGriefBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setChildContentView(binding.root)
         sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
 
         journalItem = intent.getSerializableExtra("Section") as? JournalItem
@@ -53,7 +52,13 @@ class GriefJournalActivity : AppCompatActivity() {
         binding.btnSave.isEnabled = binding.etJournalEntry.text.isNotEmpty()
 
         setupListeners()
-        showBalloonWithDim(binding.ivRefresh, "Tap to swap your prompt.","GriefJournalActivity", xOff = -200, yOff = 20)
+        showBalloonWithDim(
+            binding.ivRefresh,
+            "Tap to swap your prompt.",
+            "GriefJournalActivity",
+            xOff = -200,
+            yOff = 20
+        )
     }
 
     private fun setupListeners() {

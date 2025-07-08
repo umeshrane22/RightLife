@@ -304,7 +304,7 @@ class Journal4QuestionsActivity : BaseActivity() {
             R.color.color_think_right
         )
 
-        chip.textSize = 13f
+        chip.textSize = 12f
 
         val heightInDp = 60 // or whatever height you want
         val heightInPx = TypedValue.applyDimension(

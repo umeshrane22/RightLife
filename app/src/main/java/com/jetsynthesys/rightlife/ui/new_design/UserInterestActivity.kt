@@ -108,7 +108,7 @@ class UserInterestActivity : BaseActivity() {
             // Section Layout
             val titleLayout = LinearLayout(this@UserInterestActivity).apply {
                 orientation = LinearLayout.HORIZONTAL
-                setPadding(0, 16, 0, 12)
+                setPadding(0, 24, 0, 12)
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
@@ -137,7 +137,7 @@ class UserInterestActivity : BaseActivity() {
             val titleView = TextView(this@UserInterestActivity).apply {
                 text = userInterest.title
                 setTextAppearance(android.R.style.TextAppearance_Medium)
-                setPadding(0, 16, 0, 12)
+                setPadding(0, 24, 0, 12)
                 setTypeface(typeface, Typeface.BOLD)
                 textSize = 18F
             }

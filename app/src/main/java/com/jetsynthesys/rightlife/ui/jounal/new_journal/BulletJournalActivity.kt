@@ -5,17 +5,16 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.databinding.ActivityFreeformBinding
 import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 
-class BulletJournalActivity : AppCompatActivity() {
+class BulletJournalActivity : BaseActivity() {
 
     private lateinit var binding: ActivityFreeformBinding
-    private lateinit var sharedPreferenceManager: SharedPreferenceManager
     private var journalItem: JournalItem? = JournalItem()
     private var journalEntry: JournalEntry? = JournalEntry()
     private var previousText = ""
@@ -25,7 +24,7 @@ class BulletJournalActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityFreeformBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setChildContentView(binding.root)
         sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
         val name = sharedPreferenceManager.userProfile.userdata.firstName
         binding.tvGreeting.text = "Hello $name,\nWhat’s on your mind?"

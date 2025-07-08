@@ -104,5 +104,7 @@
         android:textColor="#FFBFBFBF"
         android:enabled="false"
         android:paddingVertical="12dp"
+        android:fontFamily="@font/dmsans_regular"
+        android:textSize="18sp"
         android:layout_gravity="center_horizontal"/>
 </LinearLayout>
