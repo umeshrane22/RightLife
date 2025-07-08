@@ -375,7 +375,7 @@ class RecipesSearchFragment : BaseFragment<FragmentRecipeSearchBinding>() {
             val args = Bundle()
             args.putString("searchType", searchType)
             args.putString("mealType", mealType)
-            args.putParcelable("snapRecipeList", recipesModel)
+            args.putString("recipeId", recipesModel.id)
             snapMealFragment.arguments = args
             replace(R.id.flFragment, snapMealFragment, "Steps")
             addToBackStack(null)

@@ -14,7 +14,7 @@ import com.jetsynthesys.rightlife.ai_package.model.response.OtherRecipe
 
 class OtherRecipeEatLandingAdapter(private val context: Context, private var dataLists: ArrayList<OtherRecipe>,
                                    private var clickPos: Int, private var mealLogListData : OtherRecipe?,
-                                   private var isClickView : Boolean, val onOtherRecipeItem: (OtherRecipe, Int, Boolean) -> Unit,) :
+                                   private var isClickView : Boolean, val onOtherRecipeItem: (OtherRecipe, Int, Boolean) -> Unit,val onOtherRecipeLogItem: (OtherRecipe, Int, Boolean) -> Unit) :
     RecyclerView.Adapter<OtherRecipeEatLandingAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -39,12 +39,12 @@ class OtherRecipeEatLandingAdapter(private val context: Context, private var dat
         holder.baguetteValue.text = item.carbs.toInt().toString()
         holder.dewpointValue.text = item.fats.toInt().toString()
 
-//        holder.layoutMain.setOnClickListener {
-//            onOtherRecipeItem(item, position, true)
-//        }
+        holder.layoutMain.setOnClickListener {
+            onOtherRecipeItem(item, position, true)
+        }
 
         holder.circlePlus.setOnClickListener {
-            onOtherRecipeItem(item, position, true)
+            onOtherRecipeLogItem(item, position, true)
         }
     }
 

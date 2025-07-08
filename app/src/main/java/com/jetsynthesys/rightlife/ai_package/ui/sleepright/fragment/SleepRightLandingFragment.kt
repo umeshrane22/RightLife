@@ -1,10 +1,12 @@
 package com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment
 
 import android.Manifest
+import android.app.DatePickerDialog
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.ProgressDialog
+import android.app.TimePickerDialog
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
@@ -18,6 +20,8 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.os.Handler
+import android.os.Looper
 import android.provider.MediaStore
 import android.util.AttributeSet
 import android.util.Log
@@ -132,6 +136,7 @@ import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -413,6 +418,10 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 }
             )
             dialog.show(parentFragmentManager, "LogYourNapDialogFragment")
+//            showDateTimePicker(requireContext()) { selectedDateTime ->
+//                val formatted = selectedDateTime.format(DateTimeFormatter.ofPattern("dd MMM yyyy, hh:mm a"))
+//                Toast.makeText(requireContext(), "Selected: $formatted", Toast.LENGTH_SHORT).show()
+//            }
         }
 
         imgSleepInfo.setOnClickListener {
@@ -1306,6 +1315,17 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     consistencyNoDataCardView.visibility = View.VISIBLE
                     consistencySleep.visibility = View.GONE
                     sleepConsistencyChart.visibility = View.GONE
+                    if (!bottomSeatName.contentEquals("LogLastNightSleep") && !isRepeat){
+                        val dialog = LogYourNapDialogFragment(
+                            requireContext = requireContext(),
+                            listener = object : OnLogYourNapSelectedListener {
+                                override fun onLogTimeSelected(time: String) {
+                                    fetchSleepLandingData()
+                                }
+                            }
+                        )
+                        dialog.show(parentFragmentManager, "LogYourNapDialogFragment")
+                    }
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     if (isAdded  && view != null){
@@ -1326,6 +1346,17 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     consistencySleep.visibility = View.GONE
                     sleepConsistencyChart.visibility = View.GONE
                     sleepStageCardView.visibility = View.GONE
+                    if (!bottomSeatName.contentEquals("LogLastNightSleep") && !isRepeat){
+                        val dialog = LogYourNapDialogFragment(
+                            requireContext = requireContext(),
+                            listener = object : OnLogYourNapSelectedListener {
+                                override fun onLogTimeSelected(time: String) {
+                                    fetchSleepLandingData()
+                                }
+                            }
+                        )
+                        dialog.show(parentFragmentManager, "LogYourNapDialogFragment")
+                    }
                 }
                 if (!isRepeat){
                     val availabilityStatus = HealthConnectClient.getSdkStatus(requireContext())
@@ -1719,8 +1750,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
 
         return outputFormatter.format(localZoned)
     }
-
-
 
     private fun formatIdealDate(dateTime: String): String {
         val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
@@ -2211,6 +2240,68 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         loadingOverlay = view.findViewById(R.id.loading_overlay)
         loadingOverlay?.visibility = View.GONE
     }
+}
+
+private fun showDateTimePicker(context: Context, onDateTimeSelected: (LocalDateTime) -> Unit) {
+    val now = LocalDateTime.now()
+    val today = LocalDate.now()
+
+    val datePickerDialog = DatePickerDialog(
+        context,
+        { _, year, month, dayOfMonth ->
+            val selectedDate = LocalDate.of(year, month + 1, dayOfMonth)
+
+            val timePickerDialog = TimePickerDialog(
+                context,
+                { _, hourOfDay, minute ->
+                    val selectedDateTime = LocalDateTime.of(selectedDate, LocalTime.of(hourOfDay, minute))
+                    // 🚫 Check if selected DateTime is in the future
+                    if (selectedDateTime.isAfter(now)) {
+                        Toast.makeText(context, "Cannot select a future time", Toast.LENGTH_SHORT).show()
+                        // Optionally: reopen time picker with current time
+                        Handler(Looper.getMainLooper()).post {
+                            showTimePickerAgain(context, selectedDate, onDateTimeSelected)
+                        }
+                    } else {
+                        onDateTimeSelected(selectedDateTime)
+                    }
+                },
+                now.hour,
+                now.minute,
+                false
+            )
+            timePickerDialog.show()
+        },
+        now.year,
+        now.monthValue - 1,
+        now.dayOfMonth
+    )
+    // 🚫 Disable future dates
+    datePickerDialog.datePicker.maxDate = System.currentTimeMillis()
+    datePickerDialog.show()
+}
+
+private fun showTimePickerAgain(
+    context: Context,
+    selectedDate: LocalDate,
+    onDateTimeSelected: (LocalDateTime) -> Unit
+) {
+    val now = LocalDateTime.now()
+    val timePickerDialog = TimePickerDialog(
+        context,
+        { _, hourOfDay, minute ->
+            val selectedDateTime = LocalDateTime.of(selectedDate, LocalTime.of(hourOfDay, minute))
+            if (selectedDateTime.isAfter(now)) {
+                Toast.makeText(context, "Still future! Try again.", Toast.LENGTH_SHORT).show()
+            } else {
+                onDateTimeSelected(selectedDateTime)
+            }
+        },
+        now.hour,
+        now.minute,
+        false
+    )
+    timePickerDialog.show()
 }
 
 

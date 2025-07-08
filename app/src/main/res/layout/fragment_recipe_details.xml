@@ -106,8 +106,8 @@
                         android:id="@+id/veg_image"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:src="@drawable/veg"
-                        android:visibility="invisible"
+                        android:src="@drawable/green_circle"
+                        android:visibility="visible"
                         android:layout_marginStart="20dp"
                         app:layout_constraintStart_toEndOf="@+id/foodType"
                         app:layout_constraintTop_toTopOf="parent"
@@ -129,7 +129,7 @@
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/second_layout"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     app:layout_constraintStart_toStartOf="parent"
@@ -142,7 +142,7 @@
                         android:layout_height="24dp"
                         android:layout_marginStart="20dp"
                         android:src="@drawable/like"
-                        android:visibility="invisible"
+                        android:visibility="gone"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent"/>
@@ -153,6 +153,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="5dp"
                         android:text=""
+                        android:visibility="gone"
                         android:textSize="12sp"
                         android:fontFamily="@font/dmsans_regular"
                         app:layout_constraintStart_toEndOf="@+id/like_image"
@@ -160,6 +161,7 @@
                         app:layout_constraintBottom_toBottomOf="@+id/like_image"/>
 
                     <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/layoutTime"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         app:layout_constraintTop_toTopOf="parent"
@@ -193,9 +195,9 @@
                         android:id="@+id/serves_image"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:layout_marginEnd="10dp"
+                        android:layout_marginStart="10dp"
                         android:src="@drawable/serves"
-                        app:layout_constraintEnd_toStartOf="@+id/serves_text"
+                        app:layout_constraintStart_toEndOf="@+id/layoutTime"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent"/>
 
@@ -203,11 +205,11 @@
                         android:id="@+id/serves_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="20dp"
+                        android:layout_marginStart="10dp"
                         android:text="serves 1"
                         android:textSize="12sp"
                         android:fontFamily="@font/dmsans_regular"
-                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/serves_image"
                         app:layout_constraintTop_toTopOf="@+id/serves_image"
                         app:layout_constraintBottom_toBottomOf="@+id/serves_image"/>
 

@@ -1,6 +1,7 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment
 
 import android.graphics.BitmapFactory
+import android.graphics.PorterDuff
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -28,6 +29,7 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.MacroNutrientsA
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MacroNutrientsModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.RecipeResponseNew
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SelectedMealLogList
+import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.databinding.FragmentRecipeDetailsBinding
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -62,11 +64,13 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
     private lateinit var tvMeasure : TextView
     private lateinit var vegTv : TextView
     private lateinit var foodType : TextView
+    private lateinit var vegImage : ImageView
     private lateinit var recipeDescription : TextView
     private var mealLogRequests : SelectedMealLogList? = null
     private var snapMealLogRequests : SelectedMealLogList? = null
     private lateinit var mealType : String
-    private  var recipeList :SnapRecipeList? = null
+    private  var recipeDetails :SnapRecipeList? = null
+    private var recipeId : String = ""
     private lateinit var backButton: ImageView
     private lateinit var mealTypeImage : ImageView
     private var loadingOverlay : FrameLayout? = null
@@ -85,8 +89,7 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
         super.onViewCreated(view, savedInstanceState)
 
         view.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
-        recipeList = arguments?.getParcelable("snapRecipeList")
-        getSnapMealRecipesList()
+        recipeId = arguments?.getString("recipeId").toString()
         macroItemRecyclerView = view.findViewById(R.id.recyclerview_macro_item)
         addToTheMealLayout = view.findViewById(R.id.layout_addToTheMeal)
         tvCheckOutRecipe = view.findViewById(R.id.tv_CheckOutRecipe)
@@ -113,6 +116,7 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
         foodType = view.findViewById(R.id.foodType)
         vegTv = view.findViewById(R.id.vegTv)
         mealTypeImage = view.findViewById(R.id.mealTypeImage)
+        vegImage = view.findViewById(R.id.veg_image)
 
         searchType = arguments?.getString("searchType").toString()
         mealType = arguments?.getString("mealType").toString()
@@ -137,6 +141,8 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
         if (selectedSnapMealLogListModels != null){
             snapMealLogRequests = selectedSnapMealLogListModels
         }
+
+        getRecipesDetails()
 
         icMacroUP.setImageResource(R.drawable.ic_down)
         view.findViewById<View>(R.id.view_macro).visibility = View.GONE
@@ -171,8 +177,9 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 if (searchType.contentEquals("EatRight")){
-                    val fragment = RecipesSearchFragment()
+                    val fragment = HomeBottomTabFragment()
                     val args = Bundle()
+                    args.putString("ModuleName", "EatRight")
                     fragment.arguments = args
                     requireActivity().supportFragmentManager.beginTransaction().apply {
                         replace(R.id.flFragment, fragment, "landing")
@@ -193,13 +200,25 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
         })
 
         backButton.setOnClickListener {
-            val fragment = RecipesSearchFragment()
-            val args = Bundle()
-            fragment.arguments = args
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                replace(R.id.flFragment, fragment, "landing")
-                addToBackStack("landing")
-                commit()
+            if (searchType.contentEquals("EatRight")){
+                val fragment = HomeBottomTabFragment()
+                val args = Bundle()
+                args.putString("ModuleName", "EatRight")
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "landing")
+                    addToBackStack("landing")
+                    commit()
+                }
+            }else{
+                val fragment = RecipesSearchFragment()
+                val args = Bundle()
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "landing")
+                    addToBackStack("landing")
+                    commit()
+                }
             }
         }
     }
@@ -263,13 +282,13 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
         }.start()
     }
 
-    private fun getSnapMealRecipesList() {
+    private fun getRecipesDetails() {
         if (isAdded  && view != null){
             requireActivity().runOnUiThread {
                 showLoader(requireView())
             }
         }
-        val call = ApiClient.apiServiceFastApi.getSnapMealRecipeById(recipeId = recipeList?.id.toString())
+        val call = ApiClient.apiServiceFastApi.getSnapMealRecipeById(recipeId = recipeId)
         call.enqueue(object : Callback<RecipeResponseNew> {
             override fun onResponse(call: Call<RecipeResponseNew>, response: Response<RecipeResponseNew>) {
                 if (response.isSuccessful) {
@@ -301,6 +320,14 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
                     protein_value.text = "${response.body()?.data?.protein?.toInt()} g"
                     fat_value.text = "${response.body()?.data?.fat?.toInt()} g"
                     vegTv.text = response.body()?.data?.tags?.substringBefore("_")
+                    if (response.body()?.data?.tags?.substringBefore("_").equals("Veg")){
+                        vegImage.setImageResource(R.drawable.green_circle)
+                    }else  if (response.body()?.data?.tags?.substringBefore("_").equals("Non-veg")){
+                        vegImage.setColorFilter(ContextCompat.getColor(context!!, R.color.red), PorterDuff.Mode.SRC_IN)
+
+                    }else{
+                        vegImage.visibility = View.INVISIBLE
+                    }
                     foodType.text = response.body()?.data?.course
                     if (response.body()?.data?.course.equals("Breakfast")){
                         mealTypeImage.setImageResource(R.drawable.ic_breakfast)
