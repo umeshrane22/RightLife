@@ -132,6 +132,7 @@ import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -2211,6 +2212,12 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         loadingOverlay = view.findViewById(R.id.loading_overlay)
         loadingOverlay?.visibility = View.GONE
     }
+
+    companion object{
+        var dialogStartTime : LocalTime = LocalTime.of(22, 0)
+        var dialogEndTime : LocalTime = LocalTime.of(6, 30)
+        var dialogDate : LocalDate =  LocalDate.now().minusDays(1)
+    }
 }
 
 
@@ -2409,3 +2416,4 @@ enum class Position1 {
 }
 
 data class SleepSegmentModel(val start: Float, val end: Float, val color: Int, val height: Float)
+

@@ -24,11 +24,38 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:text="Set Time"
+        android:text="Set Date Time"
         android:textSize="20sp"
         android:textStyle="bold" />
 </androidx.constraintlayout.widget.ConstraintLayout>
     <!-- Arrow and TimePicker Row -->
+    <LinearLayout
+        android:id="@+id/btnDatePicker"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:background="@drawable/grey_border_bg"
+        android:paddingHorizontal="16dp"
+        android:layout_marginTop="16dp">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="10dp"
+            android:src="@drawable/calendar_mini_icon" />
+
+        <TextView
+            android:id="@+id/tvDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="28 February 2025"
+            android:layout_marginEnd="10dp"
+            android:fontFamily="@font/dmsans_medium"
+            android:textSize="16sp"
+            android:textColor="#002C5F"
+            android:paddingStart="8dp" />
+    </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

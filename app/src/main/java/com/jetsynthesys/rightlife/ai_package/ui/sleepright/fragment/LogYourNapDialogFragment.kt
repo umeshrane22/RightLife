@@ -41,12 +41,12 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
     private lateinit var tvRemindTime: TextView
     private val mContext = requireContext
 
-    private var startTime: LocalTime = LocalTime.of(0, 0)
-    private var endTime: LocalTime = LocalTime.of(7, 30)
+    private var startTime: LocalTime = LocalTime.of(22, 0)
+    private var endTime: LocalTime = LocalTime.of(6, 30)
     private var selectedDate: LocalDate = LocalDate.now().minusDays(1)
-    var startHour = 0
+    var startHour = 22
     var startMinute = 0
-    var endHour = 7
+    var endHour = 6
     var endMinute = 30
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -76,30 +76,52 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
         }
 
         view.findViewById<View>(R.id.startTimeContainer).setOnClickListener {
-            TimePickerDialogFragment(requireContext,startHour, startMinute,selectedDate,0) { hour, minute ->
-                // Handle selected time
-                val formatted = LocalTime.of(hour, minute).format(DateTimeFormatter.ofPattern("hh:mm a"))
-                startHour = hour
-                startMinute = minute
-                tvStartTime.text = formatted
-                startTime = LocalTime.of(hour, minute)
-                updateDuration()
-            }.show(childFragmentManager, "TimePickerDialog")
-           // showTimePicker(isStart = true)
+            if (SleepRightLandingFragment.dialogStartTime == LocalTime.of(startHour, startMinute)) {
+                TimePickerDialogFragment(requireContext, startHour, startMinute, selectedDate, 0) { hour, minute ->
+                    val formatted = LocalTime.of(hour, minute).format(DateTimeFormatter.ofPattern("hh:mm a"))
+                    startHour = hour
+                    startMinute = minute
+                    tvStartTime.text = formatted
+                    startTime = LocalTime.of(hour, minute)
+                    SleepRightLandingFragment.dialogStartTime = startTime
+                    updateDuration()
+                }.show(childFragmentManager, "TimePickerDialog")
+            }else{
+                TimePickerDialogFragment(requireContext, SleepRightLandingFragment.dialogStartTime.hour, SleepRightLandingFragment.dialogStartTime.minute, selectedDate, 0) { hour, minute ->
+                    val formatted = LocalTime.of(hour, minute).format(DateTimeFormatter.ofPattern("hh:mm a"))
+                    startHour = hour
+                    startMinute = minute
+                    tvStartTime.text = formatted
+                    startTime = LocalTime.of(hour, minute)
+                    SleepRightLandingFragment.dialogStartTime = startTime
+                    updateDuration()
+                }.show(childFragmentManager, "TimePickerDialog")
+            }
         }
 
         view.findViewById<View>(R.id.endTimeContainer).setOnClickListener {
-            TimePickerDialogFragment(requireContext,endHour, endMinute,selectedDate,1) { hour, minute ->
-                // Handle selected time
-                val formatted = LocalTime.of(hour, minute)
-                    .format(DateTimeFormatter.ofPattern("hh:mm a"))
-                endHour = hour
-                endMinute = minute
-                tvEndTime.text = formatted
-                endTime = LocalTime.of(hour, minute)
-                updateDuration()
-            }.show(childFragmentManager, "TimePickerDialog")
-           // showTimePicker(isStart = false)
+            if (SleepRightLandingFragment.dialogEndTime == LocalTime.of(endHour, endMinute)) {
+                TimePickerDialogFragment(requireContext, endHour, endMinute, selectedDate, 1) { hour, minute ->
+                    val formatted = LocalTime.of(hour, minute).format(DateTimeFormatter.ofPattern("hh:mm a"))
+                    endHour = hour
+                    endMinute = minute
+                    tvEndTime.text = formatted
+                    endTime = LocalTime.of(hour, minute)
+                    SleepRightLandingFragment.dialogEndTime = endTime
+                    updateDuration()
+                }.show(childFragmentManager, "TimePickerDialog")
+            }else{
+                TimePickerDialogFragment(requireContext,
+                    SleepRightLandingFragment.dialogEndTime.hour, SleepRightLandingFragment.dialogEndTime.minute, selectedDate, 1) { hour, minute ->
+                    val formatted = LocalTime.of(hour, minute).format(DateTimeFormatter.ofPattern("hh:mm a"))
+                    endHour = hour
+                    endMinute = minute
+                    tvEndTime.text = formatted
+                    endTime = LocalTime.of(hour, minute)
+                    SleepRightLandingFragment.dialogEndTime = endTime
+                    updateDuration()
+                }.show(childFragmentManager, "TimePickerDialog")
+            }
         }
 
         view.findViewById<View>(R.id.btnSaveLog).setOnClickListener {
@@ -165,15 +187,33 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
     private fun updateDuration() {
         val start = startTime.atDate(selectedDate)
         val end = if (endTime < startTime) endTime.atDate(selectedDate.plusDays(1)) else endTime.atDate(selectedDate)
-        val duration = Duration.between(start, end)
-        val hours = duration.toHours()
-        val minutes = duration.minusHours(hours).toMinutes()
+        var duration = Duration.between(start, end)
+        var hours = duration.toHours()
+        var minutes = duration.minusHours(hours).toMinutes()
 
         if (hours <= 15) {
-            tvStartTime.text = startTime.format(DateTimeFormatter.ofPattern("hh:mm a"))
-            tvEndTime.text = endTime.format(DateTimeFormatter.ofPattern("hh:mm a"))
+            if (startTime == SleepRightLandingFragment.dialogStartTime){
+                tvStartTime.text = startTime.format(DateTimeFormatter.ofPattern("hh:mm a"))
+            }else{
+                 duration = Duration.between(SleepRightLandingFragment.dialogStartTime, LocalTime.of(end.hour,end.minute))
+                 hours = duration.toHours()
+                 minutes = duration.minusHours(hours).toMinutes()
+                tvStartTime.text = SleepRightLandingFragment.dialogStartTime.format(DateTimeFormatter.ofPattern("hh:mm a"))
+            }
+            if (endTime == SleepRightLandingFragment.dialogEndTime) {
+                tvEndTime.text = endTime.format(DateTimeFormatter.ofPattern("hh:mm a"))
+            }else{
+                duration = Duration.between(LocalTime.of(start.hour,start.minute), SleepRightLandingFragment.dialogEndTime)
+                hours = duration.toHours()
+                minutes = duration.minusHours(hours).toMinutes()
+                tvEndTime.text = SleepRightLandingFragment.dialogEndTime.format(DateTimeFormatter.ofPattern("hh:mm a"))
+            }
             tvDuration.text = "$hours hr $minutes mins"
-            tvDate.text = selectedDate.format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
+            if (SleepRightLandingFragment.dialogDate == selectedDate) {
+                tvDate.text = selectedDate.format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
+            }else{
+                tvDate.text = SleepRightLandingFragment.dialogDate.format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
+            }
         }else{
             Toast.makeText(requireContext,"Sleep time cannot be more than 15 hours", Toast.LENGTH_SHORT).show()
         }
@@ -200,6 +240,7 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
             requireContext(),
             { _, year, month, day ->
                 selectedDate = LocalDate.of(year, month + 1, day)
+                SleepRightLandingFragment.dialogDate = selectedDate
                 updateDuration()
             },
             selectedDate.year,
