@@ -16,6 +16,8 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.google.android.exoplayer2.C
+import com.google.android.exoplayer2.DefaultRenderersFactory
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.PlaybackException
@@ -357,7 +359,13 @@ class ContentDetailsActivity : BaseActivity() {
         // Ensure 'this' is a valid Context.
         // If in an Activity, 'this' is fine.
         // If in a Fragment, use 'requireContext()':
-        player = ExoPlayer.Builder(this).build()
+        //player = ExoPlayer.Builder(this).build()
+        val renderersFactory = DefaultRenderersFactory(this)
+            .setEnableDecoderFallback(true)
+
+        player = ExoPlayer.Builder(this, renderersFactory).build()
+        player?.setVideoScalingMode(C.VIDEO_SCALING_MODE_SCALE_TO_FIT)
+
         player?.playWhenReady = true
         binding.exoPlayerView.player = player
 
