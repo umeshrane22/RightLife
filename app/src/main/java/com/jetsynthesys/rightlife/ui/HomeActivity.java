@@ -117,6 +117,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     RelativeLayout rl_wellness_lock;
     Button btn_wellness_preference;
     RelativeLayout relative_rledit3, relative_rledit2, relative_rledit1;
+    LinearLayout rl_rightlife_edit;
     RelativeLayout relative_wellness1, relative_wellness2, relative_wellness3, relative_wellness4, rl_wellness_main;
     TextView tv_header_rledit, tv_description_rledit, tv_header_lvclass, tv_desc_lvclass,
             tv_header_servcepane1, tv_header_servcepane2, tv_header_servcepane3, tv_header_servcepane4;
@@ -291,6 +292,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         count1 = findViewById(R.id.count1);
         count2 = findViewById(R.id.count2);
 
+        rl_rightlife_edit = findViewById(R.id.rl_rightlife_edit);
         relative_rledit3 = findViewById(R.id.relative_rledit3);
         relative_rledit2 = findViewById(R.id.relative_rledit2);
         relative_rledit1 = findViewById(R.id.relative_rledit1);
@@ -955,7 +957,12 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         if (response == null || response.getData() == null) return;
 
         List<Top> topList = response.getData().getTopList();
-        if (topList == null || topList.isEmpty()) return;
+        if (topList == null || topList.isEmpty())
+        {rl_rightlife_edit.setVisibility(View.GONE);
+            return;
+        }else {
+            rl_rightlife_edit.setVisibility(View.VISIBLE);
+        }
 
         if (topList.size() > 0) {
             Top item0 = topList.get(0);
@@ -983,6 +990,8 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                         .error(R.drawable.rl_placeholder)
                         .into(img_rledit);
             }
+        }else {
+            rl_rightlife_edit.setVisibility(View.GONE);
         }
 
         if (topList.size() > 1) {
@@ -1006,6 +1015,8 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                         .transform(new RoundedCorners(25))
                         .into(img_rledit1);
             }
+        }else {
+            relative_rledit2.setVisibility(View.GONE);
         }
 
         if (topList.size() > 2) {
@@ -1029,6 +1040,8 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                         .transform(new RoundedCorners(25))
                         .into(img_rledit2);
             }
+        }else {
+            relative_rledit3.setVisibility(View.GONE);
         }
     }
 

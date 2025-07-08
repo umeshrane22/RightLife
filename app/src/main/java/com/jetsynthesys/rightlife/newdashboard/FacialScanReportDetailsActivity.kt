@@ -580,6 +580,49 @@ class FacialScanReportDetailsActivity : BaseActivity() {
                 }
             }*/
             "month" -> {
+                val calendar = Calendar.getInstance().apply {
+                    time = Date() // today
+                    set(Calendar.HOUR_OF_DAY, 0)
+                    set(Calendar.MINUTE, 0)
+                    set(Calendar.SECOND, 0)
+                    set(Calendar.MILLISECOND, 0)
+                }
+
+                // Go back 29 days to get 30 total (including today)
+                calendar.add(Calendar.DAY_OF_MONTH, -29)
+
+                // Normalize all parsedData timestamps to 00:00:00.000 and map for lookup
+                val dateValueMap = parsedData.associate {
+                    val cal = Calendar.getInstance().apply {
+                        time = it.first
+                        set(Calendar.HOUR_OF_DAY, 0)
+                        set(Calendar.MINUTE, 0)
+                        set(Calendar.SECOND, 0)
+                        set(Calendar.MILLISECOND, 0)
+                    }
+                    cal.time to it.second
+                }
+
+                val dayFormat = SimpleDateFormat("d MMM", Locale.getDefault())
+
+                for (i in 0 until 30) {
+                    val currentDay = calendar.time
+                    val value = dateValueMap[currentDay] ?: 0f
+
+                    entries.add(Entry(i.toFloat(), value))
+                    xAxisLabels.add(dayFormat.format(currentDay))
+
+                    calendar.add(Calendar.DAY_OF_MONTH, 1)
+                }
+
+                Log.d(
+                    "MonthView",
+                    "Plotted last 30 days: ${xAxisLabels.joinToString()}"
+                )
+            }
+
+
+            /*"month" -> {
                 // 1. Get today at midnight (00:00:00.000)
                 val today = Calendar.getInstance().apply {
                     time = Date()
@@ -629,7 +672,7 @@ class FacialScanReportDetailsActivity : BaseActivity() {
                     "MonthView",
                     "All dates in map: ${dateValueMap.keys.map { dayFormat.format(it) }}"
                 )
-            }
+            }*/
             /*"month" -> {
                 // 1. Get today at midnight (00:00:00.000)
                 val today = Calendar.getInstance().apply {

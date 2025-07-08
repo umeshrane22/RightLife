@@ -137,6 +137,7 @@
                     android:layout_alignParentTop="true"
                     android:layout_centerInParent="true"
                     app:auto_show="true"
+                    android:visibility="gone"
                     app:use_controller="true" />
 
 
@@ -150,7 +151,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    android:visibility="gone"
+                    android:visibility="visible"
                     >
                 </com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView>
             </RelativeLayout>
