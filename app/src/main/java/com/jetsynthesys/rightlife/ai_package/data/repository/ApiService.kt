@@ -72,6 +72,7 @@ import com.jetsynthesys.rightlife.ai_package.model.request.WaterIntakeRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.WeightIntakeRequest
 import com.jetsynthesys.rightlife.ai_package.model.response.BreathingResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.CalorieAnalysisResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedCalciumResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedCaloriesResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedCarbsResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedCholesterolResponse
@@ -79,7 +80,13 @@ import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedFatResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedIronResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedMagnesiumResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedProteinResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedSodiumResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedSugarResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedVitaminAResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedVitaminCResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedVitaminDResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedVitaminKResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.ConsumedZincResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.DeleteCaloriesResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.EatRightLandingPageDataResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.FitnessData
@@ -437,12 +444,62 @@ interface ApiService {
         @Query("period") period: String,
         @Query("date") date: String
     ): Response<ConsumedIronResponse>
+
     @GET("eat/magnesium/consumed/")
     suspend fun getConsumedMagnesium(
         @Query("user_id") userId: String,
         @Query("period") period: String,
         @Query("date") date: String
     ): Response<ConsumedMagnesiumResponse>
+
+    @GET("eat/calcium/consumed/")
+    suspend fun getConsumedCalcium(
+        @Query("user_id") userId: String,
+        @Query("period") period: String,
+        @Query("date") date: String
+    ): Response<ConsumedCalciumResponse>
+
+    @GET("eat/vitamin_a/consumed/")
+    suspend fun getConsumedVitaminA(
+        @Query("user_id") userId: String,
+        @Query("period") period: String,
+        @Query("date") date: String
+    ): Response<ConsumedVitaminAResponse>
+
+    @GET("eat/vitamin_c/consumed/")
+    suspend fun getConsumedVitaminC(
+        @Query("user_id") userId: String,
+        @Query("period") period: String,
+        @Query("date") date: String
+    ): Response<ConsumedVitaminCResponse>
+
+    @GET("eat/vitamin_d/consumed/")
+    suspend fun getConsumedVitaminD(
+        @Query("user_id") userId: String,
+        @Query("period") period: String,
+        @Query("date") date: String
+    ): Response<ConsumedVitaminDResponse>
+
+    @GET("eat/vitamin_k/consumed/")
+    suspend fun getConsumedVitaminK(
+        @Query("user_id") userId: String,
+        @Query("period") period: String,
+        @Query("date") date: String
+    ): Response<ConsumedVitaminKResponse>
+
+    @GET("eat/zinc/consumed/")
+    suspend fun getConsumedZinc(
+        @Query("user_id") userId: String,
+        @Query("period") period: String,
+        @Query("date") date: String
+    ): Response<ConsumedZincResponse>
+
+    @GET("eat/sodium/consumed/")
+    suspend fun getConsumedSodium(
+        @Query("user_id") userId: String,
+        @Query("period") period: String,
+        @Query("date") date: String
+    ): Response<ConsumedSodiumResponse>
 
     @GET("move/steps_detail_view/")
     suspend fun getStepsDetail(

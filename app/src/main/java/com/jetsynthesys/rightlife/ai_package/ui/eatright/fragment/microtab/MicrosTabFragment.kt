@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
@@ -24,7 +23,7 @@ class MicrosTabFragment : BaseFragment<FragmentMicosTabBinding>() {
     private lateinit var backIc: ImageView
     private val fragmentMap = mutableMapOf<String, Fragment>() // Cache fragments by tag
     private var currentFragmentTag: String? = null // Track current fragment
-    private val tabTitles = arrayOf("Cholesterol", "Sugar", "Iron", "Magnesium")
+    private val tabTitles = arrayOf("Cholesterol", "Sugar", "Iron", "Magnesium", "Calcium", "Vitamin A", "Vitamin C", "Vitamin D", "Vitamin K", "Zinc", "Sodium")
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentMicosTabBinding
         get() = FragmentMicosTabBinding::inflate
@@ -125,6 +124,13 @@ class MicrosTabFragment : BaseFragment<FragmentMicosTabBinding>() {
                 "Sugar" -> SugarFragment()
                 "Iron" -> IronFragment()
                 "Magnesium" -> MagnesiumFragment()
+                "Calcium" -> CalciumFragment()
+                "Vitamin A" -> VitaminAFragment()
+                "Vitamin C" -> VitaminCFragment()
+                "Vitamin D" -> VitaminDFragment()
+                "Vitamin K" -> VitaminKFragment()
+                "Zinc" -> ZincFragment()
+                "Sodium" -> SodiumFragment()
                 else -> CholesterolFragment()
             }
             fragmentMap[tag] = fragment
