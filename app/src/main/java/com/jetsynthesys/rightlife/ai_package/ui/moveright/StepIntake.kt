@@ -91,7 +91,7 @@ class StepIntake : View {
         }
 
         val density = resources.displayMetrics.density
-        lineThickness = 2 * density
+        lineThickness = 2f * density // Original thickness unchanged
         lineGap = 4 * density
         touchAreaHeight = (lineThickness * 2 + lineGap) * 4f
     }
@@ -130,21 +130,23 @@ class StepIntake : View {
             fillPaint!!
         )
 
-        // Draw thumb lines
+        // Draw thumb lines with further reduced width and shifted lower
         thumbPaint!!.strokeWidth = lineThickness
-        val lineY1 = fillRect.top - lineGap / 2 - lineThickness / 2
-        val lineY2 = fillRect.top + lineGap / 2 + lineThickness / 2
+        val verticalOffset = 5f * resources.displayMetrics.density // Shift lines 5dp lower
+        val lineY1 = fillRect.top - lineGap / 2 - lineThickness / 2 + verticalOffset
+        val lineY2 = fillRect.top + lineGap / 2 + lineThickness / 2 + verticalOffset
+        val lineInset = capillaryRect!!.width() * 0.15f // 15% inset from each side (30% total reduction)
         canvas.drawLine(
-            capillaryRect!!.left,
+            capillaryRect!!.left + lineInset, // Start x inset
             lineY1,
-            capillaryRect!!.right,
+            capillaryRect!!.right - lineInset, // End x inset
             lineY1,
             thumbPaint!!
         )
         canvas.drawLine(
-            capillaryRect!!.left,
+            capillaryRect!!.left + lineInset, // Start x inset
             lineY2,
-            capillaryRect!!.right,
+            capillaryRect!!.right - lineInset, // End x inset
             lineY2,
             thumbPaint!!
         )
@@ -168,43 +170,17 @@ class StepIntake : View {
         // Draw 12,000 Steps marker (optimalSteps)
         val optimalY = calculateYFromSteps(optimalSteps)
         dashedLinePaint!!.color = Color.RED
-        canvas.drawLine(
-            capillaryRect!!.left, // Start from bar's left edge
-            optimalY,
-            width.toFloat(), // Extend to view's right edge
-            optimalY,
-            dashedLinePaint!!
-        )
         textPaint!!.color = Color.RED
         canvas.save() // Save canvas state
         canvas.translate(capillaryRect!!.right + 5f, 0f) // Move right with small offset
-        canvas.drawText(
-            "12,000 Steps",
-            0f, // Start from new origin
-            optimalY + textPaint!!.textSize * 1.5f, // Below line
-            textPaint!!
-        )
         canvas.restore() // Restore canvas state
 
         // Draw 10,000 Steps (Average) marker
         val averageY = calculateYFromSteps(10000)
         dashedLinePaint!!.color = Color.GRAY
-        canvas.drawLine(
-            capillaryRect!!.left, // Start from bar's left edge
-            averageY,
-            width.toFloat(), // Extend to view's right edge
-            averageY,
-            dashedLinePaint!!
-        )
         textPaint!!.color = Color.GRAY
         canvas.save() // Save canvas state
         canvas.translate(capillaryRect!!.right + 5f, 0f) // Move right with small offset
-        canvas.drawText(
-            "Average",
-            0f, // Start from new origin
-            averageY + textPaint!!.textSize * 1.5f, // Below line
-            textPaint!!
-        )
         canvas.restore() // Restore canvas state
 
         // Optional: Remove if not needed
