@@ -139,17 +139,17 @@ class ProfileNewActivity : BaseActivity() {
         }
 
         binding.tvHeight.setOnClickListener {
-            showHeightSelectionBottomSheet()
+            showHeightSelectionBottomSheet(userData.gender)
         }
         binding.arrowHeight.setOnClickListener {
-            showHeightSelectionBottomSheet()
+            showHeightSelectionBottomSheet(userData.gender)
         }
 
         binding.tvWeight.setOnClickListener {
-            showWeightSelectionBottomSheet()
+            showWeightSelectionBottomSheet(userData.gender)
         }
         binding.arrowWeight.setOnClickListener {
-            showWeightSelectionBottomSheet()
+            showWeightSelectionBottomSheet(userData.gender)
         }
 
         binding.arrowDeleteAccount.setOnClickListener {
@@ -443,7 +443,7 @@ class ProfileNewActivity : BaseActivity() {
         bottomSheetDialog.show()
     }
 
-    private fun showWeightSelectionBottomSheet() {
+    private fun showWeightSelectionBottomSheet(gender: String) {
         // Create and configure BottomSheetDialog
         val bottomSheetDialog = BottomSheetDialog(this)
         var selectedLabel = " KGS"
@@ -462,11 +462,6 @@ class ProfileNewActivity : BaseActivity() {
 
         bottomSheetDialog.setContentView(bottomSheetView)
 
-        dialogBinding.switchWeightMetric.apply {
-            trackTintList = ContextCompat.getColorStateList(context, R.color.switch_track_color)
-            thumbTintList = ContextCompat.getColorStateList(context, R.color.switch_thumb_color)
-        }
-
         // Set up the animation
         val bottomSheetLayout = bottomSheetView.findViewById<LinearLayout>(R.id.design_bottom_sheet)
         if (bottomSheetLayout != null) {
@@ -476,23 +471,6 @@ class ProfileNewActivity : BaseActivity() {
         }
 
         dialogBinding.selectedNumberText.text = selectedWeight
-        dialogBinding.switchWeightMetric.isChecked = selectedLabel == " lbs"
-
-        dialogBinding.switchWeightMetric.setOnCheckedChangeListener { buttonView, isChecked ->
-            val w = selectedWeight.split(" ")
-            if (isChecked) {
-                selectedLabel = " lbs"
-                selectedWeight = ConversionUtils.convertLbsToKgs(w[0])
-                setLbsValue()
-            } else {
-                selectedLabel = " KGS"
-                selectedWeight = ConversionUtils.convertKgToLbs(w[0])
-                setKgsValue()
-            }
-            dialogBinding.rulerView.layoutManager?.scrollToPosition(floor(selectedWeight.toDouble() * 10).toInt())
-            selectedWeight += selectedLabel
-            dialogBinding.selectedNumberText.text = selectedWeight
-        }
 
         val layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
@@ -510,6 +488,62 @@ class ProfileNewActivity : BaseActivity() {
         }
         dialogBinding.rulerView.adapter = adapterWeight
 
+        if (selectedLabel == " kg"){
+            dialogBinding.kgOption.setBackgroundResource(R.drawable.bg_left_selected)
+            dialogBinding.kgOption.setTextColor(Color.WHITE)
+
+            dialogBinding.lbsOption.setBackgroundResource(R.drawable.bg_right_unselected)
+            dialogBinding.lbsOption.setTextColor(Color.BLACK)
+            setKgsValue()
+
+            dialogBinding.selectedNumberText.text = selectedWeight
+        }else{
+            dialogBinding.lbsOption.setBackgroundResource(R.drawable.bg_right_selected)
+            dialogBinding.lbsOption.setTextColor(Color.WHITE)
+
+            dialogBinding.kgOption.setBackgroundResource(R.drawable.bg_left_unselected)
+            dialogBinding.kgOption.setTextColor(Color.BLACK)
+            setLbsValue()
+
+            dialogBinding.selectedNumberText.text = selectedWeight
+        }
+
+        dialogBinding.kgOption.setOnClickListener {
+            dialogBinding.kgOption.setBackgroundResource(R.drawable.bg_left_selected)
+            dialogBinding.kgOption.setTextColor(Color.WHITE)
+
+            dialogBinding.lbsOption.setBackgroundResource(R.drawable.bg_right_unselected)
+            dialogBinding.lbsOption.setTextColor(Color.BLACK)
+
+            selectedLabel = " kg"
+            selectedWeight = if (gender == "Male")
+                "75 kg"
+            else
+                "55 kg"
+            setKgsValue()
+
+            dialogBinding.rulerView.layoutManager?.scrollToPosition(if (gender == "Male") 750 else 550)
+            dialogBinding.selectedNumberText.text = selectedWeight
+        }
+
+        dialogBinding.lbsOption.setOnClickListener {
+            dialogBinding.lbsOption.setBackgroundResource(R.drawable.bg_right_selected)
+            dialogBinding.lbsOption.setTextColor(Color.WHITE)
+
+            dialogBinding.kgOption.setBackgroundResource(R.drawable.bg_left_unselected)
+            dialogBinding.kgOption.setTextColor(Color.BLACK)
+
+            selectedLabel = " lbs"
+            selectedWeight = if (gender == "Male")
+                "165 lbs"
+            else
+                "120 lbs"
+            setLbsValue()
+
+            dialogBinding.rulerView.layoutManager?.scrollToPosition(if (gender == "Male") 1650 else 1200)
+            dialogBinding.selectedNumberText.text = selectedWeight
+        }
+
 
         // Center number with snap alignment
         val snapHelper: SnapHelper = LinearSnapHelper()
@@ -526,8 +560,7 @@ class ProfileNewActivity : BaseActivity() {
                         val position = recyclerView.layoutManager!!.getPosition(snappedView)
                         val snappedNumber = numbers[position]
                         //selected_number_text.setText("$snappedNumber Kg")
-                        Log.d("AAAA", "Selected Label in onScroll = " + selectedLabel)
-                        dialogBinding.selectedNumberText.text = "$snappedNumber $selectedLabel"
+                        dialogBinding.selectedNumberText.text = "$snappedNumber$selectedLabel"
                         selectedWeight = dialogBinding.selectedNumberText.text.toString()
                     }
                 }
@@ -574,7 +607,7 @@ class ProfileNewActivity : BaseActivity() {
         bottomSheetDialog.show()
     }
 
-    private fun showHeightSelectionBottomSheet() {
+    private fun showHeightSelectionBottomSheet(gender: String) {
         var selectedHeight = "5 Ft 10 In"
         var selectedLabel = " feet"
         // Create and configure BottomSheetDialog
@@ -586,11 +619,9 @@ class ProfileNewActivity : BaseActivity() {
         val bottomSheetView = dialogBinding.root
 
         bottomSheetDialog.setContentView(bottomSheetView)
+        val layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true)
+        dialogBinding.rulerView.layoutManager = layoutManager
 
-        dialogBinding.switchHeightMetric.apply {
-            trackTintList = ContextCompat.getColorStateList(context, R.color.switch_track_color)
-            thumbTintList = ContextCompat.getColorStateList(context, R.color.switch_thumb_color)
-        }
 
         // Set up the animation
         val bottomSheetLayout =
@@ -601,6 +632,11 @@ class ProfileNewActivity : BaseActivity() {
             bottomSheetLayout.animation = slideUpAnimation
         }
 
+        adapterHeight = RulerAdapterVertical(numbers) { number ->
+            // Handle the selected number
+        }
+        dialogBinding.rulerView.adapter = adapterHeight
+
         selectedHeight = binding.tvHeight.text.toString()
         if (selectedHeight.isEmpty()) {
             selectedHeight = "5 Ft 10 In"
@@ -610,47 +646,81 @@ class ProfileNewActivity : BaseActivity() {
                 " cms"
             else
                 " feet"
+            if (selectedLabel == " feet"){
+                dialogBinding.feetOption.setBackgroundResource(R.drawable.bg_left_selected)
+                dialogBinding.feetOption.setTextColor(Color.WHITE)
+
+                dialogBinding.cmsOption.setBackgroundResource(R.drawable.bg_right_unselected)
+                dialogBinding.cmsOption.setTextColor(Color.BLACK)
+                setFtIn()
+            }else{
+                dialogBinding.cmsOption.setBackgroundResource(R.drawable.bg_right_selected)
+                dialogBinding.cmsOption.setTextColor(Color.WHITE)
+
+                dialogBinding.feetOption.setBackgroundResource(R.drawable.bg_left_unselected)
+                dialogBinding.feetOption.setTextColor(Color.BLACK)
+                setCms()
+            }
         }
 
-        dialogBinding.switchHeightMetric.isChecked = selectedLabel == " cms"
-
         dialogBinding.selectedNumberText.text = selectedHeight
-        val layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true)
-        dialogBinding.rulerView.layoutManager = layoutManager
 
 
-        dialogBinding.switchHeightMetric.setOnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked) {
-                selectedLabel = " cms"
-                val result = CommonAPICall.convertFeetInchToCmWithIndex(selectedHeight)
+        dialogBinding.feetOption.setOnClickListener {
+            dialogBinding.feetOption.setBackgroundResource(R.drawable.bg_left_selected)
+            dialogBinding.feetOption.setTextColor(Color.WHITE)
 
-                selectedHeight = result.cmText
-                setCms()
+            dialogBinding.cmsOption.setBackgroundResource(R.drawable.bg_right_unselected)
+            dialogBinding.cmsOption.setTextColor(Color.BLACK)
 
-                dialogBinding.rulerView.scrollToPosition(result.cmIndex)
+            selectedLabel = " feet"
 
-            } else {
-                selectedLabel = " feet"
-                val result = CommonAPICall.convertCmToFeetInchWithIndex(selectedHeight)
+            selectedHeight = if (gender == "Male")
+                "5 Ft 8 In"
+            else
+                "5 Ft 4 In"
+            setFtIn()
 
-                selectedHeight = result.feetInchText
-                setFtIn()
-
-                dialogBinding.rulerView.scrollToPosition((result.inchIndex))
-
+            dialogBinding.rulerView.post {
+                if (gender == "Male") {
+                    dialogBinding.rulerView.scrollToPosition(68)
+                } else {
+                    dialogBinding.rulerView.scrollToPosition(64)
+                }
             }
             dialogBinding.selectedNumberText.text = selectedHeight
         }
 
-        adapterHeight = RulerAdapterVertical(numbers) { number ->
-            // Handle the selected number
+        dialogBinding.cmsOption.setOnClickListener {
+            dialogBinding.cmsOption.setBackgroundResource(R.drawable.bg_right_selected)
+            dialogBinding.cmsOption.setTextColor(Color.WHITE)
+
+            dialogBinding.feetOption.setBackgroundResource(R.drawable.bg_left_unselected)
+            dialogBinding.feetOption.setTextColor(Color.BLACK)
+
+            selectedLabel = " cms"
+
+            selectedHeight = if (gender == "Male")
+                "173 cms"
+            else
+                "163 cms"
+            setCms()
+
+            dialogBinding.rulerView.post {
+                if (gender == "Male") {
+                    dialogBinding.rulerView.scrollToPosition(173)
+                } else {
+                    dialogBinding.rulerView.scrollToPosition(163)
+                }
+            }
+            dialogBinding.selectedNumberText.text = selectedHeight
         }
+
         if (selectedLabel == " cms") {
             setCms()
         } else {
             setFtIn()
         }
-        dialogBinding.rulerView.adapter = adapterHeight
 
         // Attach a LinearSnapHelper for center alignment
         val snapHelper = LinearSnapHelper()
@@ -669,7 +739,7 @@ class ProfileNewActivity : BaseActivity() {
                         val snappedNumber = numbers[position]
                         if (dialogBinding.selectedNumberText != null) {
                             dialogBinding.selectedNumberText.text =
-                                "${decimalFormat.format(snappedNumber)} $selectedLabel"
+                                "${decimalFormat.format(snappedNumber)}$selectedLabel"
                             if (selectedLabel == " feet") {
                                 val feet = decimalFormat.format(snappedNumber / 12)
                                 val remainingInches = snappedNumber.toInt() % 12
@@ -710,8 +780,6 @@ class ProfileNewActivity : BaseActivity() {
                 else
                     " feet"
             }
-
-            dialogBinding.switchHeightMetric.isChecked = selectedLabel == " cms"
 
             if (selectedLabel == " feet") {
                 val regex = Regex("(\\d+)\\s*Ft\\s*(\\d+)\\s*In", RegexOption.IGNORE_CASE)

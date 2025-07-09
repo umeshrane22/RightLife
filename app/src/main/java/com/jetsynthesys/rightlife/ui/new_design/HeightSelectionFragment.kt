@@ -1,5 +1,6 @@
 package com.jetsynthesys.rightlife.ui.new_design
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -36,6 +37,8 @@ class HeightSelectionFragment : Fragment() {
     private var selectedLabel: String = " feet"
     private val decimalFormat = DecimalFormat("###.##")
     private lateinit var rulerView: RecyclerView
+    private lateinit var feetOption: TextView
+    private lateinit var cmsOption: TextView
 
     companion object {
         fun newInstance(pageIndex: Int): HeightSelectionFragment {
@@ -55,16 +58,15 @@ class HeightSelectionFragment : Fragment() {
         else
             "5 Ft 4 In"
 
+        feetOption.setBackgroundResource(R.drawable.bg_left_selected)
+        feetOption.setTextColor(Color.WHITE)
+
+        cmsOption.setBackgroundResource(R.drawable.bg_right_unselected)
+        cmsOption.setTextColor(Color.BLACK)
+
+        selectedLabel = " feet"
+
         selected_number_text!!.text = selectedHeight
-
-        rulerView.post {
-            if (gender == "Male") {
-                rulerView.scrollToPosition(68)
-            } else {
-                rulerView.scrollToPosition(64)
-            }
-        }
-
     }
 
     override fun onCreateView(
@@ -83,7 +85,7 @@ class HeightSelectionFragment : Fragment() {
             (activity as OnboardingQuestionnaireActivity).tvSkip.visibility = VISIBLE
         }
 
-        rulerView = view.findViewById<RecyclerView>(R.id.rulerView)
+        rulerView = view.findViewById(R.id.rulerView)
         val markerView = view.findViewById<View>(R.id.markerView)
         val rlRulerContainer = view.findViewById<RelativeLayout>(R.id.rl_ruler_container)
         val colorStateList = ContextCompat.getColorStateList(requireContext(), R.color.menuselected)
@@ -106,29 +108,55 @@ class HeightSelectionFragment : Fragment() {
             numbers.add(i * 1f) // Increment by 0.1  numbers.add(i * 1f)
         }
 
-        val switch = view.findViewById<SwitchCompat>(R.id.switch_height_metric)
-        switch.isChecked = false
-        switch.setOnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked) {
-                selectedLabel = " cms"
-                //selectedHeight = CommonAPICall.convertFeetInchToCm(feet)
-                val result = CommonAPICall.convertFeetInchToCmWithIndex(selectedHeight)
+        feetOption = view.findViewById(R.id.feetOption)
+        cmsOption = view.findViewById(R.id.cmsOption)
 
-                selectedHeight = result.cmText
-                setCms()
+        feetOption.setOnClickListener {
+            feetOption.setBackgroundResource(R.drawable.bg_left_selected)
+            feetOption.setTextColor(Color.WHITE)
 
-                rulerView.scrollToPosition(result.cmIndex)
+            cmsOption.setBackgroundResource(R.drawable.bg_right_unselected)
+            cmsOption.setTextColor(Color.BLACK)
 
-            } else {
-                selectedLabel = " feet"
-                //selectedHeight = ConversionUtils.convertCentimeterToFtInch(w[0])
-                val result = CommonAPICall.convertCmToFeetInchWithIndex(selectedHeight)
+            selectedLabel = " feet"
 
-                selectedHeight = result.feetInchText
-                setFtIn()
+            selectedHeight = if (gender == "Male")
+                "5 Ft 8 In"
+            else
+                "5 Ft 4 In"
+            setFtIn()
 
-                rulerView.scrollToPosition((result.inchIndex))
+            rulerView.post {
+                if (gender == "Male") {
+                    rulerView.scrollToPosition(68)
+                } else {
+                    rulerView.scrollToPosition(64)
+                }
+            }
+            selected_number_text!!.text = selectedHeight
+        }
 
+        cmsOption.setOnClickListener {
+            cmsOption.setBackgroundResource(R.drawable.bg_right_selected)
+            cmsOption.setTextColor(Color.WHITE)
+
+            feetOption.setBackgroundResource(R.drawable.bg_left_unselected)
+            feetOption.setTextColor(Color.BLACK)
+
+            selectedLabel = " cms"
+
+            selectedHeight = if (gender == "Male")
+                "173 cms"
+            else
+                "163 cms"
+            setCms()
+
+            rulerView.post {
+                if (gender == "Male") {
+                    rulerView.scrollToPosition(173)
+                } else {
+                    rulerView.scrollToPosition(163)
+                }
             }
             selected_number_text!!.text = selectedHeight
         }
@@ -174,7 +202,7 @@ class HeightSelectionFragment : Fragment() {
                         val snappedNumber = numbers[position]
                         if (selected_number_text != null) {
                             selected_number_text!!.text =
-                                "${decimalFormat.format(snappedNumber)} $selectedLabel"
+                                "${decimalFormat.format(snappedNumber)}$selectedLabel"
                             if (selectedLabel == " feet") {
                                 val feet = decimalFormat.format(snappedNumber / 12)
                                 val remainingInches = snappedNumber.toInt() % 12
@@ -210,10 +238,6 @@ class HeightSelectionFragment : Fragment() {
 
         // Scroll to the center position after layout is measured
         rulerView.post {
-            /*val h = selectedHeight.split(" ")
-            val feet = "${h[0]}.${h[2]}"
-            layoutManager.scrollToPositionWithOffset(floor(feet.toDouble()).toInt() * 12, 0)*/
-
             // Calculate the center position
             val itemCount = if (rulerView.adapter != null) rulerView.adapter!!.itemCount else 0
             val centerPosition = itemCount / 2
@@ -225,7 +249,7 @@ class HeightSelectionFragment : Fragment() {
         rulerView.post {
             if (gender == "Male") {
                 rulerView.scrollToPosition(68)
-            }else{
+            } else {
                 rulerView.scrollToPosition(64)
             }
         }
