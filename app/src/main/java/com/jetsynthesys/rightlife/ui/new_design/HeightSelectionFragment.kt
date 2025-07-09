@@ -53,7 +53,7 @@ class HeightSelectionFragment : Fragment() {
         super.onResume()
         val gender =
             SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest.gender
-        selectedHeight = if (gender == "Male")
+        selectedHeight = if (gender == "Male" || gender == "M")
             "5 Ft 8 In"
         else
             "5 Ft 4 In"
@@ -93,7 +93,7 @@ class HeightSelectionFragment : Fragment() {
         val onboardingQuestionRequest =
             SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
         val gender = onboardingQuestionRequest.gender
-        selectedHeight = if (gender == "Male")
+        selectedHeight = if (gender == "Male" || gender == "M")
             "5 Ft 8 In"
         else
             "5 Ft 4 In"
@@ -120,14 +120,14 @@ class HeightSelectionFragment : Fragment() {
 
             selectedLabel = " feet"
 
-            selectedHeight = if (gender == "Male")
+            selectedHeight = if (gender == "Male" || gender == "M")
                 "5 Ft 8 In"
             else
                 "5 Ft 4 In"
             setFtIn()
 
             rulerView.post {
-                if (gender == "Male") {
+                if (gender == "Male" || gender == "M") {
                     rulerView.scrollToPosition(68)
                 } else {
                     rulerView.scrollToPosition(64)
@@ -145,14 +145,14 @@ class HeightSelectionFragment : Fragment() {
 
             selectedLabel = " cms"
 
-            selectedHeight = if (gender == "Male")
+            selectedHeight = if (gender == "Male" || gender == "M")
                 "173 cms"
             else
                 "163 cms"
             setCms()
 
             rulerView.post {
-                if (gender == "Male") {
+                if (gender == "Male" || gender == "M") {
                     rulerView.scrollToPosition(173)
                 } else {
                     rulerView.scrollToPosition(163)
@@ -236,18 +236,8 @@ class HeightSelectionFragment : Fragment() {
             )
         }
 
-        // Scroll to the center position after layout is measured
         rulerView.post {
-            // Calculate the center position
-            val itemCount = if (rulerView.adapter != null) rulerView.adapter!!.itemCount else 0
-            val centerPosition = itemCount / 2
-
-            // Scroll to the center position
-            layoutManager.scrollToPositionWithOffset(centerPosition, 0)
-        }
-
-        rulerView.post {
-            if (gender == "Male") {
+            if (gender == "Male" || gender == "M") {
                 rulerView.scrollToPosition(68)
             } else {
                 rulerView.scrollToPosition(64)

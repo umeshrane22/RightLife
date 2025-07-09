@@ -53,7 +53,7 @@ class WeightSelectionFragment : Fragment() {
         super.onResume()
         val gender =
             SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest.gender
-        selectedWeight = if (gender == "Male")
+        selectedWeight = if (gender == "Male" || gender == "M")
             "75 kg"
         else
             "55 kg"
@@ -97,7 +97,7 @@ class WeightSelectionFragment : Fragment() {
             SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
         val gender = onboardingQuestionRequest.gender
 
-        selectedWeight = if (gender == "Male")
+        selectedWeight = if (gender == "Male" || gender == "M")
             "75 kg"
         else
             "55 kg"
@@ -114,13 +114,13 @@ class WeightSelectionFragment : Fragment() {
             lbsOption.setTextColor(Color.BLACK)
 
             selectedLabel = " kg"
-            selectedWeight = if (gender == "Male")
+            selectedWeight = if (gender == "Male" || gender == "M")
                 "75 kg"
             else
                 "55 kg"
             setKgsValue()
 
-            recyclerView.layoutManager?.scrollToPosition(if (gender == "Male") 750 else 550)
+            recyclerView.layoutManager?.scrollToPosition(if (gender == "Male" || gender == "M") 750 else 550)
             selected_number_text!!.text = selectedWeight
         }
 
@@ -132,13 +132,13 @@ class WeightSelectionFragment : Fragment() {
             kgOption.setTextColor(Color.BLACK)
 
             selectedLabel = " lbs"
-            selectedWeight = if (gender == "Male")
+            selectedWeight = if (gender == "Male" || gender == "M")
             "165 lbs"
         else
             "120 lbs"
             setLbsValue()
 
-            recyclerView.layoutManager?.scrollToPosition(if (gender == "Male") 1650 else 1200)
+            recyclerView.layoutManager?.scrollToPosition(if (gender == "Male" || gender == "M") 1650 else 1200)
             selected_number_text!!.text = selectedWeight
         }
 
@@ -242,18 +242,8 @@ class WeightSelectionFragment : Fragment() {
                 rulerView.paddingBottom
             )
         }
-
-        // Scroll to the center after layout is measured
         rulerView.post {
-            // Calculate the center position
-            val itemCount = if (rulerView.adapter != null) rulerView.adapter!!.itemCount else 0
-            val centerPosition = itemCount / 2
-
-            // Scroll to the center position
-            layoutManager.scrollToPositionWithOffset(centerPosition, 0)
-        }
-        rulerView.post {
-            rulerView.scrollToPosition(if (gender == "Male") 750 else 550)
+            rulerView.scrollToPosition(if (gender == "Male" || gender == "M") 750 else 550)
         }
         return view
     }

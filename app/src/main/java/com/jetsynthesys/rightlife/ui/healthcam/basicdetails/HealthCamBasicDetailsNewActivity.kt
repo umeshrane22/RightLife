@@ -506,13 +506,13 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
             dialogBinding.lbsOption.setTextColor(Color.BLACK)
 
             selectedLabel = " kg"
-            selectedWeight = if (gender == "Male")
+            selectedWeight = if (gender == "Male" || gender == "M")
                 "75 kg"
             else
                 "55 kg"
             setKgsValue()
 
-            dialogBinding.rulerView.layoutManager?.scrollToPosition(if (gender == "Male") 750 else 550)
+            dialogBinding.rulerView.layoutManager?.scrollToPosition(if (gender == "Male" || gender == "M") 750 else 550)
             dialogBinding.selectedNumberText.text = selectedWeight
         }
 
@@ -524,13 +524,13 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
             dialogBinding.kgOption.setTextColor(Color.BLACK)
 
             selectedLabel = " lbs"
-            selectedWeight = if (gender == "Male")
+            selectedWeight = if (gender == "Male" || gender == "M")
                 "165 lbs"
             else
                 "120 lbs"
             setLbsValue()
 
-            dialogBinding.rulerView.layoutManager?.scrollToPosition(if (gender == "Male") 1650 else 1200)
+            dialogBinding.rulerView.layoutManager?.scrollToPosition(if (gender == "Male" || gender == "M") 1650 else 1200)
             dialogBinding.selectedNumberText.text = selectedWeight
         }
 
@@ -571,17 +571,6 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
                 paddingHorizontal,
                 dialogBinding.rulerView.paddingBottom
             )
-        }
-
-        // Scroll to the center after layout is measured
-        dialogBinding.rulerView.post {
-            // Calculate the center position
-            val itemCount =
-                if (dialogBinding.rulerView.adapter != null) dialogBinding.rulerView.adapter!!.itemCount else 0
-            val centerPosition = itemCount / 2
-
-            // Scroll to the center position
-            layoutManager.scrollToPositionWithOffset(centerPosition, 0)
         }
 
         dialogBinding.rulerView.post {
@@ -665,14 +654,14 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
 
             selectedLabel = " feet"
 
-            selectedHeight = if (gender == "Male")
+            selectedHeight = if (gender == "Male" || gender == "M")
                 "5 Ft 8 In"
             else
                 "5 Ft 4 In"
             setFtIn()
 
             dialogBinding.rulerView.post {
-                if (gender == "Male") {
+                if (gender == "Male" || gender == "M") {
                     dialogBinding.rulerView.scrollToPosition(68)
                 } else {
                     dialogBinding.rulerView.scrollToPosition(64)
@@ -690,14 +679,14 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
 
             selectedLabel = " cms"
 
-            selectedHeight = if (gender == "Male")
+            selectedHeight = if (gender == "Male" || gender == "M")
                 "173 cms"
             else
                 "163 cms"
             setCms()
 
             dialogBinding.rulerView.post {
-                if (gender == "Male") {
+                if (gender == "Male" || gender == "M") {
                     dialogBinding.rulerView.scrollToPosition(173)
                 } else {
                     dialogBinding.rulerView.scrollToPosition(163)
