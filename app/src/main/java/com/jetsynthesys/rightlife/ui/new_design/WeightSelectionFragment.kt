@@ -1,5 +1,6 @@
 package com.jetsynthesys.rightlife.ui.new_design
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,7 +12,6 @@ import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.widget.SwitchCompat
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -33,11 +33,12 @@ class WeightSelectionFragment : Fragment() {
     private var tvDescription: TextView? = null
     private var selected_number_text: TextView? = null
     private lateinit var cardViewSelection: CardView
-    private lateinit var swithch: SwitchCompat
     private val numbers = mutableListOf<Float>()
     private lateinit var adapter: RulerAdapter
     private var selectedLabel: String = " kg"
     private lateinit var rulerView: RecyclerView
+    private lateinit var kgOption: TextView
+    private lateinit var lbsOption: TextView
 
     companion object {
         fun newInstance(pageIndex: Int): WeightSelectionFragment {
@@ -52,15 +53,19 @@ class WeightSelectionFragment : Fragment() {
         super.onResume()
         val gender =
             SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest.gender
-        selectedWeight = if (gender == "Male")
+        selectedWeight = if (gender == "Male" || gender == "M")
             "75 kg"
         else
             "55 kg"
         selected_number_text!!.text = selectedWeight
 
-        rulerView.post {
-            rulerView.scrollToPosition(if (gender == "Male") 750 else 550)
-        }
+        kgOption.setBackgroundResource(R.drawable.bg_left_selected)
+        kgOption.setTextColor(Color.WHITE)
+
+        lbsOption.setBackgroundResource(R.drawable.bg_right_unselected)
+        lbsOption.setTextColor(Color.BLACK)
+
+        selectedLabel = " kg"
     }
 
     override fun onCreateView(
@@ -74,15 +79,17 @@ class WeightSelectionFragment : Fragment() {
         tvSelectedWeight = view.findViewById(R.id.tv_selected_weight)
         tvDescription = view.findViewById(R.id.tv_description)
         cardViewSelection = view.findViewById(R.id.card_view_age_selector)
-        swithch = view.findViewById(R.id.switch_weight_metric)
         if (!(activity as OnboardingQuestionnaireActivity).forProfileChecklist) {
             (activity as OnboardingQuestionnaireActivity).tvSkip.visibility = VISIBLE
         }
 
+        kgOption = view.findViewById(R.id.kgOption)
+        lbsOption = view.findViewById(R.id.lbsOption)
+
         //---------
         val recyclerView = view.findViewById<RecyclerView>(R.id.rulerView)
         selected_number_text = view.findViewById(R.id.selected_number_text)
-        rulerView = view.findViewById<RecyclerView>(R.id.rulerView)
+        rulerView = view.findViewById(R.id.rulerView)
         val rlRulerContainer = view.findViewById<RelativeLayout>(R.id.rl_ruler_container)
         val colorStateList = ContextCompat.getColorStateList(requireContext(), R.color.menuselected)
 
@@ -90,7 +97,7 @@ class WeightSelectionFragment : Fragment() {
             SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest
         val gender = onboardingQuestionRequest.gender
 
-        selectedWeight = if (gender == "Male")
+        selectedWeight = if (gender == "Male" || gender == "M")
             "75 kg"
         else
             "55 kg"
@@ -98,19 +105,40 @@ class WeightSelectionFragment : Fragment() {
         selected_number_text!!.text = selectedWeight
 
 
-        swithch.setOnCheckedChangeListener { buttonView, isChecked ->
-            val w = selectedWeight.split(" ")
-            if (isChecked) {
-                selectedLabel = " lbs"
-                selectedWeight = ConversionUtils.convertLbsToKgs(w[0])
-                setLbsValue()
-            } else {
-                selectedLabel = " kg"
-                selectedWeight = ConversionUtils.convertKgToLbs(w[0])
-                setKgsValue()
-            }
-            recyclerView.layoutManager?.scrollToPosition(floor(selectedWeight.toDouble() * 10).toInt())
-            selectedWeight += selectedLabel
+
+        kgOption.setOnClickListener {
+            kgOption.setBackgroundResource(R.drawable.bg_left_selected)
+            kgOption.setTextColor(Color.WHITE)
+
+            lbsOption.setBackgroundResource(R.drawable.bg_right_unselected)
+            lbsOption.setTextColor(Color.BLACK)
+
+            selectedLabel = " kg"
+            selectedWeight = if (gender == "Male" || gender == "M")
+                "75 kg"
+            else
+                "55 kg"
+            setKgsValue()
+
+            recyclerView.layoutManager?.scrollToPosition(if (gender == "Male" || gender == "M") 750 else 550)
+            selected_number_text!!.text = selectedWeight
+        }
+
+        lbsOption.setOnClickListener {
+            lbsOption.setBackgroundResource(R.drawable.bg_right_selected)
+            lbsOption.setTextColor(Color.WHITE)
+
+            kgOption.setBackgroundResource(R.drawable.bg_left_unselected)
+            kgOption.setTextColor(Color.BLACK)
+
+            selectedLabel = " lbs"
+            selectedWeight = if (gender == "Male" || gender == "M")
+            "165 lbs"
+        else
+            "120 lbs"
+            setLbsValue()
+
+            recyclerView.layoutManager?.scrollToPosition(if (gender == "Male" || gender == "M") 1650 else 1200)
             selected_number_text!!.text = selectedWeight
         }
 
@@ -189,7 +217,7 @@ class WeightSelectionFragment : Fragment() {
                         val snappedNumber = numbers[position]
                         //selected_number_text.setText("$snappedNumber Kg")
                         if (selected_number_text != null) {
-                            selected_number_text!!.text = "$snappedNumber $selectedLabel"
+                            selected_number_text!!.text = "$snappedNumber$selectedLabel"
                             selectedWeight = selected_number_text?.text.toString()
                             btnContinue.isEnabled = true
                             btnContinue.backgroundTintList = colorStateList
@@ -201,7 +229,7 @@ class WeightSelectionFragment : Fragment() {
 
         rlRulerContainer.post {
             // Get the width of the parent LinearLayout
-            val parentWidth: Int = rlRulerContainer.getWidth()
+            val parentWidth: Int = rlRulerContainer.width
 
             // Calculate horizontal padding (half of parent width)
             val paddingHorizontal = parentWidth / 2
@@ -214,18 +242,8 @@ class WeightSelectionFragment : Fragment() {
                 rulerView.paddingBottom
             )
         }
-
-        // Scroll to the center after layout is measured
         rulerView.post {
-            // Calculate the center position
-            val itemCount = if (rulerView.adapter != null) rulerView.adapter!!.itemCount else 0
-            val centerPosition = itemCount / 2
-
-            // Scroll to the center position
-            layoutManager.scrollToPositionWithOffset(centerPosition, 0)
-        }
-        rulerView.post {
-            rulerView.scrollToPosition(if (gender == "Male") 750 else 550)
+            rulerView.scrollToPosition(if (gender == "Male" || gender == "M") 750 else 550)
         }
         return view
     }

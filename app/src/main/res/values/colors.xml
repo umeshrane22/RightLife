@@ -279,5 +279,6 @@
     <color name="light_pink_lavender">#FDE6FF</color>
     <color name="soft_beige">#F7E6B7</color>
     <color name="macros_high_color">#B50200</color>
+    <color name="border_height_weight">#74747480</color>
 
 </resources>

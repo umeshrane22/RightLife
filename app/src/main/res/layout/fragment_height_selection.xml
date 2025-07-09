@@ -39,43 +39,49 @@
         android:layout_marginBottom="-12dp">
 
 
-
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_marginTop="20dp"
                 android:layout_height="wrap_content">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:fontFamily="@font/dmsans_regular"
-                    android:text="Feet"
-                    android:paddingRight="20dp"
-                    android:layout_toLeftOf="@+id/switch_height_metric"
-                    android:textSize="@dimen/textsize_large" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:fontFamily="@font/dmsans_regular"
-                    android:text="Cms"
-                    android:paddingLeft="20dp"
-                    android:layout_toRightOf="@+id/switch_height_metric"
-                    android:textSize="@dimen/textsize_large" />
+                <LinearLayout
+                    android:id="@+id/toggleContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:orientation="horizontal"
+                    android:padding="2dp"
+                    android:layout_marginHorizontal="60dp"
+                    android:layout_centerHorizontal="true">
 
-                <androidx.appcompat.widget.SwitchCompat
-                    android:id="@+id/switch_height_metric"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    app:track="@drawable/custom_track_onboardingswitch"
-                    android:thumb="@drawable/custom_thumb"
-                    app:thumbTint="@color/switch_thumb_color"
-                    app:trackTint="@color/switch_track_color" />
+                    <TextView
+                        android:id="@+id/feetOption"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="Feet"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:textSize="16sp"
+                        android:textColor="@color/black"
+                        android:background="@drawable/bg_left_unselected" />
+
+                    <TextView
+                        android:id="@+id/cmsOption"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="Cms"
+                        android:textSize="16sp"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:textColor="@color/white"
+                        android:background="@drawable/bg_right_selected" />
+                </LinearLayout>
+
             </RelativeLayout>
 
             <LinearLayout
@@ -98,7 +104,7 @@
                     android:textStyle="bold"
                     android:fontFamily="@font/dmsans_bold"
                     android:layout_height="wrap_content"
-                    android:text="5 Ft 10 In"/>
+                    android:text="5 Ft 10 In" />
 
                 <RelativeLayout
                     android:layout_width="0dp"
@@ -107,13 +113,13 @@
                     android:id="@+id/rl_ruler_container"
                     android:layout_gravity="center_vertical"
                     android:layout_height="match_parent">
+
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rulerView"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_centerVertical="true"
                         android:clipToPadding="false" />
-
 
 
                     <LinearLayout
@@ -130,15 +136,14 @@
                             android:layout_height="5dp"
                             android:layout_marginBottom="10dp"
                             android:layout_marginEnd="40dp"
-                            android:background="@android:color/holo_red_light"/>
+                            android:background="@android:color/holo_red_light" />
 
                         <View
                             android:id="@+id/markerViewdummy"
                             android:layout_width="match_parent"
                             android:layout_height="2dp"
                             android:background="@android:color/transparent"
-                            android:layout_marginEnd="80dp"
-                            />
+                            android:layout_marginEnd="80dp" />
                     </LinearLayout>
                 </RelativeLayout>
 
@@ -158,7 +163,7 @@
                 android:text="@string/str_continue"
                 android:textColor="@color/white"
                 android:textSize="@dimen/textsize_large"
-                android:layout_alignParentBottom="true"/>
+                android:layout_alignParentBottom="true" />
         </RelativeLayout>
 
     </androidx.cardview.widget.CardView>
