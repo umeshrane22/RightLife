@@ -63,6 +63,7 @@ class HeightSelectionFragment : Fragment() {
 
         cmsOption.setBackgroundResource(R.drawable.bg_right_unselected)
         cmsOption.setTextColor(Color.BLACK)
+        setFtIn()
 
         selectedLabel = " feet"
 

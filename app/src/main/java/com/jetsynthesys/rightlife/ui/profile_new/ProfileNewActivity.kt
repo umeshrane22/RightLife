@@ -672,9 +672,9 @@ class ProfileNewActivity : BaseActivity() {
 
             dialogBinding.rulerView.post {
                 if (gender == "Male" || gender == "M") {
-                    dialogBinding.rulerView.scrollToPosition(68)
+                    dialogBinding.rulerView.scrollToPosition(68 + 8)
                 } else {
-                    dialogBinding.rulerView.scrollToPosition(64)
+                    dialogBinding.rulerView.scrollToPosition(64 + 8)
                 }
             }
             dialogBinding.selectedNumberText.text = selectedHeight
@@ -697,9 +697,9 @@ class ProfileNewActivity : BaseActivity() {
 
             dialogBinding.rulerView.post {
                 if (gender == "Male" || gender == "M") {
-                    dialogBinding.rulerView.scrollToPosition(173)
+                    dialogBinding.rulerView.scrollToPosition(173 + 8)
                 } else {
-                    dialogBinding.rulerView.scrollToPosition(163)
+                    dialogBinding.rulerView.scrollToPosition(163 + 8)
                 }
             }
             dialogBinding.selectedNumberText.text = selectedHeight
