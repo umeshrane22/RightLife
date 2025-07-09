@@ -32,6 +32,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
+import com.jetsynthesys.rightlife.ai_package.model.ThinkRecomendedResponse
 import com.jetsynthesys.rightlife.ai_package.model.request.DishLog
 import com.jetsynthesys.rightlife.ai_package.model.request.SaveDishLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.WeightIntakeRequest
@@ -57,6 +58,7 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.microtab.Micro
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.LandingPageResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MyMealModel
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
+import com.jetsynthesys.rightlife.ai_package.ui.sleepright.adapter.RecommendedAdapterSleep
 import com.jetsynthesys.rightlife.ai_package.utils.AppPreference
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
 import com.jetsynthesys.rightlife.apimodel.userdata.Userdata
@@ -94,6 +96,9 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
     private lateinit var waterQuantityTv : TextView
     private lateinit var lastLoggedNoData: TextView
     private lateinit var weightIntake: TextView
+    private lateinit var thinkRecomendedResponse : ThinkRecomendedResponse
+    private lateinit var recomendationAdapter: RecommendedAdapterSleep
+    private lateinit var recomendationRecyclerView: RecyclerView
     private lateinit var weightIntakeUnit : TextView
     private lateinit var otherRecipeMightLikeWithData : LinearLayout
     private lateinit var newImprovementLayout : LinearLayout
@@ -205,6 +210,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
         tvCabsValue = view.findViewById(R.id.tv_carbs_value)
         logYourWaterIntakeFilled = view.findViewById(R.id.log_your_water_intake_filled)
         weightTrackerIc = view.findViewById(R.id.weightTrackerIc)
+        recomendationRecyclerView = view.findViewById(R.id.recommendationRecyclerView)
         fatsProgressBar = view.findViewById(R.id.fats_progressBar)
         proteinProgressBar = view.findViewById(R.id.protein_progressBar)
         cabsProgressBar = view.findViewById(R.id.carbs_progressBar)
@@ -275,6 +281,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
         // onFrequentlyLoggedItemRefresh()
         //  halfCurveProgressBar.setValues(2000,2000)
         glassWithWaterView = view.findViewById(R.id.glass_with_water_view)
+        fetchThinkRecomendedData()
 
         if (bottomSeatName.contentEquals("LogWeightEat")){
             showLogWeightBottomSheet()
@@ -556,6 +563,32 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
                         dismissLoader(requireView())
                     }
                 }
+            }
+        })
+    }
+    private fun fetchThinkRecomendedData() {
+        val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
+        val call = ApiClient.apiService.fetchThinkRecomended(token,"HOME","EAT_RIGHT")
+        call.enqueue(object : Callback<ThinkRecomendedResponse> {
+            override fun onResponse(call: Call<ThinkRecomendedResponse>, response: Response<ThinkRecomendedResponse>) {
+                if (response.isSuccessful) {
+                    // progressDialog.dismiss()
+                    thinkRecomendedResponse = response.body()!!
+                    if (thinkRecomendedResponse.data?.contentList?.isNotEmpty() == true) {
+                        recomendationAdapter = RecommendedAdapterSleep(context!!, thinkRecomendedResponse.data?.contentList!!)
+                        recomendationRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+                        recomendationRecyclerView.adapter = recomendationAdapter
+                    }
+                } else {
+                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    //          Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    // progressDialog.dismiss()F
+                }
+            }
+            override fun onFailure(call: Call<ThinkRecomendedResponse>, t: Throwable) {
+                Log.e("Error", "API call failed: ${t.message}")
+                //          Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                //progressDialog.dismiss()
             }
         })
     }

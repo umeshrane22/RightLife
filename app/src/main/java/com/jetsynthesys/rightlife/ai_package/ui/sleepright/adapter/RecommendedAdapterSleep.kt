@@ -69,7 +69,7 @@ class RecommendedAdapterSleep(val context: Context, private val items: ArrayList
         val formattedDate = isoDate?.let { convertIsoToCustomDate(it) }
         val categoryName = item.categoryName ?: ""
 
-        val categorySpan = SpannableString("$categoryName  |  ")
+        val categorySpan = SpannableString("$categoryName      |      ")
         categorySpan.setSpan(StyleSpan(Typeface.NORMAL), 0, categoryName.length, 0)
         categorySpan.setSpan(RelativeSizeSpan(14f / 14f), 0, categoryName.length, 0) // 14sp relative to default
         categorySpan.setSpan(ForegroundColorSpan(ContextCompat.getColor(holder.author.context, android.R.color.black)), 0, categoryName.length, 0)
@@ -77,7 +77,7 @@ class RecommendedAdapterSleep(val context: Context, private val items: ArrayList
 
         // Part 2: formattedDate and duration (12sp, dark grey, medium)
         val duration = item.meta?.duration ?: ""
-        val dateDurationSpan = SpannableString("$formattedDate  |  $duration")
+        val dateDurationSpan = SpannableString("$formattedDate      |      $duration")
 
 // Set 12sp size for entire span
         dateDurationSpan.setSpan(RelativeSizeSpan(12f / 14f), 0, dateDurationSpan.length, 0)

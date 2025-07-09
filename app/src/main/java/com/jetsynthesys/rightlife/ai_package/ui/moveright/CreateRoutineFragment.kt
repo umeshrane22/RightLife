@@ -3,6 +3,8 @@ package com.jetsynthesys.rightlife.ai_package.ui.moveright
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -158,7 +160,17 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
         }
 
         editText.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {}
+            private val maxLength = 30
+            override fun afterTextChanged(s: Editable?) {
+                if (s != null && s.length > maxLength) {
+                    // Truncate the text to maxLength
+                    s.replace(maxLength, s.length, "")
+                    // Show Toast on the main thread
+                    Handler(Looper.getMainLooper()).post {
+                        Toast.makeText(editText.context, "Name cannot exceed $maxLength characters", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 

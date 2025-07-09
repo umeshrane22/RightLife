@@ -296,7 +296,7 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         Log.d("StepFragment", "Labels: $labels")
         Log.d("StepFragment", "LabelsDate: $labelsDate")
 
-        val dataSet = BarDataSet(entries, "Steps")
+        val dataSet = BarDataSet(entries, "")
         dataSet.color = ContextCompat.getColor(requireContext(), R.color.moveright)
         dataSet.valueTextColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals)
         dataSet.valueTextSize = 12f
