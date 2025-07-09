@@ -8,6 +8,8 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -28,10 +30,10 @@ import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import java.time.Instant
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import java.time.ZoneId
+import kotlin.math.min
 
 class LogYourNapDialogFragment(private val requireContext: Context, private val listener: OnLogYourNapSelectedListener) : BottomSheetDialogFragment() {
     private lateinit var tvStartTime: TextView
@@ -42,8 +44,11 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
     private val mContext = requireContext
 
     private var startTime: LocalTime = LocalTime.of(22, 0)
-    private var endTime: LocalTime = LocalTime.of(6, 30)
+    private var endTime: LocalTime = LocalTime.of(7, 30)
     private var selectedDate: LocalDate = LocalDate.now().minusDays(1)
+    private var selectedWakeDate: LocalDate = LocalDate.now()
+    private var selectedSleepDateTime : LocalDateTime = LocalDateTime.of(LocalDate.now().minusDays(1), LocalTime.of(22, 0))
+    private var selectedWakeDateTime : LocalDateTime = LocalDateTime.of(LocalDate.now(), LocalTime.of(7, 30))
     var startHour = 22
     var startMinute = 0
     var endHour = 6
@@ -69,14 +74,19 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
         tvDate = view.findViewById(R.id.tvDate)
         tvRemindTime = view.findViewById(R.id.tvRemindTime)
 
-        updateDuration()
+      //  updateDuration()
+        updateDurationNew()
 
         view.findViewById<View>(R.id.btnDatePicker).setOnClickListener {
             showDatePicker()
+            showDateTimePicker(requireContext(),{day ->
+                tvDate.text = day.format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
+               // selectedDate = day.format(DateTimeFormatter.ofPattern("dd MM yyyy"))
+            })
         }
 
         view.findViewById<View>(R.id.startTimeContainer).setOnClickListener {
-            if (SleepRightLandingFragment.dialogStartTime == LocalTime.of(startHour, startMinute)) {
+            /*if (SleepRightLandingFragment.dialogStartTime == LocalTime.of(startHour, startMinute)) {
                 TimePickerDialogFragment(requireContext, startHour, startMinute, selectedDate, 0) { hour, minute ->
                     val formatted = LocalTime.of(hour, minute).format(DateTimeFormatter.ofPattern("hh:mm a"))
                     startHour = hour
@@ -96,12 +106,17 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
                     SleepRightLandingFragment.dialogStartTime = startTime
                     updateDuration()
                 }.show(childFragmentManager, "TimePickerDialog")
-            }
+            }*/
+            showDateTimePicker(requireContext,{ date ->
+                val mDate = date
+                selectedSleepDateTime = date
+                updateDurationNew()
+            })
         }
 
         view.findViewById<View>(R.id.endTimeContainer).setOnClickListener {
-            if (SleepRightLandingFragment.dialogEndTime == LocalTime.of(endHour, endMinute)) {
-                TimePickerDialogFragment(requireContext, endHour, endMinute, selectedDate, 1) { hour, minute ->
+            /*if (SleepRightLandingFragment.dialogEndTime == LocalTime.of(endHour, endMinute)) {
+                TimePickerDialogFragment(requireContext, endHour, endMinute, selectedWakeDate, 1) { hour, minute ->
                     val formatted = LocalTime.of(hour, minute).format(DateTimeFormatter.ofPattern("hh:mm a"))
                     endHour = hour
                     endMinute = minute
@@ -112,7 +127,7 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
                 }.show(childFragmentManager, "TimePickerDialog")
             }else{
                 TimePickerDialogFragment(requireContext,
-                    SleepRightLandingFragment.dialogEndTime.hour, SleepRightLandingFragment.dialogEndTime.minute, selectedDate, 1) { hour, minute ->
+                    SleepRightLandingFragment.dialogEndTime.hour, SleepRightLandingFragment.dialogEndTime.minute, selectedWakeDate, 1) { hour, minute ->
                     val formatted = LocalTime.of(hour, minute).format(DateTimeFormatter.ofPattern("hh:mm a"))
                     endHour = hour
                     endMinute = minute
@@ -121,7 +136,12 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
                     SleepRightLandingFragment.dialogEndTime = endTime
                     updateDuration()
                 }.show(childFragmentManager, "TimePickerDialog")
-            }
+            }*/
+            showDateTimeWakePicker(requireContext,{ date ->
+                val mDate = date
+                selectedWakeDateTime = date
+                updateDurationNew()
+            })
         }
 
         view.findViewById<View>(R.id.btnSaveLog).setOnClickListener {
@@ -129,17 +149,17 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
             val inputFmt  = DateTimeFormatter.ofPattern("hh:mm a")
             val outputFmt = DateTimeFormatter.ofPattern("HH:mm:ss")
             val time24h = LocalTime.parse(sleepTime, inputFmt).format(outputFmt)
-            val formatStartDate = "$selectedDate"+"T"+"$time24h"
+           // val formatStartDate = "$selectedDate"+"T"+"$time24h"
             val deviceZone  = ZoneId.systemDefault()          // phone / emulator zone
-            val ldt         = LocalDateTime.parse(formatStartDate)      // parses without zone
-            val instantStart     = ldt.atZone(deviceZone).toInstant().toString()
+          //  val ldt         = LocalDateTime.parse(formatStartDate)      // parses without zone
+            val instantStart     = selectedSleepDateTime.atZone(deviceZone).toInstant().toString()
             val wakeTime =  tvEndTime.text.toString()
             val inputFmt1  = DateTimeFormatter.ofPattern("hh:mm a")
             val outputFmt1 = DateTimeFormatter.ofPattern("HH:mm:ss")
             val time24h1 = LocalTime.parse(wakeTime, inputFmt1).format(outputFmt1)
-            val formatWakeDate = "$selectedDate"+"T"+"$time24h1"
-            val ldt1         = LocalDateTime.parse(formatWakeDate)      // parses without zone
-            val instantEnd     = ldt1.atZone(deviceZone).toInstant().toString()
+         //   val formatWakeDate = "${SleepRightLandingFragment.dialogWakeDate}"+"T"+"$time24h1"
+        //    val ldt1         = LocalDateTime.parse(formatWakeDate)      // parses without zone
+            val instantEnd     = selectedWakeDateTime.atZone(deviceZone).toInstant().toString()
             val utcOdt   = OffsetDateTime.parse(instantStart)    // parse as an OffsetDateTime (UTC)
             val systemZone1: ZoneId = ZoneId.systemDefault()       // or ZoneId.systemDefault()
             val istOdt   = utcOdt.atZoneSameInstant(systemZone1)   // same instant, new zone
@@ -153,6 +173,137 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
         view.findViewById<View>(R.id.btnClose).setOnClickListener {
             dismiss()
         }
+    }
+
+    private fun showDateTimePicker(context: Context, onDateTimeSelected: (LocalDateTime) -> Unit) {
+        val now = LocalDateTime.now()
+        val today = LocalDate.now()
+        val hour = 22
+        val minute = "00"
+
+        val datePickerDialog = DatePickerDialog(
+            context,
+            { _, year, month, dayOfMonth ->
+                val selectedDate = LocalDate.of(year, month + 1, dayOfMonth)
+
+                val timePickerDialog = TimePickerDialog(
+                    context,
+                    { _, hourOfDay, minute ->
+                        val selectedDateTime = LocalDateTime.of(selectedDate, LocalTime.of(hourOfDay, minute))
+                        // 🚫 Check if selected DateTime is in the future
+                        if (selectedDateTime.isAfter(now)) {
+                            Toast.makeText(context, "Cannot select a future time", Toast.LENGTH_SHORT).show()
+                            // Optionally: reopen time picker with current time
+                            Handler(Looper.getMainLooper()).post {
+                                showTimePickerAgain(context, selectedDate, onDateTimeSelected)
+                            }
+                        } else {
+                            onDateTimeSelected(selectedDateTime)
+                        }
+                    },
+                    hour,
+                    minute.toInt(),
+                    false
+                )
+                timePickerDialog.show()
+            },
+            now.year,
+            now.monthValue - 1,
+            now.dayOfMonth -1
+        )
+        val today1 = System.currentTimeMillis()
+        val sevenDaysAgo = today1 - 6 * 24 * 60 * 60 * 1000L // 6 days ago in milliseconds
+        datePickerDialog.datePicker.maxDate = today1
+        datePickerDialog.datePicker.minDate = sevenDaysAgo
+        datePickerDialog.show()
+    }
+
+    private fun showTimePickerAgain(context: Context, selectedDate: LocalDate, onDateTimeSelected: (LocalDateTime) -> Unit) {
+        val now = LocalDateTime.now()
+        val hour = 22
+        val minute = "00"
+        val timePickerDialog = TimePickerDialog(
+            context,
+            { _, hourOfDay, minute ->
+                val selectedDateTime = LocalDateTime.of(selectedDate, LocalTime.of(hourOfDay, minute))
+                if (selectedDateTime.isAfter(now)) {
+                    Toast.makeText(context, "Still future! Try again.", Toast.LENGTH_SHORT).show()
+                } else {
+                    onDateTimeSelected(selectedDateTime)
+                }
+            },
+            hour,
+            minute.toInt(),
+            false
+        )
+        timePickerDialog.show()
+    }
+
+    private fun showDateTimeWakePicker(context: Context, onDateTimeSelected: (LocalDateTime) -> Unit) {
+        val now = LocalDateTime.now()
+        val today = LocalDate.now()
+        val hour = "07"
+        val minute = "30"
+
+        val datePickerDialog = DatePickerDialog(
+            context,
+            { _, year, month, dayOfMonth ->
+                val selectedDate = LocalDate.of(year, month + 1, dayOfMonth)
+
+                val timePickerDialog = TimePickerDialog(
+                    context,
+                    { _, hourOfDay, minute ->
+                        val selectedDateTime = LocalDateTime.of(selectedDate, LocalTime.of(hourOfDay, minute))
+                        // 🚫 Check if selected DateTime is in the future
+                    //    if (selectedDateTime.isAfter(now)) {
+                    //        Toast.makeText(context, "Cannot select a future time", Toast.LENGTH_SHORT).show()
+                            // Optionally: reopen time picker with current time
+                    //        Handler(Looper.getMainLooper()).post {
+                    //            showTimePickerWakeAgain(context, selectedDate, onDateTimeSelected)
+                    //        }
+                    //    } else {
+                            onDateTimeSelected(selectedDateTime)
+                   //     }
+                    },
+                    hour.toInt(),
+                    minute.toInt(),
+                    false
+                )
+                timePickerDialog.show()
+            },
+            now.year,
+            now.monthValue - 1,
+            now.dayOfMonth
+        )
+        // 🚫 Disable future dates
+        val today1 = System.currentTimeMillis()
+        val sevenDaysAgo = today1 - 6 * 24 * 60 * 60 * 1000L // 6 days ago in milliseconds
+        datePickerDialog.datePicker.maxDate = today1
+        datePickerDialog.datePicker.minDate = sevenDaysAgo
+        datePickerDialog.show()
+    }
+
+    private fun showTimePickerWakeAgain(
+        context: Context,
+        selectedDate: LocalDate,
+        onDateTimeSelected: (LocalDateTime) -> Unit
+    ) {
+        val now = LocalDateTime.now()
+        val timePickerDialog = TimePickerDialog(
+            context,
+            { _, hourOfDay, minute ->
+                val selectedDateTime = LocalDateTime.of(selectedDate, LocalTime.of(hourOfDay, minute))
+               // if (selectedDateTime.isAfter(now)) {
+              //      Toast.makeText(context, "Still future! Try again.", Toast.LENGTH_SHORT).show()
+             //   } else {
+                    onDateTimeSelected(selectedDateTime)
+             //   }
+            },
+            now.hour,
+            now.minute,
+            false
+        )
+        timePickerDialog.show()
     }
 
     private fun logNap(sleepTime: String, wakeTime: String) {
@@ -209,11 +360,25 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
                 tvEndTime.text = SleepRightLandingFragment.dialogEndTime.format(DateTimeFormatter.ofPattern("hh:mm a"))
             }
             tvDuration.text = "$hours hr $minutes mins"
-            if (SleepRightLandingFragment.dialogDate == selectedDate) {
+            if (SleepRightLandingFragment.dialogSleepDate == selectedDate) {
                 tvDate.text = selectedDate.format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
             }else{
-                tvDate.text = SleepRightLandingFragment.dialogDate.format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
+                tvDate.text = SleepRightLandingFragment.dialogSleepDate.format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
             }
+        }else{
+            Toast.makeText(requireContext,"Sleep time cannot be more than 15 hours", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun updateDurationNew() {
+        tvDate.text = selectedSleepDateTime.format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
+        tvStartTime.text = selectedSleepDateTime.format(DateTimeFormatter.ofPattern("hh:mm a"))
+        tvEndTime.text = selectedWakeDateTime.format(DateTimeFormatter.ofPattern("hh:mm a"))
+        var duration = Duration.between(selectedSleepDateTime, selectedWakeDateTime)
+        var hours = duration.toHours()
+        var minutes = duration.minusHours(hours).toMinutes()
+        if (hours <= 15) {
+            tvDuration.text = "$hours hr $minutes mins"
         }else{
             Toast.makeText(requireContext,"Sleep time cannot be more than 15 hours", Toast.LENGTH_SHORT).show()
         }
@@ -240,12 +405,12 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
             requireContext(),
             { _, year, month, day ->
                 selectedDate = LocalDate.of(year, month + 1, day)
-                SleepRightLandingFragment.dialogDate = selectedDate
+                SleepRightLandingFragment.dialogSleepDate = selectedDate
                 updateDuration()
             },
-            selectedDate.year,
-            selectedDate.monthValue - 1,
-            selectedDate.dayOfMonth
+            SleepRightLandingFragment.dialogSleepDate.year,
+            SleepRightLandingFragment.dialogSleepDate.monthValue - 1,
+            SleepRightLandingFragment.dialogSleepDate.dayOfMonth
         )
         val today = System.currentTimeMillis()
         val sevenDaysAgo = today - 6 * 24 * 60 * 60 * 1000L // 6 days ago in milliseconds
