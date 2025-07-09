@@ -142,8 +142,8 @@
 
                         <TextView
                             android:id="@+id/average_text_heading"
-                            android:layout_width="40dp"
-                            android:layout_height="1dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             android:fontFamily="@font/dmsans_bold"
                             android:text="Average"
                             android:textColor="@color/black_no_meals"

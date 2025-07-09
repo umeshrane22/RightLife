@@ -41,6 +41,7 @@ import androidx.health.connect.client.request.ReadRecordsRequest
 import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.google.gson.Gson
@@ -55,6 +56,7 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.MealSummaryInf
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.YourMealLogsFragment
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.graphs.LineGrapghViewSteps
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.graphs.LineGraphView
+import com.jetsynthesys.rightlife.ai_package.ui.sleepright.adapter.RecommendedAdapterSleep
 import com.jetsynthesys.rightlife.ai_package.ui.steps.SetYourStepGoalFragment
 import com.jetsynthesys.rightlife.ai_package.utils.AppPreference
 import com.jetsynthesys.rightlife.databinding.FragmentLandingBinding
@@ -63,6 +65,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
@@ -151,6 +156,9 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private var totalIntakeCaloriesSum: Int = 0
     private var loadingOverlay : FrameLayout? = null
     private var isRepeat : Boolean = false
+    private lateinit var recomendationRecyclerView: RecyclerView
+    private lateinit var thinkRecomendedResponse : ThinkRecomendedResponse
+    private lateinit var recomendationAdapter: RecommendedAdapterSleep
 
     private val allReadPermissions = setOf(
         HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class),
@@ -201,6 +209,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         step_forward_icon = view.findViewById(R.id.step_forward_icon)
         totalIntakeCalorieText = view.findViewById(R.id.textView1)
         calorieCountText = view.findViewById(R.id.calorie_count)
+        recomendationRecyclerView = view.findViewById(R.id.recommendationRecyclerView)
         steps_no_data_text = view.findViewById(R.id.steps_no_data_text)
         stes_no_data_text_description = view.findViewById(R.id.stes_no_data_text_description)
         syncWithHealthConnectButton = view.findViewById(R.id.syncWithHealthConnectButton)
@@ -235,6 +244,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         yourHeartRateZone = view.findViewById(R.id.yourHeartRateZone)
 
         setupRecyclerView(view)
+        fetchThinkRecomendedData()
 
         moveRightImageBack.setOnClickListener {
             activity?.finish()
@@ -265,14 +275,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 .addToBackStack(null)
                 .commit()
         }
-        workoutImageIcon.setOnClickListener {
-            // Define action if needed
-            val fragment = WorkoutAnalyticsFragment()
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.flFragment, fragment, "workoutAnalysisFragment")
-                .addToBackStack(null)
-                .commit()
-        }
+
         lytNoDataAddWorkoutBtn.setOnClickListener{
             navigateToFragment(YourActivityFragment(), "YourActivityFragment")
         }
@@ -1088,7 +1091,6 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                             peakZone = 0f
                         )
 
-
                         // Map syncedWorkouts to CardItem objects
                         val syncedCardItems = it.syncedWorkouts.map { workout ->
                             val durationDouble = workout.duration.toDoubleOrNull() ?: 0.0
@@ -1152,10 +1154,9 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                 }
 
                                 workoutImageIcon.visibility = if (hasValidHeartRate) View.VISIBLE else View.GONE
-
-                               // workoutImageIcon.visibility = View.VISIBLE
                                 dataFilledworkout.visibility = View.VISIBLE
                                 nodataWorkout.visibility = View.GONE
+
                                 val adapter = CarouselAdapter(allCardItems) { cardItem, position ->
                                     val fragment = WorkoutAnalyticsFragment().apply {
                                         arguments = Bundle().apply { putSerializable("cardItem", cardItem) }
@@ -1175,6 +1176,23 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                 carouselViewPager.setPageTransformer { page, position ->
                                     val offset = abs(position)
                                     page.scaleY = 1 - (offset * 0.1f)
+                                }
+
+                                // Set click listener for workoutImageIcon to navigate to WorkoutAnalyticsFragment with current CardItem
+                                workoutImageIcon.setOnClickListener {
+                                    val currentPosition = carouselViewPager.currentItem
+                                    if (currentPosition >= 0 && currentPosition < allCardItems.size) {
+                                        val selectedCardItem = allCardItems[currentPosition]
+                                        val fragment = WorkoutAnalyticsFragment().apply {
+                                            arguments = Bundle().apply { putSerializable("cardItem", selectedCardItem) }
+                                        }
+                                        requireActivity().supportFragmentManager.beginTransaction()
+                                            .replace(R.id.flFragment, fragment, "workoutAnalysisFragment")
+                                            .addToBackStack(null)
+                                            .commit()
+                                    } else {
+                                        Toast.makeText(requireContext(), "No workout selected", Toast.LENGTH_SHORT).show()
+                                    }
                                 }
                             } else {
                                 nodataWorkout.visibility = View.VISIBLE
@@ -1443,6 +1461,32 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 }
             }
         }
+    }
+    private fun fetchThinkRecomendedData() {
+        val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
+        val call = ApiClient.apiService.fetchThinkRecomended(token,"HOME","MOVE_RIGHT")
+        call.enqueue(object : Callback<ThinkRecomendedResponse> {
+            override fun onResponse(call: Call<ThinkRecomendedResponse>, response: Response<ThinkRecomendedResponse>) {
+                if (response.isSuccessful) {
+                    // progressDialog.dismiss()
+                    thinkRecomendedResponse = response.body()!!
+                    if (thinkRecomendedResponse.data?.contentList?.isNotEmpty() == true) {
+                        recomendationAdapter = RecommendedAdapterSleep(context!!, thinkRecomendedResponse.data?.contentList!!)
+                        recomendationRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+                        recomendationRecyclerView.adapter = recomendationAdapter
+                    }
+                } else {
+                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    //          Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    // progressDialog.dismiss()F
+                }
+            }
+            override fun onFailure(call: Call<ThinkRecomendedResponse>, t: Throwable) {
+                Log.e("Error", "API call failed: ${t.message}")
+                //          Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                //progressDialog.dismiss()
+            }
+        })
     }
 
     private fun storeBodyFatData(): List<BodyFatPercentage>? {

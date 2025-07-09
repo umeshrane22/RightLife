@@ -71,6 +71,59 @@
             android:layout_width="110dp"
             android:layout_centerInParent="true"
             android:layout_height="350dp" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="3dp"
+            android:layout_alignTop="@id/steps_slider_view"
+            android:layout_alignStart="@id/steps_slider_view"
+            android:layout_marginTop="119dp">
+            <ImageView
+                android:id="@+id/goal_image"
+                android:layout_width="150dp"
+                android:layout_height="15dp"
+                android:src="@drawable/set_your_goal_recommended"
+                android:scaleType="fitCenter"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:text="12,000 Steps Recomended"
+                android:textSize="12sp"
+                android:textColor="@color/black"
+                app:layout_constraintStart_toEndOf="@+id/goal_image"
+                app:layout_constraintTop_toTopOf="@+id/goal_image"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="3dp"
+            android:layout_alignTop="@id/steps_slider_view"
+            android:layout_alignStart="@id/steps_slider_view"
+            android:layout_marginTop="153dp">
+            <ImageView
+                android:id="@+id/average_image"
+                android:layout_width="150dp"
+                android:layout_height="15dp"
+                android:src="@drawable/set_average_image"
+                android:scaleType="fitCenter"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:text="10,000 Steps Average"
+                android:textSize="12sp"
+                android:textColor="@color/black"
+                app:layout_constraintStart_toEndOf="@+id/average_image"
+                app:layout_constraintTop_toTopOf="@+id/average_image"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -95,10 +148,10 @@
                 android:id="@+id/step_count_text_your_goal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="10sp"
+                android:textSize="14sp"
                 android:fontFamily="@font/dmsans_regular"
                 android:textColor="@color/black"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="19dp"
                 android:text="Your Goal" />
 
         </LinearLayout>
@@ -109,6 +162,7 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="350dp"
+            android:visibility="gone"
             android:layout_alignTop="@+id/steps_slider_view"
 
             android:layout_toEndOf="@id/steps_slider_view"
