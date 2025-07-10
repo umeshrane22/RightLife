@@ -97,6 +97,7 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
     private lateinit var averageWaterIntake: TextView
     private lateinit var averageHeading: TextView
     private lateinit var percentageTv: TextView
+    private lateinit var weightLastLogDateTv : TextView
     private lateinit var averageGoalLayout : LinearLayoutCompat
     private var loadingOverlay : FrameLayout? = null
     private val viewModel: HydrationViewModelNew by viewModels()
@@ -135,6 +136,7 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
         percentageTv = view.findViewById(R.id.percentage_text)
         averageWaterIntake = view.findViewById(R.id.average_number)
         val backIc = view.findViewById<ImageView>(R.id.backIc)
+        weightLastLogDateTv = view.findViewById(R.id.weightLastLogDateTv)
 
         backIc.setOnClickListener {
             val fragment = HomeBottomTabFragment()

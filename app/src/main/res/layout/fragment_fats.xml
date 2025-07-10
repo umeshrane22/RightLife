@@ -330,7 +330,7 @@
                                     android:layout_width="15dp"
                                     android:layout_height="15dp"
                                     android:layout_marginStart="3dp"
-                                    android:src="@drawable/ic_cal"
+                                    android:src="@drawable/ic_fats"
                                     />
 
                             </androidx.appcompat.widget.LinearLayoutCompat>

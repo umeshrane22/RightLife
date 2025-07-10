@@ -25,13 +25,11 @@ import com.jetsynthesys.rightlife.ai_package.model.request.IngredientEntry
 import com.jetsynthesys.rightlife.ai_package.model.response.IngredientDetail
 import com.jetsynthesys.rightlife.ai_package.model.response.MealUpdateResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.tab.IngredientListAdapter
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.YourMealLogsFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.DeleteIngredientBottomSheet
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.HomeTabMealFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.IngredientDishFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.SearchIngredientFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.IngredientLocalListModel
-import com.jetsynthesys.rightlife.ai_package.utils.LoaderUtil
 import com.jetsynthesys.rightlife.databinding.FragmentCreateRecipeBinding
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call

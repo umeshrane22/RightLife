@@ -63,6 +63,7 @@ class DishToLogFragment : BaseFragment<FragmentDishBinding>() {
     private lateinit var tvChange: TextView
     private lateinit var tvQuantity: TextView
     private var quantity = 1
+    private lateinit var backButton : ImageView
     private lateinit var ivEdit : ImageView
     private lateinit var tvMeasure :TextView
     private var dishLists : ArrayList<SearchResultItem> = ArrayList()
@@ -105,6 +106,7 @@ class DishToLogFragment : BaseFragment<FragmentDishBinding>() {
         icMacroUP = view.findViewById(R.id.icMacroUP)
         quantityEdit = view.findViewById(R.id.quantityEdit)
         ivEdit = view.findViewById(R.id.ivEdit)
+        backButton = view.findViewById(R.id.backButton)
 
         searchType = arguments?.getString("searchType").toString()
         mealType = arguments?.getString("mealType").toString()
@@ -222,6 +224,28 @@ class DishToLogFragment : BaseFragment<FragmentDishBinding>() {
                 }
             }
         })
+
+        backButton.setOnClickListener {
+            if (searchType.contentEquals("EatRight")){
+                val fragment = HomeBottomTabFragment()
+                val args = Bundle()
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "landing")
+                    addToBackStack("landing")
+                    commit()
+                }
+            }else{
+                val fragment = SearchDishToLogFragment()
+                val args = Bundle()
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "landing")
+                    addToBackStack("landing")
+                    commit()
+                }
+            }
+        }
 
         quantityEdit.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(update: Editable?) {
