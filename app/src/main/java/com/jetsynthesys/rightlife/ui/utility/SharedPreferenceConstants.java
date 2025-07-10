@@ -6,6 +6,7 @@ public class SharedPreferenceConstants {
     public static final String FIRST_VISIT = "first_visit";
     public static final String IS_LOGGED_IN = "is_logged_in";
     public static final String USER_ID = "user_id";
+    public static final String SNAP_MEAL_ID = "snap_meal_id";
 
     public static final String DEVICE_NAME = "device_name";
 

@@ -1546,10 +1546,14 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
         } else if (viewId == R.id.ll_health_cam_ql) {
             startActivity(new Intent(HomeActivity.this, HealthCamActivity.class));
         } else if (viewId == R.id.ll_mealplan) {
-            if (checkTrailEndedAndShowDialog()) {
-                Toast.makeText(HomeActivity.this, "Meal Plan Coming Soon...", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(HomeActivity.this, MainAIActivity.class);
+            intent.putExtra("ModuleName", "EatRight");
+            intent.putExtra("BottomSeatName", "SnapMealTypeEat");
+            if (!sharedPreferenceManager.getSnapMealId().isEmpty()){
+                intent.putExtra("snapMealId", sharedPreferenceManager.getSnapMealId()); // make sure snapMealId is declared and initialized
             }
-            //startActivity(new Intent(HomeActivity.this, BreathworkActivity.class));
+            startActivity(intent);
+
         } else if (viewId == R.id.btn_wellness_preference) {
         } else if (view.getId() == R.id.ll_food_log) {
             if (checkTrailEndedAndShowDialog()) {
