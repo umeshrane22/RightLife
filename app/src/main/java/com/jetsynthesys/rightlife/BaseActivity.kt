@@ -21,6 +21,7 @@ open class BaseActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         baseBinding = ActivityBaseBinding.inflate(layoutInflater)
+
         setContentView(baseBinding.root)
 
         sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
