@@ -207,14 +207,20 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                 }
             }
             binding.includedhomebottomsheet.llMealplan.setOnClickListener {
-                if (checkTrailEndedAndShowDialog()) {
+
+                startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
+                    putExtra("ModuleName", "EatRight")
+                    putExtra("BottomSeatName", "SnapMealTypeEat")
+                    putExtra("snapMealId", snapMealId)
+                })
+              /*  if (checkTrailEndedAndShowDialog()) {
                     startActivity(Intent(
                         this@HomeDashboardActivity, MainAIActivity::class.java
                     ).apply {
                         putExtra("ModuleName", "EatRight")
                         putExtra("BottomSeatName", "SelectMealTypeEat")
                     })
-                }
+                }*/
             }
 
         }
@@ -758,7 +764,7 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                             module.calories?.toString()
                         )
                         setIfNotNullOrBlank(
-                            binding.tvModuleValueSleepright, DateTimeUtils.formatSleepDurationint(module.sleepDuration?:0)
+                            binding.tvModuleValueSleepright, DateTimeUtils.formatSleepDurationforidealSleep(module.totalSleepDurationMinutes?:0.0)
                         )
                         setIfNotNullOrBlank(
                             binding.tvModuleValueThinkright, module.mindfulTime?.toString()
@@ -784,7 +790,7 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                             module.calories?.toString()
                         )
                         setIfNotNullOrBlank(
-                            binding.tvModuleValueSleepright, DateTimeUtils.formatSleepDurationint(module.sleepDuration?:0)
+                            binding.tvModuleValueSleepright, DateTimeUtils.formatSleepDurationforidealSleep(module.totalSleepDurationMinutes?:0.0)
                         )
                         setIfNotNullOrBlank(
                             binding.tvModuleValueThinkright, module.mindfulTime?.toString()
@@ -844,7 +850,7 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                             module.calories?.toString()
                         )
                         setIfNotNullOrBlank(
-                            binding.tvModuleValueSleepright,DateTimeUtils.formatSleepDurationint(module.sleepDuration?:0)
+                            binding.tvModuleValueSleepright, DateTimeUtils.formatSleepDurationforidealSleep(module.totalSleepDurationMinutes?:0.0)
                         )
                         setIfNotNullOrBlank(
                             binding.tvModuleValueThinkright, module.mindfulTime?.toString()
@@ -867,7 +873,7 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                             module.calories?.toString()
                         )
                         setIfNotNullOrBlank(
-                            binding.tvModuleValueSleepright, DateTimeUtils.formatSleepDurationint(module.sleepDuration?:0)
+                            binding.tvModuleValueSleepright, DateTimeUtils.formatSleepDurationforidealSleep(module.totalSleepDurationMinutes?:0.0)
                         )
                         setIfNotNullOrBlank(
                             binding.tvModuleValueThinkright, module.mindfulTime?.toString()
@@ -1218,8 +1224,9 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
             binding.includeChecklist.llLayoutChecklist.visibility = View.VISIBLE
         }
         checklistResponse.data.snap_mealId?.let { snapMealId ->
-            //SharedPreferenceManager.getInstance(this).saveSnapMealId(snapMealId)
+            SharedPreferenceManager.getInstance(this).saveSnapMealId(snapMealId)
             this@HomeDashboardActivity.snapMealId = snapMealId
+            Log.d("SnapMealId_fromstored", sharedPreferenceManager.snapMealId)
         }
     }
 
@@ -1345,6 +1352,10 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                 CommonAPICall.updateChecklistStatus(
                     this, "sync_health_data", AppConstants.CHECKLIST_COMPLETED
                 )
+                lifecycleScope.launch {
+                    // fetchAllHealthData()
+                    getDashboardChecklist("")
+                }
             } else {
                 requestPermissionsLauncher.launch(allReadPermissions.toTypedArray())
             }

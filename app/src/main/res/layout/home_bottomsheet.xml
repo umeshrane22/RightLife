@@ -134,6 +134,49 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/ll_sleep_log"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/white"
+                        android:elevation="5dp"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:layout_margin="1dp"
+
+                            android:background="@drawable/rounded_corder_border_gray_radius_quicklink"
+                            android:gravity="center"
+                            android:orientation="horizontal"
+                            android:padding="10dp">
+
+                            <ImageView
+                                android:layout_width="30dp"
+                                android:layout_height="30dp"
+
+                                android:src="@drawable/icon_sleep_ql" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+
+                                android:layout_marginStart="5dp"
+                                android:layout_marginEnd="5dp"
+                                android:fontFamily="@font/dmsans_regular"
+                                android:gravity="center"
+                                android:minLines="2"
+                                android:text="Sleep"
+                                android:textColor="@color/text_color_app"
+                                android:textSize="@dimen/textsize_small" />
+
+                        </LinearLayout>
+                    </LinearLayout>
+                    <LinearLayout
                         android:id="@+id/ll_mood_log"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -142,6 +185,7 @@
                         android:backgroundTint="@color/white"
                         android:elevation="5dp"
                         android:gravity="center"
+                        android:visibility="gone"
                         android:orientation="vertical">
 
                         <LinearLayout
@@ -185,58 +229,17 @@
                     android:layout_alignParentBottom="true"
                     android:background="@drawable/roundedcornershape"
                     android:orientation="horizontal"
+                    android:gravity="center"
                     android:visibility="visible">
 
-                    <LinearLayout
-                        android:id="@+id/ll_sleep_log"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="5dp"
-                        android:layout_weight="1"
-                        android:backgroundTint="@color/white"
-                        android:elevation="5dp"
-                        android:gravity="center"
-                        android:orientation="vertical">
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_gravity="center"
-                            android:layout_margin="1dp"
-
-                            android:background="@drawable/rounded_corder_border_gray_radius_quicklink"
-                            android:gravity="center"
-                            android:orientation="horizontal"
-                            android:padding="10dp">
-
-                            <ImageView
-                                android:layout_width="30dp"
-                                android:layout_height="30dp"
-
-                                android:src="@drawable/icon_sleep_ql" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-
-                                android:layout_marginStart="5dp"
-                                android:layout_marginEnd="5dp"
-                                android:fontFamily="@font/dmsans_regular"
-                                android:gravity="center"
-                                android:minLines="2"
-                                android:text="Sleep"
-                                android:textColor="@color/text_color_app"
-                                android:textSize="@dimen/textsize_small" />
-
-                        </LinearLayout>
-                    </LinearLayout>
 
                     <LinearLayout
                         android:id="@+id/ll_weight_log"
-                        android:layout_width="0dp"
+                        android:layout_width="120dp"
                         android:layout_height="wrap_content"
                         android:layout_margin="5dp"
-                        android:layout_weight="1"
+
                         android:backgroundTint="@color/white"
                         android:elevation="5dp"
                         android:gravity="center"
@@ -277,10 +280,10 @@
 
                     <LinearLayout
                         android:id="@+id/ll_water_log"
-                        android:layout_width="0dp"
+                        android:layout_width="120dp"
                         android:layout_height="wrap_content"
                         android:layout_margin="5dp"
-                        android:layout_weight="1"
+
                         android:backgroundTint="@color/white"
                         android:elevation="5dp"
                         android:gravity="center"
@@ -423,7 +426,7 @@
                                 android:layout_width="30dp"
                                 android:layout_height="30dp"
                                 android:layout_marginTop="5dp"
-                                android:src="@drawable/icon_mealplan_ql" />
+                                android:src="@drawable/icon_snapmeal_ql" />
 
 
                             <TextView
@@ -432,7 +435,7 @@
                                 android:fontFamily="@font/dmsans_bold"
                                 android:gravity="center"
                                 android:minLines="2"
-                                android:text="Meal Plan"
+                                android:text="Snap Meal"
                                 android:textColor="@color/ql_mealplan_color"
                                 android:textSize="@dimen/textsize_medium" />
 
@@ -442,7 +445,7 @@
                                 android:fontFamily="@font/dmsans_regular"
                                 android:gravity="center"
                                 android:minLines="2"
-                                android:text="Smart, balanced eating"
+                                android:text="Click, Check, Track"
                                 android:textColor="@color/text_color_app"
                                 android:textSize="@dimen/textsize_small" />
                         </LinearLayout>

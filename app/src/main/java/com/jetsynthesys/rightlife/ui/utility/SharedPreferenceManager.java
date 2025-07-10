@@ -504,5 +504,17 @@ public class SharedPreferenceManager {
     public Boolean isMealCalenderTooltipShowed(String prefKey) {
         return sharedPreferences.getBoolean(prefKey, false);
     }
+
+    // Method to save the user ID
+    public void saveSnapMealId(String snapMealId) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(SharedPreferenceConstants.SNAP_MEAL_ID, snapMealId);
+        editor.apply();
+    }
+
+    // Method to retrieve the user ID
+    public String getSnapMealId() {
+        return sharedPreferences.getString(SharedPreferenceConstants.SNAP_MEAL_ID, "");
+    }
 }
 
