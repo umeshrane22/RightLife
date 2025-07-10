@@ -442,8 +442,9 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
                        val weightUnit = parts.getOrElse(1) { "kg" }
                        weightIntake.text = response.body()?.weight.toString()
                        weightIntakeUnit.text = response.body()?.type.toString()
+                       weightLastLogDateTv.text = response.body()?.date.toString()
                        Log.d("LogWaterAPI", "Success: $responseBody")
-                       // You can do something with responseBody here
+                       fetchWeightData("last_monthly")
                    } else {
                        bottomSheetDialog.dismiss()
                        Log.e(
@@ -556,6 +557,7 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
                             weight_description_text.text = data.description
                             if (data.lastWeightLog != null){
                                 weightIntake.text = data.lastWeightLog.totalWeight.toString()
+                                weightLastLogDateTv.text = data.lastWeightLog.date.toString()
                             }
                            // weightIntakeUnit.text = data.lastWeightLog.
                             if (data.weightTotals.size > 31) {
