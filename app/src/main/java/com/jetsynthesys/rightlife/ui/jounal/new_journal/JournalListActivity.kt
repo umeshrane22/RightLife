@@ -23,6 +23,7 @@ import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.ActivityJournalListBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetDeleteTagBinding
+import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.utility.Utils
@@ -57,7 +58,7 @@ class JournalListActivity : BaseActivity() {
 
         binding.addEntryButton.setOnClickListener {
             startActivity(Intent(this, JournalNewActivity::class.java).apply {
-                putExtra("StartDate",startDate)
+                putExtra("StartDate", startDate)
             })
         }
 
@@ -100,14 +101,17 @@ class JournalListActivity : BaseActivity() {
         binding.rvCalendar.addItemDecoration(SpacingItemDecoration(resources.getDimensionPixelSize(R.dimen.spacing)))
         calendarAdapter = CalendarAdapter(calendarDays) { selectedDay ->
             // Toggle selection
-            calendarDays.forEach { it.isSelected = false }
-            selectedDay.isSelected = true
+            if (!isFutureDate(selectedDay.dateString)) {
+                calendarDays.forEach { it.isSelected = false }
+                selectedDay.isSelected = true
 
-            selectedDay.isChecked = !selectedDay.isChecked
+                selectedDay.isChecked = !selectedDay.isChecked
 
-            calendarAdapter.updateData(calendarDays)
-            selectedDate = selectedDay
-            getJournalList(selectedDay.dateString)
+                calendarAdapter.updateData(calendarDays)
+                selectedDate = selectedDay
+                getJournalList(selectedDay.dateString)
+            } else
+                showCustomToast("Hold up, we haven’t lived that day yet!")
         }
 
         binding.rvCalendar.adapter = calendarAdapter
@@ -272,7 +276,8 @@ class JournalListActivity : BaseActivity() {
     }
 
     private fun updateWeekView() {
-        val currentWeek = getWeekDates()
+        val (currentWeekString, currentWeek) = getWeekDates()
+        var isFutureDatePresent = false
         calendarDays.clear()
 
         for (i in daysOfWeek.indices) {
@@ -283,24 +288,43 @@ class JournalListActivity : BaseActivity() {
             calendarDays.add(
                 CalendarDay(
                     daysOfWeek[i], currentWeek[i], isSelected = isToday,
-                    SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(cal.time)
+                    currentWeekString[i]
                 )
             )
+            if (isFutureDate(calendarDays[i].dateString)) {
+                isFutureDatePresent = true
+            }
         }
 
         binding.tvSelectedDate.text =
             SimpleDateFormat("EEE . dd MMM yyyy", Locale.getDefault()).format(calendar.time)
         calendarAdapter.updateData(calendarDays)
+        binding.ivNext.isEnabled = !isFutureDatePresent
+        binding.ivNext.setImageResource(if (isFutureDatePresent) R.drawable.right_arrow_journal else R.drawable.right_arrow_journal_enabled)
     }
 
-    private fun getWeekDates(): List<Int> {
-        val calendarCopy = calendar.clone() as Calendar
+    private fun getWeekDates(): Pair<List<String>, List<Int>> {
+        val calendarCopy = Calendar.getInstance()
+        calendarCopy.time = calendar.time // Copy original calendar's time
+
+        // Start week from Monday
+        calendarCopy.firstDayOfWeek = Calendar.MONDAY
         calendarCopy.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
-        return List(7) {
-            calendarCopy.get(Calendar.DAY_OF_MONTH)
-                .also { calendarCopy.add(Calendar.DAY_OF_MONTH, 1) }
+
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
+        val dateStrings = mutableListOf<String>()
+        val dayOfMonths = mutableListOf<Int>()
+
+        repeat(7) {
+            dateStrings.add(dateFormat.format(calendarCopy.time))
+            dayOfMonths.add(calendarCopy.get(Calendar.DAY_OF_MONTH))
+            calendarCopy.add(Calendar.DAY_OF_MONTH, 1)
         }
+
+        return dateStrings to dayOfMonths
     }
+
 
     private fun getJournalList(date: String) {
         Utils.showLoader(this)
@@ -370,5 +394,24 @@ class JournalListActivity : BaseActivity() {
         val endDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
         CommonAPICall.postMindFullData(this, "Journaling", startDate, endDate)
     }
+
+    private fun isFutureDate(dateString: String): Boolean {
+        return try {
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            dateFormat.isLenient = false
+
+            val inputDate = dateFormat.parse(dateString)
+            val today = Calendar.getInstance()
+            today.set(Calendar.HOUR_OF_DAY, 0)
+            today.set(Calendar.MINUTE, 0)
+            today.set(Calendar.SECOND, 0)
+            today.set(Calendar.MILLISECOND, 0)
+
+            inputDate?.after(today.time) ?: false
+        } catch (e: Exception) {
+            false // return false for invalid date format
+        }
+    }
+
 
 }
