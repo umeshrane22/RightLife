@@ -45,7 +45,7 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
 
     private var startTime: LocalTime = LocalTime.of(22, 0)
     private var endTime: LocalTime = LocalTime.of(7, 30)
-    private var selectedDate: LocalDate = LocalDate.now().minusDays(1)
+    private var selectedDate: LocalDate = LocalDate.now()
     private var selectedWakeDate: LocalDate = LocalDate.now()
     private var selectedSleepDateTime : LocalDateTime = LocalDateTime.of(LocalDate.now().minusDays(1), LocalTime.of(22, 0))
     private var selectedWakeDateTime : LocalDateTime = LocalDateTime.of(LocalDate.now(), LocalTime.of(7, 30))
@@ -78,8 +78,9 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
         updateDurationNew()
 
         view.findViewById<View>(R.id.btnDatePicker).setOnClickListener {
-            showDatePicker()
-            showDateTimePicker(requireContext(),{day ->
+          //  showDatePicker()
+            showDatePicker(requireContext(),{day ->
+              //  selectedSleepDateTime = day.withHour(22).withMinute(0)
                 tvDate.text = day.format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
                // selectedDate = day.format(DateTimeFormatter.ofPattern("dd MM yyyy"))
             })
@@ -175,11 +176,35 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
         }
     }
 
+    private fun showDatePicker(context: Context, onDateSelected: (LocalDate) -> Unit) {
+        val now = LocalDateTime.now()
+        //  val today = LocalDate.now()
+        //   val hour = 22
+        //    val minute = "00"
+
+        val datePickerDialog = DatePickerDialog(
+            context,
+            { _, year, month, dayOfMonth ->
+                selectedDate = LocalDate.of(year, month + 1, dayOfMonth)
+                onDateSelected(selectedDate)
+
+            },
+            selectedDate.year,
+            selectedDate.monthValue - 1,
+            selectedDate.dayOfMonth
+        )
+        val today1 = System.currentTimeMillis()
+        val sevenDaysAgo = today1 - 6 * 24 * 60 * 60 * 1000L // 6 days ago in milliseconds
+        datePickerDialog.datePicker.maxDate = today1
+        datePickerDialog.datePicker.minDate = sevenDaysAgo
+        datePickerDialog.show()
+    }
+
     private fun showDateTimePicker(context: Context, onDateTimeSelected: (LocalDateTime) -> Unit) {
         val now = LocalDateTime.now()
-        val today = LocalDate.now()
-        val hour = 22
-        val minute = "00"
+      //  val today = LocalDate.now()
+     //   val hour = 22
+    //    val minute = "00"
 
         val datePickerDialog = DatePickerDialog(
             context,
@@ -201,15 +226,15 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
                             onDateTimeSelected(selectedDateTime)
                         }
                     },
-                    hour,
-                    minute.toInt(),
+                    selectedSleepDateTime.hour,
+                    selectedSleepDateTime.minute,
                     false
                 )
                 timePickerDialog.show()
             },
-            now.year,
-            now.monthValue - 1,
-            now.dayOfMonth -1
+            selectedSleepDateTime.year,
+            selectedSleepDateTime.monthValue - 1,
+            selectedSleepDateTime.dayOfMonth
         )
         val today1 = System.currentTimeMillis()
         val sevenDaysAgo = today1 - 6 * 24 * 60 * 60 * 1000L // 6 days ago in milliseconds
@@ -371,13 +396,13 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
     }
 
     private fun updateDurationNew() {
-        tvDate.text = selectedSleepDateTime.format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
+        tvDate.text = selectedDate.format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
         tvStartTime.text = selectedSleepDateTime.format(DateTimeFormatter.ofPattern("hh:mm a"))
         tvEndTime.text = selectedWakeDateTime.format(DateTimeFormatter.ofPattern("hh:mm a"))
         var duration = Duration.between(selectedSleepDateTime, selectedWakeDateTime)
         var hours = duration.toHours()
         var minutes = duration.minusHours(hours).toMinutes()
-        if (hours <= 15) {
+        if (duration <= Duration.ofHours(15)) {
             tvDuration.text = "$hours hr $minutes mins"
         }else{
             Toast.makeText(requireContext,"Sleep time cannot be more than 15 hours", Toast.LENGTH_SHORT).show()
