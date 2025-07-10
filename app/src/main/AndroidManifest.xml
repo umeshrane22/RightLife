@@ -60,7 +60,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
-        tools:targetApi="31">
+        tools:targetApi="35">
         <activity
             android:name=".subsciptions.BillingActivity"
             android:exported="false" />
