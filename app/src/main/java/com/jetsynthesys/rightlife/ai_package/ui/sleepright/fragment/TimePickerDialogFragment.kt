@@ -25,14 +25,11 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
-class TimePickerDialogFragment(
-    val requireContext: Context, private val initialHour: Int,
-    private val initialMinute: Int, private val selectedDate: LocalDate,
-    val onTimeSelected1: Int,
-    private val onTimeSelected: (hour: Int, minute: Int) -> Unit
-)  : BottomSheetDialogFragment() {
+class TimePickerDialogFragment(val requireContext: Context, private val initialHour: Int, private val initialMinute: Int, private val selectedDate: LocalDate,
+    val onTimeSelected1: Int, private val onTimeSelected: (hour: Int, minute: Int) -> Unit)  : BottomSheetDialogFragment() {
 
-    private var mSelectedDate: LocalDate = LocalDate.now().minusDays(1)
+    private var mSleepSelectedDate: LocalDate = selectedDate
+    private var mWakeupSelectedDate: LocalDate = LocalDate.now()
     private lateinit var tvDate: TextView
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -57,10 +54,15 @@ class TimePickerDialogFragment(
         timePicker.setIs24HourView(false)
         timePicker.hour = initialHour
         timePicker.minute = initialMinute
-        if (SleepRightLandingFragment.dialogDate == mSelectedDate) {
-            tvDate.text = mSelectedDate.format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
+        if (SleepRightLandingFragment.dialogSleepDate == mSleepSelectedDate) {
+            tvDate.text = mSleepSelectedDate.format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
         }else{
-            tvDate.text = SleepRightLandingFragment.dialogDate.format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
+            tvDate.text = SleepRightLandingFragment.dialogSleepDate.format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
+        }
+        if (onTimeSelected1 == 1) {
+            tvDate.text = mWakeupSelectedDate.format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
+        }else{
+            tvDate.text = SleepRightLandingFragment.dialogSleepDate.format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
         }
         setTimePickerTextColor(timePicker,R.color.blue_bar)
 
@@ -83,7 +85,12 @@ class TimePickerDialogFragment(
             }
         }
         view.findViewById<View>(R.id.btnDatePicker).setOnClickListener {
-            showDatePicker()
+            if (onTimeSelected1 == 0){
+                showSleepDatePicker()
+            }else{
+                showWakeDatePicker()
+            }
+
         }
 
         btnLeft.setOnClickListener {
@@ -101,17 +108,36 @@ class TimePickerDialogFragment(
         }
     }
 
-    private fun showDatePicker() {
+    private fun showSleepDatePicker() {
         val datePicker = DatePickerDialog(
             requireContext(),
             { _, year, month, day ->
-                mSelectedDate = LocalDate.of(year, month + 1, day)
-                tvDate.text = mSelectedDate.format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
-                SleepRightLandingFragment.dialogDate = mSelectedDate
+                mSleepSelectedDate = LocalDate.of(year, month + 1, day)
+                tvDate.text = mSleepSelectedDate.format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
+                SleepRightLandingFragment.dialogSleepDate = mSleepSelectedDate
             },
-            mSelectedDate.year,
-            mSelectedDate.monthValue - 1,
-            mSelectedDate.dayOfMonth
+            mSleepSelectedDate.year,
+            mSleepSelectedDate.monthValue - 1,
+            mSleepSelectedDate.dayOfMonth
+        )
+        val today = System.currentTimeMillis()
+        val sevenDaysAgo = today - 6 * 24 * 60 * 60 * 1000L // 6 days ago in milliseconds
+        datePicker.datePicker.maxDate = today
+        datePicker.datePicker.minDate = sevenDaysAgo
+        datePicker.show()
+    }
+
+    private fun showWakeDatePicker() {
+        val datePicker = DatePickerDialog(
+            requireContext(),
+            { _, year, month, day ->
+                mWakeupSelectedDate = LocalDate.of(year, month + 1, day)
+                tvDate.text = mWakeupSelectedDate.format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))
+                SleepRightLandingFragment.dialogWakeDate = mWakeupSelectedDate
+            },
+            mWakeupSelectedDate.year,
+            mWakeupSelectedDate.monthValue - 1,
+            mWakeupSelectedDate.dayOfMonth
         )
         val today = System.currentTimeMillis()
         val sevenDaysAgo = today - 6 * 24 * 60 * 60 * 1000L // 6 days ago in milliseconds
