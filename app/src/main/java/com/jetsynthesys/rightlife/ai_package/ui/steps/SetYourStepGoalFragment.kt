@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -30,6 +31,7 @@ class SetYourStepGoalFragment : BaseFragment<FragmentSetYourStepGoalBinding>() {
     private lateinit var stepsSliderView: StepIntake
     private lateinit var setTargetButton: TextView
     private lateinit var tvCurrentGoal: TextView
+    private lateinit var backButton : ImageView
 
     private var currentGoal = 10000 // Increased initial goal to start in the middle of the range
     private val maxSteps = 20000
@@ -42,6 +44,7 @@ class SetYourStepGoalFragment : BaseFragment<FragmentSetYourStepGoalBinding>() {
         stepsSliderView = view.findViewById(R.id.steps_slider_view)
         setTargetButton = view.findViewById(R.id.tv_set_target)
         tvCurrentGoal = view.findViewById(R.id.step_count_text_5)
+        backButton = view.findViewById(R.id.back_button)
 
         // Configure StepIntake
         stepsSliderView.setMinSteps(0)
@@ -73,6 +76,10 @@ class SetYourStepGoalFragment : BaseFragment<FragmentSetYourStepGoalBinding>() {
                 navigateToMoveRightLandingFragment()
             }
         })
+
+        backButton.setOnClickListener {
+            navigateToMoveRightLandingFragment()
+        }
 
         // Initial text update
         updateCurrentGoalText()
