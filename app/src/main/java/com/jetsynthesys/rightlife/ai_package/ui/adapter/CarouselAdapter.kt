@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.R
@@ -51,6 +52,8 @@ class CarouselAdapter(
         private val leftTimeLabel: TextView = itemView.findViewById(R.id.left_time_label)
         private val rightTimeLabel: TextView = itemView.findViewById(R.id.right_time_label)
         private val sourceIcon: ImageView = itemView.findViewById(R.id.sourceIcon)
+        private val timeline_line1: View = itemView.findViewById(R.id.timeline_line1)
+        private val timeline_line: View = itemView.findViewById(R.id.timeline_line)
 
         fun bind(item: CardItem, position: Int) {
             cardTitle.text = item.title
@@ -94,6 +97,15 @@ class CarouselAdapter(
                 lineGraph.updateData(heartRates)
                 leftTimeLabel.text = item.heartRateData.firstOrNull()?.date?.let { formatTime(it) } ?: "N/A"
                 rightTimeLabel.text = item.heartRateData.lastOrNull()?.date?.let { formatTime(it) } ?: "N/A"
+                val displayMetrics = itemView.context.resources.displayMetrics
+                val screenWidthDp = displayMetrics.widthPixels / displayMetrics.density
+                val layoutParams = timeline_line.layoutParams as ConstraintLayout.LayoutParams
+                layoutParams.width = if (screenWidthDp < 600) {
+                    itemView.context.resources.getDimensionPixelSize(R.dimen.timeline_width_small) // 50dp (reused dimen)
+                } else {
+                    itemView.context.resources.getDimensionPixelSize(R.dimen.timeline_width_large) // 56dp (reused dimen)
+                }
+                timeline_line.layoutParams = layoutParams
             } else {
                 lineGraph.visibility = View.GONE
                 itemView.findViewById<View>(R.id.timeline_layout).visibility = View.GONE
@@ -103,6 +115,15 @@ class CarouselAdapter(
                 noDataIcon.visibility = View.VISIBLE
                 noDataText.visibility = View.VISIBLE
                 noDataTextWorkoutLoggedManually.visibility = View.VISIBLE
+                val displayMetrics = itemView.context.resources.displayMetrics
+                val screenWidthDp = displayMetrics.widthPixels / displayMetrics.density
+                val layoutParams = timeline_line1.layoutParams as ConstraintLayout.LayoutParams
+                layoutParams.width = if (screenWidthDp < 600) {
+                    itemView.context.resources.getDimensionPixelSize(R.dimen.timeline_width_small) // 50dp (reused dimen)
+                } else {
+                    itemView.context.resources.getDimensionPixelSize(R.dimen.timeline_width_large) // 56dp (reused dimen)
+                }
+                timeline_line1.layoutParams = layoutParams
             }
             Glide.with(itemView.context)
                 .load(item.icon)
