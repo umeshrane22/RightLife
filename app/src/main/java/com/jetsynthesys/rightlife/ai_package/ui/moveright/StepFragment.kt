@@ -23,6 +23,7 @@ import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.BarLineChartBase
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.AxisBase
+import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
@@ -72,6 +73,7 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
     private var selectedHalfYearlyDate: String = ""
     private lateinit var selectedDate: TextView
     private lateinit var selectedItemDate: TextView
+    private lateinit var total_steps_count: TextView
     private lateinit var heart_rate_description_heading: TextView
     private lateinit var step_discreption: TextView
     private lateinit var selectHeartRateLayout: CardView
@@ -113,6 +115,7 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         layoutLineChart = view.findViewById(R.id.lyt_line_chart)
         stripsContainer = view.findViewById(R.id.stripsContainer)
         lineChart = view.findViewById(R.id.heartLineChart)
+        total_steps_count = view.findViewById(R.id.total_steps_count)
         layout_btn_log_meal.setOnClickListener {
             val args = Bundle().apply {
                 // Add your arguments here
@@ -298,7 +301,7 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         }
     }
 
-    /** Update BarChart with new data and add dotted lines for total_steps_count and total_steps_avg */
+
     private fun updateChart(entries: List<BarEntry>, labels: List<String>, labelsDate: List<String>, stepData: StepTrackerData) {
         Log.d("StepFragment", "Entries size: ${entries.size}, Labels size: ${labels.size}, LabelsDate size: ${labelsDate.size}")
         Log.d("StepFragment", "Entries: $entries")
@@ -335,33 +338,33 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
             stepData.totalStepsAvg.toFloat()
         )
 
-        // Set axisMaximum to nearest 5000 multiple, minimum 15000
-        val axisMax = maxOf(maxValue, 15000f)
-        val adjustedMax = ((axisMax / 5000).toInt() + 1) * 5000 // Round up to next 5000 multiple
+        // Set axisMaximum to nearest 1000 multiple, ensuring it covers goal steps
+        val axisMax = maxOf(maxValue, stepData.stepsGoal.toFloat()) // Ensure green line is covered
+        val adjustedMax = ((axisMax / 1000).toInt() + 1) * 1000 // Round up to next 1000 multiple
 
-        // Adjust axisMinimum to shift bars down visually (e.g., -2000f offset)
-        leftYAxis.axisMinimum = if (minValue < 0) minValue * 1.2f else -2000f // Negative offset to move bars down
+        // Set axisMinimum to 0 to ensure bars start from zero
+        leftYAxis.axisMinimum = 0f
         leftYAxis.axisMaximum = adjustedMax.toFloat()
         leftYAxis.setDrawZeroLine(true)
         leftYAxis.zeroLineColor = Color.BLACK
         leftYAxis.zeroLineWidth = 1f
 
-        // Custom formatter for 5000 intervals (0, 5k, 10k, 15k, etc.)
+        // Custom formatter for dynamic intervals (exact below 1000, 1k above)
         leftYAxis.valueFormatter = object : ValueFormatter() {
             override fun getAxisLabel(value: Float, axis: AxisBase?): String {
                 return when {
                     value == 0f -> "0"
-                    value >= 5000f -> {
+                    value < 1000f -> value.toInt().toString() // Exact values below 1000
+                    else -> {
                         val kiloValue = (value / 1000f).toInt()
                         "${kiloValue}k"
                     }
-                    else -> value.toInt().toString()
                 }
             }
         }
-
-        // Set granularity to 5000 for exact intervals
-        leftYAxis.granularity = 5000f
+        total_steps_count.text = "Total Steps Taken This Week: ${stepData.totalStepsCount}"
+        // Set granularity to 500f for finer control, adjust based on max value
+        leftYAxis.granularity = if (adjustedMax <= 5000f) 500f else 1000f // 500 for small range, 1000 for larger
 
         val totalStepsLine = LimitLine(stepData.totalStepsCount.toFloat(), "Total Steps: ${stepData.totalStepsCount.toInt()}")
         totalStepsLine.lineColor = Color.BLUE
@@ -438,10 +441,13 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
 
         barChart.axisRight.isEnabled = false
         barChart.description.isEnabled = false
-        barChart.setExtraOffsets(0f, 0f, 0f, 0f)
+        barChart.setExtraOffsets(0f, 0f, 0f, 0f) // Ensure no extra padding
 
         val legend = barChart.legend
-        legend.setDrawInside(false)
+        legend.isEnabled = true // Enable legend
+        legend.setDrawInside(false) // Keep outside but reduce box
+        legend.form = Legend.LegendForm.NONE // Remove the box, keep labels if any
+        legend.textColor = ContextCompat.getColor(requireContext(), R.color.black_no_meals) // Match text color
 
         barChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
             override fun onValueSelected(e: Entry?, h: Highlight?) {

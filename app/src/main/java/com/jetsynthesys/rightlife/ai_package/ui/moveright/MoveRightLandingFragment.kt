@@ -242,6 +242,25 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         yourMovementSummary = view.findViewById(R.id.yourMovementSummary)
         yourVitals = view.findViewById(R.id.yourVitals)
         yourHeartRateZone = view.findViewById(R.id.yourHeartRateZone)
+        val displayMetrics = resources.displayMetrics
+        val screenWidthDp = displayMetrics.widthPixels / displayMetrics.density
+        val dottedLine = view.findViewById<View>(R.id.horizontal_dotted_green)
+
+        val layoutParams = dottedLine.layoutParams as ConstraintLayout.LayoutParams
+        layoutParams.width = if (screenWidthDp < 600) {
+            resources.getDimensionPixelSize(R.dimen.dotted_line_width_small) // e.g., 50dp
+        } else {
+            resources.getDimensionPixelSize(R.dimen.dotted_line_width_large) // e.g., 56dp
+        }
+        dottedLine.layoutParams = layoutParams
+        val dottedRed = view.findViewById<View>(R.id.horizontal_dotted_red)
+        val redLayoutParams = dottedRed.layoutParams as ConstraintLayout.LayoutParams
+        redLayoutParams.width = if (screenWidthDp < 600) {
+            resources.getDimensionPixelSize(R.dimen.dotted_line_width_small) // 50dp
+        } else {
+            resources.getDimensionPixelSize(R.dimen.dotted_line_width_large) // 56dp
+        }
+        dottedRed.layoutParams = redLayoutParams
 
         setupRecyclerView(view)
         fetchThinkRecomendedData()
@@ -447,6 +466,8 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                         )
                         // Heart rate zone checks and UI updates
                         withContext(Dispatchers.Main) {
+
+
                             text_activity.text = it.data.activityFactor.today.toString() ?: "0"
                             val allInvalid = (/*it.data.calorieBalance.calorieBurnTarget == null || it.data.calorieBalance.calorieBurnTarget == 0f) &&
                                     (it.data.calorieBalance.difference == null || it.data.calorieBalance.difference == 0f) &&*/
@@ -534,8 +555,23 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                     averageStepsTv.text = averageStepCount.toString()
                                     goalStepsTv.text = goalStepCount.toString()
                                 }else{
-                                    stepNoDataLayout.visibility = View.VISIBLE
-                                    stepWithDataCardLayout.visibility = View.GONE
+                                   if(it.data.caloriesBurned.today.toDouble() == 0.0){
+                                       stepNoDataLayout.visibility = View.VISIBLE
+                                       stepWithDataCardLayout.visibility = View.GONE
+
+                                   }else{
+                                       stepNoDataLayout.visibility = View.GONE
+                                       stepWithDataCardLayout.visibility = View.VISIBLE
+                                       stepLineGraphView.clear()
+                                       stepLineGraphView.addDataSet(todayStepsData, 0xFFFD6967.toInt()) // Red
+                                       stepLineGraphView.addDataSet(averageStepsData, 0xFF707070.toInt()) // Gray
+                                       stepLineGraphView.addDataSet(goalStepsData, 0xFF03B27B.toInt()) // Green (dotted)
+                                       stepLineGraphView.invalidate()
+                                       todayStepsTv.text = todayStepCount.toString()
+                                       averageStepsTv.text = averageStepCount.toString()
+                                       goalStepsTv.text = goalStepCount.toString()
+                                   }
+
                                 }
                             }
                             if (heartRateZones != null) {
@@ -1289,23 +1325,23 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 } ?: emptyList()
                 val heartRateVariability = heartRateVariability?.map { record ->
                     HeartRateVariabilityRequest(
-                                start_datetime = convertToTargetFormat(record.time.toString()),
-                                end_datetime = convertToTargetFormat(record.time.toString()),
-                                record_type = "HeartRateVariability",
-                                unit = "double",
-                                value = record.heartRateVariabilityMillis.toString(),
-                                source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
-                            )
+                        start_datetime = convertToTargetFormat(record.time.toString()),
+                        end_datetime = convertToTargetFormat(record.time.toString()),
+                        record_type = "HeartRateVariability",
+                        unit = "double",
+                        value = record.heartRateVariabilityMillis.toString(),
+                        source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                    )
                 } ?: emptyList()
                 val restingHeartRate = restingHeartRecord?.map { record ->
-                            HeartRateRequest(
-                                start_datetime = convertToTargetFormat(record.time.toString()),
-                                end_datetime = convertToTargetFormat(record.time.toString()),
-                                record_type = "RestingHeartRate",
-                                unit = "bpm",
-                                value = record.beatsPerMinute.toString(),
-                                source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
-                            )
+                    HeartRateRequest(
+                        start_datetime = convertToTargetFormat(record.time.toString()),
+                        end_datetime = convertToTargetFormat(record.time.toString()),
+                        record_type = "RestingHeartRate",
+                        unit = "bpm",
+                        value = record.beatsPerMinute.toString(),
+                        source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                    )
                 } ?: emptyList()
                 val respiratoryRate = respiratoryRateRecord?.mapNotNull { record ->
                     if (record.rate > 0) {
@@ -1332,14 +1368,14 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                     } else null
                 } ?: emptyList()
                 val bloodPressureSystolic = bloodPressureRecord?.mapNotNull { record ->
-                        BloodPressure(
-                            start_datetime = convertToTargetFormat(record.time.toString()),
-                            end_datetime = convertToTargetFormat(record.time.toString()),
-                            record_type = "BloodPressureSystolic",
-                            unit = "millimeterOfMercury",
-                            value = record.systolic.inMillimetersOfMercury.toString(),
-                            source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
-                        )
+                    BloodPressure(
+                        start_datetime = convertToTargetFormat(record.time.toString()),
+                        end_datetime = convertToTargetFormat(record.time.toString()),
+                        record_type = "BloodPressureSystolic",
+                        unit = "millimeterOfMercury",
+                        value = record.systolic.inMillimetersOfMercury.toString(),
+                        source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                    )
                 } ?: emptyList()
                 val bloodPressureDiastolic = bloodPressureRecord?.mapNotNull { record ->
                     BloodPressure(
@@ -1364,14 +1400,14 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                     } else null
                 } ?: emptyList()
                 val bodyFatPercentage = bodyFatRecord?.mapNotNull { record ->
-                        BodyFatPercentage(
-                            start_datetime = convertToTargetFormat(record.time.toString()),
-                            end_datetime = convertToTargetFormat(record.time.toString()),
-                            record_type = "BodyFat",
-                            unit = "percentage",
-                            value = String.format("%.1f", record.percentage),
-                            source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
-                        )
+                    BodyFatPercentage(
+                        start_datetime = convertToTargetFormat(record.time.toString()),
+                        end_datetime = convertToTargetFormat(record.time.toString()),
+                        record_type = "BodyFat",
+                        unit = "percentage",
+                        value = String.format("%.1f", record.percentage),
+                        source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                    )
                 } ?: emptyList()
                 val sleepStage = sleepSessionRecord?.flatMap { record ->
                     record.stages.mapNotNull { stage ->
@@ -1400,7 +1436,9 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                         ExerciseSessionRecord.EXERCISE_TYPE_WALKING -> "Walking"
                         else -> "Other"
                     }
-                    val calories = record.metadata.dataOrigin?.let { 300 } ?: 0
+                    val calories = totalCaloriesBurnedRecord?.filter {
+                        it.startTime >= record.startTime && it.endTime <= record.endTime
+                    }?.sumOf { it.energy.inKilocalories.toInt() } ?: 0
                     val distance = record.metadata.dataOrigin?.let { 5.0 } ?: 0.0
                     if (calories > 0) {
                         WorkoutRequest(
@@ -1441,16 +1479,11 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
                         val todaysTime = Instant.now()
-                     //   val instant = Instant.parse(todaysTime)
-                        // or convert to ZonedDateTime
                         val syncTime = ZonedDateTime.parse(todaysTime.toString(), DateTimeFormatter.ISO_DATE_TIME)
-                    //    val syncTime = convertToTargetFormat(zdt.toString())
                         SharedPreferenceManager.getInstance(requireContext()).saveMoveRightSyncTime(syncTime.toString())
-                      //  Toast.makeText(requireContext(), response.body()?.message ?: "Health data stored successfully", Toast.LENGTH_SHORT).show()
                         isRepeat = true
                         fetchMoveLanding(recyclerView, adapter)
                     } else {
-                       // Toast.makeText(requireContext(), "Error storing data: ${response.code()} - ${response.message()}", Toast.LENGTH_SHORT).show()
                         isRepeat = true
                     }
                 }

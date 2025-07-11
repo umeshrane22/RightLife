@@ -316,7 +316,7 @@
 
                         <View
                             android:id="@+id/horizontal_dotted_green"
-                            android:layout_width="56dp"
+                            android:layout_width="50dp"
                             android:layout_height="6dp"
                             android:layout_marginTop="20dp"
                             android:background="@drawable/dotted_line_green"
@@ -351,7 +351,7 @@
 
                         <View
                             android:id="@+id/horizontal_dotted_red"
-                            android:layout_width="56dp"
+                            android:layout_width="50dp"
                             android:layout_height="6dp"
                             android:layout_marginTop="20dp"
                             android:background="@drawable/dotted_line_red"
