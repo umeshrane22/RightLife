@@ -117,7 +117,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
         microUP = view.findViewById(R.id.microUP)
         icMacroUP = view.findViewById(R.id.icMacroUP)
         ivEdit = view.findViewById(R.id.ivEdit)
-        backButton = view.findViewById(R.id.back_button)
+        backButton = view.findViewById(R.id.backButton)
 
         mealId = arguments?.getString("mealId").toString()
         mealName = arguments?.getString("mealName").toString()

@@ -89,7 +89,7 @@ class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
         icMacroUP = view.findViewById(R.id.icMacroUP)
         quantityEdit = view.findViewById(R.id.quantityEdit)
         ivEdit = view.findViewById(R.id.ivEdit)
-        backButton = view.findViewById(R.id.back_button)
+        backButton = view.findViewById(R.id.backButton)
 
         searchType = arguments?.getString("searchType").toString()
         recipeId = arguments?.getString("recipeId").toString()

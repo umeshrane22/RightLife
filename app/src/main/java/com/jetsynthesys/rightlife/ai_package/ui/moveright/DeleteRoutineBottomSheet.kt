@@ -1,24 +1,35 @@
 package com.jetsynthesys.rightlife.ai_package.ui.moveright
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
+import com.jetsynthesys.rightlife.ai_package.model.response.DeleteCaloriesResponse
+import com.jetsynthesys.rightlife.ai_package.model.response.MealUpdateResponse
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class DeleteRoutineBottomSheet: BottomSheetDialogFragment() {
 
     private var calorieId: String? = null
     private var userId: String? = null
     private var onDeleteSuccess: (() -> Unit)? = null
+    private var loadingOverlay : FrameLayout? = null
 
     companion object {
         const val ARG_CALORIE_ID = "calorie_id"
@@ -78,32 +89,55 @@ class DeleteRoutineBottomSheet: BottomSheetDialogFragment() {
         this.onDeleteSuccess = listener
     }
 
-    private fun deleteCalorieRecord(calorieId: String, userId: String) {
-        lifecycleScope.launch(Dispatchers.IO) {
-            try {
-                // Call the suspend function directly
-                val deleteResponse = ApiClient.apiServiceFastApi.deleteRoutines(
-                    routineId = calorieId,
-                    userId = userId
-                )
-
-                // Since deleteRoutines directly returns the response body (not retrofit2.Response),
-                // we assume the call is successful if no exception is thrown
-                withContext(Dispatchers.Main) {
-                    if (deleteResponse != null) {
-                        Toast.makeText(requireContext(), "Workout deleted: ", Toast.LENGTH_SHORT).show()
-                        onDeleteSuccess?.invoke()
-                    } else {
-                        Toast.makeText(requireContext(), "Deletion failed: Empty response", Toast.LENGTH_SHORT).show()
-                    }
-                    dismiss()
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-                    dismiss()
-                }
+    private fun deleteCalorieRecord(calorieId: String, userID: String) {
+        if (isAdded  && view != null){
+            requireActivity().runOnUiThread {
+                showLoader(requireView())
             }
         }
+        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+        val call = ApiClient.apiServiceFastApi.deleteRoutines(routineId = calorieId,
+            userId = userId)
+        call.enqueue(object : Callback<DeleteCaloriesResponse> {
+            override fun onResponse(call: Call<DeleteCaloriesResponse>, response: Response<DeleteCaloriesResponse>) {
+                if (response.isSuccessful) {
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
+                    val mealData = response.body()?.message
+                    Toast.makeText(context, mealData, Toast.LENGTH_SHORT).show()
+                    onDeleteSuccess?.invoke()
+                    dismiss()
+                } else {
+                    Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
+                    Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show()
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
+                }
+            }
+            override fun onFailure(call: Call<DeleteCaloriesResponse>, t: Throwable) {
+                Log.e("Error", "API call failed: ${t.message}")
+                Toast.makeText(context, "Failure", Toast.LENGTH_SHORT).show()
+                if (isAdded  && view != null){
+                    requireActivity().runOnUiThread {
+                        dismissLoader(requireView())
+                    }
+                }
+            }
+        })
+    }
+
+    fun showLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.VISIBLE
+    }
+    fun dismissLoader(view: View) {
+        loadingOverlay = view.findViewById(R.id.loading_overlay)
+        loadingOverlay?.visibility = View.GONE
     }
 }
