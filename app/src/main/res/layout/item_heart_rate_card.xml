@@ -38,8 +38,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_toEndOf="@id/ivHeartIcon"
+                android:layout_toStartOf="@+id/tvDate"
                 android:fontFamily="@font/dmsans_bold"
                 android:text="Heart Rate"
+                android:ellipsize="end"
+                android:maxLines="1"
                 android:textColor="@color/black"
                 android:textSize="16sp"
                 android:textStyle="bold" />
