@@ -86,6 +86,7 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
     private lateinit var stripsContainer: FrameLayout
     private lateinit var lineChart: LineChart
     private var loadingOverlay : FrameLayout? = null
+    private var currentGoal = 0
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -113,7 +114,13 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         stripsContainer = view.findViewById(R.id.stripsContainer)
         lineChart = view.findViewById(R.id.heartLineChart)
         layout_btn_log_meal.setOnClickListener {
-            navigateToFragment(SetYourStepGoalFragment(), "HomeBottomTabFragment")
+            val args = Bundle().apply {
+                // Add your arguments here
+                putInt("currentGoal", currentGoal) // Example: String argument
+                    // Example: Int argument
+                // Add more key-value pairs as needed
+            }
+            navigateToFragment(SetYourStepGoalFragment(), "HomeBottomTabFragment", args)
         }
         back_button_calorie_balance = view.findViewById(R.id.step_back)
         back_button_calorie_balance.setOnClickListener {
@@ -281,8 +288,10 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         }
     }
 
-    private fun navigateToFragment(fragment: Fragment, tag: String) {
+    private fun navigateToFragment(fragment: Fragment, tag: String, args: Bundle? = null) {
         requireActivity().supportFragmentManager.beginTransaction().apply {
+            // Set arguments if provided
+            args?.let { fragment.arguments = it }
             replace(R.id.flFragment, fragment, tag)
             addToBackStack(null)
             commit()
@@ -369,6 +378,7 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         avgStepsLine.textColor = Color.GREEN
         avgStepsLine.textSize = 10f
         avgStepsLine.labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
+        currentGoal = stepData.stepsGoal
 
         leftYAxis.removeAllLimitLines()
         leftYAxis.addLimitLine(totalStepsLine)
