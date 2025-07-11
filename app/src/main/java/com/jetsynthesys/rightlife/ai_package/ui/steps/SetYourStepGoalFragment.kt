@@ -39,7 +39,8 @@ class SetYourStepGoalFragment : BaseFragment<FragmentSetYourStepGoalBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         view.background = ContextCompat.getDrawable(requireContext(), R.drawable.gradient_color_background_workout)
-
+        val args = arguments
+        currentGoal = args?.getInt("currentGoal") ?: 10000
         // Initialize views
         stepsSliderView = view.findViewById(R.id.steps_slider_view)
         setTargetButton = view.findViewById(R.id.tv_set_target)

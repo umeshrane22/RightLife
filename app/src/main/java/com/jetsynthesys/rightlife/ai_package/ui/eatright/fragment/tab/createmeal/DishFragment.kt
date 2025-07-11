@@ -66,7 +66,7 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
     private lateinit var tvMeasure :TextView
     private lateinit var backButton : ImageView
     private var dishLists : ArrayList<SearchResultItem> = ArrayList()
-    private lateinit var snapDishLocalListModel : SnapDishLocalListModel
+    private var snapDishLocalListModel : SnapDishLocalListModel? = null
     private var mealId : String = ""
     private var mealName : String = ""
     private lateinit var mealType : String
@@ -104,7 +104,7 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
         icMacroUP = view.findViewById(R.id.icMacroUP)
         quantityEdit = view.findViewById(R.id.quantityEdit)
         ivEdit = view.findViewById(R.id.ivEdit)
-        backButton = view.findViewById(R.id.back_button)
+        backButton = view.findViewById(R.id.backButton)
 
         searchType = arguments?.getString("searchType").toString()
         mealId = arguments?.getString("mealId").toString()
@@ -127,8 +127,8 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
             if (snapDishLocalListModels != null) {
                 snapDishLocalListModel = snapDishLocalListModels
                 if (snapDishLocalListModel?.data != null){
-                    if (snapDishLocalListModel.data.size > 0){
-                        dishLists.addAll(snapDishLocalListModel.data)
+                    if (snapDishLocalListModel!!.data.size > 0){
+                        dishLists.addAll(snapDishLocalListModel!!.data)
                     }
                 }
             }
@@ -136,8 +136,8 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
             if (snapDishLocalListModels != null) {
                 snapDishLocalListModel = snapDishLocalListModels
                 if (snapDishLocalListModel?.data != null){
-                    if (snapDishLocalListModel.data.size > 0){
-                        dishLists.addAll(snapDishLocalListModel.data)
+                    if (snapDishLocalListModel!!.data.size > 0){
+                        dishLists.addAll(snapDishLocalListModel!!.data)
                     }
                 }
             }
@@ -260,7 +260,7 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
             onMicroNutrientsList(foodDetailsResponse, 1.0, 1.0)
         }else{
             if (snapDishLocalListModel != null){
-                for (item in snapDishLocalListModel.data) {
+                for (item in snapDishLocalListModel!!.data) {
                     if (item.name.contentEquals(snapRecipeName)) {
                         setDishData(item, false)
                         onMacroNutrientsList(item, 1.0, 1.0)
@@ -288,7 +288,7 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
                             onMicroNutrientsList(foodDetailsResponse, mealQuantity, targetValue)
                         }else{
                             if (snapDishLocalListModel != null){
-                                for (item in snapDishLocalListModel.data) {
+                                for (item in snapDishLocalListModel!!.data) {
                                     if (item.name.contentEquals(snapRecipeName)) {
                                         setDishData(item, true)
                                         var mealQuantity = 0.0
@@ -411,8 +411,8 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
                         }
                     }else{
                         if (snapDishLocalListModel != null) {
-                            if (snapDishLocalListModel.data.size > 0) {
-                                for (item in snapDishLocalListModel.data) {
+                            if (snapDishLocalListModel!!.data.size > 0) {
+                                for (item in snapDishLocalListModel!!.data) {
                                     if (item.name.contentEquals(snapRecipeName)) {
                                         val foodData = item
                                         var targetValue = 0.0
@@ -421,7 +421,7 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
                                         }else{
                                             targetValue = 0.0
                                         }
-                                        val index = snapDishLocalListModel.data.indexOfFirst { it.name == snapRecipeName }
+                                        val index = snapDishLocalListModel!!.data.indexOfFirst { it.name == snapRecipeName }
                                         var mealQuantity = 0.0
                                         if (foodData.mealQuantity != null && foodData.mealQuantity > 0.0){
                                             mealQuantity = foodData.mealQuantity

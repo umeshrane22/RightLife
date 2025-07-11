@@ -370,11 +370,62 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
             averageBedTime.setText(convertDecimalHoursToHrMinFormat(detail.averageSleepDurationHours!!))
         }
         if (detail?.averageSleepStartTime?.isNotEmpty() == true && detail.averageWakeTime?.isNotEmpty() == true) {
-            averageSleepTime.setText(convertTo12HourFormat(detail.averageSleepStartTime!!))
-            averageWakeupTime.setText(convertTo12HourFormat(detail.averageWakeTime!!))
+            val sleepTime = convertUtcToLocal(detail.averageSleepStartTime!!)
+            val wakeTime = convertUtcToLocal(detail.averageWakeTime!!)
+            averageSleepTime.setText(convertTo12HourTime(sleepTime))
+            averageWakeupTime.setText(convertTo12HourTime(wakeTime))
         }
-
     }
+
+    private fun convertUtcToLocal(utcTimeString: String): String {
+        // Parse the UTC date-time string
+        val utcFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+        val utcLocalDateTime = LocalDateTime.parse(utcTimeString, utcFormatter)
+
+        // Attach UTC time zone
+        val utcZoned = utcLocalDateTime.atZone(ZoneId.of("UTC"))
+
+        // Convert to local time zone
+        val localZoned = utcZoned.withZoneSameInstant(ZoneId.systemDefault())
+
+        // Format the local time as desired
+        val outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+        return localZoned.format(outputFormatter)
+    }
+
+    fun convertTo12HourTime(timeStr: String): String {
+        val inputFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+        val outputFormat = DateTimeFormatter.ofPattern("hh:mm a") // 12-hour with AM/PM
+        val dateTime = LocalDateTime.parse(timeStr, inputFormat)
+        return dateTime.format(outputFormat)
+    }
+
+
+    fun convertTo12HourLocalTime(input: String): String {
+        val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+        val localDateTime = LocalDateTime.parse(input, inputFormatter)
+
+        val utcZoned = localDateTime.atZone(ZoneId.of("UTC"))
+        val localZoned = utcZoned.withZoneSameInstant(ZoneId.systemDefault())
+
+        val outputFormatter = DateTimeFormatter.ofPattern("hh:mm a") // 12-hour with AM/PM
+        return localZoned.format(outputFormatter)
+    }
+
+
+    private fun formatUtcToLocal12HourTime(utcDateTime: String): String {
+        val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+        val utcLocalDateTime = LocalDateTime.parse(utcDateTime, inputFormatter)
+
+        val utcZoned = utcLocalDateTime.atZone(ZoneId.of("UTC"))
+        val localZoned = utcZoned.withZoneSameInstant(ZoneId.systemDefault())
+
+        // Output in 12-hour time format: 07:57 PM
+        val outputFormatter = DateTimeFormatter.ofPattern("hh:mm a")
+        return localZoned.format(outputFormatter)
+    }
+
+
     fun convertTo12HourFormat(datetimeStr: String): String {
         val inputFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
         val outputFormatter = DateTimeFormatter.ofPattern("h:mm a")

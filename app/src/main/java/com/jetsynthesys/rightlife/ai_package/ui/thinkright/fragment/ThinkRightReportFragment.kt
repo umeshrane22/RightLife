@@ -834,6 +834,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                 startActivity(Intent(requireContext(), PractiseAffirmationPlaylistActivity::class.java))
         }
     }
+
     private fun fetchQuoteData() {
        // progressDialog.show()
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken

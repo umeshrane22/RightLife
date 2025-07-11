@@ -80,7 +80,7 @@ class SimpleProgressBar @JvmOverloads constructor(
         )
     }
 
-    override fun onTouchEvent(event: MotionEvent): Boolean {
+  /*  override fun onTouchEvent(event: MotionEvent): Boolean {
         when (event.action) {
             MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE -> {
                 val newProgress = (event.x / width).coerceIn(0f, 1f)
@@ -89,7 +89,7 @@ class SimpleProgressBar @JvmOverloads constructor(
             }
         }
         return super.onTouchEvent(event)
-    }
+    }*/
 
     fun setOnProgressChangedListener(listener: (Float) -> Unit) {
         this.onProgressChangedListener = listener
