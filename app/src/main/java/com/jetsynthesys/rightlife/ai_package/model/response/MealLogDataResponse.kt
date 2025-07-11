@@ -168,7 +168,7 @@ data class MealNutritionSummary(
     val sugar: Double,
     val fiber: Double,
     val protein: Double,
-    val fat: Double,
+    val fats: Double,
     val saturated_fat: Double,
     val trans_fat: Double,
     val cholesterol: Double,

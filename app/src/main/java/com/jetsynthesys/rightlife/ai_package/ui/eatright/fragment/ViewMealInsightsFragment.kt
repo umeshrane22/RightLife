@@ -210,12 +210,12 @@ class ViewMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBinding>()
         val calories_kcal : String = mealDetails.calories?.times(value)?.toInt().toString()?: "NA"
         val protein_g : String = mealDetails.protein?.times(value)?.toInt().toString()?: "NA"
         val carb_g : String = mealDetails.carbs?.times(value)?.toInt().toString()?: "NA"
-        val fat_g : String = mealDetails.fat?.times(value)?.toInt().toString()?: "NA"
+        val fat_g : String = mealDetails.fats?.times(value)?.toInt().toString()?: "NA"
 
         val mealLogs = listOf(
             MacroNutrientsModel(calories_kcal, "kcal", "Calorie", R.drawable.ic_cal),
-            MacroNutrientsModel(protein_g, "g", "Protein", R.drawable.ic_cabs),
-            MacroNutrientsModel(carb_g, "g", "Carbs", R.drawable.ic_protein),
+            MacroNutrientsModel(protein_g, "g", "Protein", R.drawable.ic_protein),
+            MacroNutrientsModel(carb_g, "g", "Carbs", R.drawable.ic_cabs),
             MacroNutrientsModel(fat_g, "g", "Fats", R.drawable.ic_fats),
         )
 

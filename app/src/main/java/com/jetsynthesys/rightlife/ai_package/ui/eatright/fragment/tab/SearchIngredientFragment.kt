@@ -28,8 +28,6 @@ import com.jetsynthesys.rightlife.ai_package.model.response.IngredientDetailResp
 import com.jetsynthesys.rightlife.ai_package.model.response.IngredientLists
 import com.jetsynthesys.rightlife.ai_package.model.response.IngredientResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.tab.IngredientSearchAdapter
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.MealScanResultFragment
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.YourMealLogsFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.createmeal.CreateRecipeFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.IngredientLocalListModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.viewmodel.DishesViewModel
@@ -134,7 +132,7 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
 
         backButton.setOnClickListener {
             if (searchType.contentEquals("createRecipe")){
-                val fragment = MealScanResultFragment()
+                val fragment = CreateRecipeFragment()
                 val args = Bundle()
                 args.putString("recipeId", recipeId)
                 args.putString("recipeName", recipeName)
@@ -153,13 +151,13 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
             filterDishes(query)
         }
 
-        getRecipesList("100")
+        getRecipesList("0")
 
         cancel.setOnClickListener {
             if (searchEditText.text.toString().isNotEmpty()){
                 dishesViewModel.setSearchQuery("")
                 searchEditText.setText("")
-                searchIngredientList.clear()
+              //  searchIngredientList.clear()
             }
         }
 

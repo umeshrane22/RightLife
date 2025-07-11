@@ -27,7 +27,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:background="@color/view_border"></View>
+            android:background="@color/view_border">
+        </View>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layout_meal_name"
@@ -267,14 +268,14 @@
                 android:layout_marginEnd="10dp">
 
                 <ImageView
-                    android:id="@+id/image_subtraction"
+                    android:id="@+id/imageProtein"
                     android:layout_width="11dp"
                     android:layout_height="11dp"
                     android:scaleType="fitXY"
                     android:src="@drawable/ic_protein" />
 
                 <TextView
-                    android:id="@+id/tv_subtraction_value"
+                    android:id="@+id/tvProteinValue"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
@@ -284,7 +285,7 @@
                     android:text="8" />
 
                 <TextView
-                    android:id="@+id/tv_subtraction_unit"
+                    android:id="@+id/tvProteinUnit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
@@ -304,14 +305,14 @@
                 android:layout_marginEnd="10dp">
 
                 <ImageView
-                    android:id="@+id/image_baguette"
+                    android:id="@+id/imageCarbs"
                     android:layout_width="11dp"
                     android:layout_height="11dp"
                     android:scaleType="fitXY"
                     android:src="@drawable/ic_cabs" />
 
                 <TextView
-                    android:id="@+id/tv_baguette_value"
+                    android:id="@+id/tvCarbsValue"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
@@ -321,7 +322,7 @@
                     android:text="308" />
 
                 <TextView
-                    android:id="@+id/tv_baguette_unit"
+                    android:id="@+id/tvCarbsUnit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
@@ -340,14 +341,14 @@
                 android:layout_marginStart="10dp">
 
                 <ImageView
-                    android:id="@+id/image_dewpoint"
+                    android:id="@+id/imageFats"
                     android:layout_width="11dp"
                     android:layout_height="11dp"
                     android:scaleType="fitXY"
                     android:src="@drawable/ic_fats" />
 
                 <TextView
-                    android:id="@+id/tv_dewpoint_value"
+                    android:id="@+id/tvFatsValue"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
@@ -357,7 +358,7 @@
                     android:text="17" />
 
                 <TextView
-                    android:id="@+id/tv_dewpoint_unit"
+                    android:id="@+id/tvFatsUnit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"

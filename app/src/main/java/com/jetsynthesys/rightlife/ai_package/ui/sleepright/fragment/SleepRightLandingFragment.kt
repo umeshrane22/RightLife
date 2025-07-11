@@ -5,7 +5,6 @@ import android.app.DatePickerDialog
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.app.ProgressDialog
 import android.app.TimePickerDialog
 import android.content.ContentValues
 import android.content.Context
@@ -68,7 +67,6 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.SleepLandingResponse
-import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.databinding.FragmentSleepRightLandingBinding
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.NewSleepSoundActivity
 import com.github.mikephil.charting.charts.LineChart
@@ -78,7 +76,6 @@ import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
@@ -92,11 +89,9 @@ import com.jetsynthesys.rightlife.ai_package.model.Distance
 import com.jetsynthesys.rightlife.ai_package.model.EnergyBurnedRequest
 import com.jetsynthesys.rightlife.ai_package.model.HeartRateRequest
 import com.jetsynthesys.rightlife.ai_package.model.HeartRateVariabilityRequest
-import com.jetsynthesys.rightlife.ai_package.model.MindfullResponse
 import com.jetsynthesys.rightlife.ai_package.model.OxygenSaturation
 import com.jetsynthesys.rightlife.ai_package.model.RespiratoryRate
 import com.jetsynthesys.rightlife.ai_package.model.SleepConsistency
-import com.jetsynthesys.rightlife.ai_package.model.SleepConsistencyResponse
 import com.jetsynthesys.rightlife.ai_package.model.SleepDetails
 import com.jetsynthesys.rightlife.ai_package.model.SleepJson
 import com.jetsynthesys.rightlife.ai_package.model.SleepJsonRequest
@@ -114,14 +109,10 @@ import com.jetsynthesys.rightlife.ai_package.model.WorkoutRequest
 import com.jetsynthesys.rightlife.ai_package.model.response.SleepSoundResponse
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.adapter.RecommendedAdapterSleep
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.RestorativeSleepFragment.MultilineXAxisRenderer
-import com.jetsynthesys.rightlife.ai_package.ui.thinkright.adapter.RecommendationAdapter
-import com.jetsynthesys.rightlife.ai_package.ui.thinkright.fragment.AssessmentReviewDialog
 import com.jetsynthesys.rightlife.ai_package.ui.thinkright.fragment.SleepInfoDialogFragment
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
-import com.jetsynthesys.rightlife.ui.utility.Utils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -2244,7 +2235,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     companion object{
         var dialogStartTime : LocalTime = LocalTime.of(22, 0)
         var dialogEndTime : LocalTime = LocalTime.of(6, 30)
-        var dialogDate : LocalDate =  LocalDate.now().minusDays(1)
+        var dialogSleepDate : LocalDate =  LocalDate.now().minusDays(1)
+        var dialogWakeDate : LocalDate =  LocalDate.now()
     }
 }
 

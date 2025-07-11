@@ -97,6 +97,7 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
     private lateinit var averageWaterIntake: TextView
     private lateinit var averageHeading: TextView
     private lateinit var percentageTv: TextView
+    private lateinit var weightLastLogDateTv : TextView
     private lateinit var averageGoalLayout : LinearLayoutCompat
     private var loadingOverlay : FrameLayout? = null
     private val viewModel: HydrationViewModelNew by viewModels()
@@ -135,6 +136,7 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
         percentageTv = view.findViewById(R.id.percentage_text)
         averageWaterIntake = view.findViewById(R.id.average_number)
         val backIc = view.findViewById<ImageView>(R.id.backIc)
+        weightLastLogDateTv = view.findViewById(R.id.weightLastLogDateTv)
 
         backIc.setOnClickListener {
             val fragment = HomeBottomTabFragment()
@@ -440,8 +442,9 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
                        val weightUnit = parts.getOrElse(1) { "kg" }
                        weightIntake.text = response.body()?.weight.toString()
                        weightIntakeUnit.text = response.body()?.type.toString()
+                       weightLastLogDateTv.text = response.body()?.date.toString()
                        Log.d("LogWaterAPI", "Success: $responseBody")
-                       // You can do something with responseBody here
+                       fetchWeightData("last_monthly")
                    } else {
                        bottomSheetDialog.dismiss()
                        Log.e(
@@ -554,6 +557,7 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
                             weight_description_text.text = data.description
                             if (data.lastWeightLog != null){
                                 weightIntake.text = data.lastWeightLog.totalWeight.toString()
+                                weightLastLogDateTv.text = data.lastWeightLog.date.toString()
                             }
                            // weightIntakeUnit.text = data.lastWeightLog.
                             if (data.weightTotals.size > 31) {

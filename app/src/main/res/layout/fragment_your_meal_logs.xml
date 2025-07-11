@@ -338,7 +338,7 @@
                         app:layout_constraintTop_toBottomOf="@+id/view_progress">
 
                         <androidx.appcompat.widget.LinearLayoutCompat
-                            android:id="@+id/layout_subtraction"
+                            android:id="@+id/layoutProtein"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center"
@@ -347,7 +347,7 @@
                             app:layout_constraintTop_toTopOf="parent">
 
                             <androidx.appcompat.widget.LinearLayoutCompat
-                                android:id="@+id/layout_subtraction_cal_value"
+                                android:id="@+id/layoutProteinValue"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="left"
@@ -366,7 +366,7 @@
                                     android:src="@drawable/ic_protein" />
 
                                 <TextView
-                                    android:id="@+id/tv_subtraction_cal_value"
+                                    android:id="@+id/tvProteinValue"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="5dp"
@@ -398,7 +398,7 @@
                                 app:layout_constraintTop_toBottomOf="@+id/layout_meal_cal_value">
 
                                 <ProgressBar
-                                    android:id="@+id/carbs_progressBar"
+                                    android:id="@+id/protien_progressBar"
                                     style="?android:attr/progressBarStyleHorizontal"
                                     android:layout_width="match_parent"
                                     android:layout_height="5dp"
@@ -411,7 +411,7 @@
                         </androidx.appcompat.widget.LinearLayoutCompat>
 
                         <androidx.appcompat.widget.LinearLayoutCompat
-                            android:id="@+id/layout_baguette"
+                            android:id="@+id/layoutCarbs"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center"
@@ -421,7 +421,7 @@
                             app:layout_constraintTop_toTopOf="parent">
 
                             <androidx.appcompat.widget.LinearLayoutCompat
-                                android:id="@+id/layout_baguette_cal_value"
+                                android:id="@+id/layoutCarbValue"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="left"
@@ -440,7 +440,7 @@
                                     android:src="@drawable/ic_cabs" />
 
                                 <TextView
-                                    android:id="@+id/tv_baguette_cal_value"
+                                    android:id="@+id/tvCarbsValue"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="5dp"
@@ -472,7 +472,7 @@
                                 app:layout_constraintTop_toBottomOf="@+id/layout_meal_cal_value">
 
                                 <ProgressBar
-                                    android:id="@+id/protien_progressBar"
+                                    android:id="@+id/carbs_progressBar"
                                     style="?android:attr/progressBarStyleHorizontal"
                                     android:layout_width="match_parent"
                                     android:layout_height="5dp"
@@ -484,7 +484,7 @@
                         </androidx.appcompat.widget.LinearLayoutCompat>
 
                         <androidx.appcompat.widget.LinearLayoutCompat
-                            android:id="@+id/layout_dewpoint"
+                            android:id="@+id/layoutFats"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center"
@@ -493,7 +493,7 @@
                             app:layout_constraintTop_toTopOf="parent">
 
                             <androidx.appcompat.widget.LinearLayoutCompat
-                                android:id="@+id/layout_dewpoint_cal_value"
+                                android:id="@+id/layoutFatsValue"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="left"
@@ -512,7 +512,7 @@
                                     android:src="@drawable/ic_fats" />
 
                                 <TextView
-                                    android:id="@+id/tv_dewpoint_cal_value"
+                                    android:id="@+id/tvFatsValue"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="5dp"
@@ -575,7 +575,7 @@
                         android:id="@+id/layout_breakfast_title"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="15dp"
+                        android:layout_marginStart="10dp"
                         android:layout_marginTop="10dp"
                         android:layout_marginEnd="10dp"
                         android:orientation="horizontal"
@@ -605,7 +605,7 @@
                                 android:id="@+id/tv_meal_title"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="10dp"
+                                android:layout_marginStart="5dp"
                                 android:layout_marginTop="3dp"
                                 android:layout_marginEnd="10dp"
                                 android:fontFamily="@font/dmsans_bold"
@@ -623,11 +623,10 @@
                             android:layout_gravity="center"
                             android:layout_marginStart="10dp"
                             android:layout_marginTop="5dp"
-                            android:layout_marginEnd="10dp"
+                            android:layout_marginEnd="20dp"
                             android:gravity="center"
                             android:orientation="horizontal"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toStartOf="@+id/addBreakfastLayout"
                             app:layout_constraintTop_toTopOf="parent">
 
                             <ImageView
@@ -661,10 +660,10 @@
 
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:id="@+id/addBreakfastLayout"
-                            android:layout_width="70dp"
-                            android:layout_height="30dp"
+                            android:layout_width="60dp"
+                            android:layout_height="25dp"
                             android:layout_marginStart="10dp"
-                            android:layout_marginTop="5dp"
+                            android:layout_marginTop="2dp"
                             android:background="@drawable/green_meal_bg"
                             android:gravity="center"
                             android:orientation="horizontal"
@@ -936,7 +935,7 @@
                         android:id="@+id/layoutMorningSnackTitle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="15dp"
+                        android:layout_marginStart="10dp"
                         android:layout_marginTop="10dp"
                         android:layout_marginEnd="10dp"
                         android:orientation="horizontal"
@@ -984,11 +983,10 @@
                             android:layout_gravity="center"
                             android:layout_marginStart="10dp"
                             android:layout_marginTop="5dp"
-                            android:layout_marginEnd="10dp"
+                            android:layout_marginEnd="20dp"
                             android:gravity="center"
                             android:orientation="horizontal"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toStartOf="@+id/addMorningSnackLayout"
                             app:layout_constraintTop_toTopOf="parent">
 
                             <ImageView
@@ -1022,10 +1020,10 @@
 
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:id="@+id/addMorningSnackLayout"
-                            android:layout_width="70dp"
-                            android:layout_height="30dp"
+                            android:layout_width="60dp"
+                            android:layout_height="25dp"
                             android:layout_marginStart="10dp"
-                            android:layout_marginTop="5dp"
+                            android:layout_marginTop="2dp"
                             android:background="@drawable/green_meal_bg"
                             android:gravity="center"
                             android:orientation="horizontal"
@@ -1298,7 +1296,7 @@
                         android:id="@+id/layout_lunch_title"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="15dp"
+                        android:layout_marginStart="10dp"
                         android:layout_marginTop="10dp"
                         android:layout_marginEnd="10dp"
                         android:orientation="horizontal"
@@ -1328,7 +1326,7 @@
                                 android:id="@+id/tv_lunch"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="10dp"
+                                android:layout_marginStart="5dp"
                                 android:layout_marginTop="3dp"
                                 android:layout_marginEnd="10dp"
                                 android:fontFamily="@font/dmsans_bold"
@@ -1346,11 +1344,10 @@
                             android:layout_gravity="center"
                             android:layout_marginStart="10dp"
                             android:layout_marginTop="5dp"
-                            android:layout_marginEnd="10dp"
+                            android:layout_marginEnd="20dp"
                             android:gravity="center"
                             android:orientation="horizontal"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toStartOf="@+id/addLunchLayout"
                             app:layout_constraintTop_toTopOf="parent">
 
                             <ImageView
@@ -1384,10 +1381,10 @@
 
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:id="@+id/addLunchLayout"
-                            android:layout_width="70dp"
-                            android:layout_height="30dp"
+                            android:layout_width="60dp"
+                            android:layout_height="25dp"
                             android:layout_marginStart="10dp"
-                            android:layout_marginTop="5dp"
+                            android:layout_marginTop="2dp"
                             android:background="@drawable/green_meal_bg"
                             android:gravity="center"
                             android:orientation="horizontal"
@@ -1491,7 +1488,8 @@
                                 android:background="@color/view_border"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toBottomOf="@+id/progressBarLayout"></View>
+                                app:layout_constraintTop_toBottomOf="@+id/progressBarLayout">
+                            </View>
 
                             <androidx.appcompat.widget.LinearLayoutCompat
                                 android:layout_width="wrap_content"
@@ -1544,7 +1542,8 @@
                         android:background="@color/view_border"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/recyclerview_lunch_meals_item"></View>
+                        app:layout_constraintTop_toBottomOf="@+id/recyclerview_lunch_meals_item">
+                    </View>
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/layout_lunch_add_view"
@@ -1656,7 +1655,7 @@
                         android:id="@+id/layout_eveningSnacks_title"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="15dp"
+                        android:layout_marginStart="10dp"
                         android:layout_marginTop="10dp"
                         android:layout_marginEnd="10dp"
                         android:orientation="horizontal"
@@ -1704,11 +1703,10 @@
                             android:layout_gravity="center"
                             android:layout_marginStart="10dp"
                             android:layout_marginTop="5dp"
-                            android:layout_marginEnd="10dp"
+                            android:layout_marginEnd="20dp"
                             android:gravity="center"
                             android:orientation="horizontal"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toStartOf="@+id/addEveningSnacksLayout"
                             app:layout_constraintTop_toTopOf="parent">
 
                             <ImageView
@@ -1742,10 +1740,10 @@
 
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:id="@+id/addEveningSnacksLayout"
-                            android:layout_width="70dp"
-                            android:layout_height="30dp"
+                            android:layout_width="60dp"
+                            android:layout_height="25dp"
                             android:layout_marginStart="10dp"
-                            android:layout_marginTop="5dp"
+                            android:layout_marginTop="2dp"
                             android:background="@drawable/green_meal_bg"
                             android:gravity="center"
                             android:orientation="horizontal"
@@ -2018,7 +2016,7 @@
                         android:id="@+id/layout_dinner_title"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="15dp"
+                        android:layout_marginStart="10dp"
                         android:layout_marginTop="10dp"
                         android:layout_marginEnd="10dp"
                         android:orientation="horizontal"
@@ -2048,7 +2046,7 @@
                                 android:id="@+id/tv_dinner"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="10dp"
+                                android:layout_marginStart="5dp"
                                 android:layout_marginTop="3dp"
                                 android:layout_marginEnd="10dp"
                                 android:fontFamily="@font/dmsans_bold"
@@ -2066,11 +2064,10 @@
                             android:layout_gravity="center"
                             android:layout_marginStart="10dp"
                             android:layout_marginTop="5dp"
-                            android:layout_marginEnd="10dp"
+                            android:layout_marginEnd="20dp"
                             android:gravity="center"
                             android:orientation="horizontal"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toStartOf="@+id/addDinnerLayout"
                             app:layout_constraintTop_toTopOf="parent">
 
                             <ImageView
@@ -2104,10 +2101,10 @@
 
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:id="@+id/addDinnerLayout"
-                            android:layout_width="70dp"
-                            android:layout_height="30dp"
+                            android:layout_width="60dp"
+                            android:layout_height="25dp"
                             android:layout_marginStart="10dp"
-                            android:layout_marginTop="5dp"
+                            android:layout_marginTop="2dp"
                             android:background="@drawable/green_meal_bg"
                             android:gravity="center"
                             android:orientation="horizontal"

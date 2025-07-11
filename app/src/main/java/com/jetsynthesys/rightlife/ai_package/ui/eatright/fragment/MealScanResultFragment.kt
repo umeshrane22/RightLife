@@ -854,6 +854,8 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>(), Ra
             calendar.get(Calendar.MONTH),
             calendar.get(Calendar.DAY_OF_MONTH)
         )
+        // ✅ Disable future dates
+        datePicker.datePicker.maxDate = System.currentTimeMillis()
         datePicker.show()
     }
 
