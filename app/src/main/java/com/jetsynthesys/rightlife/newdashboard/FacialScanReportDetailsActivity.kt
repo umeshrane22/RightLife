@@ -244,7 +244,7 @@ class FacialScanReportDetailsActivity : BaseActivity() {
     }
 
     private fun fetchPastFacialScanReport(key: String, startDate: String, endDate: String) {
-
+        binding.llSelectedGraphItem.visibility = View.GONE
         //Dummy data
         val entries = mutableListOf<Entry>()
 
