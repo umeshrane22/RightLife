@@ -160,7 +160,7 @@ public class CircularCardAdapter extends RecyclerView.Adapter<CircularCardAdapte
         private final TextView cardbtntext;
         private final TextView cardbtntextDesc;
         private final TextView workshop_tag1;
-        private final ImageView cardImage;
+        private final ImageView cardImage,img_btn_icon,img_title_icon;
         private TextView workshop_tag3;
 
         public CardViewHolder(@NonNull View itemView) {
@@ -170,6 +170,8 @@ public class CircularCardAdapter extends RecyclerView.Adapter<CircularCardAdapte
             cardbtntext = itemView.findViewById(R.id.promobtntxt);
             cardImage = itemView.findViewById(R.id.cardImage);
             workshop_tag1 = itemView.findViewById(R.id.workshop_tag1);
+            img_btn_icon = itemView.findViewById(R.id.img_btn_icon);
+            img_title_icon = itemView.findViewById(R.id.img_title_icon);
         }
 
         public void bind(CardItem item) {
@@ -181,6 +183,19 @@ public class CircularCardAdapter extends RecyclerView.Adapter<CircularCardAdapte
                         .error(R.drawable.rl_placeholder)
                         .into(cardImage);
             }
+            if (item.getImageUrl() != null && !item.getImageUrl().isEmpty()) {
+                Glide.with(itemView.getContext()).load(ApiClient.CDN_URL_QA + item.getButtonImage())
+                        .placeholder(R.drawable.ic_banner_t_healthcam)
+                        .error(R.drawable.ic_banner_t_healthcam)
+                        .into(img_btn_icon);
+            }
+            if (item.getImageUrl() != null && !item.getImageUrl().isEmpty()) {
+                Glide.with(itemView.getContext()).load(ApiClient.CDN_URL_QA + item.getTitleImage())
+                        .placeholder(R.drawable.ic_banner_t_healthcam)
+                        .error(R.drawable.ic_banner_t_healthcam)
+                        .into(img_title_icon);
+            }
+
             cardbtntext.setText(item.getButtonText());
             cardTitle.setText(item.getTitle());
             cardbtntextDesc.setText(item.getContent());
@@ -190,23 +205,23 @@ public class CircularCardAdapter extends RecyclerView.Adapter<CircularCardAdapte
 
             if (item.getCategory().equalsIgnoreCase("MIND_AUDIT")) {
                 Drawable drawable = ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_banner_t_mindaudit);
-                cardTitle.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
+                //cardTitle.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
                 Drawable drawable1 = ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_banner_chekinnow);
-                cardbtntext.setCompoundDrawablesWithIntrinsicBounds(drawable1, null, null, null);
+                //cardbtntext.setCompoundDrawablesWithIntrinsicBounds(drawable1, null, null, null);
 
             } else if (item.getCategory().equalsIgnoreCase("VOICE_SCAN")) {
 
                 Drawable drawable = ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_banner_t_voicescan);
-                cardTitle.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
+                //cardTitle.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
                 Drawable drawable1 = ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_banner_recordnow);
-                cardbtntext.setCompoundDrawablesWithIntrinsicBounds(drawable1, null, null, null);
+                //cardbtntext.setCompoundDrawablesWithIntrinsicBounds(drawable1, null, null, null);
 
             } else {
                 //else if (item.getCategory().equalsIgnoreCase("FACIAL_SCAN"))
                 Drawable drawable = ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_banner_t_healthcam);
-                cardTitle.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
+                //cardTitle.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
                 Drawable drawable1 = ContextCompat.getDrawable(itemView.getContext(), R.drawable.ic_banner_scannow);
-                cardbtntext.setCompoundDrawablesWithIntrinsicBounds(drawable1, null, null, null);
+                //cardbtntext.setCompoundDrawablesWithIntrinsicBounds(drawable1, null, null, null);
             }
 
         }

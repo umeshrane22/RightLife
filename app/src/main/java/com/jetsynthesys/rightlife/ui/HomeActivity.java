@@ -739,7 +739,9 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                     promotionResponse.getPromotiondata().getPromotionList().get(i).getButtonName(),
                     promotionResponse.getPromotiondata().getPromotionList().get(i).getCategory(),
                     String.valueOf(promotionResponse.getPromotiondata().getPromotionList().get(i).getViews()),
-                    promotionResponse.getPromotiondata().getPromotionList().get(i).getSeriesId());
+                    promotionResponse.getPromotiondata().getPromotionList().get(i).getSeriesId(),
+                    promotionResponse.getPromotiondata().getPromotionList().get(i).getTitleImage(),
+                    promotionResponse.getPromotiondata().getPromotionList().get(i).getButtonImage());
             cardItems.add(i, cardItem);
         }
 
@@ -751,8 +753,6 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
             viewPager.setVisibility(View.GONE);
         }
         adapter.notifyDataSetChanged();
-
-
     }
 
     private void setupViewPager() {
@@ -769,11 +769,11 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
     private List<CardItem> getCardItems() {
         List<CardItem> items = new ArrayList<>();
         // Add your CardItem instances here
-        items.add(new CardItem("0", "Card 1", R.drawable.facialconcept, "", "", "scan now", "", "", ""));
-        items.add(new CardItem("1", "Card 2", R.drawable.facialconcept, "", "", "scan now", "", "", ""));
-        items.add(new CardItem("2", "Card 3", R.drawable.facialconcept, "", "", "scan now", "", "", ""));
-        items.add(new CardItem("3", "Card 4", R.drawable.facialconcept, "", "", "scan now", "", "", ""));
-        items.add(new CardItem("4", "Card 5", R.drawable.facialconcept, "", "", "scan now", "", "", ""));
+        items.add(new CardItem("0", "Card 1", R.drawable.facialconcept, "", "", "scan now", "", "", "", "", ""));
+        items.add(new CardItem("1", "Card 2", R.drawable.facialconcept, "", "", "scan now", "", "", "", "", ""));
+        items.add(new CardItem("2", "Card 3", R.drawable.facialconcept, "", "", "scan now", "", "", "", "", ""));
+        items.add(new CardItem("3", "Card 4", R.drawable.facialconcept, "", "", "scan now", "", "", "", "", ""));
+        items.add(new CardItem("4", "Card 5", R.drawable.facialconcept, "", "", "scan now", "", "", "", "", ""));
         return items;
     }
 

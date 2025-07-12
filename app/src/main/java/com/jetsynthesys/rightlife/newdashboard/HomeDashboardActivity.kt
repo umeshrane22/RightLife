@@ -512,6 +512,7 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
 
     override fun onResume() {
         super.onResume()
+        getUserDetails("")
         fetchDashboardData()
         getDashboardChecklist("")
         getDashboardChecklistStatus()
@@ -1465,6 +1466,7 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                                 binding.includeChecklist.llLayoutChecklist.visibility = View.VISIBLE
                                 binding.llDiscoverLayout.visibility = View.VISIBLE
                             }
+
                         } else {
                             Toast.makeText(
                                 this@HomeDashboardActivity,
