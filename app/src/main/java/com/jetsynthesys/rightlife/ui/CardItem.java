@@ -11,8 +11,26 @@ public class CardItem {
     private String seriesId;
     private boolean isAffirmation = false;
     private String viewCount;
+    private String titleImage;
+    private String ButtonImage;
 
-    public CardItem(String id, String title, int imageResId, String imageUrl, String content, String buttonText, String category, String viewCount, String seriesId) {
+    public String getTitleImage() {
+        return titleImage;
+    }
+
+    public void setTitleImage(String titleImage) {
+        this.titleImage = titleImage;
+    }
+
+    public String getButtonImage() {
+        return ButtonImage;
+    }
+
+    public void setButtonImage(String buttonImage) {
+        ButtonImage = buttonImage;
+    }
+
+    public CardItem(String id, String title, int imageResId, String imageUrl, String content, String buttonText, String category, String viewCount, String seriesId, String titleImage, String ButtonImage) {
         this.id = id;
         this.title = title;
         this.imageUrl = imageUrl;
@@ -22,6 +40,8 @@ public class CardItem {
         this.category = category;
         this.viewCount = viewCount;
         this.seriesId = seriesId;
+        this.titleImage = titleImage;
+        this.ButtonImage = ButtonImage;
     }
 
     public String getSeriesId() {

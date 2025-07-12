@@ -46,8 +46,34 @@
             android:paddingTop="10dp"
             android:paddingBottom="1dp"
             android:visibility="visible">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:orientation="horizontal"
+                android:layout_height="32dp"
+                android:layout_marginTop="14dp"
+                android:paddingHorizontal="10dp"
+                android:background="@drawable/healthcam_rect">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:src="@drawable/ic_healthcam"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginHorizontal="5dp"
+                    android:id="@+id/img_title_icon"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:id="@+id/promotitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:drawableTint="@color/white"
+                    android:fontFamily="@font/dmsans_regular"
+                    android:gravity="center"
 
-            <TextView
+                    android:paddingVertical="4dp"
+                    android:text="Health Cam"
+                    android:textColor="@android:color/white"
+                    android:textSize="@dimen/textsize_small" />
+            </LinearLayout>
+          <!--  <TextView
                 android:id="@+id/promotitle"
                 android:layout_width="wrap_content"
                 android:layout_height="30dp"
@@ -62,7 +88,7 @@
                 android:paddingVertical="4dp"
                 android:text="Health Cam"
                 android:textColor="@android:color/white"
-                android:textSize="@dimen/textsize_small" />
+                android:textSize="@dimen/textsize_small" />-->
 
             <TextView
                 android:id="@+id/promodescription"
@@ -79,7 +105,40 @@
                 android:textColor="@android:color/white"
                 android:textSize="@dimen/textsize_large" />
 
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:orientation="horizontal"
+            android:layout_height="34dp"
+            android:layout_marginTop="14dp"
+            android:paddingHorizontal="10dp"
+            android:background="@drawable/roundedcornershape">
+            <ImageView
+                android:layout_width="30dp"
+                android:src="@drawable/ic_healthcam"
+                android:layout_gravity="center_vertical"
+                android:layout_marginHorizontal="5dp"
+                android:id="@+id/img_btn_icon"
+                android:scaleType="fitXY"
+                android:layout_height="30dp"/>
             <TextView
+                android:id="@+id/promobtntxt"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:background="@drawable/roundedcornershape"
+                android:backgroundTint="@color/white"
+                android:fontFamily="@font/dmsans_bold"
+                android:gravity="center"
+
+                android:paddingVertical="4dp"
+                android:paddingTop="15dp"
+                android:paddingBottom="15dp"
+                android:text="Scan Now"
+                android:textColor="@color/rightlife"
+                android:textSize="@dimen/textsize_small" />
+        </LinearLayout>
+
+
+         <!--   <TextView
                 android:id="@+id/promobtntxt"
                 android:layout_width="wrap_content"
                 android:layout_height="34dp"
@@ -100,7 +159,7 @@
                 android:paddingBottom="15dp"
                 android:text="Scan Now"
                 android:textColor="@color/rightlife"
-                android:textSize="@dimen/textsize_small" />
+                android:textSize="@dimen/textsize_small" />-->
 
         </LinearLayout>
 
