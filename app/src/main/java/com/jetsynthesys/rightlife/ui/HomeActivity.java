@@ -967,7 +967,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
 
         if (topList.size() > 0) {
             Top item0 = topList.get(0);
-            tv_rledt_cont_title1.setText(item0.getDesc());
+            tv_rledt_cont_title1.setText(item0.getTitle());
 
             if (item0.getArtist() != null && !item0.getArtist().isEmpty()) {
                 Artist artist = item0.getArtist().get(0);
