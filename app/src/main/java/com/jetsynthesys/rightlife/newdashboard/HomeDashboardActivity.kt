@@ -24,6 +24,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.net.toUri
@@ -810,19 +811,39 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                         val (carbsValue, carbsTotal) = extractNumericValues(module.carbs.toString())
                         val (fatsValue, fatsTotal) = extractNumericValues(module.fats.toString())
 
-                        binding.tvSubtractionCalValue.text = proteinValue
-                        binding.tvSubtractionCalUnit.text = "/" + proteinTotal + " g"
-                        binding.carbsProgressBar.max = proteinTotal.toDouble().toInt()
-                        binding.carbsProgressBar.progress = proteinValue.toDouble().toInt()
+                        if (safeToFloat(proteinValue) > safeToFloat(proteinTotal)) {
+                            binding.tvProtienValue.setTextColor(ContextCompat.getColor(this, R.color.macros_high_color))
+                        } else {
+                            binding.tvProtienValue.setTextColor(ContextCompat.getColor(this, R.color.black_no_meals))
+                        }
+
+                        if (safeToFloat(carbsValue) > safeToFloat(carbsTotal)) {
+                            binding.tvCarbsValue.setTextColor(ContextCompat.getColor(this, R.color.macros_high_color))
+                        } else {
+                            binding.tvCarbsValue.setTextColor(ContextCompat.getColor(this, R.color.black_no_meals))
+                        }
+
+                        if (safeToFloat(fatsValue) > safeToFloat(fatsTotal)) {
+                            binding.tvFatsValue.setTextColor(ContextCompat.getColor(this, R.color.macros_high_color))
+                        } else {
+                            binding.tvFatsValue.setTextColor(ContextCompat.getColor(this, R.color.black_no_meals))
+                        }
 
 
-                        binding.tvSubtractionCarbsValue.text = carbsValue
-                        binding.tvSubtractionCarbsUnit.text = "/" + carbsTotal + " g"
-                        binding.protienProgressBar.max = carbsTotal.toDouble().toInt()
-                        binding.protienProgressBar.progress = carbsValue.toDouble().toInt()
 
-                        binding.tvSubtractionFatsValue.text = fatsValue
-                        binding.tvSubtractionFatsUnit.text = "/" + fatsTotal + " g"
+                        binding.tvProtienValue.text = proteinValue.toDouble().toInt().toString()
+                        binding.proteinUnitTv.text = " / " + proteinTotal.toDouble().toInt().toString() + " g"
+                        binding.proteinProgressBar.max = proteinTotal.toDouble().toInt()
+                        binding.proteinProgressBar.progress = proteinValue.toDouble().toInt()
+
+
+                        binding.tvCarbsValue.text = carbsValue.toDouble().toInt().toString()
+                        binding.carbsUnitTv.text = " / " + carbsTotal.toDouble().toInt().toString() + " g"
+                        binding.carbsProgressBar.max = carbsTotal.toDouble().toInt()
+                        binding.carbsProgressBar.progress = carbsValue.toDouble().toInt()
+
+                        binding.tvFatsValue.text = fatsValue.toDouble().toInt().toString()
+                        binding.fatsUnitTv.text = " / " + fatsTotal.toDouble().toInt().toString() + " g"
                         binding.fatsProgressBar.max = fatsTotal.toDouble().toInt()
                         binding.fatsProgressBar.progress = fatsValue.toDouble().toInt()
 
@@ -858,6 +879,8 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                         setIfNotNullOrBlankWithCalories(
                             binding.tvModuleValueMoveright, module.activeBurn?.toString()
                         )
+
+
                     }
 
                     "SLEEP_RIGHT" -> {
@@ -906,6 +929,10 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
             }
         }
     }
+    fun safeToFloat(value: String?): Float {
+        return value?.toFloatOrNull() ?: 0f
+    }
+
     /*private fun setProgressBarMoveright1() {
 
         // 🔸 Hardcoded test values
