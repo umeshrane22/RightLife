@@ -47,6 +47,7 @@ class SplashScreenActivity : BaseActivity() {
             if (authToken.isEmpty()) {
                 val intent = Intent(this, DataControlActivity::class.java)
                 startActivity(intent)
+                finish()
             } else {
                 var email = ""
                 email = try {
