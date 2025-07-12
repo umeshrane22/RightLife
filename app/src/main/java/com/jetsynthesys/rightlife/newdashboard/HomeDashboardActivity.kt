@@ -512,11 +512,11 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
 
     override fun onResume() {
         super.onResume()
-        getUserDetails("")
         fetchDashboardData()
-        getDashboardChecklist("")
         getDashboardChecklistStatus()
+        getDashboardChecklist("")
         getAiDashboard("")
+        getUserDetails("")
     }
 
     private fun loadFragment(fragment: Fragment) {
@@ -590,6 +590,8 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                         binding.llCountDown.visibility = View.GONE
                         if (!DashboardChecklistManager.paymentStatus) {
                             binding.trialExpiredLayout.trialExpiredLayout.visibility = View.VISIBLE
+                        }else {
+                            binding.trialExpiredLayout.trialExpiredLayout.visibility = View.GONE
                         }
                     }
 
