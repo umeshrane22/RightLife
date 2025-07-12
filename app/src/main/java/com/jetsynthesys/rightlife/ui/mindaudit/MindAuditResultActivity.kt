@@ -287,6 +287,12 @@ class MindAuditResultActivity : BaseActivity() {
                         )
                         setRainbowView(assessmentTaken.interpretations.anxiety.score.toInt())
                         //setLeftRainbowView(assessmentTaken.interpretations.anxiety.score.toInt())
+
+                        val explanation = getDASS21AnxietyExplanation(
+                            assessmentTaken.interpretations.anxiety.score.toFloat()
+                        )
+                        binding.tvResultExplanationTitle.text = explanation.first
+                        binding.tvResultExplanation.text = explanation.second
                     }
                     assessmentTaken.interpretations.depression?.let {
                         cardviewMainscore2.visibility = View.VISIBLE
@@ -307,6 +313,11 @@ class MindAuditResultActivity : BaseActivity() {
                             )
                         )
                         //setCenterRainbowView(assessmentTaken.interpretations.depression.score.toInt())
+                        val explanation = getDASS21DepressionExplanation(
+                            assessmentTaken.interpretations.depression.score.toFloat()
+                        )
+                        binding.tvResultExplanationTitle.text = explanation.first
+                        binding.tvResultExplanation.text = explanation.second
                     }
                     assessmentTaken.interpretations.stress?.let {
                         cardviewMainscore3.visibility = View.VISIBLE
@@ -323,6 +334,13 @@ class MindAuditResultActivity : BaseActivity() {
                         )
                         setExplanationTitle(assessmentTaken.interpretations.stress.level, "Stress")
                         //setRightRainbowView(assessmentTaken.interpretations.stress.score.toInt())
+
+                        val explanation = getDASS21StressExplanation(
+                            assessmentTaken.interpretations.stress.score.toFloat()
+                        )
+                        binding.tvResultExplanationTitle.text = explanation.first
+                        binding.tvResultExplanation.text = explanation.second
+
                     }
                     scoreBarContainer.visibility = View.VISIBLE
                     scoreBarContainerhappiness.visibility = View.GONE
@@ -347,6 +365,10 @@ class MindAuditResultActivity : BaseActivity() {
                             assessmentTaken.interpretations.depression.level,
                             "Depression"
                         )
+                        val explanation = getPHQ9Explanation(assessmentTaken.interpretations.depression.score.toFloat())
+                        binding.tvResultExplanationTitle.text = explanation.first
+                        binding.tvResultExplanation.text = explanation.second
+
                     }
                     cardviewMainscore3.visibility = View.GONE
                     cardviewMainscore2.visibility = View.GONE
@@ -373,6 +395,9 @@ class MindAuditResultActivity : BaseActivity() {
                             assessmentTaken.interpretations.happiness.level,
                             "Happiness"
                         )
+                        val explanation = getHappinessExplanation(assessmentTaken.interpretations.happiness.score.toFloat())
+                        binding.tvResultExplanationTitle.text = explanation.first
+                        binding.tvResultExplanation.text = explanation.second
                     }
                     cardviewMainscore3.visibility = View.GONE
                     cardviewMainscore2.visibility = View.GONE
@@ -398,6 +423,10 @@ class MindAuditResultActivity : BaseActivity() {
                             assessmentTaken.interpretations.anxiety.level,
                             "Anxiety"
                         )
+
+                        val explanation = getGAD7Explanation(assessmentTaken.interpretations.anxiety.score.toFloat())
+                        binding.tvResultExplanationTitle.text = explanation.first
+                        binding.tvResultExplanation.text = explanation.second
                     }
                     cardviewMainscore3.visibility = View.GONE
                     cardviewMainscore2.visibility = View.GONE
@@ -421,6 +450,10 @@ class MindAuditResultActivity : BaseActivity() {
                         )
                         setExplanationTitle(assessmentTaken.interpretations.anger.level, "Anger")
                     }
+                    val explanation = getCASExplanation(assessmentTaken.interpretations.anger.score.toFloat())
+                    binding.tvResultExplanationTitle.text = explanation.first
+                    binding.tvResultExplanation.text = explanation.second
+
                     cardviewMainscore3.visibility = View.GONE
                     cardviewMainscore2.visibility = View.GONE
                     scoreBarContainer.visibility = View.VISIBLE
@@ -805,4 +838,154 @@ class MindAuditResultActivity : BaseActivity() {
 
         }
     }
+
+
+
+    private fun getHappinessExplanation(score: Float): Pair<String, String> {
+        return when {
+            score in 1f..1.9999f -> "Weathering the storm, seeking sunnier days." to
+                    "In moments of struggle, it’s common to experience a lack of happiness and perceive our situations more negatively than they truly are. Just as storm clouds eventually give way to clearer skies, remember that your current outlook can shift toward a sunnier perspective."
+
+            score in 2f..2.999999f -> "Navigating the happiness spectrum, one step at a time." to
+                    "While you might feel somewhat unhappy now, emotions shift like changing landscapes. Just a step on your journey, leading to brighter moments ahead."
+
+            score in 3f..3.9999f -> "Finding equilibrium on the happiness scale." to
+                    "At this juncture, you find yourself in a state of equilibrium—neither swaying towards happiness nor tipping into unhappiness. This neutral phase signifies a pause in the emotional spectrum, allowing you to find your footing before the journey continues."
+
+            score == 4f -> "Cruising the highway of contentment." to
+                    "Picture yourself cruising down the highway of contentment, where your emotions land somewhere between moderate happiness and mild satisfaction. This range often represents the score of an average individual, reflecting a state of balance and ease."
+
+            score in 4.00001f..4.9999f -> "On the brink of brighter smiles." to
+                    "You seem to be on the edge of radiant smiles, feeling quite content and happy."
+
+            score in 5f..5.9999f -> "Catching happiness rays, making life golden." to
+                    "Beyond its immediate pleasantness, happiness brings a cascade of benefits. It intertwines with better health, stronger relationships, and realizing aspirations. A foundation of happiness serves as a launchpad, enabling you to expand and construct a path towards even greater accomplishments."
+
+            score >= 6f -> "Balancing joy like a happiness pro." to
+                    "Happiness is the delicate equilibrium between holding on and letting go, and at this moment, you’ve mastered it with finesse. Your happiness overflows, filling your cup to the brim, and spilling on to others around you."
+
+            else -> "No Data" to "Score not within defined range."
+        }
+    }
+
+    private fun getPHQ9Explanation(score: Float): Pair<String, String> {
+        return when (score) {
+            in 1f..4f -> "Minimal Depression" to
+                    "You’re showing signs of minimal depression. It’s like having a small cloud in a clear sky. With the right strategies, brighter days are certainly ahead. Let’s take the first step together."
+
+            in 5f..9f -> "Mild Depression" to
+                    "Your score indicates mild depression. With consistent care and small daily actions, we can lift the fog and find the sunshine."
+
+            in 10f..14f -> "Moderate Depression" to
+                    "Your results suggest moderate depression. Remember, every step forward is progress, and we’re here to share the load and walk with you towards lighter days."
+
+            in 15f..19f -> "Moderately Severe Depression" to
+                    "You’re experiencing moderately severe depression. Storms don’t last forever, and with support and guidance, we can navigate to calmer waters together."
+
+            in 20f..27f -> "Severe Depression" to
+                    "Your score is indicative of severe depression. But even the longest nights end, and we’re here to help you await the dawn. Step by step, let’s welcome a new day."
+
+            else -> "No Data" to "Score not within defined range."
+        }
+    }
+    private fun getGAD7Explanation(score: Float): Pair<String, String> {
+        return when (score) {
+            in 0f..4f -> "Minimal Anxiety" to
+                    "Minimal anxiety’s on the radar—it’s life whispering for a bit of TLC. Some deep breaths and a relaxing playlist could be just what you need."
+
+            in 5f..9f -> "Mild Anxiety" to
+                    "Mild anxiety is like a nudge from your body saying, ‘Hey, let’s slow down a sec.’ A short walk or a quick meditation session might be the perfect response."
+
+            in 10f..14f -> "Moderate Anxiety" to
+                    "Moderate anxiety can feel like too many tabs open in your brain. It might help to ‘close’ a few with a soothing hobby or by chatting with a friend."
+
+            in 15f..21f -> "Severe Anxiety" to
+                    "Severe anxiety can be quite the handful, but it’s not the boss of you. Support is key—maybe a chat with a pro or joining a yoga class. You’re not alone on this journey."
+
+            else -> "No Data" to "Score not within defined GAD-7 range."
+        }
+    }
+    private fun getCASExplanation(score: Float): Pair<String, String> {
+        return when (score) {
+            in 0f..13f -> "Minimal Clinical Anger" to
+                    "Your anger levels are pretty minimal. Keeping a cool head is your superpower. Keep using those chill vibes to navigate life's ups and downs."
+
+            in 14f..19f -> "Mild Clinical Anger" to
+                    "You're experiencing mild anger — manageable with some mindful cooling. Perhaps some deep breaths or a walk could be your go-to."
+
+            in 20f..28f -> "Moderate Clinical Anger" to
+                    "Your score shows moderate anger. It might feel like a storm brewing, but finding calm strategies, like talking it out or hitting pause on heated moments, can help."
+
+            in 29f..63f -> "Severe Clinical Anger" to
+                    "Looks like anger is weighing heavily on you. It's important, and okay, to seek support—whether it's through therapy, anger management techniques, or mindfulness practices. You've got the strength to work through this."
+
+            else -> "No Data" to "Score not within defined CAS range."
+        }
+    }
+
+    private fun getDASS21DepressionExplanation(score: Float): Pair<String, String> {
+        return when (score) {
+            in 0f..9f -> "Normal" to
+                    "Your score’s in the normal range, and that’s great news! Still, remember to keep a check on your well-being. A little self-care can ensure you stay on this track."
+
+            in 10f..13f -> "Mild" to
+                    "You’re experiencing mild depression. It’s a signal to take extra care of yourself. Small acts of self-care and talking about your feelings can make a big difference."
+
+            in 14f..20f -> "Moderate" to
+                    "Seems you’re in a bit of a fog. Let’s clear it up with some support, be it a heart-to-heart, a hobby, or a helping hand from a pro."
+
+            in 21f..27f -> "Severe" to
+                    "Things are feeling pretty heavy, huh? It’s okay to lean on others. A chat with a professional can be a lifeline. Remember, it’s brave to ask for help."
+
+            in 28f..100f -> "Extremely Severe" to
+                    "Things may seem tough right now, but reaching out to a professional is a strong move. Together, you can start turning things around. You’re not on this path alone."
+
+            else -> "No Data" to "Score not within defined DASS-21 depression range."
+        }
+    }
+
+    private fun getDASS21AnxietyExplanation(score: Float): Pair<String, String> {
+        return when (score) {
+            in 0f..9f -> "Normal" to
+                    "You're in the normal range for anxiety, which is fantastic! Still, life throws curveballs, so keeping those relaxation techniques handy is always a good idea."
+
+            in 10f..13f -> "Mild" to
+                    "Experiencing mild anxiety? It's a gentle nudge that it’s time to breathe and maybe stretch out those worries. Small daily mindfulness practices can work wonders."
+
+            in 14f..20f -> "Moderate" to
+                    "Moderate anxiety can feel like carrying an extra backpack of worries. Remember, it’s okay to put it down through activities like journaling, walks, or seeking support."
+
+            in 21f..27f -> "Severe" to
+                    "Your score indicates severe anxiety. It’s a heavy load but sharing it can lighten it. Professional guidance and peer support are valuable tools on your path to calm."
+
+            in 28f..100f -> "Extremely Severe" to
+                    "Extremely severe anxiety is tough, but so are you. It’s crucial to reach out for professional help now. There’s a community ready to stand by you as you take steps towards healing."
+
+            else -> "No Data" to "Score not within defined DASS-21 anxiety range."
+        }
+    }
+
+
+    private fun getDASS21StressExplanation(score: Float): Pair<String, String> {
+        return when (score) {
+            in 0f..9f -> "Normal" to
+                    "Your stress levels are looking normal—a sign of smooth sailing. Keep those stress-busting activities close to maintain this peaceful vibe."
+
+            in 10f..13f -> "Mild" to
+                    "A hint of mild stress detected. It might be life's way of saying, 'Let's find more moments to unwind.' A quick walk or a fun hobby could be your perfect antidote."
+
+            in 14f..20f -> "Moderate" to
+                    "Dealing with moderate stress? It can feel like juggling more balls than you have hands. Time to set some down and focus on your breath. Why not try a meditation on our app or a relaxing playlist?"
+
+            in 21f..27f -> "Severe" to
+                    "Severe stress is no small feat to manage. But remember, asking for help is a strength, not a weakness. This could be a good time to explore stress management techniques or talk to someone who can help."
+
+            in 28f..100f -> "Extremely Severe" to
+                    "Facing extremely severe stress is challenging, but you're not alone. Professional support can offer new strategies to navigate through this storm. Together, let’s find your way back to a less stressful life."
+
+            else -> "No Data" to "Score not within defined DASS-21 stress range."
+        }
+    }
+
+
 }

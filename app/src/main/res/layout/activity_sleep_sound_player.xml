@@ -114,7 +114,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="16dp"
-        android:background="@drawable/img_logintop1"
+        android:background="@drawable/rl_placeholder"
         android:contentDescription="Album Art"
         android:scaleType="centerCrop"
         app:layout_constraintDimensionRatio="1:1"

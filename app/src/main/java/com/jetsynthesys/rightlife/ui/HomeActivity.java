@@ -38,6 +38,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.navigation.NavigationView;
@@ -1012,9 +1013,9 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                         .load(ApiClient.CDN_URL_QA + item1.getThumbnail().getUrl())
                         .placeholder(R.drawable.rl_placeholder)
                         .error(R.drawable.rl_placeholder)
-                        .transform(new RoundedCorners(25))
+                        .transform(new CenterCrop(), new RoundedCorners(25)) // Ensure order!
                         .into(img_rledit1);
-            }
+}
         }else {
             relative_rledit2.setVisibility(View.GONE);
         }
@@ -1037,7 +1038,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener, 
                         .load(ApiClient.CDN_URL_QA + item2.getThumbnail().getUrl())
                         .placeholder(R.drawable.rl_placeholder)
                         .error(R.drawable.rl_placeholder)
-                        .transform(new RoundedCorners(25))
+                        .transform(new CenterCrop(), new RoundedCorners(25)) // Ensure order!
                         .into(img_rledit2);
             }
         }else {

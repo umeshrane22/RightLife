@@ -8,14 +8,13 @@
 
     <RelativeLayout
         android:layout_width="wrap_content"
-
         android:layout_height="wrap_content">
 
         <ImageView
             android:id="@+id/cardImage"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="fitXY"
+            android:scaleType="centerCrop"
             android:src="@drawable/facialconcept" />
 
         <TextView

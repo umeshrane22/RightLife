@@ -699,6 +699,13 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
 
     private fun handleSelectedModule(aiDashboardResponseMain: AiDashboardResponseMain?) {
         val modules = aiDashboardResponseMain?.data?.updatedModules
+        binding.cardMoverightMain.visibility = View.GONE
+        binding.cardSleeprightMain.visibility = View.GONE
+        binding.cardSleepMainIdeal.visibility = View.GONE
+        binding.cardSleepMainLog.visibility = View.GONE
+
+        binding.cardEatrightMain.visibility = View.GONE
+        binding.cardThinkrightMain.visibility = View.GONE
 
         if (modules.isNullOrEmpty()) {
             binding.llNodataMain.visibility = View.VISIBLE

@@ -441,6 +441,7 @@
                                                 <RelativeLayout
                                                     android:layout_width="match_parent"
                                                     android:layout_height="match_parent"
+                                                    android:layout_margin="10dp"
                                                     android:layout_weight=".5">
 
                                                     <ImageView
@@ -448,8 +449,6 @@
                                                         android:layout_width="160dp"
                                                         android:layout_height="120dp"
                                                         android:layout_alignParentStart="true"
-                                                        android:padding="10dp"
-                                                        android:scaleType="fitXY"
                                                         android:src="@drawable/img_logintop1" />
                                                 </RelativeLayout>
 
@@ -563,6 +562,7 @@
                                                 <RelativeLayout
                                                     android:layout_width="match_parent"
                                                     android:layout_height="match_parent"
+                                                    android:layout_margin="10dp"
                                                     android:layout_weight=".5">
 
                                                     <ImageView
@@ -570,8 +570,6 @@
                                                         android:layout_width="160dp"
                                                         android:layout_height="120dp"
                                                         android:layout_alignParentStart="true"
-                                                        android:padding="10dp"
-                                                        android:scaleType="fitXY"
                                                         android:src="@drawable/img_rledit2" />
                                                 </RelativeLayout>
 
