@@ -37,9 +37,9 @@ class YourActivitiesAdapter(
 
         // Bind data to views
         holder.mealTitle.text = item.activityType
-        val formattedTime = formatTimeString(item.duration)
+        val formattedTime = formatTimeString(item.duration!!)
         holder.servesCount.text = formattedTime
-        val formattedCalories = formatCalorieString( item.caloriesBurned)
+        val formattedCalories = formatCalorieString( item.caloriesBurned!!)
         holder.calValue.text = formattedCalories
         holder.subtractionValue.text = item.intensity
         holder.mealName.visibility = View.GONE
@@ -47,8 +47,8 @@ class YourActivitiesAdapter(
         holder.circlePlus.visibility = View.VISIBLE
         holder.edit.setOnClickListener {
             val bottomSheet = DeleteWorkoutBottomSheet.newInstance(
-                calorieId = item.calorieId,
-                userId = item.userId // Replace with dynamic userId if available
+                calorieId = item.calorieId!!,
+                userId = item.userId!! // Replace with dynamic userId if available
             )
             bottomSheet.setOnDeleteSuccessListener {
                 dataLists.removeAt(position)

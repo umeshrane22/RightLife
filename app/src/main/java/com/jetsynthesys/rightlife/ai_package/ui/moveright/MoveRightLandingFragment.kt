@@ -546,6 +546,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                 if (it.data.steps.todayTotal > 0 || it.data.steps.averageSteps > 0 || it.data.steps.goalSteps > 0){
                                     stepNoDataLayout.visibility = View.GONE
                                     stepWithDataCardLayout.visibility = View.VISIBLE
+
                                     stepLineGraphView.clear()
                                     stepLineGraphView.addDataSet(todayStepsData, 0xFFFD6967.toInt()) // Red
                                     stepLineGraphView.addDataSet(averageStepsData, 0xFF707070.toInt()) // Gray
@@ -555,10 +556,10 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                     averageStepsTv.text = averageStepCount.toString()
                                     goalStepsTv.text = goalStepCount.toString()
                                 }else{
+                                    step_forward_icon.visibility = View.INVISIBLE
                                    if(it.data.caloriesBurned.today.toDouble() == 0.0){
                                        stepNoDataLayout.visibility = View.VISIBLE
                                        stepWithDataCardLayout.visibility = View.GONE
-
                                    }else{
                                        stepNoDataLayout.visibility = View.GONE
                                        stepWithDataCardLayout.visibility = View.VISIBLE

@@ -5,12 +5,12 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class ActivityModel(
-    val activityType: String,
-    val activity_id: String,
-    val duration: String,
-    val caloriesBurned: String,
-    val icon: String,
-    val intensity: String,
-    val calorieId: String,
-    val userId :String
+    val activityType: String?,
+    val activity_id: String?,
+    val duration: String?,
+    val caloriesBurned: String?,
+    val icon: String?,
+    val intensity: String?,
+    val calorieId: String?,
+    val userId :String?
 ) : Parcelable

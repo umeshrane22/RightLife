@@ -346,6 +346,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                             calorieId = workout.id,
                             userId = userId
                         )
+                        println(newActivities)
                         newActivities.add(activity)
                     }
 
