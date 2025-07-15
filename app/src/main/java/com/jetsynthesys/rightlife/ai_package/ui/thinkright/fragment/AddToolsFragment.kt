@@ -160,6 +160,7 @@ class ToolsAdapterList(private val context1: Context, private val items: List<To
                 if (position == 0 && getVisit == "1") {
                    // holder.tooltipLayout.visibility = View.VISIBLE
                     showTooltipPopup( toolHolder.selectButton,"Quickly add it to your tools")
+                    SharedPreferenceManager.getInstance(contexts).saveUserFirstVisit("2")
                 } else if (position == 0) {
                    // showTooltipPopup( toolHolder.selectButton,"Quickly add it to your tools")
                    // holder.tooltipLayout.visibility = View.GONE
