@@ -12,9 +12,17 @@ import androidx.annotation.RequiresApi
 import androidx.core.net.toUri
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.permission.HealthPermission
+import androidx.health.connect.client.records.ActiveCaloriesBurnedRecord
+import androidx.health.connect.client.records.BasalMetabolicRateRecord
+import androidx.health.connect.client.records.BloodPressureRecord
+import androidx.health.connect.client.records.BodyFatRecord
 import androidx.health.connect.client.records.DistanceRecord
 import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.records.HeartRateRecord
+import androidx.health.connect.client.records.HeartRateVariabilityRmssdRecord
+import androidx.health.connect.client.records.OxygenSaturationRecord
+import androidx.health.connect.client.records.RespiratoryRateRecord
+import androidx.health.connect.client.records.RestingHeartRateRecord
 import androidx.health.connect.client.records.SleepSessionRecord
 import androidx.health.connect.client.records.SpeedRecord
 import androidx.health.connect.client.records.StepsRecord
@@ -34,13 +42,21 @@ class SyncNowActivity : BaseActivity() {
     private lateinit var healthConnectClient: HealthConnectClient
     private val allReadPermissions = setOf(
         HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class),
+        HealthPermission.getReadPermission(ActiveCaloriesBurnedRecord::class),
         HealthPermission.getReadPermission(StepsRecord::class),
         HealthPermission.getReadPermission(HeartRateRecord::class),
         HealthPermission.getReadPermission(SleepSessionRecord::class),
         HealthPermission.getReadPermission(ExerciseSessionRecord::class),
         HealthPermission.getReadPermission(SpeedRecord::class),
         HealthPermission.getReadPermission(WeightRecord::class),
-        HealthPermission.getReadPermission(DistanceRecord::class)
+        HealthPermission.getReadPermission(DistanceRecord::class),
+        HealthPermission.getReadPermission(OxygenSaturationRecord::class),
+        HealthPermission.getReadPermission(RespiratoryRateRecord::class),
+        HealthPermission.getReadPermission(BodyFatRecord::class),
+        HealthPermission.getReadPermission(RestingHeartRateRecord::class),
+        HealthPermission.getReadPermission(BasalMetabolicRateRecord::class),
+        HealthPermission.getReadPermission(HeartRateVariabilityRmssdRecord::class),
+        HealthPermission.getReadPermission(BloodPressureRecord::class)
     )
 
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
@@ -107,7 +123,11 @@ class SyncNowActivity : BaseActivity() {
                 }
                 Toast.makeText(this, "Permissions Granted", Toast.LENGTH_SHORT).show()
             } else {
-                Toast.makeText(this, "Permissions Denied", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Permissions Granted", Toast.LENGTH_SHORT).show()
+                lifecycleScope.launch {
+                    // fetchAllHealthData()
+                    CommonAPICall.updateChecklistStatus(this@SyncNowActivity, "sync_health_data", AppConstants.CHECKLIST_COMPLETED)
+                }
             }
             startNextActivity()
         }
