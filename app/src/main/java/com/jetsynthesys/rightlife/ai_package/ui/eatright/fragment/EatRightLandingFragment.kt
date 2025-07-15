@@ -841,37 +841,6 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
         val bottomSheetView = dialogBinding.root
         bottomSheetDialog.setContentView(bottomSheetView)
         dialogBinding.selectedNumberText.text = selectedWeight
-        if (selectedLabel == " lbs") {
-            dialogBinding.switchWeightMetric.isChecked = true
-        }
-
-        val thumbColors = ColorStateList(
-            arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()),
-            intArrayOf(Color.parseColor("#03B27B"), Color.parseColor("#03B27B"))
-        )
-
-        val trackColors = ColorStateList(
-            arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()),
-            intArrayOf(Color.parseColor("#F2F2F2"), Color.parseColor("#F2F2F2"))
-        )
-
-        dialogBinding.switchWeightMetric.thumbTintList = thumbColors
-        dialogBinding.switchWeightMetric.trackTintList = trackColors
-        dialogBinding.switchWeightMetric.setOnCheckedChangeListener { buttonView, isChecked ->
-            val w = selectedWeight.split(" ")
-            if (isChecked) {
-                selectedLabel = " lbs"
-                selectedWeight = ConversionUtils.convertLbsToKgs(w[0])
-                setLbsValue()
-            } else {
-                selectedLabel = " kgs"
-                selectedWeight = ConversionUtils.convertKgToLbs(w[0])
-                setKgsValue()
-            }
-            dialogBinding.rulerView.layoutManager?.scrollToPosition(floor(selectedWeight.toDouble() * 10).toInt())
-            selectedWeight += selectedLabel
-            dialogBinding.selectedNumberText.text = selectedWeight
-        }
 
         val layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
@@ -886,6 +855,50 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
             // Handle the selected number
         }
         dialogBinding.rulerView.adapter = logWeightRulerAdapter
+
+        if (selectedLabel == " kg"){
+            dialogBinding.kgOption.setBackgroundResource(R.drawable.bg_weight_log_left_selected)
+            dialogBinding.kgOption.setTextColor(Color.WHITE)
+            dialogBinding.lbsOption.setBackgroundResource(R.drawable.bg_weight_log_right_unselected)
+            dialogBinding.lbsOption.setTextColor(Color.BLACK)
+            setKgsValue()
+            dialogBinding.selectedNumberText.text = selectedWeight
+        }else{
+            dialogBinding.lbsOption.setBackgroundResource(R.drawable.bg_weight_log_right_selected)
+            dialogBinding.lbsOption.setTextColor(Color.WHITE)
+            dialogBinding.kgOption.setBackgroundResource(R.drawable.bg_weight_log_left_unselected)
+            dialogBinding.kgOption.setTextColor(Color.BLACK)
+            setLbsValue()
+            dialogBinding.selectedNumberText.text = selectedWeight
+        }
+
+        dialogBinding.kgOption.setOnClickListener {
+            dialogBinding.kgOption.setBackgroundResource(R.drawable.bg_weight_log_left_selected)
+            dialogBinding.kgOption.setTextColor(Color.WHITE)
+            dialogBinding.lbsOption.setBackgroundResource(R.drawable.bg_weight_log_right_unselected)
+            dialogBinding.lbsOption.setTextColor(Color.BLACK)
+            val w = selectedWeight.split(" ")
+            selectedLabel = " kg"
+            selectedWeight = ConversionUtils.convertKgToLbs(w[0])
+            setKgsValue()
+            dialogBinding.rulerView.layoutManager?.scrollToPosition(floor(selectedWeight.toDouble() * 10).toInt())
+            selectedWeight += selectedLabel
+            dialogBinding.selectedNumberText.text = selectedWeight
+        }
+
+        dialogBinding.lbsOption.setOnClickListener {
+            dialogBinding.lbsOption.setBackgroundResource(R.drawable.bg_weight_log_right_selected)
+            dialogBinding.lbsOption.setTextColor(Color.WHITE)
+            dialogBinding.kgOption.setBackgroundResource(R.drawable.bg_weight_log_left_unselected)
+            dialogBinding.kgOption.setTextColor(Color.BLACK)
+            val w = selectedWeight.split(" ")
+            selectedLabel = " lbs"
+            selectedWeight = ConversionUtils.convertLbsToKgs(w[0])
+            setLbsValue()
+            dialogBinding.rulerView.layoutManager?.scrollToPosition(floor(selectedWeight.toDouble() * 10).toInt())
+            selectedWeight += selectedLabel
+            dialogBinding.selectedNumberText.text = selectedWeight
+        }
 
         // Center number with snap alignment
         val snapHelper: SnapHelper = LinearSnapHelper()
@@ -1195,67 +1208,4 @@ class MasterCalculationsViewModel  : ViewModel() {
     fun calculateBMI(weight: Double, height: Double): Double {
         return weight / (height * height)
     }
-
-    fun calculateBodyFatPercentage(weight: Double, height: Double, age: Int, gender: String): Double {
-        val bmi = calculateBMI(weight, height)
-        return if (gender.lowercase() == "male") {
-            1.20 * bmi + 0.23 * age - 16.2
-        } else {
-            1.20 * bmi + 0.23 * age - 5.4
-        }
-    }
-
-    fun calculateBMR(weight: Double, height: Double, age: Int, gender: String): Double {
-        return if (gender.lowercase() == "male") {
-            10 * weight + 6.25 * height * 100 - 5 * age + 5
-        } else {
-            10 * weight + 6.25 * height * 100 - 5 * age - 161
-        }
-    }
-
-    fun calculateTDEE(bmr: Double, activityLevel: Double): Double {
-        return bmr * activityLevel
-    }
-
-//    fun getCalculatedValues(): NutrientIntakes? {
-//        val model = _userResponse.value
-//        return model?.data?.let {
-//            calculateIntakes(
-//                weight = it.weight ?: 0.0,
-//                height = (it.height ?: 0.0) / 100.0,
-//                age = (it.age ?: 0.0).toInt(),
-//                gender = "male",
-//                activityLevel = 1.55
-//            )
-//        }
-//    }
-//
-//    fun calculateIntakes(
-//        weight: Double,
-//        height: Double,
-//        age: Int,
-//        gender: String,
-//        activityLevel: Double
-//    ): NutrientIntakes {
-//        val bodyFatPercentage = calculateBodyFatPercentage(weight, height, age, gender)
-//        val bmr = calculateBMR(weight, height, age, gender)
-//        val tdee = calculateTDEE(bmr, activityLevel)
-//
-//        val fatMass = weight * (bodyFatPercentage / 100)
-//        val leanMass = weight - fatMass
-//        val idealProtein = 2.6 * leanMass
-//        val caloriesFromProtein = 4 * idealProtein
-//        val remainingCalories = tdee - caloriesFromProtein
-//        val caloriesFromCarbs = 0.6 * remainingCalories
-//        val caloriesFromFats = 0.4 * remainingCalories
-//
-//        return NutrientIntakes(
-//            dailyCaloricGoal = tdee,
-//            protein = idealProtein,
-//            carbs = caloriesFromCarbs / 4,
-//            fats = caloriesFromFats / 9,
-//            bodyFatPercentage = bodyFatPercentage,
-//            tdee = tdee
-//        )
- //   }
 }
