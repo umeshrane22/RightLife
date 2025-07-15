@@ -548,7 +548,9 @@ class HomeExploreFragment : BaseFragment() {
                 promotionResponse.promotiondata.promotionList[i].buttonName,
                 promotionResponse.promotiondata.promotionList[i].category,
                 promotionResponse.promotiondata.promotionList[i].views.toString(),
-                promotionResponse.promotiondata.promotionList[i].seriesId
+                promotionResponse.promotiondata.promotionList[i].seriesId,
+                promotionResponse.promotiondata.promotionList[i].titleImage,
+                promotionResponse.promotiondata.promotionList[i].buttonImage
             )
             cardItems.add(i, cardItem)
         }
@@ -556,11 +558,11 @@ class HomeExploreFragment : BaseFragment() {
         if (cardItems.isNotEmpty()) {
             binding.viewPager.visibility = View.VISIBLE
             adapter = CircularCardAdapter(requireActivity(), cardItems)
-            binding.viewPager.setAdapter(adapter)
+            binding.viewPager.adapter = adapter
         } else {
             binding.viewPager.visibility = View.GONE
         }
-        adapter?.notifyDataSetChanged()
+        adapter!!.notifyDataSetChanged()
     }
 
     private fun handleServicePaneResponse(responseObj: ServicePaneResponse) {
