@@ -26,15 +26,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class MyRoutineFragment : BaseFragment<FragmentMyRoutineBinding>() {
+
     private lateinit var myRoutineRecyclerView: RecyclerView
     private lateinit var layoutBtnLogWorkout: LinearLayoutCompat
+
     private val myRoutineListAdapter by lazy {
         MyRoutineMainListAdapter(
-            requireContext(),
-            arrayListOf(),
-            -1,
-            null,
-            false,
+            requireContext(), arrayListOf(), -1, null, false,
             onCirclePlusClick = { workoutRoutineModel, position ->
                 val fragment = AddWorkoutSearchFragment()
                 val args = Bundle().apply {
@@ -45,15 +43,7 @@ class MyRoutineFragment : BaseFragment<FragmentMyRoutineBinding>() {
                 requireActivity().supportFragmentManager.beginTransaction().apply {
                     replace(R.id.flFragment, fragment, "workoutDetails")
                     addToBackStack("workoutDetails")
-                    commit()
-                }
-                //showActivityDetailsDialog(activityModel, position)
-//                println(activityModel)
-//                println(position)
-            },
-            ::onWorkoutItemClick,
-
-        )
+                    commit() } }, ::onWorkoutItemClick,)
     }
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentMyRoutineBinding

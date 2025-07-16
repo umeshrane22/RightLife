@@ -197,13 +197,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:background="@color/view_border"
-            app:layout_constraintTop_toBottomOf="@+id/tv_meal_name"></View>
+            app:layout_constraintTop_toBottomOf="@+id/tv_meal_name">
+        </View>
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_margin="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
             android:gravity="left"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -227,21 +229,21 @@
                     android:id="@+id/tv_serves"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:textSize="18sp"
+                    android:layout_marginStart="2dp"
+                    android:textSize="16sp"
                     android:visibility="visible"
-                    android:fontFamily="@font/dmsans_regular"
+                    android:fontFamily="@font/dmsans_bold"
                     android:textColor="@color/workout_textcolor"
                     android:text="1" />
 
                 <TextView
-
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:textSize="12sp"
+                    android:layout_marginStart="1dp"
+                    android:layout_marginTop="2dp"
+                    android:textSize="10sp"
                     android:visibility="visible"
-                    android:fontFamily="@font/dmsans_bold"
+                    android:fontFamily="@font/dmsans_regular"
                     android:textColor="@color/workout_textcolor"
                     android:text="hr" />
 
@@ -249,10 +251,10 @@
                     android:id="@+id/min_serves"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:textSize="18sp"
+                    android:layout_marginStart="2dp"
+                    android:textSize="16sp"
                     android:visibility="visible"
-                    android:fontFamily="@font/dmsans_regular"
+                    android:fontFamily="@font/dmsans_bold"
                     android:textColor="@color/workout_textcolor"
                     android:text="" />
 
@@ -260,9 +262,10 @@
                     android:id="@+id/tv_serves_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:textSize="12sp"
-                    android:fontFamily="@font/dmsans_bold"
+                    android:layout_marginStart="1dp"
+                    android:layout_marginTop="2dp"
+                    android:textSize="10sp"
+                    android:fontFamily="@font/dmsans_regular"
                     android:textColor="@color/workout_textcolor"
                     android:text="min" />
 
@@ -287,8 +290,8 @@
                     android:id="@+id/tv_cal_value"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:textSize="18sp"
+                    android:layout_marginStart="2dp"
+                    android:textSize="16sp"
                     android:fontFamily="@font/dmsans_bold"
                     android:textColor="@color/workout_textcolor"
                     android:text="337" />
@@ -297,8 +300,9 @@
                     android:id="@+id/tv_cal_unit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
+                    android:layout_marginStart="1dp"
                     android:textSize="10sp"
+                    android:layout_marginTop="2dp"
                     android:visibility="visible"
                     android:fontFamily="@font/dmsans_regular"
                     android:textColor="@color/workout_textcolor"
@@ -318,7 +322,6 @@
                 android:paddingTop="5dp"
                 android:paddingBottom="5dp"
                 android:layout_marginStart="5dp"
-                android:layout_marginEnd="10dp"
                 android:background="@drawable/add_cart_button_background">
 
                 <ImageView

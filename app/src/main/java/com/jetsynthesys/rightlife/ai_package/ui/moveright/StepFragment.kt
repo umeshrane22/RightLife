@@ -362,29 +362,19 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
                 }
             }
         }
-        total_steps_count.text = "Total Steps Taken This Week: ${stepData.totalStepsCount}"
+        total_steps_count.text = "Total Steps Taken This Week: ${stepData.totalStepsCount.toInt()}"
         // Set granularity to 500f for finer control, adjust based on max value
         leftYAxis.granularity = if (adjustedMax <= 5000f) 500f else 1000f // 500 for small range, 1000 for larger
 
-        val totalStepsLine = LimitLine(stepData.totalStepsCount.toFloat(), "Total Steps: ${stepData.totalStepsCount.toInt()}")
-        totalStepsLine.lineColor = Color.BLUE
-        totalStepsLine.lineWidth = 1f
-        totalStepsLine.enableDashedLine(10f, 10f, 0f)
-        totalStepsLine.textColor = Color.BLUE
-        totalStepsLine.textSize = 10f
-        totalStepsLine.labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
-
-        val avgStepsLine = LimitLine(stepData.stepsGoal.toFloat(), "Goal Steps: ${stepData.stepsGoal.toInt()}")
-        avgStepsLine.lineColor = Color.GREEN
+        val avgStepsLine = LimitLine(stepData.totalStepsAvg.toFloat(), "A")
+        avgStepsLine.lineColor = ContextCompat.getColor(requireContext(), R.color.text_color_kcal)
         avgStepsLine.lineWidth = 1f
         avgStepsLine.enableDashedLine(10f, 10f, 0f)
-        avgStepsLine.textColor = Color.GREEN
+        avgStepsLine.textColor = ContextCompat.getColor(requireContext(), R.color.text_color_kcal)
         avgStepsLine.textSize = 10f
         avgStepsLine.labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
-        currentGoal = stepData.stepsGoal
 
         leftYAxis.removeAllLimitLines()
-        leftYAxis.addLimitLine(totalStepsLine)
         leftYAxis.addLimitLine(avgStepsLine)
 
         // Multiline X-axis labels
