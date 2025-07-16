@@ -323,8 +323,14 @@ class HomeDashboardFragment : BaseFragment() {
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
             if (permissions.values.all { it }) {
                 lifecycleScope.launch {
-                    // fetchAllHealthData()
-                    getDashboardChecklist()
+                    CommonAPICall.updateChecklistStatus(
+                        requireContext(), "sync_health_data", AppConstants.CHECKLIST_COMPLETED
+                    ){ status ->
+                        if (status)
+                            lifecycleScope.launch {
+                                getDashboardChecklist()
+                            }
+                    }
                 }
                 Toast.makeText(requireContext(), "Permissions Granted", Toast.LENGTH_SHORT).show()
             } else {
