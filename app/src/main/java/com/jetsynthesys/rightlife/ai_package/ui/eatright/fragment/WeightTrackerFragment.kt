@@ -313,37 +313,38 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
        val bottomSheetView = dialogBinding.root
        bottomSheetDialog.setContentView(bottomSheetView)
        dialogBinding.selectedNumberText.text = selectedWeight
-       if (selectedLabel == " lbs") {
-           dialogBinding.switchWeightMetric.isChecked = true
-       }
+     //  if (selectedLabel == " lbs") {
+          // dialogBinding.switchWeightMetric.isChecked = true
+          // dialogBinding.tabGroup.i
+     //  }
 
-       val thumbColors = ColorStateList(
-           arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()),
-           intArrayOf(Color.parseColor("#03B27B"), Color.parseColor("#03B27B"))
-       )
-
-       val trackColors = ColorStateList(
-           arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()),
-           intArrayOf(Color.parseColor("#F2F2F2"), Color.parseColor("#F2F2F2"))
-       )
-
-       dialogBinding.switchWeightMetric.thumbTintList = thumbColors
-       dialogBinding.switchWeightMetric.trackTintList = trackColors
-       dialogBinding.switchWeightMetric.setOnCheckedChangeListener { buttonView, isChecked ->
-           val w = selectedWeight.split(" ")
-           if (isChecked) {
-               selectedLabel = " lbs"
-               selectedWeight = ConversionUtils.convertLbsToKgs(w[0])
-               setLbsValue()
-           } else {
-               selectedLabel = " kgs"
-               selectedWeight = ConversionUtils.convertKgToLbs(w[0])
-               setKgsValue()
-           }
-           dialogBinding.rulerView.layoutManager?.scrollToPosition(floor(selectedWeight.toDouble() * 10).toInt())
-           selectedWeight += selectedLabel
-           dialogBinding.selectedNumberText.text = selectedWeight
-       }
+//       val thumbColors = ColorStateList(
+//           arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()),
+//           intArrayOf(Color.parseColor("#03B27B"), Color.parseColor("#03B27B"))
+//       )
+//
+//       val trackColors = ColorStateList(
+//           arrayOf(intArrayOf(android.R.attr.state_checked), intArrayOf()),
+//           intArrayOf(Color.parseColor("#F2F2F2"), Color.parseColor("#F2F2F2"))
+//       )
+//
+//       dialogBinding.switchWeightMetric.thumbTintList = thumbColors
+//       dialogBinding.switchWeightMetric.trackTintList = trackColors
+//       dialogBinding.switchWeightMetric.setOnCheckedChangeListener { buttonView, isChecked ->
+//           val w = selectedWeight.split(" ")
+//           if (isChecked) {
+//               selectedLabel = " lbs"
+//               selectedWeight = ConversionUtils.convertLbsToKgs(w[0])
+//               setLbsValue()
+//           } else {
+//               selectedLabel = " kgs"
+//               selectedWeight = ConversionUtils.convertKgToLbs(w[0])
+//               setKgsValue()
+//           }
+//           dialogBinding.rulerView.layoutManager?.scrollToPosition(floor(selectedWeight.toDouble() * 10).toInt())
+//           selectedWeight += selectedLabel
+//           dialogBinding.selectedNumberText.text = selectedWeight
+//       }
 
        val layoutManager =
            LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
@@ -358,6 +359,50 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
            // Handle the selected number
        }
        dialogBinding.rulerView.adapter = logWeightRulerAdapter
+
+       if (selectedLabel == " kg"){
+           dialogBinding.kgOption.setBackgroundResource(R.drawable.bg_weight_log_left_selected)
+           dialogBinding.kgOption.setTextColor(Color.WHITE)
+           dialogBinding.lbsOption.setBackgroundResource(R.drawable.bg_weight_log_right_unselected)
+           dialogBinding.lbsOption.setTextColor(Color.BLACK)
+           setKgsValue()
+           dialogBinding.selectedNumberText.text = selectedWeight
+       }else{
+           dialogBinding.lbsOption.setBackgroundResource(R.drawable.bg_weight_log_right_selected)
+           dialogBinding.lbsOption.setTextColor(Color.WHITE)
+           dialogBinding.kgOption.setBackgroundResource(R.drawable.bg_weight_log_left_unselected)
+           dialogBinding.kgOption.setTextColor(Color.BLACK)
+           setLbsValue()
+           dialogBinding.selectedNumberText.text = selectedWeight
+       }
+
+       dialogBinding.kgOption.setOnClickListener {
+           dialogBinding.kgOption.setBackgroundResource(R.drawable.bg_weight_log_left_selected)
+           dialogBinding.kgOption.setTextColor(Color.WHITE)
+           dialogBinding.lbsOption.setBackgroundResource(R.drawable.bg_weight_log_right_unselected)
+           dialogBinding.lbsOption.setTextColor(Color.BLACK)
+           val w = selectedWeight.split(" ")
+           selectedLabel = " kg"
+           selectedWeight = ConversionUtils.convertKgToLbs(w[0])
+           setKgsValue()
+           dialogBinding.rulerView.layoutManager?.scrollToPosition(floor(selectedWeight.toDouble() * 10).toInt())
+           selectedWeight += selectedLabel
+           dialogBinding.selectedNumberText.text = selectedWeight
+       }
+
+       dialogBinding.lbsOption.setOnClickListener {
+           dialogBinding.lbsOption.setBackgroundResource(R.drawable.bg_weight_log_right_selected)
+           dialogBinding.lbsOption.setTextColor(Color.WHITE)
+           dialogBinding.kgOption.setBackgroundResource(R.drawable.bg_weight_log_left_unselected)
+           dialogBinding.kgOption.setTextColor(Color.BLACK)
+           val w = selectedWeight.split(" ")
+           selectedLabel = " lbs"
+           selectedWeight = ConversionUtils.convertLbsToKgs(w[0])
+           setLbsValue()
+           dialogBinding.rulerView.layoutManager?.scrollToPosition(floor(selectedWeight.toDouble() * 10).toInt())
+           selectedWeight += selectedLabel
+           dialogBinding.selectedNumberText.text = selectedWeight
+       }
 
        // Center number with snap alignment
        val snapHelper: SnapHelper = LinearSnapHelper()
@@ -556,7 +601,13 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
                             weight_description_heading.text = data.heading
                             weight_description_text.text = data.description
                             if (data.lastWeightLog != null){
-                                weightIntake.text = data.lastWeightLog.totalWeight.toString()
+                                weightIntakeUnit.text = data.lastWeightLog?.type
+                                if (data.lastWeightLog?.type.equals("lbs")){
+                                    val selectedWeight = ConversionUtils.convertLbsToKgs(data.lastWeightLog.totalWeight?.toFloat().toString())
+                                    weightIntake.text = selectedWeight
+                                }else{
+                                    weightIntake.text = data.lastWeightLog.totalWeight.toString()
+                                }
                                 weightLastLogDateTv.text = data.lastWeightLog.date.toString()
                             }
                            // weightIntakeUnit.text = data.lastWeightLog.

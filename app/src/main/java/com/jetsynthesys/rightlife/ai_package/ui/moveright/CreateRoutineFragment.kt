@@ -160,7 +160,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
         }
 
         editText.addTextChangedListener(object : TextWatcher {
-            private val maxLength = 30
+            private val maxLength = 20
             override fun afterTextChanged(s: Editable?) {
                 if (s != null && s.length > maxLength) {
                     // Truncate the text to maxLength

@@ -53,12 +53,48 @@
             android:layout_marginTop="20dp"
             android:layout_height="wrap_content">
 
+            <LinearLayout
+                android:id="@+id/toggleContainer"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:orientation="horizontal"
+                android:padding="2dp"
+                android:layout_marginStart="40dp"
+                android:layout_marginEnd="40dp"
+                android:layout_centerHorizontal="true">
+
+                <TextView
+                    android:id="@+id/kgOption"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="kg"
+                    android:fontFamily="@font/dmsans_bold"
+                    android:textSize="16sp"
+                    android:textColor="@color/black"
+                    android:background="@drawable/bg_weight_log_left_unselected" />
+
+                <TextView
+                    android:id="@+id/lbsOption"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="lbs"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/dmsans_bold"
+                    android:textColor="@color/white"
+                    android:background="@drawable/bg_weight_log_right_selected" />
+            </LinearLayout>
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:fontFamily="@font/dmsans_bold"
                 android:text="Kg"
+                android:visibility="gone"
                 android:paddingEnd="20dp"
                 android:textColor="@color/black_no_meals"
                 android:layout_toStartOf="@+id/switch_weight_metric"
@@ -70,6 +106,7 @@
                 android:layout_centerVertical="true"
                 android:fontFamily="@font/dmsans_bold"
                 android:text="lbs"
+                android:visibility="gone"
                 android:paddingStart="20dp"
                 android:textColor="@color/black_no_meals"
                 android:layout_toEndOf="@+id/switch_weight_metric"
@@ -79,6 +116,7 @@
                 android:id="@+id/switch_weight_metric"
                 android:layout_width="wrap_content"
                 android:layout_height="30dp"
+                android:visibility="gone"
                 android:layout_centerHorizontal="true"
                 app:track="@drawable/custom_track_eat_weightswitch"
                 android:thumb="@drawable/custom_weightthumb"
