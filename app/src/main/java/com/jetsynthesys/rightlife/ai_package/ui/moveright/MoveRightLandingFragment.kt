@@ -305,10 +305,26 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
             navigateToFragment(ActivityFactorFragment(), "ActivityFactorFragment")
         }
         logMealNoDataBtn.setOnClickListener {
-            navigateToFragment(YourMealLogsFragment(), "YourMealLogs")
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                val mealSearchFragment = YourMealLogsFragment()
+                val args = Bundle()
+                args.putString("ModuleName", "MoveRightLanding")
+                mealSearchFragment.arguments = args
+                replace(R.id.flFragment, mealSearchFragment, "Steps")
+                addToBackStack(null)
+                commit()
+            }
         }
         logMealButton.setOnClickListener {
-            navigateToFragment(YourMealLogsFragment(), "YourMealLogs")
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                val mealSearchFragment = YourMealLogsFragment()
+                val args = Bundle()
+                args.putString("ModuleName", "MoveRightLanding")
+                mealSearchFragment.arguments = args
+                replace(R.id.flFragment, mealSearchFragment, "Steps")
+                addToBackStack(null)
+                commit()
+            }
         }
         caloricInfo.setOnClickListener {
             val yourCaloricSummaryInfoBottomSheet = YourCaloricSummaryInfoBottomSheet()

@@ -261,6 +261,13 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             bundle.putBoolean("test",false)
             selectMealTypeBottomSheet.arguments = bundle
             parentFragment.let { selectMealTypeBottomSheet.show(childFragmentManager, "SelectMealTypeBottomSheet") }
+        }else if (moduleName.contentEquals("MoveRightLanding")) {
+            selectMealTypeBottomSheet = SelectMealTypeBottomSheet()
+            selectMealTypeBottomSheet.isCancelable = true
+            val bundle = Bundle()
+            bundle.putBoolean("test", false)
+            selectMealTypeBottomSheet.arguments = bundle
+            parentFragment.let { selectMealTypeBottomSheet.show(childFragmentManager, "SelectMealTypeBottomSheet") }
         }
 
         mealLogWeeklyDayRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL,
@@ -286,7 +293,11 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             override fun handleOnBackPressed() {
                 val fragment = HomeBottomTabFragment()
                 val args = Bundle()
-                args.putString("ModuleName", "EatRight")
+                if (moduleName.contentEquals("EatRightLanding")){
+                    args.putString("ModuleName", "EatRight")
+                }else{
+                    args.putString("ModuleName", "MoveRight")
+                }
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
                     replace(R.id.flFragment, fragment, "landing")
@@ -359,7 +370,11 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
         backButton.setOnClickListener {
             val fragment = HomeBottomTabFragment()
             val args = Bundle()
-            args.putString("ModuleName", "EatRight")
+            if (moduleName.contentEquals("EatRightLanding")){
+                args.putString("ModuleName", "EatRight")
+            }else{
+                args.putString("ModuleName", "MoveRight")
+            }
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "landing")

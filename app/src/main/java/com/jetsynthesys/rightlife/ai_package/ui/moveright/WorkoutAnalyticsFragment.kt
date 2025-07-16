@@ -40,6 +40,7 @@ class WorkoutAnalyticsFragment : BaseFragment<FragmentWorkoutAnalyticsBinding>()
     private lateinit var customProgressBarFatBurn: FatBurnStrippedProgressBar
     private lateinit var transparentOverlayFatBurn: View
     private lateinit var light_percentage_value: TextView
+    private lateinit var yourHeartRateZone : ImageView
     private lateinit var light_time_value: TextView
     private lateinit var fat_burn_time_value: TextView
     private lateinit var fat_burn_percentage_value: TextView
@@ -83,6 +84,7 @@ class WorkoutAnalyticsFragment : BaseFragment<FragmentWorkoutAnalyticsBinding>()
         cardio_text_percentage_value = view.findViewById(R.id.cardio_text_percentage_value)
         peak_text_time_value = view.findViewById(R.id.peak_text_time_value)
         light_text_percentage = view.findViewById(R.id.light_text_percentage)
+        yourHeartRateZone = view.findViewById(R.id.yourHeartRateZone)
 
         workOutsAnalyticsBackButton.setOnClickListener {
             val fragment = HomeBottomTabFragment()
@@ -198,6 +200,12 @@ class WorkoutAnalyticsFragment : BaseFragment<FragmentWorkoutAnalyticsBinding>()
             // Handle the case where no CardItem is provided
             view.findViewById<TextView>(R.id.functional_strength_text).text = "No Data"
             Toast.makeText(requireContext(), "No workout data available", Toast.LENGTH_SHORT).show()
+        }
+
+        yourHeartRateZone.setOnClickListener {
+            val yourHeartRateZonesInfoBottomSheet = YourHeartRateZonesInfoBottomSheet()
+            yourHeartRateZonesInfoBottomSheet.isCancelable = true
+            parentFragment.let { yourHeartRateZonesInfoBottomSheet.show(childFragmentManager, "YourHeartRateZonesInfoBottomSheet") }
         }
     }
 

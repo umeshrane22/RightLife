@@ -29,7 +29,7 @@ class YourHeartRateZonesInfoBottomSheet : BottomSheetDialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_meal_summary_info_bottom_sheet, container, false)
+        return inflater.inflate(R.layout.fragment_heart_rate_zone_info_bottom_sheet, container, false)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -40,23 +40,27 @@ class YourHeartRateZonesInfoBottomSheet : BottomSheetDialogFragment() {
         dialog.window?.setBackgroundDrawableResource(transparent)
         val title = view.findViewById<TextView>(R.id.title)
         val close = view.findViewById<ImageView>(R.id.close)
-        val summary = view.findViewById<TextView>(R.id.tvMealSummary)
-        val image = view.findViewById<ImageView>(R.id.image)
+        val heatRateZone = view.findViewById<TextView>(R.id.tvHeatRateZone)
+        val calculationHeatRateZone = view.findViewById<TextView>(R.id.tvCalculationHeatRateZone)
+        val analysis = view.findViewById<TextView>(R.id.tvAnalysis)
+        val training = view.findViewById<TextView>(R.id.tvTraining)
+        val image = view.findViewById<ImageView>(R.id.imageHeartRateZone)
 
-        image.setImageResource(R.drawable.your_heart_hate_zone)
+       // image.setImageResource(R.drawable.your_heart_hate_zone)
         title.text = "Your Heart Rate Zones"
 
         close.setOnClickListener {
             dismiss()
         }
-        val htmlContent = """
-        <h2>How does RightLife calculate your Heart Rate Zones?</h2>
+        val htmlContentHeatRateZone = """
         <h2>Why Heart Rate Zones Matter</h2>
 <p>Heart rate (HR) zones are essential for optimizing workouts, ensuring that you’re training at the right intensity to achieve your fitness goals. However, many fitness apps and wearables rely on outdated formulas that fail to account for individual differences.</p>
 
 <p><b>RightLife</b> takes a science-backed approach, using the <b>Karvonen Method</b>, a more accurate formula that personalizes HR zones based on both Maximum Heart Rate (MHR) and Resting Heart Rate (RHR). This means your HR zones adjust dynamically as your fitness improves, ensuring more precise and effective training.</p>
+    """.trimIndent()
+        heatRateZone.text = Html.fromHtml(htmlContentHeatRateZone, Html.FROM_HTML_MODE_LEGACY)
 
-<h3>How RightLife Calculates Your HR Zones</h3>
+    val htmlContentCalculationHeatRateZone = """
 <p>Unlike many wearables that use the generic <i>[220 - age]</i> formula, RightLife incorporates your resting HR, ensuring HR zones are tailored to you. Here’s how we do it:</p>
 
 <ul>
@@ -82,8 +86,10 @@ class YourHeartRateZonesInfoBottomSheet : BottomSheetDialogFragment() {
     </ul>
   </li>
 </ul>
+    """.trimIndent()
+        calculationHeatRateZone.text = Html.fromHtml(htmlContentCalculationHeatRateZone, Html.FROM_HTML_MODE_LEGACY)
 
-<h3>How RightLife Stands Out</h3>
+val htmlContentAnalysis = """
 <p>Many fitness apps fail to personalize HR zones, leading to inaccurate intensity recommendations. RightLife improves on industry standards in the following ways:</p>
 
 <ul>
@@ -93,12 +99,14 @@ class YourHeartRateZonesInfoBottomSheet : BottomSheetDialogFragment() {
 </ul>
 
 <p><i>See “How does RL track HR Zones better than Polar and Garmin”</i></p>
+    """.trimIndent()
+        analysis.text = Html.fromHtml(htmlContentAnalysis, Html.FROM_HTML_MODE_LEGACY)
 
-<h3>Maximize Your Training with RightLife</h3>
+val htmlContentTraining = """
 <p>Your heart rate zones should work for you, not against you. With RightLife, you get an adaptive, data-driven approach that ensures every workout is optimized for efficiency, whether you're aiming for fat loss, endurance, or peak performance. Start training smarter with RightLife’s personalized HR zones.</p>
     """.trimIndent()
-        summary.text = Html.fromHtml(htmlContent, Html.FROM_HTML_MODE_LEGACY)
-    }
+        training.text = Html.fromHtml(htmlContentTraining, Html.FROM_HTML_MODE_LEGACY)
+}
 
     companion object {
         const val TAG = "LoggedBottomSheet"
