@@ -256,13 +256,14 @@
 
                         <ImageView
                             android:id="@+id/icMacroUP"
-                            android:layout_width="12dp"
-                            android:layout_height="12dp"
+                            android:layout_width="13dp"
+                            android:layout_height="10dp"
                             android:layout_gravity="right"
                             android:layout_marginStart="10dp"
                             android:layout_marginTop="10dp"
+                            android:layout_marginEnd="5dp"
                             android:scaleType="fitXY"
-                            android:src="@drawable/ic_down"
+                            android:src="@drawable/ic_feather_down"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             />
@@ -296,7 +297,7 @@
                             android:id="@+id/calorie_image"
                             android:layout_width="20dp"
                             android:layout_height="20dp"
-                            android:src="@drawable/calorie_burned_icon"
+                            android:src="@drawable/ic_awesome_cal"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"/>
 
@@ -344,7 +345,7 @@
                             android:id="@+id/protein_image"
                             android:layout_width="20dp"
                             android:layout_height="20dp"
-                            android:src="@drawable/ic_protein"
+                            android:src="@drawable/ic_union_pro"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"/>
 
@@ -392,7 +393,7 @@
                             android:id="@+id/carbs_image"
                             android:layout_width="20dp"
                             android:layout_height="20dp"
-                            android:src="@drawable/ic_cabs"
+                            android:src="@drawable/ic_wheat_carb"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"/>
 
@@ -442,7 +443,7 @@
                             android:id="@+id/fat_image"
                             android:layout_width="20dp"
                             android:layout_height="20dp"
-                            android:src="@drawable/ic_fats"
+                            android:src="@drawable/ic_raindrop_fat"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"/>
 

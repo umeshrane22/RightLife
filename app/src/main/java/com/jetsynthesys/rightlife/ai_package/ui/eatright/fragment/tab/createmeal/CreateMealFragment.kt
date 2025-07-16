@@ -68,6 +68,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
     private lateinit var mealType : String
     private var mealName : String = ""
     private var loadingOverlay : FrameLayout? = null
+    private var moduleName : String = ""
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentCreateMealBinding
         get() = FragmentCreateMealBinding::inflate
@@ -106,6 +107,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
         addedDishItemRecyclerview.layoutManager = LinearLayoutManager(context)
         addedDishItemRecyclerview.adapter = dishListAdapter
 
+        moduleName = arguments?.getString("ModuleName").toString()
         mealId = arguments?.getString("mealId").toString()
         mealType = arguments?.getString("mealType").toString()
         mealName = arguments?.getString("mealName").toString()
@@ -144,6 +146,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
             override fun handleOnBackPressed() {
                 val fragment = HomeTabMealFragment()
                 val args = Bundle()
+                args.putString("ModuleName", moduleName)
                 args.putString("mealType", mealType)
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -157,6 +160,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
         backButton.setOnClickListener {
             val fragment = HomeTabMealFragment()
             val args = Bundle()
+            args.putString("ModuleName", moduleName)
             args.putString("mealType", mealType)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -250,6 +254,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
         btnAddLayout.setOnClickListener {
             val fragment = SearchDishFragment()
             val args = Bundle()
+            args.putString("ModuleName", moduleName)
             args.putString("searchType", "createMeal")
             args.putString("mealId", mealId)
             args.putString("mealType", mealType)
@@ -307,6 +312,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
         requireActivity().supportFragmentManager.beginTransaction().apply {
             val fragment = DishFragment()
             val args = Bundle()
+            args.putString("ModuleName", moduleName)
             args.putString("searchType", "createMeal")
             args.putString("mealId", mealId)
             args.putString("mealType", mealType)
@@ -325,6 +331,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
         val deleteDishBottomSheet = DeleteDishBottomSheet()
         deleteDishBottomSheet.isCancelable = true
         val args = Bundle()
+        args.putString("ModuleName", moduleName)
         args.putBoolean("test",false)
         args.putString("mealId", mealId)
         args.putString("mealType", mealType)
@@ -495,6 +502,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
                     Toast.makeText(activity, mealData, Toast.LENGTH_SHORT).show()
                     val fragment = HomeTabMealFragment()
                     val args = Bundle()
+                    args.putString("ModuleName", moduleName)
                     args.putString("mealType", mealType)
                     args.putString("tabType", "MyMeal")
                     fragment.arguments = args
@@ -562,6 +570,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
                     Toast.makeText(activity, mealData, Toast.LENGTH_SHORT).show()
                     val fragment = HomeTabMealFragment()
                     val args = Bundle()
+                    args.putString("ModuleName", moduleName)
                     args.putString("tabType", "MyMeal")
                     fragment.arguments = args
                     requireActivity().supportFragmentManager.beginTransaction().apply {

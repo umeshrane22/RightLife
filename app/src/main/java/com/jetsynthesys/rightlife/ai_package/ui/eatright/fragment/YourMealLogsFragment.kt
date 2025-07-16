@@ -250,23 +250,26 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
         if (moduleName.contentEquals("HomeDashboard")){
             selectMealTypeBottomSheet = SelectMealTypeBottomSheet()
             selectMealTypeBottomSheet.isCancelable = true
-            val bundle = Bundle()
-            bundle.putBoolean("test",false)
-            selectMealTypeBottomSheet.arguments = bundle
+            val args = Bundle()
+            args.putString("ModuleName", moduleName)
+            args.putBoolean("test",false)
+            selectMealTypeBottomSheet.arguments = args
             parentFragment.let { selectMealTypeBottomSheet.show(childFragmentManager, "SelectMealTypeBottomSheet") }
         }else if (moduleName.contentEquals("EatRightLanding")){
             selectMealTypeBottomSheet = SelectMealTypeBottomSheet()
             selectMealTypeBottomSheet.isCancelable = true
-            val bundle = Bundle()
-            bundle.putBoolean("test",false)
-            selectMealTypeBottomSheet.arguments = bundle
+            val args = Bundle()
+            args.putString("ModuleName", moduleName)
+            args.putBoolean("test",false)
+            selectMealTypeBottomSheet.arguments = args
             parentFragment.let { selectMealTypeBottomSheet.show(childFragmentManager, "SelectMealTypeBottomSheet") }
         }else if (moduleName.contentEquals("MoveRightLanding")) {
             selectMealTypeBottomSheet = SelectMealTypeBottomSheet()
             selectMealTypeBottomSheet.isCancelable = true
-            val bundle = Bundle()
-            bundle.putBoolean("test", false)
-            selectMealTypeBottomSheet.arguments = bundle
+            val args = Bundle()
+            args.putString("ModuleName", moduleName)
+            args.putBoolean("test", false)
+            selectMealTypeBottomSheet.arguments = args
             parentFragment.let { selectMealTypeBottomSheet.show(childFragmentManager, "SelectMealTypeBottomSheet") }
         }
 

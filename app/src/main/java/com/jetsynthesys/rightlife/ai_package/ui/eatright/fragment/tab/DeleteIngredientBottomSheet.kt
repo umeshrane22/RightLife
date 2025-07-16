@@ -25,6 +25,7 @@ class DeleteIngredientBottomSheet : BottomSheetDialogFragment() {
     private var recipeId : String = ""
     private var recipeName : String = ""
     private var serving : Double = 0.0
+    private var moduleName : String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,6 +52,7 @@ class DeleteIngredientBottomSheet : BottomSheetDialogFragment() {
         deleteTitle.text = "Delete Ingredient"
         deleteConfirmTv.text = "Are you sure you want to delete this ingredient entry?"
 
+        moduleName = arguments?.getString("ModuleName").toString()
         val ingredientName = arguments?.getString("ingredientName").toString()
         recipeId = arguments?.getString("recipeId").toString()
         recipeName = arguments?.getString("recipeName").toString()
@@ -72,6 +74,7 @@ class DeleteIngredientBottomSheet : BottomSheetDialogFragment() {
                             Toast.makeText(view.context, "Ingredient Removed", Toast.LENGTH_SHORT).show()
                             val fragment = CreateRecipeFragment()
                             val args = Bundle()
+                            args.putString("ModuleName", moduleName)
                             args.putString("recipeId", recipeId)
                             args.putString("recipeName", recipeName)
                             args.putDouble("serving", serving)

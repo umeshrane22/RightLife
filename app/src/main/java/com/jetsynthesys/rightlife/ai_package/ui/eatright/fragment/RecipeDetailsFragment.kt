@@ -144,7 +144,7 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
 
         getRecipesDetails()
 
-        icMacroUP.setImageResource(R.drawable.ic_down)
+        icMacroUP.setImageResource(R.drawable.ic_feather_down)
         view.findViewById<View>(R.id.view_macro).visibility = View.GONE
         view.findViewById<LinearLayoutCompat>(R.id.calorie_layout).visibility = View.GONE
         view.findViewById<LinearLayoutCompat>(R.id.carbs_layout).visibility = View.GONE
@@ -154,7 +154,7 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
         layoutMacroTitle.setOnClickListener {
             if (macroItemRecyclerView.isVisible){
                 macroItemRecyclerView.visibility = View.GONE
-                icMacroUP.setImageResource(R.drawable.ic_down)
+                icMacroUP.setImageResource(R.drawable.ic_feather_down)
                 view.findViewById<View>(R.id.view_macro).visibility = View.GONE
                 view.findViewById<LinearLayoutCompat>(R.id.calorie_layout).visibility = View.GONE
                 view.findViewById<LinearLayoutCompat>(R.id.carbs_layout).visibility = View.GONE
@@ -162,7 +162,7 @@ class RecipeDetailsFragment  : BaseFragment<FragmentRecipeDetailsBinding>() {
                 view.findViewById<LinearLayoutCompat>(R.id.fat_layout).visibility = View.GONE
             }else{
                 macroItemRecyclerView.visibility = View.VISIBLE
-                icMacroUP.setImageResource(R.drawable.ic_up)
+                icMacroUP.setImageResource(R.drawable.ic_feather_up)
                 view.findViewById<View>(R.id.view_macro).visibility = View.VISIBLE
                 view.findViewById<LinearLayoutCompat>(R.id.calorie_layout).visibility = View.VISIBLE
                 view.findViewById<LinearLayoutCompat>(R.id.carbs_layout).visibility = View.VISIBLE

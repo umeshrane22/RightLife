@@ -44,6 +44,7 @@ class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() , DeleteRecipeB
     private var ingredientLocalListModel : IngredientLocalListModel? = null
     private var recipeList: List<MyRecipe> = ArrayList()
     private var loadingOverlay : FrameLayout? = null
+    private var moduleName : String = ""
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentMyRecipeBinding
         get() = FragmentMyRecipeBinding::inflate
@@ -64,6 +65,7 @@ class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() , DeleteRecipeB
         yourRecipesLayout = view.findViewById(R.id.yourRecipesLayout)
         addRecipeLayout = view.findViewById(R.id.addRecipeLayout)
 
+        moduleName = arguments?.getString("ModuleName").toString()
         mealType = arguments?.getString("mealType").toString()
         recipeRecyclerView.layoutManager = LinearLayoutManager(context)
         recipeRecyclerView.adapter = recipeAdapter
@@ -72,6 +74,7 @@ class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() , DeleteRecipeB
             override fun handleOnBackPressed() {
                 val fragment = YourMealLogsFragment()
                 val args = Bundle()
+                args.putString("ModuleName", moduleName)
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
                     replace(R.id.flFragment, fragment, "landing")
@@ -86,6 +89,7 @@ class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() , DeleteRecipeB
         addRecipeEmptyLayout.setOnClickListener {
             val fragment = CreateRecipeFragment()
             val args = Bundle()
+            args.putString("ModuleName", moduleName)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "mealLog")
@@ -97,6 +101,7 @@ class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() , DeleteRecipeB
         addRecipeLayout.setOnClickListener {
             val fragment = CreateRecipeFragment()
             val args = Bundle()
+            args.putString("ModuleName", moduleName)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "mealLog")
@@ -130,10 +135,11 @@ class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() , DeleteRecipeB
     private fun onDeleteRecipeItem(myRecipe : MyRecipe, position: Int, isRefresh: Boolean) {
         val deleteRecipeBottomSheet = DeleteRecipeBottomSheet()
         deleteRecipeBottomSheet.isCancelable = true
-        val bundle = Bundle()
-        bundle.putString("recipeId", myRecipe._id)
-        bundle.putString("deleteType", "MyRecipe")
-        deleteRecipeBottomSheet.arguments = bundle
+        val args = Bundle()
+        args.putString("ModuleName", moduleName)
+        args.putString("recipeId", myRecipe._id)
+        args.putString("deleteType", "MyRecipe")
+        deleteRecipeBottomSheet.arguments = args
         parentFragment.let { deleteRecipeBottomSheet.show(childFragmentManager, "DeleteRecipeBottomSheet") }
     }
 
@@ -174,6 +180,7 @@ class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() , DeleteRecipeB
             ingredientLocalListModel = IngredientLocalListModel(ingredientLists)
             val fragment = CreateRecipeFragment()
             val args = Bundle()
+            args.putString("ModuleName", moduleName)
             args.putString("recipeId", myRecipe._id)
             args.putString("recipeName", myRecipe.recipe_name)
             args.putDouble("serving", myRecipe.servings)

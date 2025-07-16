@@ -602,12 +602,6 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
                 macroTitle.text = landingPageResponse.insight.heading
                 macroOnTrackTextLine.text = landingPageResponse.insight.macros_message
             }
-        }else{
-            todayMacrosWithDataLayout.visibility = View.GONE
-            todayMacroNoDataLayout.visibility = View.VISIBLE
-        }
-
-        if(landingPageResponse.micros.value > 0){
             todayMicrosWithDataLayout.visibility = View.VISIBLE
             todayMacroNoDataLayoutOne.visibility = View.GONE
             microsMessage.text = landingPageResponse.micros.micros_message
@@ -615,9 +609,23 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
             unitMicroTv.text = landingPageResponse.micros.unit
             energyTypeTv.text = landingPageResponse.micros.micros_name
         }else{
+            todayMacrosWithDataLayout.visibility = View.GONE
+            todayMacroNoDataLayout.visibility = View.VISIBLE
             todayMicrosWithDataLayout.visibility = View.GONE
             todayMacroNoDataLayoutOne.visibility = View.VISIBLE
         }
+
+//        if(landingPageResponse.micros.value > 0){
+//            todayMicrosWithDataLayout.visibility = View.VISIBLE
+//            todayMacroNoDataLayoutOne.visibility = View.GONE
+//            microsMessage.text = landingPageResponse.micros.micros_message
+//            microValueTv.text = landingPageResponse.micros.value.toInt().toString()
+//            unitMicroTv.text = landingPageResponse.micros.unit
+//            energyTypeTv.text = landingPageResponse.micros.micros_name
+//        }else{
+//            todayMicrosWithDataLayout.visibility = View.GONE
+//            todayMacroNoDataLayoutOne.visibility = View.VISIBLE
+//        }
 
         if(landingPageResponse.other_recipes_you_might_like.size > 0){
             logNextMealSuggestionLayout.visibility = View.GONE
