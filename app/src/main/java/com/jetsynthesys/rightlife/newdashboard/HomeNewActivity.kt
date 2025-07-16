@@ -14,8 +14,8 @@ import android.view.animation.DecelerateInterpolator
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.Firebase
@@ -75,6 +75,44 @@ class HomeNewActivity : BaseActivity() {
             }
         }
 
+
+        onBackPressedDispatcher.addCallback {
+            if (binding.includedhomebottomsheet.bottomSheet.visibility == View.VISIBLE) {
+                binding.includedhomebottomsheet.bottomSheet.visibility = View.GONE
+                val currentFragment =
+                    supportFragmentManager.findFragmentById(R.id.fragmentContainer)
+                when (currentFragment) {
+                    is HomeExploreFragment -> updateMenuSelection(R.id.menu_explore)
+                    is HomeDashboardFragment -> updateMenuSelection(R.id.menu_home)
+                }
+
+                binding.fab.setImageResource(R.drawable.icon_quicklink_plus) // Change back to add icon
+                binding.fab.backgroundTintList = ContextCompat.getColorStateList(
+                    this@HomeNewActivity, R.color.white
+                )
+                binding.fab.imageTintList = ColorStateList.valueOf(
+                    resources.getColor(
+                        R.color.rightlife
+                    )
+                )
+            isAdd = !isAdd // Toggle the state
+
+            } else {
+                val currentFragment =
+                    supportFragmentManager.findFragmentById(R.id.fragmentContainer)
+                when (currentFragment) {
+                    is HomeExploreFragment -> {
+                        supportFragmentManager.beginTransaction()
+                            .replace(R.id.fragmentContainer, HomeDashboardFragment())
+                            .commit()
+                        updateMenuSelection(R.id.menu_home)
+                    }
+
+                    is HomeDashboardFragment -> finish()
+                }
+            }
+        }
+
         // Handle FAB click
         binding.fab.backgroundTintList = ContextCompat.getColorStateList(
             this, android.R.color.white
@@ -85,7 +123,8 @@ class HomeNewActivity : BaseActivity() {
 
             if (binding.includedhomebottomsheet.bottomSheet.visibility == View.VISIBLE) {
                 bottom_sheet.visibility = View.GONE
-                val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
+                val currentFragment =
+                    supportFragmentManager.findFragmentById(R.id.fragmentContainer)
                 when (currentFragment) {
                     is HomeExploreFragment -> updateMenuSelection(R.id.menu_explore)
                     is HomeDashboardFragment -> updateMenuSelection(R.id.menu_home)
@@ -433,7 +472,6 @@ class HomeNewActivity : BaseActivity() {
             }
         }
     }
-
 
 
     private fun checkTrailEndedAndShowDialog(): Boolean {

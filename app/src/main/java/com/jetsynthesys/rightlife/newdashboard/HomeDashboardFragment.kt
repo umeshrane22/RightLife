@@ -303,11 +303,13 @@ class HomeDashboardFragment : BaseFragment() {
 //                fetchAllHealthData()
                 CommonAPICall.updateChecklistStatus(
                     requireContext(), "sync_health_data", AppConstants.CHECKLIST_COMPLETED
-                )
-                lifecycleScope.launch {
-                    // fetchAllHealthData()
-                    getDashboardChecklist()
+                ){ status ->
+                    if (status)
+                        lifecycleScope.launch {
+                            getDashboardChecklist()
+                        }
                 }
+
             } else {
                 requestPermissionsLauncher.launch(allReadPermissions.toTypedArray())
             }

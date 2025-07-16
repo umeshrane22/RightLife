@@ -1399,12 +1399,14 @@
                                     android:orientation="vertical">
 
                                     <ImageView
+                                        android:id="@+id/imageThinkRightCategory1"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:layout_weight=".4"
                                         android:src="@drawable/emotional" />
 
                                     <TextView
+                                        android:id="@+id/tvThinkRightCategory1"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_gravity="center"
@@ -1430,12 +1432,14 @@
                                     android:orientation="vertical">
 
                                     <ImageView
+                                        android:id="@+id/imageThinkRightCategory2"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:layout_weight=".4"
                                         android:src="@drawable/stressmanagement" />
 
                                     <TextView
+                                        android:id="@+id/tvThinkRightCategory2"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_weight=".6"
@@ -1468,12 +1472,14 @@
                                     android:orientation="vertical">
 
                                     <ImageView
+                                        android:id="@+id/imageThinkRightCategory3"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:layout_weight=".4"
                                         android:src="@drawable/meditation" />
 
                                     <TextView
+                                        android:id="@+id/tvThinkRightCategory3"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:layout_weight=".6"
@@ -1499,6 +1505,7 @@
                                     android:orientation="vertical">
 
                                     <ImageView
+                                        android:id="@+id/imageThinkRightCategory4"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:layout_weight=".4"
@@ -1506,6 +1513,7 @@
                                         android:src="@drawable/thinkrightcoping" />
 
                                     <TextView
+                                        android:id="@+id/tvThinkRightCategory4"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:layout_weight=".6"
@@ -1632,12 +1640,14 @@
                                     android:orientation="vertical">
 
                                     <ImageView
+                                        android:id="@+id/imageMoveRightCategory1"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:layout_weight=".4"
                                         android:src="@drawable/ic_healthcam_logo" />
 
                                     <TextView
+                                        android:id="@+id/tvMoveRightCategory1"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_gravity="center"
@@ -1664,12 +1674,14 @@
                                     android:orientation="vertical">
 
                                     <ImageView
+                                        android:id="@+id/imageMoveRightCategory2"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:layout_weight=".4"
                                         android:src="@drawable/ic_voicescan_logo" />
 
                                     <TextView
+                                        android:id="@+id/tvMoveRightCategory2"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_weight=".6"
@@ -1703,11 +1715,13 @@
                                     android:orientation="vertical">
 
                                     <ImageView
+                                        android:id="@+id/imageMoveRightCategory3"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:src="@drawable/ic_healthaudit_logo" />
 
                                     <TextView
+                                        android:id="@+id/tvMoveRightCategory3"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:fontFamily="@font/merriweather_bold"
@@ -1863,12 +1877,14 @@
                                     android:orientation="vertical">
 
                                     <ImageView
+                                        android:id="@+id/imageEatRightCategory1"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:layout_weight=".4"
                                         android:src="@drawable/foodandbody" />
 
                                     <TextView
+                                        android:id="@+id/tvEatRightCategory1"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_gravity="center"
@@ -1894,12 +1910,14 @@
                                     android:orientation="vertical">
 
                                     <ImageView
+                                        android:id="@+id/imageEatRightCategory2"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:layout_weight=".4"
                                         android:src="@drawable/foodandmind" />
 
                                     <TextView
+                                        android:id="@+id/tvEatRightCategory2"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_weight=".6"
@@ -1932,12 +1950,14 @@
                                     android:orientation="vertical">
 
                                     <ImageView
+                                        android:id="@+id/imageEatRightCategory3"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:layout_weight=".4"
                                         android:src="@drawable/receipes" />
 
                                     <TextView
+                                        android:id="@+id/tvEatRightCategory3"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:layout_weight=".6"
@@ -1963,6 +1983,7 @@
                                     android:orientation="vertical">
 
                                     <ImageView
+                                        android:id="@+id/imageEatRightCategory4"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:layout_weight=".4"
@@ -1970,6 +1991,7 @@
                                         android:src="@drawable/diets" />
 
                                     <TextView
+                                        android:id="@+id/tvEatRightCategory4"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:layout_weight=".6"
@@ -2097,15 +2119,15 @@
                                     android:orientation="vertical">
 
                                     <ImageView
+                                        android:id="@+id/imageSleepRightCategory1"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
-
                                         android:src="@drawable/sleepaid" />
 
                                     <TextView
+                                        android:id="@+id/tvSleepRightCategory1"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
-
                                         android:fontFamily="@font/merriweather_bold"
                                         android:gravity="center"
                                         android:text="Sleep \nAids"
@@ -2129,6 +2151,7 @@
                                     android:visibility="gone">
 
                                     <ImageView
+
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:layout_weight=".4"
@@ -2168,11 +2191,13 @@
                                     android:orientation="vertical">
 
                                     <ImageView
+                                        android:id="@+id/imageSleepRightCategory2"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:src="@drawable/sleepperformance" />
 
                                     <TextView
+                                        android:id="@+id/tvSleepRightCategory2"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_gravity="center"
@@ -2198,11 +2223,13 @@
                                     android:orientation="vertical">
 
                                     <ImageView
+                                        android:id="@+id/imageSleepRightCategory3"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:src="@drawable/sleepdisorder" />
 
                                     <TextView
+                                        android:id="@+id/tvSleepRightCategory3"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:fontFamily="@font/merriweather_bold"

@@ -485,21 +485,25 @@ class HomeExploreFragment : BaseFragment() {
                             affirmationsResponse.toString(),
                             SubModuleResponse::class.java
                         )
+                        handleThinkRightResponse()
                     } else if (moduleid.equals("MOVE_RIGHT", ignoreCase = true)) {
                         MoveRSubModuleResponse = gson.fromJson(
                             affirmationsResponse.toString(),
                             SubModuleResponse::class.java
                         )
+                        handleMoveRightResponse()
                     } else if (moduleid.equals("EAT_RIGHT", ignoreCase = true)) {
                         EatRSubModuleResponse = gson.fromJson(
                             affirmationsResponse.toString(),
                             SubModuleResponse::class.java
                         )
+                        handleEatRightResponse()
                     } else if (moduleid.equals("SLEEP_RIGHT", ignoreCase = true)) {
                         SleepRSubModuleResponse = gson.fromJson(
                             affirmationsResponse.toString(),
                             SubModuleResponse::class.java
                         )
+                        handleSleepRightResponse()
                     }
                 } else {
                     // Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
@@ -510,6 +514,158 @@ class HomeExploreFragment : BaseFragment() {
                 handleNoInternetView(t)
             }
         })
+    }
+
+    private fun handleThinkRightResponse(){
+        if (ThinkRSubModuleResponse?.data?.isNotEmpty() == true) {
+            with(binding) {
+                tvThinkRightCategory1.text = ThinkRSubModuleResponse?.data?.get(0)?.name
+                Glide.with(requireActivity())
+                    .load(ApiClient.CDN_URL_QA + ThinkRSubModuleResponse?.data?.get(0)?.imageUrl)
+                    .placeholder(R.drawable.rl_placeholder)
+                    .error(R.drawable.rl_placeholder)
+                    .into(imageThinkRightCategory1)
+            }
+        }
+        if (ThinkRSubModuleResponse?.data?.size!! > 1) {
+            with(binding) {
+                tvThinkRightCategory2.text = ThinkRSubModuleResponse?.data?.get(1)?.name
+                Glide.with(requireActivity())
+                    .load(ApiClient.CDN_URL_QA + ThinkRSubModuleResponse?.data?.get(1)?.imageUrl)
+                    .placeholder(R.drawable.rl_placeholder)
+                    .error(R.drawable.rl_placeholder)
+                    .into(imageThinkRightCategory2)
+            }
+        }
+        if (ThinkRSubModuleResponse?.data?.size!! > 2) {
+            with(binding) {
+                tvThinkRightCategory3.text = ThinkRSubModuleResponse?.data?.get(2)?.name
+                Glide.with(requireActivity())
+                    .load(ApiClient.CDN_URL_QA + ThinkRSubModuleResponse?.data?.get(2)?.imageUrl)
+                    .placeholder(R.drawable.rl_placeholder)
+                    .error(R.drawable.rl_placeholder)
+                    .into(imageThinkRightCategory3)
+            }
+        }
+        if (ThinkRSubModuleResponse?.data?.size!! > 3) {
+            with(binding) {
+                tvThinkRightCategory4.text = ThinkRSubModuleResponse?.data?.get(3)?.name
+                Glide.with(requireActivity())
+                    .load(ApiClient.CDN_URL_QA + ThinkRSubModuleResponse?.data?.get(3)?.imageUrl)
+                    .placeholder(R.drawable.rl_placeholder)
+                    .error(R.drawable.rl_placeholder)
+                    .into(imageThinkRightCategory4)
+            }
+        }
+    }
+
+    private fun handleMoveRightResponse(){
+        if (MoveRSubModuleResponse?.data?.isNotEmpty() == true) {
+            with(binding) {
+                tvMoveRightCategory1.text = MoveRSubModuleResponse?.data?.get(0)?.name
+                Glide.with(requireActivity())
+                    .load(ApiClient.CDN_URL_QA + MoveRSubModuleResponse?.data?.get(0)?.imageUrl)
+                    .placeholder(R.drawable.rl_placeholder)
+                    .error(R.drawable.rl_placeholder)
+                    .into(imageMoveRightCategory1)
+            }
+        }
+        if (MoveRSubModuleResponse?.data?.size!! > 1) {
+            with(binding) {
+                tvMoveRightCategory2.text = MoveRSubModuleResponse?.data?.get(1)?.name
+                Glide.with(requireActivity())
+                    .load(ApiClient.CDN_URL_QA + MoveRSubModuleResponse?.data?.get(1)?.imageUrl)
+                    .placeholder(R.drawable.rl_placeholder)
+                    .error(R.drawable.rl_placeholder)
+                    .into(imageMoveRightCategory2)
+            }
+        }
+        if (MoveRSubModuleResponse?.data?.size!! > 2) {
+            with(binding) {
+                tvMoveRightCategory3.text = MoveRSubModuleResponse?.data?.get(2)?.name
+                Glide.with(requireActivity())
+                    .load(ApiClient.CDN_URL_QA + MoveRSubModuleResponse?.data?.get(2)?.imageUrl)
+                    .placeholder(R.drawable.rl_placeholder)
+                    .error(R.drawable.rl_placeholder)
+                    .into(imageMoveRightCategory3)
+            }
+        }
+    }
+
+    private fun handleEatRightResponse(){
+        if (EatRSubModuleResponse?.data?.isNotEmpty() == true) {
+            with(binding) {
+                tvEatRightCategory1.text = EatRSubModuleResponse?.data?.get(0)?.name
+                Glide.with(requireActivity())
+                    .load(ApiClient.CDN_URL_QA + EatRSubModuleResponse?.data?.get(0)?.imageUrl)
+                    .placeholder(R.drawable.rl_placeholder)
+                    .error(R.drawable.rl_placeholder)
+                    .into(imageEatRightCategory1)
+            }
+        }
+        if (EatRSubModuleResponse?.data?.size!! > 1) {
+            with(binding) {
+                tvEatRightCategory2.text = EatRSubModuleResponse?.data?.get(1)?.name
+                Glide.with(requireActivity())
+                    .load(ApiClient.CDN_URL_QA + EatRSubModuleResponse?.data?.get(1)?.imageUrl)
+                    .placeholder(R.drawable.rl_placeholder)
+                    .error(R.drawable.rl_placeholder)
+                    .into(imageEatRightCategory2)
+            }
+        }
+        if (EatRSubModuleResponse?.data?.size!! > 2) {
+            with(binding) {
+                tvEatRightCategory3.text = EatRSubModuleResponse?.data?.get(2)?.name
+                Glide.with(requireActivity())
+                    .load(ApiClient.CDN_URL_QA + EatRSubModuleResponse?.data?.get(2)?.imageUrl)
+                    .placeholder(R.drawable.rl_placeholder)
+                    .error(R.drawable.rl_placeholder)
+                    .into(imageEatRightCategory3)
+            }
+        }
+        if (ThinkRSubModuleResponse?.data?.size!! > 3) {
+            with(binding) {
+                tvEatRightCategory4.text = EatRSubModuleResponse?.data?.get(3)?.name
+                Glide.with(requireActivity())
+                    .load(ApiClient.CDN_URL_QA + EatRSubModuleResponse?.data?.get(3)?.imageUrl)
+                    .placeholder(R.drawable.rl_placeholder)
+                    .error(R.drawable.rl_placeholder)
+                    .into(imageEatRightCategory4)
+            }
+        }
+    }
+
+    private fun handleSleepRightResponse(){
+        if (SleepRSubModuleResponse?.data?.isNotEmpty() == true) {
+            with(binding) {
+                tvSleepRightCategory1.text = SleepRSubModuleResponse?.data?.get(0)?.name
+                Glide.with(requireActivity())
+                    .load(ApiClient.CDN_URL_QA + SleepRSubModuleResponse?.data?.get(0)?.imageUrl)
+                    .placeholder(R.drawable.rl_placeholder)
+                    .error(R.drawable.rl_placeholder)
+                    .into(imageSleepRightCategory1)
+            }
+        }
+        if (SleepRSubModuleResponse?.data?.size!! > 1) {
+            with(binding) {
+                tvSleepRightCategory2.text = SleepRSubModuleResponse?.data?.get(1)?.name
+                Glide.with(requireActivity())
+                    .load(ApiClient.CDN_URL_QA + SleepRSubModuleResponse?.data?.get(1)?.imageUrl)
+                    .placeholder(R.drawable.rl_placeholder)
+                    .error(R.drawable.rl_placeholder)
+                    .into(imageSleepRightCategory2)
+            }
+        }
+        if (SleepRSubModuleResponse?.data?.size!! > 2) {
+            with(binding) {
+                tvSleepRightCategory3.text = SleepRSubModuleResponse?.data?.get(2)?.name
+                Glide.with(requireActivity())
+                    .load(ApiClient.CDN_URL_QA + SleepRSubModuleResponse?.data?.get(2)?.imageUrl)
+                    .placeholder(R.drawable.rl_placeholder)
+                    .error(R.drawable.rl_placeholder)
+                    .into(imageSleepRightCategory3)
+            }
+        }
     }
 
     private fun setupAffirmationContent(responseObj: AffirmationResponse) {

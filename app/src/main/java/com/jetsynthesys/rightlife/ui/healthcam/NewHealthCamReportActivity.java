@@ -181,7 +181,7 @@ public class NewHealthCamReportActivity extends BaseActivity {
     }
 
     private void updateChecklistStatus() {
-        CommonAPICall.INSTANCE.updateChecklistStatus(this, "vital_facial_scan", AppConstants.CHECKLIST_COMPLETED);
+        CommonAPICall.INSTANCE.updateChecklistStatus(this, "vital_facial_scan", AppConstants.CHECKLIST_COMPLETED,null);
     }
 
     private void getMyRLHealthCamResult() {
