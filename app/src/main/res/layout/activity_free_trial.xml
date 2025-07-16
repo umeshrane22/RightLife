@@ -63,6 +63,7 @@
                             android:src="@drawable/lock_bg_1_trail"
                             android:layout_centerInParent="true"
                             android:scaleType="fitXY"
+                            android:layout_marginTop="5dp"
                             android:layout_height="match_parent"/>
                     <ImageView
                         android:layout_width="32dp"
@@ -70,6 +71,7 @@
                         android:src="@drawable/icon_lock_freetrial"
                         android:background="@drawable/ic_uncheck_circle"
                         android:padding="10dp"
+
                         android:backgroundTint="#1292E5"
                         app:tint="@color/white" />
                     </RelativeLayout>
@@ -84,15 +86,15 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Today:"
-                            android:visibility="gone"
+                            android:visibility="visible"
                             android:fontFamily="@font/dmsans_bold"
                             android:textColor="@color/txt_color_header"
-                            android:textSize="16sp" />
+                            android:textSize="@dimen/textsize_large18sp" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Enjoy 7 days of full RightLife Premium access and unlock your best self!"
+                            android:text="Unlock full access to all our features. \n"
                             android:textSize="@dimen/textsize_large"
                             android:fontFamily="@font/dmsans_regular"
                             android:textColor="@color/txt_color_header" />
@@ -136,14 +138,14 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Day 5:"
-                            android:visibility="gone"
+                            android:visibility="visible"
                             android:fontFamily="@font/dmsans_bold"
-                            android:textSize="16sp" />
+                            android:textSize="@dimen/textsize_large18sp" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="The sooner you finish the checklist, the faster your personalised dashboard is live."
+                            android:text="We’ll remind you with a notification that your trial is ending soon."
                             android:textSize="@dimen/textsize_large"
                             android:fontFamily="@font/dmsans_regular"
                             android:layout_marginBottom="10dp"
@@ -186,14 +188,14 @@
                             android:layout_height="wrap_content"
                             android:text="Day 7:"
                             android:fontFamily="@font/dmsans_bold"
-                            android:textSize="16sp"
-                            android:visibility="gone"
+                            android:textSize="@dimen/textsize_large18sp"
+                            android:visibility="visible"
                             android:textColor="@color/txt_color_header" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Pick a plan on Day 7 to continue accessing your personalised data, progress tracking, and insights!"
+                            android:text="Pick a plan on Day 7 to continue accessing your personalised data, progress tracking, and insights! "
                             android:textSize="@dimen/textsize_large"
                             android:fontFamily="@font/dmsans_regular"
                             android:layout_marginBottom="10dp"

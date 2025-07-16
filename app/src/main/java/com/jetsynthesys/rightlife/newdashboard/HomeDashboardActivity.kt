@@ -1424,12 +1424,14 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
             if (permissions.values.all { it }) {
                 lifecycleScope.launch {
+                    CommonAPICall.updateChecklistStatus(this@HomeDashboardActivity, "sync_health_data", AppConstants.CHECKLIST_COMPLETED)
                     // fetchAllHealthData()
                     getDashboardChecklist("")
                 }
                 Toast.makeText(this, "Permissions Granted", Toast.LENGTH_SHORT).show()
             } else {
                 lifecycleScope.launch {
+                    CommonAPICall.updateChecklistStatus(this@HomeDashboardActivity, "sync_health_data", AppConstants.CHECKLIST_COMPLETED)
                     // fetchAllHealthData()
                     getDashboardChecklist("")
                 }
