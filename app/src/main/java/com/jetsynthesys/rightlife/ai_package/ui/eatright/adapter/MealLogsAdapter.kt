@@ -13,6 +13,7 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.model.response.MergedLogsMealItem
 import com.jetsynthesys.rightlife.ai_package.model.response.RegularRecipeEntry
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMeal
+import kotlin.math.round
 
 class MealLogsAdapter(val context: Context, private var dataLists: ArrayList<MergedLogsMealItem>,
                       private var clickPos: Int, private var regularRecipeEntry : RegularRecipeEntry?,
@@ -191,10 +192,10 @@ class MealLogsAdapter(val context: Context, private var dataLists: ArrayList<Mer
                 servesCount.text = "1"
                 val mealTime = ""
                 mealTimeTv.text = ""//mealTime.toInt().toString()
-                calValue.text = snapData.calories_kcal?.toInt().toString()
-                proteinValue.text = snapData.protein_g?.toInt().toString()
-                calValue.text = snapData.carb_g?.toInt().toString()
-                fatsValue.text = snapData.fat_g?.toInt().toString()
+                calValue.text = round(snapData.calories_kcal)?.toInt().toString()
+                proteinValue.text = round(snapData.protein_g)?.toInt().toString()
+                carbsValue.text = round(snapData.carb_g)?.toInt().toString()
+                fatsValue.text = round(snapData.fat_g)?.toInt().toString()
                 val imageUrl = ""//getDriveImageUrl(data.photo_url)
                 Glide.with(this.itemView)
                     .load(imageUrl)

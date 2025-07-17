@@ -228,7 +228,7 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
                 startActivity(Intent(this@HomeDashboardActivity, MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "EatRight")
                     putExtra("BottomSeatName", "SnapMealTypeEat")
-                    putExtra("snapMealId", snapMealId)
+                 //   putExtra("snapMealId", snapMealId)
                 })
               /*  if (checkTrailEndedAndShowDialog()) {
                     startActivity(Intent(

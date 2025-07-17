@@ -281,7 +281,8 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
         // onFrequentlyLoggedItemRefresh()
         //  halfCurveProgressBar.setValues(2000,2000)
         glassWithWaterView = view.findViewById(R.id.glass_with_water_view)
-        fetchThinkRecomendedData()
+
+        fetchEatRecommendedData()
 
         if (bottomSeatName.contentEquals("LogWeightEat")){
             showLogWeightBottomSheet()
@@ -566,7 +567,8 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
             }
         })
     }
-    private fun fetchThinkRecomendedData() {
+
+    private fun fetchEatRecommendedData() {
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
         val call = ApiClient.apiService.fetchThinkRecomended(token,"HOME","EAT_RIGHT")
         call.enqueue(object : Callback<ThinkRecomendedResponse> {
