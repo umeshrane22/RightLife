@@ -56,6 +56,7 @@ class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
     private var recipeName : String = ""
     private var serving : Double = 0.0
     private var mealQuantity = 1.0
+    private var moduleName : String = ""
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentDishBinding
         get() = FragmentDishBinding::inflate
@@ -91,6 +92,7 @@ class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
         ivEdit = view.findViewById(R.id.ivEdit)
         backButton = view.findViewById(R.id.backButton)
 
+        moduleName = arguments?.getString("ModuleName").toString()
         searchType = arguments?.getString("searchType").toString()
         recipeId = arguments?.getString("recipeId").toString()
         serving = arguments?.getDouble("serving")?.toDouble() ?: 0.0
@@ -196,6 +198,7 @@ class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
             if (searchType.contentEquals("searchIngredient")){
                 val fragment = SearchIngredientFragment()
                 val args = Bundle()
+                args.putString("ModuleName", moduleName)
                 args.putString("recipeId", recipeId)
                 args.putString("recipeName", recipeName)
                 args.putDouble("serving", serving)
@@ -209,6 +212,7 @@ class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
             }else{
                 val fragment = CreateRecipeFragment()
                 val args = Bundle()
+                args.putString("ModuleName", moduleName)
                 args.putString("recipeId", recipeId)
                 args.putString("recipeName", recipeName)
                 args.putDouble("serving", serving)
@@ -336,6 +340,7 @@ class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
                         Toast.makeText(activity, "Added To Meal", Toast.LENGTH_SHORT).show()
                         val fragment = CreateRecipeFragment()
                         val args = Bundle()
+                        args.putString("ModuleName", moduleName)
                         args.putString("recipeId", recipeId)
                         args.putString("recipeName", recipeName)
                         args.putDouble("serving", serving)
@@ -400,6 +405,7 @@ class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
                                         Toast.makeText(activity, "Changes Save", Toast.LENGTH_SHORT).show()
                                         val fragment = CreateRecipeFragment()
                                         val args = Bundle()
+                                        args.putString("ModuleName", moduleName)
                                         args.putString("recipeId", recipeId)
                                         args.putString("recipeName", recipeName)
                                         args.putDouble("serving", serving)

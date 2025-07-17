@@ -78,6 +78,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
     private var snapMealRequestCount : Int = 0
     private var loadingOverlay : FrameLayout? = null
     private var tabType : String = ""
+    private var moduleName : String = ""
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentHomeTabMealBinding
         get() = FragmentHomeTabMealBinding::inflate
@@ -101,6 +102,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
         checkCircle = view.findViewById<ImageView>(R.id.check_circle_icon)
         loggedSuccess = view.findViewById<TextView>(R.id.tv_logged_success)
 
+        moduleName = arguments?.getString("ModuleName").toString()
         searchType = arguments?.getString("searchType").toString()
         mealType = arguments?.getString("mealType").toString()
         tabType = arguments?.getString("tabType").toString()
@@ -209,6 +211,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
                 override fun handleOnBackPressed() {
                     val fragment = YourMealLogsFragment()
                     val args = Bundle()
+                    args.putString("ModuleName", moduleName)
                     fragment.arguments = args
                     requireActivity().supportFragmentManager.beginTransaction().apply {
                         replace(R.id.flFragment, fragment, "landing")
@@ -222,6 +225,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
             val fragment = YourMealLogsFragment()
             val args = Bundle()
             fragment.arguments = args
+            args.putString("ModuleName", moduleName)
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "landing")
                 addToBackStack("landing")
@@ -235,6 +239,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
             }
             val fragment = SearchDishToLogFragment()
             val args = Bundle()
+            args.putString("ModuleName", moduleName)
             args.putString("searchType", "HomeTabMeal")
             args.putString("mealType", mealType)
             args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
@@ -322,6 +327,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
     private fun replaceFragment(fragment: Fragment) {
         childFragmentManager.beginTransaction().apply {
                 val args = Bundle()
+                args.putString("ModuleName", moduleName)
                 args.putString("mealType", mealType)
                 fragment.arguments = args
                 replace(R.id.fragmentContainer, fragment, "homeTab")
@@ -427,6 +433,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
                     frequentlyAddDishBottomSheetLayout.visibility = View.GONE
                     val fragment = YourMealLogsFragment()
                     val args = Bundle()
+                    args.putString("ModuleName", moduleName)
                     fragment.arguments = args
                     requireActivity().supportFragmentManager.beginTransaction().apply {
                         replace(R.id.flFragment, fragment, "landing")
@@ -506,6 +513,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
                     frequentlyAddDishBottomSheetLayout.visibility = View.GONE
                     val fragment = YourMealLogsFragment()
                     val args = Bundle()
+                    args.putString("ModuleName", moduleName)
                     fragment.arguments = args
                     requireActivity().supportFragmentManager.beginTransaction().apply {
                         replace(R.id.flFragment, fragment, "landing")
@@ -718,6 +726,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
                             frequentlyAddDishBottomSheetLayout.visibility = View.GONE
                             val fragment = YourMealLogsFragment()
                             val args = Bundle()
+                            args.putString("ModuleName", moduleName)
                             fragment.arguments = args
                             requireActivity().supportFragmentManager.beginTransaction().apply {
                                 replace(R.id.flFragment, fragment, "landing")

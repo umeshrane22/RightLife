@@ -192,7 +192,7 @@
                                 app:layout_constraintTop_toTopOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintEnd_toStartOf="@+id/layout_cabs"
-                                app:layout_constraintWidth_percent="0.33">
+                                app:layout_constraintWidth_percent="0.30">
 
                                 <androidx.appcompat.widget.LinearLayoutCompat
                                     android:id="@+id/layout_protein_value"
@@ -200,12 +200,10 @@
                                     android:layout_height="wrap_content"
                                     app:layout_constraintTop_toTopOf="parent"
                                     app:layout_constraintStart_toStartOf="parent"
-                                    android:layout_gravity="left"
+                                    android:layout_gravity="center"
                                     android:orientation="horizontal"
                                     android:gravity="center"
-                                    android:layout_marginTop="10dp"
-                                    android:layout_marginStart="10dp"
-                                    android:layout_marginEnd="10dp">
+                                    android:layout_marginTop="10dp">
 
                                     <ImageView
                                         android:layout_width="11dp"
@@ -224,7 +222,7 @@
                                             android:id="@+id/tv_protien_value"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
-                                            android:textSize="20sp"
+                                            android:textSize="19sp"
                                             android:fontFamily="@font/dmsans_bold"
                                             android:textColor="#B50200"
                                             android:text="95"
@@ -236,7 +234,7 @@
                                             android:id="@+id/proteinUnitTv"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
-                                            android:textSize="12sp"
+                                            android:textSize="10sp"
                                             android:layout_marginBottom="3dp"
                                             android:fontFamily="@font/dmsans_regular"
                                             android:textColor="@color/text_color_kcal"
@@ -297,12 +295,12 @@
                                 android:layout_height="wrap_content"
                                 android:orientation="vertical"
                                 android:gravity="center"
-                                android:layout_marginStart="2dp"
-                                android:layout_marginEnd="2dp"
+                                android:layout_marginStart="10dp"
+                                android:layout_marginEnd="10dp"
                                 app:layout_constraintTop_toTopOf="parent"
                                 app:layout_constraintStart_toEndOf="@+id/layout_protein"
                                 app:layout_constraintEnd_toStartOf="@+id/layout_fats"
-                                app:layout_constraintWidth_percent="0.33">
+                                app:layout_constraintWidth_percent="0.30">
 
                                 <androidx.appcompat.widget.LinearLayoutCompat
                                     android:id="@+id/layout_cabs_cal_value"
@@ -310,12 +308,11 @@
                                     android:layout_height="wrap_content"
                                     app:layout_constraintTop_toTopOf="parent"
                                     app:layout_constraintStart_toStartOf="parent"
-                                    android:layout_gravity="left"
+                                    android:layout_gravity="center"
                                     android:orientation="horizontal"
                                     android:gravity="center"
                                     android:layout_marginTop="10dp"
-                                    android:layout_marginStart="10dp"
-                                    android:layout_marginEnd="10dp">
+                                   >
 
                                     <ImageView
                                         android:layout_width="11dp"
@@ -338,7 +335,7 @@
                                             app:layout_constraintStart_toStartOf="parent"
                                             android:text="558"
                                             android:textColor="#B50200"
-                                            android:textSize="20sp"
+                                            android:textSize="19sp"
                                             tools:ignore="MissingConstraints" />
 
                                         <TextView
@@ -349,7 +346,7 @@
                                             android:fontFamily="@font/dmsans_regular"
                                             android:text="/ 500g"
                                             android:textColor="@color/text_color_kcal"
-                                            android:textSize="12sp"
+                                            android:textSize="10sp"
                                             app:layout_constraintBottom_toBottomOf="@+id/tv_carbs_value"
                                             app:layout_constraintStart_toEndOf="@+id/tv_carbs_value" />
                                     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -408,7 +405,7 @@
                                 app:layout_constraintTop_toTopOf="parent"
                                 app:layout_constraintStart_toEndOf="@+id/layout_cabs"
                                 app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintWidth_percent="0.33">
+                                app:layout_constraintWidth_percent="0.30">
 
                                 <androidx.appcompat.widget.LinearLayoutCompat
                                     android:id="@+id/layout_fats_value"
@@ -416,12 +413,10 @@
                                     android:layout_height="wrap_content"
                                     app:layout_constraintTop_toTopOf="parent"
                                     app:layout_constraintStart_toStartOf="parent"
-                                    android:layout_gravity="left"
+                                    android:layout_gravity="center"
                                     android:orientation="horizontal"
                                     android:gravity="center"
-                                    android:layout_marginTop="10dp"
-                                    android:layout_marginStart="10dp"
-                                    android:layout_marginEnd="10dp">
+                                    android:layout_marginTop="10dp">
 
                                     <ImageView
                                         android:layout_width="11dp"
@@ -440,7 +435,7 @@
                                             android:id="@+id/tv_fats_value"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
-                                            android:textSize="20sp"
+                                            android:textSize="19sp"
                                             android:fontFamily="@font/dmsans_bold"
                                             android:textColor="#B50200"
                                             app:layout_constraintTop_toTopOf="parent"
@@ -451,7 +446,7 @@
                                             android:id="@+id/fatsUnitTv"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
-                                            android:textSize="12sp"
+                                            android:textSize="10sp"
                                             android:layout_marginBottom="3dp"
                                             android:fontFamily="@font/dmsans_regular"
                                             android:textColor="@color/text_color_kcal"
@@ -813,7 +808,7 @@
                             android:id="@+id/cardview_today_micros"
                             android:layout_width="80dp"
                             android:layout_height="80dp"
-                            android:layout_marginStart="20dp"
+                            android:layout_marginStart="15dp"
                             android:layout_marginTop="13dp"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent">
@@ -838,7 +833,9 @@
                                     app:layout_constraintTop_toTopOf="parent"
                                     app:layout_constraintStart_toStartOf="parent"
                                     app:layout_constraintEnd_toEndOf="parent"
-                                    android:padding="8dp"
+                                    android:paddingTop="5dp"
+                                    android:layout_marginEnd="5dp"
+                                    android:layout_marginBottom="5dp"
                                     android:orientation="vertical"
                                     android:gravity="center">
 
@@ -886,6 +883,7 @@
                             android:textSize="15sp"
                             android:layout_marginTop="13dp"
                             android:layout_marginStart="110dp"
+                            android:layout_marginEnd="5dp"
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/cardview_today_micros"/>
                     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -993,6 +991,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
+                        android:layout_marginStart="5dp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent">
@@ -1016,7 +1015,7 @@
                     <ImageView
                         android:layout_width="20dp"
                         android:layout_height="20dp"
-                        android:layout_marginEnd="10dp"
+                        android:layout_marginEnd="15dp"
                         android:src="@drawable/forward_green_color_meal"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"

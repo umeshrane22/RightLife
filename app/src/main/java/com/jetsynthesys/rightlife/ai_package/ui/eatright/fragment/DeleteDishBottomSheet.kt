@@ -22,6 +22,7 @@ class DeleteDishBottomSheet : BottomSheetDialogFragment() {
     private var mealId : String = ""
     private lateinit var mealType : String
     private var mealName : String = ""
+    private var moduleName : String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +46,7 @@ class DeleteDishBottomSheet : BottomSheetDialogFragment() {
         val layoutCancel = view.findViewById<LinearLayoutCompat>(R.id.noBtn)
         val layoutDelete = view.findViewById<LinearLayoutCompat>(R.id.yesBtn)
 
+        moduleName = arguments?.getString("ModuleName").toString()
         val snapRecipeName = arguments?.getString("snapRecipeName").toString()
         mealId = arguments?.getString("mealId").toString()
         mealType = arguments?.getString("mealType").toString()
@@ -66,6 +68,7 @@ class DeleteDishBottomSheet : BottomSheetDialogFragment() {
                             Toast.makeText(view.context, "Dish Removed", Toast.LENGTH_SHORT).show()
                             val fragment = CreateMealFragment()
                             val args = Bundle()
+                            args.putString("ModuleName", moduleName)
                             args.putString("mealId", mealId)
                             args.putString("mealName", mealName)
                             args.putString("mealType", mealType)

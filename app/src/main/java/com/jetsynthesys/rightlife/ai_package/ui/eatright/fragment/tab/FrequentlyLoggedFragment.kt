@@ -51,7 +51,7 @@ class FrequentlyLoggedFragment : BaseFragment<FragmentFrequentlyLoggedBinding>()
     private var mealLogRequests : SelectedMealLogList? = null
     private lateinit var mealType : String
     private var loadingOverlay : FrameLayout? = null
-
+    private var moduleName : String = ""
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentFrequentlyLoggedBinding
         get() = FragmentFrequentlyLoggedBinding::inflate
@@ -79,6 +79,7 @@ class FrequentlyLoggedFragment : BaseFragment<FragmentFrequentlyLoggedBinding>()
         val loggedSuccess = view.findViewById<TextView>(R.id.tv_logged_success)
          addDishBottomSheet = view.findViewById<LinearLayout>(R.id.layout_add_dish_bottom_sheet)
 
+        moduleName = arguments?.getString("ModuleName").toString()
         mealType = arguments?.getString("mealType").toString()
         frequentlyLoggedRecyclerView.layoutManager = LinearLayoutManager(context)
         frequentlyLoggedRecyclerView.adapter = frequentlyLoggedListAdapter
@@ -87,6 +88,7 @@ class FrequentlyLoggedFragment : BaseFragment<FragmentFrequentlyLoggedBinding>()
             override fun handleOnBackPressed() {
                 val fragment = YourMealLogsFragment()
                 val args = Bundle()
+                args.putString("ModuleName", moduleName)
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
                     replace(R.id.flFragment, fragment, "landing")
@@ -101,6 +103,7 @@ class FrequentlyLoggedFragment : BaseFragment<FragmentFrequentlyLoggedBinding>()
         layoutCreateMeal.setOnClickListener {
             val fragment = CreateMealFragment()
             val args = Bundle()
+            args.putString("ModuleName", moduleName)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "mealLog")
@@ -118,6 +121,7 @@ class FrequentlyLoggedFragment : BaseFragment<FragmentFrequentlyLoggedBinding>()
 //            updateIngredientChips()
             val fragment = LogMealFragment()
             val args = Bundle()
+            args.putString("ModuleName", moduleName)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "mealLog")
@@ -132,9 +136,10 @@ class FrequentlyLoggedFragment : BaseFragment<FragmentFrequentlyLoggedBinding>()
             addDishBottomSheet.visibility = View.GONE
             loggedBottomSheetFragment = LoggedBottomSheet()
             loggedBottomSheetFragment.isCancelable = true
-            val bundle = Bundle()
-            bundle.putBoolean("test",false)
-            loggedBottomSheetFragment.arguments = bundle
+            val args = Bundle()
+            args.putString("ModuleName", moduleName)
+            args.putBoolean("test",false)
+            loggedBottomSheetFragment.arguments = args
             activity?.supportFragmentManager?.let { loggedBottomSheetFragment.show(it, "LoggedBottomSheet") }
         }
     }

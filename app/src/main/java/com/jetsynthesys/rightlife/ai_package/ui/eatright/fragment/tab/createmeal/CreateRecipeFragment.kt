@@ -61,6 +61,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
     private var serving : Double = 0.0
     private var quantity = 1
     private var loadingOverlay : FrameLayout? = null
+    private var moduleName : String = ""
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentCreateRecipeBinding
         get() = FragmentCreateRecipeBinding::inflate
@@ -94,6 +95,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
         addedIngredientsRecyclerview.layoutManager = LinearLayoutManager(context)
         addedIngredientsRecyclerview.adapter = ingredientListAdapter
 
+        moduleName = arguments?.getString("ModuleName").toString()
         recipeId = arguments?.getString("recipeId").toString()
         recipeName = arguments?.getString("recipeName").toString()
         serving = arguments?.getDouble("serving")?.toDouble() ?: 0.0
@@ -132,6 +134,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
             override fun handleOnBackPressed() {
                 val fragment = HomeTabMealFragment()
                 val args = Bundle()
+                args.putString("ModuleName", moduleName)
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
                     replace(R.id.flFragment, fragment, "landing")
@@ -248,6 +251,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
         btnAddLayout.setOnClickListener {
             val fragment = SearchIngredientFragment()
             val args = Bundle()
+            args.putString("ModuleName", moduleName)
             args.putString("searchType", "createRecipe")
             args.putString("recipeId", recipeId)
             args.putDouble("serving", servingTv.text.toString().toDouble())
@@ -264,6 +268,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
         backButton.setOnClickListener {
             val fragment = HomeTabMealFragment()
             val args = Bundle()
+            args.putString("ModuleName", moduleName)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "landing")
@@ -312,6 +317,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
         requireActivity().supportFragmentManager.beginTransaction().apply {
             val fragment = IngredientDishFragment()
             val args = Bundle()
+            args.putString("ModuleName", moduleName)
             args.putString("searchType", "createMeal")
             args.putString("recipeId", recipeId)
             args.putDouble("serving", servingTv.text.toString().toDouble())
@@ -329,6 +335,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
         val deleteDishBottomSheet = DeleteIngredientBottomSheet()
         deleteDishBottomSheet.isCancelable = true
         val args = Bundle()
+        args.putString("ModuleName", moduleName)
         args.putBoolean("test",false)
         args.putString("recipeId", recipeId)
         args.putDouble("serving", servingTv.text.toString().toDouble())
@@ -381,6 +388,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
                     Toast.makeText(activity, mealData, Toast.LENGTH_SHORT).show()
                     val fragment = HomeTabMealFragment()
                     val args = Bundle()
+                    args.putString("ModuleName", moduleName)
                     args.putString("tabType", "MyRecipe")
                     fragment.arguments = args
                     requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -452,6 +460,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
                     Toast.makeText(activity, mealData, Toast.LENGTH_SHORT).show()
                     val fragment = HomeTabMealFragment()
                     val args = Bundle()
+                    args.putString("ModuleName", moduleName)
                     args.putString("tabType", "MyRecipe")
                     fragment.arguments = args
                     requireActivity().supportFragmentManager.beginTransaction().apply {

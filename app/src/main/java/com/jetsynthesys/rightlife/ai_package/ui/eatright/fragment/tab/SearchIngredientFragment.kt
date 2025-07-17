@@ -58,6 +58,7 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
     private var recipeName : String = ""
     private var serving : Double = 0.0
     private var loadingOverlay : FrameLayout? = null
+    private var moduleName : String = ""
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentSearchDishBinding
         get() = FragmentSearchDishBinding::inflate
@@ -85,6 +86,7 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
         allDishesRecyclerview = view.findViewById(R.id.recyclerView_all_dishes)
         backButton = view.findViewById(R.id.backButton)
 
+        moduleName = arguments?.getString("ModuleName").toString()
         searchType = arguments?.getString("searchType").toString()
         recipeId = arguments?.getString("recipeId").toString()
         serving = arguments?.getDouble("serving")?.toDouble() ?: 0.0
@@ -116,6 +118,7 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
                     if (searchType.contentEquals("createRecipe")){
                         val fragment = CreateRecipeFragment()
                         val args = Bundle()
+                        args.putString("ModuleName", moduleName)
                         args.putString("recipeId", recipeId)
                         args.putString("recipeName", recipeName)
                         args.putDouble("serving", serving)
@@ -134,6 +137,7 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
             if (searchType.contentEquals("createRecipe")){
                 val fragment = CreateRecipeFragment()
                 val args = Bundle()
+                args.putString("ModuleName", moduleName)
                 args.putString("recipeId", recipeId)
                 args.putString("recipeName", recipeName)
                 args.putDouble("serving", serving)
@@ -273,6 +277,7 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
                         requireActivity().supportFragmentManager.beginTransaction().apply {
                             val snapMealFragment = IngredientDishFragment()
                             val args = Bundle()
+                            args.putString("ModuleName", moduleName)
                             args.putString("searchType", "searchIngredient")
                             args.putString("recipeId", recipeId)
                             args.putDouble("serving", serving)
