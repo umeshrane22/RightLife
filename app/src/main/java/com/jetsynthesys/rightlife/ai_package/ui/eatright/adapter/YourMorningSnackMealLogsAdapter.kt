@@ -194,7 +194,7 @@ class YourMorningSnackMealLogsAdapter(val context: Context, private var dataList
                 mealTimeTv.text = ""//mealTime.toInt().toString()
                 calValue.text = round(snapData.calories_kcal)?.toInt().toString()
                 proteinValue.text = round(snapData.protein_g)?.toInt().toString()
-                calValue.text = round(snapData.carb_g)?.toInt().toString()
+                carbsValue.text = round(snapData.carb_g)?.toInt().toString()
                 fatsValue.text = round(snapData.fat_g)?.toInt().toString()
                 val imageUrl = ""//getDriveImageUrl(data.photo_url)
                 Glide.with(this.itemView)
