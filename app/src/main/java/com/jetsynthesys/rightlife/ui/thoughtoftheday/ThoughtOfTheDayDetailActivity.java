@@ -451,4 +451,34 @@ public class ThoughtOfTheDayDetailActivity extends BaseActivity {
         });
 
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopAndReleasePlayer();
+        stopAndReleaseAudioPlayer();
+        // Remove any pending handler callbacks
+        handler.removeCallbacks(updateProgress);
+    }
+
+    // Method to stop and release ExoPlayer
+    private void stopAndReleasePlayer() {
+        if (player != null) {
+            player.stop();
+            player.release();
+            player = null;
+        }
+    }
+
+    // Method to stop and release MediaPlayer
+    private void stopAndReleaseAudioPlayer() {
+        if (mediaPlayer != null) {
+            if (mediaPlayer.isPlaying()) {
+                mediaPlayer.stop();
+            }
+            mediaPlayer.release();
+            mediaPlayer = null;
+            isPlayingmusic = false;
+        }
+    }
 }
