@@ -19,7 +19,7 @@
             android:layout_height="25dp"
             android:id="@+id/img_back"
             android:src="@drawable/sleep_back_icon"
-            android:layout_marginStart="17dp"
+            android:layout_marginStart="20dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
 
@@ -27,7 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Today"
-            android:textSize="25dp"
+            android:textSize="20sp"
             android:fontFamily="@font/dmsans_bold"
             android:textColor="@color/sleep_text_color"
             android:layout_marginBottom="3dp"
