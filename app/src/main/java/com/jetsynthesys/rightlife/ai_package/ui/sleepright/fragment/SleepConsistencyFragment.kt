@@ -956,7 +956,7 @@ class SleepGraphView @JvmOverloads constructor(
    Only nights with >0.0 duration will be graphed.                         */
 fun List<SleepDetails>.toSleepEntries(): List<SleepEntry> =
     filter { it.sleepDurationHours!! >= 0.0 }           // ignore the zero-length nights
-        .map { SleepEntry.fromUtcIso(it.sleepStartTime!!, it.sleepDurationHours!!) }
+        .map { SleepEntry.fromUtcIso(it.sleepEndTime!!, it.sleepDurationHours!!) }
 
 data class SleepEntry(
     val startLocal: LocalDateTime,
