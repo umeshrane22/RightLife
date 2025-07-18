@@ -98,7 +98,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                 Log.e("AddWorkoutSearch", "ActivityModel is null in edit mode")
                 return
             } else {
-                Log.d("AddWorkoutSearch", "Editing activity: ${activityModel?.activityType}, Calorie ID: ${activityModel?.calorieId}")
+                Log.d("AddWorkoutSearch", "Editing activity: ${activityModel?.workoutType}, Calorie ID: ${activityModel?.id}")
             }
         } else if(edit_routine == "edit_routine"){
             if (workoutModel == null) {
@@ -106,7 +106,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                 Log.e("AddWorkoutSearch", "ActivityModel is null in edit mode")
                 return
             } else {
-                Log.d("AddWorkoutSearch", "Editing activity: ${activityModel?.activityType}, Calorie ID: ${activityModel?.calorieId}")
+                Log.d("AddWorkoutSearch", "Editing activity: ${activityModel?.workoutType}, Calorie ID: ${activityModel?.id}")
             }
         }
         else {
@@ -163,7 +163,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
             val minutes = minutePicker.value
             val durationMinutes = hours * 60 + minutes
             if (edit == "edit") {
-                activityModel?.calorieId?.let { calorieId ->
+                activityModel?.id?.let { calorieId ->
                     val normalizedIntensity = normalizeIntensity(selectedIntensity)
                     updateCalories(calorieId, durationMinutes, normalizedIntensity)
                 } ?: run {
@@ -203,7 +203,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                         lastWorkoutRecord = newWorkoutRecord
                         if (lastWorkoutRecord?.caloriesBurned == null) {
                             Toast.makeText(requireContext(), "Calculating calories...", Toast.LENGTH_SHORT).show()
-                            val activityId = workout._id ?: activityModel?.activity_id
+                            val activityId = workout._id ?: activityModel?.id
                             if (activityId != null) {
                                 calculateUserCalories(durationMinutes, normalizedIntensity, activityId)
                             } else {
@@ -259,7 +259,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
             Log.d("AddWorkoutSearch", "Edit mode - Initial intensity: $selectedIntensity, Progress: ${intensityProgressBar.progress}")
             selectedTime = "$hours hr ${minutes.toString().padStart(2, '0')} min"
             // Trigger initial calorie calculation in edit mode
-            activityModel?.activity_id?.let { calorieId ->
+            activityModel?.id?.let { calorieId ->
                 calculateUserCalories(durationMin, selectedIntensity, calorieId)
                 addLog.isEnabled = true
             }
@@ -312,7 +312,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
             selectedTime = "$hours hr ${minutes.toString().padStart(2, '0')} min"
             val durationMinutes = hours * 60 + minutes
             if (durationMinutes > 0) {
-                val activityId = if (edit == "edit") activityModel?.activity_id else if (edit_routine.equals("edit_routine")) workoutModel?.activityId else workout?._id
+                val activityId = if (edit == "edit") activityModel?.id else if (edit_routine.equals("edit_routine")) workoutModel?.activityId else workout?._id
                 if (activityId != null) {
                     val normalizedIntensity = normalizeIntensity(selectedIntensity)
                     calculateUserCalories(durationMinutes, normalizedIntensity, activityId)
@@ -345,7 +345,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
             val minutes = minutePicker.value
             val durationMinutes = hours * 60 + minutes
             if (durationMinutes > 0) {
-                val activityId = if (edit == "edit") activityModel?.activity_id else if (edit_routine.equals("edit_routine")) workoutModel?.activityId else workout?._id
+                val activityId = if (edit == "edit") activityModel?.id else if (edit_routine.equals("edit_routine")) workoutModel?.activityId else workout?._id
                 if (activityId != null) {
                     //caloriesText.text = "Calculating..."
                     calculateUserCalories(durationMinutes, selectedIntensity, activityId)
