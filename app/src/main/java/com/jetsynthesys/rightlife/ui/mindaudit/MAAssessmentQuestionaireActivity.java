@@ -10,6 +10,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Nullable;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -83,7 +84,14 @@ public class MAAssessmentQuestionaireActivity extends BaseActivity {
         });
         viewPager.setUserInputEnabled(false);
 
-        imgBack.setOnClickListener(view -> finish());
+        imgBack.setOnClickListener(view -> navigateToPreviousPage());
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                navigateToPreviousPage();
+            }
+        });
 
         adapter = new MAAssessmentPagerAdapter(this);
         viewPager.setAdapter(adapter);
@@ -142,6 +150,8 @@ public class MAAssessmentQuestionaireActivity extends BaseActivity {
     private void navigateToPreviousPage() {
         if (viewPager.getCurrentItem() > 0) {
             viewPager.setCurrentItem(viewPager.getCurrentItem() - 1);
+        }else {
+            finish();
         }
     }
 
