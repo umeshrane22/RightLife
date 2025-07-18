@@ -779,7 +779,7 @@
                                     app:layout_constraintTop_toTopOf="parent"
                                     app:layout_constraintStart_toStartOf="parent"
                                     app:layout_constraintEnd_toStartOf="@+id/layout_cabs"
-                                    app:layout_constraintWidth_percent="0.33">
+                                    app:layout_constraintWidth_percent="0.30">
 
                                     <androidx.appcompat.widget.LinearLayoutCompat
                                         android:id="@+id/layout_protein_value"
@@ -811,7 +811,7 @@
                                                 android:id="@+id/tv_protien_value"
                                                 android:layout_width="wrap_content"
                                                 android:layout_height="wrap_content"
-                                                android:textSize="20sp"
+                                                android:textSize="18sp"
                                                 android:fontFamily="@font/dmsans_bold"
                                                 android:textColor="#B50200"
                                                 android:text="95"
@@ -823,7 +823,7 @@
                                                 android:id="@+id/proteinUnitTv"
                                                 android:layout_width="wrap_content"
                                                 android:layout_height="wrap_content"
-                                                android:textSize="12sp"
+                                                android:textSize="10sp"
                                                 android:layout_marginBottom="3dp"
                                                 android:fontFamily="@font/dmsans_regular"
                                                 android:textColor="@color/text_color_kcal"
@@ -889,7 +889,7 @@
                                     app:layout_constraintTop_toTopOf="parent"
                                     app:layout_constraintStart_toEndOf="@+id/layout_protein"
                                     app:layout_constraintEnd_toStartOf="@+id/layout_fats"
-                                    app:layout_constraintWidth_percent="0.33">
+                                    app:layout_constraintWidth_percent="0.30">
 
                                     <androidx.appcompat.widget.LinearLayoutCompat
                                         android:id="@+id/layout_cabs_cal_value"
@@ -925,7 +925,7 @@
                                                 app:layout_constraintStart_toStartOf="parent"
                                                 android:text="558"
                                                 android:textColor="#B50200"
-                                                android:textSize="20sp"
+                                                android:textSize="18sp"
                                                 tools:ignore="MissingConstraints" />
 
                                             <TextView
@@ -936,7 +936,7 @@
                                                 android:fontFamily="@font/dmsans_regular"
                                                 android:text="/ 500g"
                                                 android:textColor="@color/text_color_kcal"
-                                                android:textSize="12sp"
+                                                android:textSize="10sp"
                                                 app:layout_constraintBottom_toBottomOf="@+id/tv_carbs_value"
                                                 app:layout_constraintStart_toEndOf="@+id/tv_carbs_value" />
                                         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -995,7 +995,7 @@
                                     app:layout_constraintTop_toTopOf="parent"
                                     app:layout_constraintStart_toEndOf="@+id/layout_cabs"
                                     app:layout_constraintEnd_toEndOf="parent"
-                                    app:layout_constraintWidth_percent="0.33">
+                                    app:layout_constraintWidth_percent="0.30">
 
                                     <androidx.appcompat.widget.LinearLayoutCompat
                                         android:id="@+id/layout_fats_value"
@@ -1027,7 +1027,7 @@
                                                 android:id="@+id/tv_fats_value"
                                                 android:layout_width="wrap_content"
                                                 android:layout_height="wrap_content"
-                                                android:textSize="20sp"
+                                                android:textSize="18sp"
                                                 android:fontFamily="@font/dmsans_bold"
                                                 android:textColor="#B50200"
                                                 app:layout_constraintTop_toTopOf="parent"
@@ -1038,7 +1038,7 @@
                                                 android:id="@+id/fatsUnitTv"
                                                 android:layout_width="wrap_content"
                                                 android:layout_height="wrap_content"
-                                                android:textSize="12sp"
+                                                android:textSize="10sp"
                                                 android:layout_marginBottom="3dp"
                                                 android:fontFamily="@font/dmsans_regular"
                                                 android:textColor="@color/text_color_kcal"
