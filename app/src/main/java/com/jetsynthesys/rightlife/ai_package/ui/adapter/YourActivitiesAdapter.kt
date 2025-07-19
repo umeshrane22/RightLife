@@ -52,8 +52,10 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
        }
         val formattedTime = formatTimeString(item.duration!!)
         holder.duration.text = formattedTime
-        val formattedCalories = formatCalorieString( item.caloriesBurned!!)
+        val formattedCalories = item.caloriesBurned!!.substringBefore(".")
         holder.calValue.text = formattedCalories
+        holder.calUnit.visibility = View.VISIBLE
+        holder.calUnit.text = item.caloriesUnit
         holder.mealName.visibility = View.GONE
         holder.delete.setOnClickListener {
             val bottomSheet = DeleteWorkoutBottomSheet.newInstance(
@@ -149,9 +151,10 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
         )
         return spannable
     }
+
     private fun formatTimeString(timeString: String): SpannableStringBuilder {
         // Step 1: Parse the input string (e.g., "61 min" -> 61)
-        val minutes = timeString.replace(" min", "").toIntOrNull() ?: 0
+        val minutes = timeString.replace(" mins", "").toIntOrNull() ?: 0
         // Step 2: Convert minutes to hours and minutes
         val hours = minutes / 60
         val remainingMinutes = minutes % 60
@@ -160,7 +163,7 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
             if (hours > 0) {
                 append("$hours hr ")
             }
-            append("$remainingMinutes min")
+            append("$remainingMinutes mins")
         }
         // Step 4: Create SpannableStringBuilder for styling
         val spannable = SpannableStringBuilder(formattedText)

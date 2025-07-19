@@ -15,6 +15,7 @@ data class ActivityModel(
     val duration: String?,
     val averageHeartRate : Double,
     val caloriesBurned: String?,
+    val caloriesUnit: String,
     val icon: String?,
     val intensity: String?,
     val isSynced : Boolean

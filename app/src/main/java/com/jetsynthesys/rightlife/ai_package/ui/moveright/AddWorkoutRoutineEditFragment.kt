@@ -125,7 +125,6 @@ class AddWorkoutRoutineEditFragment : BaseFragment<FragmentAddWorkoutSearchBindi
                 setFragmentResult("workoutListUpdate", Bundle().apply {
                     putParcelableArrayList("workoutList", workoutListRoutine)
                 })
-
                 val fragment = CreateRoutineFragment()
                 val args = Bundle().apply {
                     putParcelableArrayList("workoutList", workoutListRoutine)
