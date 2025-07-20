@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.TextView
@@ -80,6 +81,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         }
 
         binding.edtAge.setOnClickListener {
+            hideKeyboard()
             lifecycleScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) {
                     showAgeSelectionBottomSheet()
@@ -88,6 +90,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         }
 
         binding.edtHeight.setOnClickListener {
+            hideKeyboard()
             lifecycleScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) {
                     showHeightSelectionBottomSheet(sharedPreferenceManager.userProfile.userdata.gender)
@@ -96,6 +99,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
         }
 
         binding.edtWeight.setOnClickListener {
+            hideKeyboard()
             lifecycleScope.launch(Dispatchers.IO) {
                 withContext(Dispatchers.Main) {
                     showWeightSelectionBottomSheet(sharedPreferenceManager.userProfile.userdata.gender)
@@ -1029,6 +1033,13 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
                 handleNoInternetView(t)
             }
         })
+    }
+
+    private fun hideKeyboard() {
+        val inputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+        currentFocus?.let {
+            inputMethodManager.hideSoftInputFromWindow(it.windowToken, 0)
+        }
     }
 
 }

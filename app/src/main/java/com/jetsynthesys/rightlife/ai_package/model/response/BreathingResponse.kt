@@ -1,6 +1,9 @@
 package com.jetsynthesys.rightlife.ai_package.model.response
 
+import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import com.jetsynthesys.rightlife.ui.breathwork.pojo.BreathingData
+import java.io.Serializable
 
 data class BreathingResponse(
     @SerializedName("success")
@@ -12,6 +15,9 @@ data class BreathingResponse(
 )
 
 
+
+
+/*
 data class BreathingData(
     @SerializedName("_id")
     var Id               : String? ,
@@ -35,4 +41,4 @@ data class BreathingData(
     var _v               : Int? ,
     @SerializedName("duration")
     var duration         : Int?
-)
+)*/
