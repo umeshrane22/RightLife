@@ -50,6 +50,14 @@ import androidx.health.connect.client.records.WeightRecord
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.android.billingclient.api.AcknowledgePurchaseParams
+import com.android.billingclient.api.BillingClient
+import com.android.billingclient.api.BillingClientStateListener
+import com.android.billingclient.api.BillingResult
+import com.android.billingclient.api.ConsumeParams
+import com.android.billingclient.api.PendingPurchasesParams
+import com.android.billingclient.api.Purchase
+import com.android.billingclient.api.QueryPurchasesParams
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.Firebase
@@ -135,6 +143,7 @@ class HomeDashboardActivity : BaseActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeDashboardBinding.inflate(layoutInflater)
         setChildContentView(binding.root)
+        //initBillingAndRecover()
 
         // Set default fragment
         loadFragment(HomeFragment())
@@ -1819,6 +1828,98 @@ private fun checkTimeAndSetVisibility(module: UpdatedModule) {
                 handleNoInternetView(t)
             }
         })
+    }
+
+
+
+    // billing issue recovery
+
+    private lateinit var billingClient: BillingClient
+
+    private fun initBillingAndRecover() {
+        billingClient = BillingClient.newBuilder(this)
+            .setListener { billingResult, purchases ->
+                // Optional: React to new purchases here if needed
+            }
+            .enablePendingPurchases(
+                PendingPurchasesParams.newBuilder()
+                    .enableOneTimeProducts()
+                    .build()
+            )
+            .build()
+
+        billingClient.startConnection(object : BillingClientStateListener {
+            override fun onBillingSetupFinished(billingResult: BillingResult) {
+                if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                    // Query in-app purchases
+                    recoverInAppPurchases()
+                    // Query subscriptions
+                    recoverSubscriptions()
+                }
+            }
+
+            override fun onBillingServiceDisconnected() {
+                // Retry connection if needed
+            }
+        })
+    }
+
+    private fun recoverInAppPurchases() {
+        val params = QueryPurchasesParams.newBuilder()
+            .setProductType(BillingClient.ProductType.INAPP)
+            .build()
+
+        billingClient.queryPurchasesAsync(params) { billingResult, purchases ->
+            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                for (purchase in purchases) {
+                    if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
+                        // Make sure it's not already consumed
+                        consumeIfNeeded(purchase)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun recoverSubscriptions() {
+        val params = QueryPurchasesParams.newBuilder()
+            .setProductType(BillingClient.ProductType.SUBS)
+            .build()
+
+        billingClient.queryPurchasesAsync(params) { billingResult, purchases ->
+            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                for (purchase in purchases) {
+                    if (!purchase.isAcknowledged && purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
+                        acknowledgeSubscription(purchase)
+                    }
+                    // Optionally update UI/backend if already acknowledged
+                }
+            }
+        }
+    }
+
+    private fun consumeIfNeeded(purchase: Purchase) {
+        val consumeParams = ConsumeParams.newBuilder()
+            .setPurchaseToken(purchase.purchaseToken)
+            .build()
+
+        billingClient.consumeAsync(consumeParams) { result, _ ->
+            if (result.responseCode == BillingClient.BillingResponseCode.OK) {
+                // ✅ Successfully consumed, update local or server state
+            }
+        }
+    }
+
+    private fun acknowledgeSubscription(purchase: Purchase) {
+        val acknowledgeParams = AcknowledgePurchaseParams.newBuilder()
+            .setPurchaseToken(purchase.purchaseToken)
+            .build()
+
+        billingClient.acknowledgePurchase(acknowledgeParams) { result ->
+            if (result.responseCode == BillingClient.BillingResponseCode.OK) {
+                // ✅ Acknowledged successfully, update backend or UI
+            }
+        }
     }
 
 
