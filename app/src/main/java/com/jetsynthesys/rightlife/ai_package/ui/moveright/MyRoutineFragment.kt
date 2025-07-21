@@ -16,16 +16,24 @@ import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
+import com.jetsynthesys.rightlife.ai_package.model.AddWorkoutResponse
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutRoutineItem
-import com.jetsynthesys.rightlife.ai_package.model.response.WorkoutPlanResponse
+import com.jetsynthesys.rightlife.ai_package.model.request.AddWorkoutLogRequest
 import com.jetsynthesys.rightlife.ai_package.ui.thinkright.adapter.MyRoutineMainListAdapter
 import com.jetsynthesys.rightlife.databinding.FragmentMyRoutineBinding
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
-class MyRoutineFragment : BaseFragment<FragmentMyRoutineBinding>() {
+class MyRoutineFragment(mSelectedDate: String) : BaseFragment<FragmentMyRoutineBinding>() {
+
+    private val selectedDate = mSelectedDate
 
     private lateinit var myRoutineRecyclerView: RecyclerView
     private lateinit var layoutBtnLogWorkout: LinearLayoutCompat
@@ -43,8 +51,38 @@ class MyRoutineFragment : BaseFragment<FragmentMyRoutineBinding>() {
                 requireActivity().supportFragmentManager.beginTransaction().apply {
                     replace(R.id.flFragment, fragment, "workoutDetails")
                     addToBackStack("workoutDetails")
-                    commit() } }, ::onWorkoutItemClick,)
+                    commit() } },::onWorkoutAddToLog, ::onWorkoutItemClick)
     }
+
+    fun getTodayDate(): LocalDate {
+        return LocalDate.now()
+    }
+
+    private fun onWorkoutAddToLog(workoutItem:WorkoutRoutineItem) {
+                val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+                val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                val date = getTodayDate().format(dateFormatter)
+                Log.d("FetchRoutines", "Fetching routines for userId: $userId")
+                val call = ApiClient.apiServiceFastApi.addWorkoutLog(AddWorkoutLogRequest(userId,selectedDate,workoutItem.routineId))
+                call.enqueue(object : Callback<AddWorkoutResponse> {
+                    override fun onResponse(call: Call<AddWorkoutResponse>, response: Response<AddWorkoutResponse>) {
+                        if (response.isSuccessful) {
+                            if (response.body() != null) {
+                                Toast.makeText(activity, "Workout Added Successfully.", Toast.LENGTH_SHORT).show()
+                                navigateToFragment(YourActivityFragment(), "AllWorkoutFragment")
+                              //  val bottomSheet = LoggedBottomSheet()
+                              //     bottomSheet.show((context as AppCompatActivity).supportFragmentManager, "EditWorkoutBottomSheet")
+                            }
+                        }
+                    }
+
+                    override fun onFailure(call: Call<AddWorkoutResponse>, t: Throwable) {
+                        Log.e("Error", "API call failed: ${t.message}")
+                        Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
+                    }
+                })
+    }
+
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentMyRoutineBinding
         get() = FragmentMyRoutineBinding::inflate
@@ -163,5 +201,13 @@ class MyRoutineFragment : BaseFragment<FragmentMyRoutineBinding>() {
     private fun onWorkoutItemClick(workout: WorkoutRoutineItem, position: Int, isRefresh: Boolean) {
         Log.d("MyRoutineFragment", "Workout clicked: ${workout.activityName}, Position: $position")
         // Add click handling logic here if needed
+    }
+
+    private fun navigateToFragment(fragment: androidx.fragment.app.Fragment, tag: String) {
+        requireActivity().supportFragmentManager.beginTransaction().apply {
+            replace(R.id.flFragment, fragment, tag)
+            addToBackStack(null)
+            commit()
+        }
     }
 }

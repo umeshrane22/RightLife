@@ -26,6 +26,7 @@ class MyRoutineMainListAdapter(
     private var workoutItem: WorkoutRoutineItem?,
     private var isClickView: Boolean,
     private val onCirclePlusClick: (WorkoutRoutineItem, Int) -> Unit,
+    private val onAddToLogButtonClick: (WorkoutRoutineItem) -> Unit,
     private val onWorkoutItemClick: (WorkoutRoutineItem, Int, Boolean) -> Unit
 ) : RecyclerView.Adapter<MyRoutineMainListAdapter.ViewHolder>() {
 
@@ -60,8 +61,7 @@ class MyRoutineMainListAdapter(
             // Implement edit functionality
         }
         holder.addToWorkout.setOnClickListener {
-            val bottomSheet = LoggedBottomSheet()
-            bottomSheet.show((context as AppCompatActivity).supportFragmentManager, "EditWorkoutBottomSheet")
+            onAddToLogButtonClick(item)
         }
         holder.layout_edit.setOnClickListener {
             onCirclePlusClick(item, position)

@@ -157,6 +157,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         layout_btn_addWorkout.setOnClickListener {
             val fragment = SearchWorkoutFragment()
             val args = Bundle()
+            args.putString("selected_date", workoutDateTv.text.toString()) // Put the string in the bundle
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "searchWorkoutFragment")
