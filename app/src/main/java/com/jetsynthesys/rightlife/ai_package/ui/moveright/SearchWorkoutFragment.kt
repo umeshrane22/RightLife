@@ -48,8 +48,11 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
         val searchEditText: EditText = view.findViewById(R.id.searchEditText)
         val tabLayout = view.findViewById<TabLayout>(R.id.tabLayout)
 
-        mSelectedDate = convertDate(selectedDate!!)
+        if (selectedDate != null){
+            mSelectedDate = convertDate(selectedDate)
+        }
         searchWorkoutBackButton = view.findViewById(R.id.search_workout_back_button)
+
         searchWorkoutBackButton.setOnClickListener {
             navigateToYourActivityFragment()
         }

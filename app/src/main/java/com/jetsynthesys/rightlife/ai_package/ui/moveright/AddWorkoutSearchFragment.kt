@@ -66,6 +66,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
     private var lastWorkoutRecord: WorkoutSessionRecord? = null
     private var routine: String = ""
     private var routineName: String = ""
+    private lateinit var workoutName : TextView
     private var workoutListRoutine = ArrayList<WorkoutSessionRecord>()
 
     // Normalize intensity to match API's expected values
@@ -128,6 +129,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
         val addSearchFragmentBackButton = view.findViewById<ImageView>(R.id.back_button)
         intensityProgressBar = view.findViewById(R.id.customSeekBar)
         caloriesText = view.findViewById(R.id.calories_text)
+        workoutName = view.findViewById(R.id.workoutName)
 
         // Initially disable the addLog button until conditions are met
         addLog.isEnabled = false
@@ -366,6 +368,14 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                 Toast.makeText(requireContext(), "Please select a duration", Toast.LENGTH_SHORT).show()
                 addLog.isEnabled = false
             }
+        }
+
+        if (workout != null){
+            workoutName.text = workout?.title
+        }else if (activityModel != null){
+            workoutName.text = activityModel?.workoutType
+        }else if (workoutModel != null){
+            workoutName.text = workoutModel?.activityName
         }
 
         // Initial API call with default values if in non-edit mode
@@ -678,6 +688,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
             }
         }
     }
+
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     private fun updateCalories(calorieId: String, durationMinutes: Int, intensity: String) {
         CoroutineScope(Dispatchers.IO).launch {

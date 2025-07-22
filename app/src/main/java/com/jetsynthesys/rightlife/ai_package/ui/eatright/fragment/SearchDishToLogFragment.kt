@@ -75,6 +75,7 @@ class SearchDishToLogFragment : BaseFragment<FragmentSearchDishBinding>() {
     private var searchMealList : ArrayList<SearchResultItem> = ArrayList()
     private var snapMealRequestLocalListModel : SnapMealRequestLocalListModel? = null
     private var loadingOverlay : FrameLayout? = null
+    private var moduleName : String = ""
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentSearchDishBinding
         get() = FragmentSearchDishBinding::inflate
@@ -105,6 +106,7 @@ class SearchDishToLogFragment : BaseFragment<FragmentSearchDishBinding>() {
         allDishesRecyclerview = view.findViewById(R.id.recyclerView_all_dishes)
         backButton = view.findViewById(R.id.backButton)
 
+        moduleName = arguments?.getString("ModuleName").toString()
         searchType = arguments?.getString("searchType").toString()
         mealType = arguments?.getString("mealType").toString()
 
@@ -174,6 +176,7 @@ class SearchDishToLogFragment : BaseFragment<FragmentSearchDishBinding>() {
                 override fun handleOnBackPressed() {
                     val fragment = YourMealLogsFragment()
                     val args = Bundle()
+                    args.putString("ModuleName", moduleName)
                     fragment.arguments = args
                     requireActivity().supportFragmentManager.beginTransaction().apply {
                         replace(R.id.flFragment, fragment, "landing")
@@ -186,6 +189,7 @@ class SearchDishToLogFragment : BaseFragment<FragmentSearchDishBinding>() {
         backButton.setOnClickListener {
             val fragment = YourMealLogsFragment()
             val args = Bundle()
+            args.putString("ModuleName", moduleName)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "landing")
@@ -206,6 +210,7 @@ class SearchDishToLogFragment : BaseFragment<FragmentSearchDishBinding>() {
             }
             val fragment = HomeTabMealFragment()
             val args = Bundle()
+            args.putString("ModuleName", moduleName)
             args.putString("mealType", "dinner")
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -239,6 +244,7 @@ class SearchDishToLogFragment : BaseFragment<FragmentSearchDishBinding>() {
                                     Log.d("Keyboard", "Closed")
                                     val fragment = HomeTabMealFragment()
                                     val args = Bundle()
+                                    args.putString("ModuleName", moduleName)
                                     args.putString("mealType", "dinner")
                                     fragment.arguments = args
                                     requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -307,6 +313,7 @@ class SearchDishToLogFragment : BaseFragment<FragmentSearchDishBinding>() {
         requireActivity().supportFragmentManager.beginTransaction().apply {
             val snapMealFragment = DishToLogFragment()
             val args = Bundle()
+            args.putString("ModuleName", moduleName)
             args.putString("searchType", searchType)
             args.putString("mealType", mealType)
             args.putParcelable("searchResultItem", searchResultItem)

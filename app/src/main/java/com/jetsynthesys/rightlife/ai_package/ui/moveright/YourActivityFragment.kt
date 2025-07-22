@@ -24,31 +24,20 @@ import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.LinearLayoutCompat
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.snackbar.Snackbar
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.ActivityModel
-import com.jetsynthesys.rightlife.ai_package.model.CardItem
-import com.jetsynthesys.rightlife.ai_package.model.DeleteCalorieResponse
-import com.jetsynthesys.rightlife.ai_package.model.HeartRateZoneMinutes
-import com.jetsynthesys.rightlife.ai_package.model.HeartRateZonePercentages
-import com.jetsynthesys.rightlife.ai_package.model.HeartRateZones
-import com.jetsynthesys.rightlife.ai_package.model.UpdateCalorieRequest
-import com.jetsynthesys.rightlife.ai_package.model.UpdateCalorieResponse
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutWeeklyDayModel
 import com.jetsynthesys.rightlife.ai_package.model.response.WorkoutHistoryResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.WorkoutRecord
-import com.jetsynthesys.rightlife.ai_package.ui.adapter.CarouselAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.adapter.YourActivitiesAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.adapter.YourActivitiesWeeklyListAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
-import com.jetsynthesys.rightlife.ai_package.utils.LoaderUtil
 import com.jetsynthesys.rightlife.databinding.FragmentYourActivityBinding
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.Dispatchers
@@ -57,14 +46,10 @@ import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.text.SimpleDateFormat
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.Date
-import java.util.Locale
-import kotlin.math.abs
 
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
