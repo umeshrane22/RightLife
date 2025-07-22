@@ -3,6 +3,7 @@ package com.jetsynthesys.rightlife.ai_package.data.repository
 import com.jetsynthesys.rightlife.ai_package.model.ActiveCaloriesResponse
 import com.jetsynthesys.rightlife.ai_package.model.AddEmojiRequest
 import com.jetsynthesys.rightlife.ai_package.model.AddToolRequest
+import com.jetsynthesys.rightlife.ai_package.model.AddWorkoutResponse
 import com.jetsynthesys.rightlife.ai_package.model.AffirmationPlaylistResponse
 import com.jetsynthesys.rightlife.ai_package.model.MealLogsResponseModel
 import com.jetsynthesys.rightlife.ai_package.model.MealsResponse
@@ -55,6 +56,7 @@ import com.jetsynthesys.rightlife.ai_package.model.WorkoutMoveResponseRoutine
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponse
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponseModel
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutResponseRoutine
+import com.jetsynthesys.rightlife.ai_package.model.request.AddWorkoutLogRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.CreateRecipeRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.CreateWorkoutRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.MealPlanLogRequest
@@ -724,6 +726,9 @@ interface ApiService {
     suspend fun getRoutines(
         @Query("user_id") userId: String
     ): Response<WorkoutPlanResponse>
+
+    @POST("move/workout_list/log_routine/")
+    fun addWorkoutLog(@Body addWorkoutLogRequest: AddWorkoutLogRequest): Call<AddWorkoutResponse>
 
     @GET("move/landing_page/")
     suspend fun getLandingPageData(

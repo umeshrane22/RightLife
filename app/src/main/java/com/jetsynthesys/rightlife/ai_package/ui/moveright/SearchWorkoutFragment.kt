@@ -22,12 +22,15 @@ import com.jetsynthesys.rightlife.ai_package.model.WorkoutSessionRecord
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.viewmodel.WorkoutViewModel
 import com.jetsynthesys.rightlife.databinding.FragmentSearchWorkoutBinding
 import com.google.android.material.tabs.TabLayout
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
 
     private val workoutViewModel: WorkoutViewModel by activityViewModels()
     private lateinit var searchWorkoutBackButton: ImageView
     private var workoutList = ArrayList<WorkoutSessionRecord>()
+    private var mSelectedDate = ""
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentSearchWorkoutBinding
         get() = FragmentSearchWorkoutBinding::inflate
@@ -37,6 +40,7 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
         super.onViewCreated(view, savedInstanceState)
         view.setBackgroundResource(R.drawable.gradient_color_background_workout)
 
+        val selectedDate = arguments?.getString("selected_date")
         val routine = arguments?.getString("routine")
         val routineName = arguments?.getString("routineName")
         workoutList = arguments?.getParcelableArrayList("workoutList") ?: ArrayList()
@@ -44,6 +48,7 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
         val searchEditText: EditText = view.findViewById(R.id.searchEditText)
         val tabLayout = view.findViewById<TabLayout>(R.id.tabLayout)
 
+        mSelectedDate = convertDate(selectedDate!!)
         searchWorkoutBackButton = view.findViewById(R.id.search_workout_back_button)
         searchWorkoutBackButton.setOnClickListener {
             navigateToYourActivityFragment()
@@ -62,7 +67,7 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
         // Initial fragment load based on selectedTab
         if (savedInstanceState == null) {
             val initialFragment: Fragment = when (selectedTab) {
-                1 -> MyRoutineFragment()
+                1 -> MyRoutineFragment(mSelectedDate)
                 2 -> FrequentlyLoggedSearchFragment()
                 else -> AllWorkoutFragment().apply {
                     arguments = Bundle().apply {
@@ -90,7 +95,7 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
                         }
                         replaceFragment(allWorkoutFragment)
                     }
-                    1 -> replaceFragment(MyRoutineFragment())
+                    1 -> replaceFragment(MyRoutineFragment(mSelectedDate))
                     2 -> replaceFragment(FrequentlyLoggedSearchFragment())
                 }
                 updateTabColors()
@@ -119,6 +124,17 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
                 navigateToYourActivityFragment()
             }
         })
+    }
+
+    private fun convertDate(date: String): String{
+        val originalFormatter = DateTimeFormatter.ofPattern("E, d MMM yyyy")
+        val targetFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
+        val dateStr = date
+        val dateFormat = LocalDate.parse(dateStr, originalFormatter)
+
+        val formattedDate = dateFormat.format(targetFormatter)
+        return formattedDate
     }
 
     private fun replaceFragment(fragment: Fragment) {

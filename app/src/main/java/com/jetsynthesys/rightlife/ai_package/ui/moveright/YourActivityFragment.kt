@@ -141,7 +141,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         super.onViewCreated(view, savedInstanceState)
 
         view.setBackgroundResource(R.drawable.gradient_color_background_workout)
-
+        val selectedDate = arguments?.getString("selected_date")
         mealLogDateListAdapter = view.findViewById(R.id.recyclerview_calender)
         myActivityRecyclerView = view.findViewById(R.id.recyclerview_my_meals_item)
         imageCalender = view.findViewById(R.id.image_calender)
@@ -157,6 +157,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         layout_btn_addWorkout.setOnClickListener {
             val fragment = SearchWorkoutFragment()
             val args = Bundle()
+            args.putString("selected_date", workoutDateTv.text.toString()) // Put the string in the bundle
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "searchWorkoutFragment")
