@@ -204,6 +204,9 @@ class MyRoutineFragment(mSelectedDate: String) : BaseFragment<FragmentMyRoutineB
     }
 
     private fun navigateToFragment(fragment: androidx.fragment.app.Fragment, tag: String) {
+        val args = Bundle()
+        args.putString("selected_date", selectedDate) // Put the string in the bundle
+        fragment.arguments = args
         requireActivity().supportFragmentManager.beginTransaction().apply {
             replace(R.id.flFragment, fragment, tag)
             addToBackStack(null)

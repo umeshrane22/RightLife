@@ -141,7 +141,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         super.onViewCreated(view, savedInstanceState)
 
         view.setBackgroundResource(R.drawable.gradient_color_background_workout)
-
+        val selectedDate = arguments?.getString("selected_date")
         mealLogDateListAdapter = view.findViewById(R.id.recyclerview_calender)
         myActivityRecyclerView = view.findViewById(R.id.recyclerview_my_meals_item)
         imageCalender = view.findViewById(R.id.image_calender)
