@@ -2,6 +2,7 @@ package com.jetsynthesys.rightlife.ai_package.ui.moveright
 
 import android.graphics.Color
 import android.graphics.Typeface
+import android.media.Image
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -19,6 +20,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.os.BundleCompat
 import androidx.fragment.app.setFragmentResult
+import com.bumptech.glide.Glide
 import com.google.gson.Gson
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
@@ -268,7 +270,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
             selectedTime = "$hours hr ${minutes.toString().padStart(2, '0')} min"
             // Trigger initial calorie calculation in edit mode
             activityModel?.id?.let { calorieId ->
-                calculateUserCalories(durationMin, selectedIntensity, calorieId)
+             //   calculateUserCalories(durationMin, selectedIntensity, calorieId)
                 addLog.isEnabled = true
             }
         }else if(edit_routine.equals("edit_routine")&& workoutModel != null){
@@ -289,7 +291,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
             selectedTime = "$hours hr ${minutes.toString().padStart(2, '0')} min"
             // Trigger initial calorie calculation in edit mode
             workoutModel?.activityId?.let { activityId ->
-                calculateUserCalories(durationMin, selectedIntensity, activityId)
+              //  calculateUserCalories(durationMin, selectedIntensity, activityId)
                 addLog.isEnabled = true
             }
         }
@@ -644,11 +646,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                         val errorBody = response.errorBody()?.string()
                         Log.e("CalculateCalories", "Error: ${response.code()} - ${response.message()}, Body: $errorBody")
                         //caloriesText.text = "Error"
-                        Toast.makeText(
-                            requireContext(),
-                            "Error: ${response.code()} - ${response.message()}\nDetails: $errorBody",
-                            Toast.LENGTH_LONG
-                        ).show()
+                        Toast.makeText(requireContext(), "Error: ${response.code()} - ${response.message()}\nDetails: $errorBody", Toast.LENGTH_LONG).show()
                         // Navigate even if API fails, as lastWorkoutRecord is set
                         if (navigateToRoutine) {
                             navigateToCreateRoutineFragment()
@@ -657,14 +655,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                 }
             } catch (e: Exception) {
                 lastWorkoutRecord = workout?.let {
-                    WorkoutSessionRecord(
-                        userId = "64763fe2fa0e40d9c0bc8264",
-                        activityId = activityId,
-                        durationMin = durationMinutes,
-                        intensity = selectedIntensity,
-                        sessions = 1,
-                        moduleName = it.title
-                    )
+                    WorkoutSessionRecord(userId = "64763fe2fa0e40d9c0bc8264", activityId = activityId, durationMin = durationMinutes, intensity = selectedIntensity, sessions = 1, moduleName = it.title)
                 }
                 withContext(Dispatchers.Main) {
                     //caloriesText.text = "Error"
