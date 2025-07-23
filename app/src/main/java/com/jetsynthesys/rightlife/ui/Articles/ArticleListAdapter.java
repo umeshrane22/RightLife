@@ -22,6 +22,7 @@ import com.jetsynthesys.rightlife.databinding.ArticleItemRowBinding;
 import com.jetsynthesys.rightlife.ui.Articles.models.Article;
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.ContentDetailsActivity;
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.SeriesListActivity;
+import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils;
 import com.jetsynthesys.rightlife.ui.utility.Utils;
 import com.jetsynthesys.rightlife.ui.utility.svgloader.GlideApp;
 
@@ -115,9 +116,86 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
             holder.binding.card2.setVisibility(View.GONE);
         }
 
+
+
         // Article Card
         if (article.getRecommendedArticle() != null && article.getRecommendedArticle().getTitle() != null) {
-            if (article.getRecommendedArticle().getContentType().equalsIgnoreCase("video") || article.getRecommendedArticle().getContentType().equalsIgnoreCase("Audio")) {
+
+            /*if (article.getRecommendedArticle().getContentType().equalsIgnoreCase("text")){
+
+            }*/
+                holder.binding.card3.setVisibility(View.GONE);
+                holder.binding.card3Series.setVisibility(View.VISIBLE);
+                holder.binding.card3.setVisibility(View.GONE);
+                holder.binding.card3Series.setVisibility(View.VISIBLE);
+                holder.binding.imgContentTypeSeries.setImageResource(R.drawable.ic_series_content);
+
+                //holder.binding.tvTitleCardSeries.setText(article.getRecommendedArticle().getTitle());
+                holder.binding.txtDescCardSeries.setText(article.getRecommendedArticle().getTitle());
+                if (article.getRecommendedArticle().getThumbnail().getUrl()!=null) {
+                    GlideApp.with(context).load(ApiClient.CDN_URL_QA + article.getRecommendedArticle().getThumbnail().getUrl())
+                            .transform(new RoundedCorners(15))
+                            .placeholder(R.drawable.rl_placeholder)
+                            .error(R.drawable.rl_placeholder)
+                            .into(holder.binding.imgThumbnailSeries);
+                }
+
+                holder.binding.txtTagSeries.setVisibility(View.VISIBLE);
+
+                if (article.getRecommendedArticle().getViewCount()!=null) {
+                    holder.binding.txtViewcountSeries.setText(String.valueOf(article.getRecommendedArticle().getViewCount()));
+                    holder.binding.txtViewcountSeries.setVisibility(View.VISIBLE);
+                }
+
+                holder.binding.imgContentTypeSeries.setImageResource(R.drawable.ic_text_content);
+                if (article.getRecommendedArticle().getContentType().equalsIgnoreCase("Audio")) {
+                    holder.binding.imgContentTypeVideo.setImageResource(R.drawable.ic_audio_content);
+                }else if (article.getRecommendedArticle().getContentType().equalsIgnoreCase("Video")) {
+                    holder.binding.imgContentTypeVideo.setImageResource(R.drawable.ic_video_content);
+                }else if (article.getRecommendedArticle().getContentType().equalsIgnoreCase("series")) {
+                    holder.binding.imgContentTypeVideo.setImageResource(R.drawable.ic_series_content);
+                } else {
+                    holder.binding.imgContentTypeVideo.setImageResource(R.drawable.ic_text_content);
+                }
+                int color = Utils.getModuleColor(context,article.getRecommendedArticle().getModuleId());
+                holder.binding.imgTagSeries.setBackgroundTintList(ColorStateList.valueOf(color));
+
+                holder.binding.tvName.setText(article.getRecommendedArticle().getArtist().get(0).getFirstName() + " " + article.getRecommendedArticle().getArtist().get(0).getLastName());
+                holder.binding.tvdateTime.setText(DateTimeUtils.convertAPIDateMonthFormat(article.getRecommendedArticle().getCreatedAt()));
+                holder.binding.tvLeftTime.setText(article.getRecommendedArticle().getReadingTime() + " min read");
+
+
+                holder.binding.card3Series.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        if (article.getRecommendedArticle().getContentType().equalsIgnoreCase("text")){
+                            Intent intent = new Intent(holder.itemView.getContext(), ArticlesDetailActivity.class);
+                            intent.putExtra("contentId", article.getRecommendedArticle().getId());
+                            holder.itemView.getContext().startActivity(intent);
+                        }else if (article.getRecommendedArticle().getContentType().equalsIgnoreCase("Audio")) {
+                            Intent intent = new Intent(holder.itemView.getContext(), ContentDetailsActivity.class);
+                            intent.putExtra("contentId", article.getRecommendedArticle().getId());
+                            holder.itemView.getContext().startActivity(intent);
+                        }else if (article.getRecommendedArticle().getContentType().equalsIgnoreCase("Video")) {
+                            Intent intent = new Intent(holder.itemView.getContext(), ContentDetailsActivity.class);
+                            intent.putExtra("contentId", article.getRecommendedArticle().getId());
+                            holder.itemView.getContext().startActivity(intent);
+                        }else if (article.getRecommendedArticle().getContentType().equalsIgnoreCase("series")) {
+                            Intent intent = new Intent(holder.itemView.getContext(), SeriesListActivity.class);
+                            intent.putExtra("contentId",article.getRecommendedArticle().getId());
+                            holder.itemView.getContext().startActivity(intent);
+                        } else {
+
+                        }
+                    }
+                });
+
+
+
+/*
+            if (article.getRecommendedArticle().getContentType().equalsIgnoreCase("video") || article.getRecommendedArticle().getContentType().equalsIgnoreCase("Audio"))
+            {
                 holder.binding.card3.setVisibility(View.VISIBLE);
 
                 holder.binding.tvArticlecard3TitleVideo.setText(article.getRecommendedArticle().getTitle());
@@ -161,8 +239,8 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
                 holder.binding.card3Series.setVisibility(View.VISIBLE);
                 holder.binding.imgContentTypeSeries.setImageResource(R.drawable.ic_series_content);
 
-                holder.binding.tvTitleCardSeries.setText(article.getRecommendedArticle().getTitle());
-                holder.binding.txtDescCardSeries.setText(article.getRecommendedArticle().getDesc());
+                //holder.binding.tvTitleCardSeries.setText(article.getRecommendedArticle().getTitle());
+                holder.binding.txtDescCardSeries.setText(article.getRecommendedArticle().getTitle());
                 if (article.getRecommendedArticle().getThumbnail().getUrl()!=null) {
                     GlideApp.with(context).load(ApiClient.CDN_URL_QA + article.getRecommendedArticle().getThumbnail().getUrl())
                             .transform(new RoundedCorners(15))
@@ -201,8 +279,8 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
                 holder.binding.card3Series.setVisibility(View.VISIBLE);
                 holder.binding.imgContentTypeSeries.setImageResource(R.drawable.ic_series_content);
 
-                holder.binding.tvTitleCardSeries.setText(article.getRecommendedArticle().getTitle());
-                holder.binding.txtDescCardSeries.setText(article.getRecommendedArticle().getDesc());
+                //holder.binding.tvTitleCardSeries.setText(article.getRecommendedArticle().getTitle());
+                holder.binding.txtDescCardSeries.setText(article.getRecommendedArticle().getTitle());
                 if (article.getRecommendedArticle().getThumbnail().getUrl()!=null) {
                     GlideApp.with(context).load(ApiClient.CDN_URL_QA + article.getRecommendedArticle().getThumbnail().getUrl())
                             .transform(new RoundedCorners(15))
@@ -221,7 +299,12 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
                 holder.binding.imgContentTypeSeries.setImageResource(R.drawable.ic_text_content);
                 int color = Utils.getModuleColor(context,article.getRecommendedArticle().getModuleId());
                 holder.binding.imgTagSeries.setBackgroundTintList(ColorStateList.valueOf(color));
-            }
+
+                holder.binding.tvName.setText(article.getRecommendedArticle().getArtist().get(0).getFirstName() + " " + article.getRecommendedArticle().getArtist().get(0).getLastName());
+                holder.binding.tvdateTime.setText(DateTimeUtils.convertAPIDateMonthFormat(article.getRecommendedArticle().getCreatedAt()));
+                holder.binding.tvLeftTime.setText(article.getRecommendedArticle().getReadingTime() + " min read");
+
+            }*/
 
         }
 
