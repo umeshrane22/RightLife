@@ -50,6 +50,8 @@ data class UnsyncedWorkout(
     private val rawHeartRateData: List<Map<String, String>>,
     @SerializedName("_id")
     val id: String,
+    @SerializedName("activity_id")
+    val activity_id: String,
     @SerializedName("icon")
     val icon: String,
     @SerializedName("user_id")
