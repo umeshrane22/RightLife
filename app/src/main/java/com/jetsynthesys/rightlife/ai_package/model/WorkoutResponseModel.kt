@@ -14,6 +14,7 @@ data class WorkoutList(
     val title: String,
     val iconUrl: String,
     val moduleId: String,
+    val activityId: String,
     val order: Int,
     val isActive: Boolean,
     val createdAt: String,

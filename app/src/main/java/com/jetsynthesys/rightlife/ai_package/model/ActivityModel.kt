@@ -12,6 +12,7 @@ data class ActivityModel(
     val recordType: String,
     val workoutType: String,
     val workoutId: String?,
+    val activityId: String,
     val duration: String?,
     val averageHeartRate : Double,
     val caloriesBurned: String?,

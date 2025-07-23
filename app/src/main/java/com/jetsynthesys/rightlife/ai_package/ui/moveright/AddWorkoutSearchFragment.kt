@@ -94,12 +94,28 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
         edit = arguments?.getString("edit") ?: ""
         edit_routine = arguments?.getString("edit_routine") ?: ""
         workout = arguments?.getParcelable("workout")
+        caloriesText = view.findViewById(R.id.calories_text)
+        val hourPicker = view.findViewById<NumberPicker>(R.id.hourPicker)
+        val minutePicker = view.findViewById<NumberPicker>(R.id.minutePicker)
+        addLog = view.findViewById<LinearLayoutCompat>(R.id.layout_btn_log_meal)
+        val addSearchFragmentBackButton = view.findViewById<ImageView>(R.id.back_button)
+        intensityProgressBar = view.findViewById(R.id.customSeekBar)
+        hourPicker.minValue = 0
+        hourPicker.maxValue = 23
+        minutePicker.minValue = 0
+        minutePicker.maxValue = 59
         if (edit == "edit") {
             if (activityModel == null) {
                 Toast.makeText(requireContext(), "No activity data provided for editing", Toast.LENGTH_SHORT).show()
                 Log.e("AddWorkoutSearch", "ActivityModel is null in edit mode")
                 return
             } else {
+                caloriesText.text = activityModel?.caloriesBurned
+                val timeStr = activityModel?.duration!!
+                val regex = Regex("\\d+")
+                val numbers = regex.findAll(timeStr).map { it.value.toInt() }.toList()
+                hourPicker.value = numbers.getOrNull(0)!!
+                minutePicker.value = numbers.getOrNull(1)!!
                 Log.d("AddWorkoutSearch", "Editing activity: ${activityModel?.workoutType}, Calorie ID: ${activityModel?.id}")
             }
         } else if(edit_routine == "edit_routine"){
@@ -124,12 +140,8 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
 
         lastWorkoutRecord = arguments?.let { BundleCompat.getParcelable(it, "workoutRecord", WorkoutSessionRecord::class.java) }
 
-        val hourPicker = view.findViewById<NumberPicker>(R.id.hourPicker)
-        val minutePicker = view.findViewById<NumberPicker>(R.id.minutePicker)
-        addLog = view.findViewById<LinearLayoutCompat>(R.id.layout_btn_log_meal)
-        val addSearchFragmentBackButton = view.findViewById<ImageView>(R.id.back_button)
-        intensityProgressBar = view.findViewById(R.id.customSeekBar)
-        caloriesText = view.findViewById(R.id.calories_text)
+
+
 
         // Initially disable the addLog button until conditions are met
         addLog.isEnabled = false
@@ -246,18 +258,15 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
             }
         })
 
-        hourPicker.minValue = 0
-        hourPicker.maxValue = 23
-        minutePicker.minValue = 0
-        minutePicker.maxValue = 59
+
 
         // Prefill data in edit mode
         if (edit == "edit" && activityModel != null) {
-            val durationMin = activityModel?.duration?.replace(" mins", "")?.toIntOrNull() ?: 0
-            val hours = durationMin / 60
-            val minutes = durationMin % 60
-            hourPicker.value = hours
-            minutePicker.value = minutes
+            val timeStr = activityModel?.duration!!
+            val regex = Regex("\\d+")
+            val numbers = regex.findAll(timeStr).map { it.value.toInt() }.toList()
+            hourPicker.value = numbers.getOrNull(0)!!
+            minutePicker.value = numbers.getOrNull(1)!!
             selectedIntensity = normalizeIntensity(activityModel?.intensity ?: "Low")
             // Set progress based on intensity (progress range is 0 to 1)
             when (selectedIntensity) {
@@ -267,18 +276,18 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                 "Very High" -> intensityProgressBar.progress = 1.0f
             }
             Log.d("AddWorkoutSearch", "Edit mode - Initial intensity: $selectedIntensity, Progress: ${intensityProgressBar.progress}")
-            selectedTime = "$hours hr ${minutes.toString().padStart(2, '0')} min"
+            selectedTime = "${numbers.getOrNull(0)!!} hr ${numbers.getOrNull(1)!!} min"
             // Trigger initial calorie calculation in edit mode
             activityModel?.id?.let { calorieId ->
              //   calculateUserCalories(durationMin, selectedIntensity, calorieId)
                 addLog.isEnabled = true
             }
         }else if(edit_routine.equals("edit_routine")&& workoutModel != null){
-            val durationMin = workoutModel?.duration?.replace(" mins", "")?.toIntOrNull() ?: 0
-            val hours = durationMin / 60
-            val minutes = durationMin % 60
-            hourPicker.value = hours
-            minutePicker.value = minutes
+            val timeStr = activityModel?.duration!!
+            val regex = Regex("\\d+")
+            val numbers = regex.findAll(timeStr).map { it.value.toInt() }.toList()
+            hourPicker.value = numbers.getOrNull(0)!!
+            minutePicker.value = numbers.getOrNull(1)!!
             selectedIntensity = normalizeIntensity(workoutModel?.intensity ?: "Low")
             // Set progress based on intensity (progress range is 0 to 1)
             when (selectedIntensity) {
@@ -288,7 +297,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                 "Very High" -> intensityProgressBar.progress = 1.0f
             }
             Log.d("AddWorkoutSearch", "Edit mode - Initial intensity: $selectedIntensity, Progress: ${intensityProgressBar.progress}")
-            selectedTime = "$hours hr ${minutes.toString().padStart(2, '0')} min"
+            selectedTime = "${numbers.getOrNull(0)!!} hr ${numbers.getOrNull(1)!!} min"
             // Trigger initial calorie calculation in edit mode
             workoutModel?.activityId?.let { activityId ->
               //  calculateUserCalories(durationMin, selectedIntensity, activityId)
@@ -322,7 +331,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
             selectedTime = "$hours hr ${minutes.toString().padStart(2, '0')} min"
             val durationMinutes = hours * 60 + minutes
             if (durationMinutes > 0) {
-                val activityId = if (edit == "edit") activityModel?.id else if (edit_routine.equals("edit_routine")) workoutModel?.activityId else workout?._id
+                val activityId = if (edit == "edit") activityModel?.activityId else if (edit_routine.equals("edit_routine")) workoutModel?.activityId else workout?._id
                 if (activityId != null) {
                     val normalizedIntensity = normalizeIntensity(selectedIntensity)
                     calculateUserCalories(durationMinutes, normalizedIntensity, activityId)
@@ -355,7 +364,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
             val minutes = minutePicker.value
             val durationMinutes = hours * 60 + minutes
             if (durationMinutes > 0) {
-                val activityId = if (edit == "edit") activityModel?.id else if (edit_routine.equals("edit_routine")) workoutModel?.activityId else workout?._id
+                val activityId = if (edit == "edit") activityModel?.activityId else if (edit_routine.equals("edit_routine")) workoutModel?.activityId else workout?._id
                 if (activityId != null) {
                     //caloriesText.text = "Calculating..."
                     calculateUserCalories(durationMinutes, selectedIntensity, activityId)
@@ -373,7 +382,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
         // Initial API call with default values if in non-edit mode
         if (edit != "edit") {
             workout?.let { workout ->
-                calculateUserCalories(60, selectedIntensity, workout._id) // 1 hr default
+                calculateUserCalories(60, selectedIntensity, workout.activityId) // 1 hr default
                 addLog.isEnabled = true
             }
         }else if (edit_routine.equals("edit_routine")){

@@ -337,7 +337,8 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                                 caloriesUnit = workout.caloriesUnit,
                                 icon = "",
                                 intensity = "",
-                                isSynced = true
+                                isSynced = true,
+                                activityId = workout.activity_id
                             )
                         }
                         // Map unsyncedWorkouts to CardItem objects
@@ -362,7 +363,8 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                                 caloriesUnit = workout.caloriesUnit,
                                 icon = workout.icon,
                                 intensity = workout.intensity,
-                                isSynced = false
+                                isSynced = false,
+                                activityId = workout.activity_id
                             )
                         }
                         // Combine synced and unsynced CardItems
