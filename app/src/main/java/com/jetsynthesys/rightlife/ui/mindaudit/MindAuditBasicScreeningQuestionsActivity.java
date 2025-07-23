@@ -17,7 +17,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.jetsynthesys.rightlife.BaseActivity;
 import com.jetsynthesys.rightlife.R;
-import com.jetsynthesys.rightlife.ui.HomeActivity;
+import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity;
 
 public class MindAuditBasicScreeningQuestionsActivity extends BaseActivity {
     public Button nextButton, submitButton;
@@ -150,16 +150,14 @@ public class MindAuditBasicScreeningQuestionsActivity extends BaseActivity {
             dialog.dismiss();
             //this.finish();
             finishAffinity(); // Finishes Activity D and all activities below it in the same task
-            Intent intent = new Intent(MindAuditBasicScreeningQuestionsActivity.this, HomeActivity.class);
+            Intent intent = new Intent(MindAuditBasicScreeningQuestionsActivity.this, HomeNewActivity.class);
             startActivity(intent);
         });
 
         // Show the dialog
         dialog.show();
     }
-
     public interface OnNextButtonClickListener {
         void onNextClicked();
     }
-
 }
