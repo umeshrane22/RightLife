@@ -467,10 +467,8 @@ public class ArticlesDetailActivity extends BaseActivity {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
 
-        String shareText = "I'm inviting you to join me on the RightLife App, where health meets happiness in every tap.\n" +
-                "HealthCam and Voice Scan: Get insights into your physical and emotional well-being through facial recognition and voice pattern analysis.\n\n" +
-                "Together, let's craft our own adventure towards wellbeing!\n" +
-                "Download Now:  https://rightlife.sng.link/Afiju/ui5f/r_ccc1b019cd";
+        String shareText = "“Been using this app called RightLife that tracks food, workouts, sleep, and mood. Super simple, no wearable needed.\n" +
+                "                     Try it and get 7 days for free. Here’s the link:\n  https://rightlife.sng.link/Afiju/ui5f/r_ccc1b019cd";
 
         intent.putExtra(Intent.EXTRA_TEXT, shareText);
 
