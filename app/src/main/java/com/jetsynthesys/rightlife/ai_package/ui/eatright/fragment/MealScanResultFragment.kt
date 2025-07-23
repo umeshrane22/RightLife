@@ -60,7 +60,7 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MicroNutrientsMod
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SnapDishLocalListModel
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.databinding.FragmentMealScanResultsBinding
-import com.jetsynthesys.rightlife.newdashboard.HomeDashboardActivity
+import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
@@ -327,7 +327,7 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>(), Ra
                     commit()
                 }
             }else{
-                startActivity(Intent(context, HomeDashboardActivity::class.java))
+                startActivity(Intent(context, HomeNewActivity::class.java))
                 requireActivity().finish()
             }
         }
@@ -345,7 +345,7 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>(), Ra
                         commit()
                     }
                 }else{
-                    startActivity(Intent(context, HomeDashboardActivity::class.java))
+                    startActivity(Intent(context, HomeNewActivity::class.java))
                     requireActivity().finish()
                 }
             }
@@ -392,7 +392,7 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>(), Ra
                     commit()
                 }
             }else{
-                startActivity(Intent(context, HomeDashboardActivity::class.java))
+                startActivity(Intent(context, HomeNewActivity::class.java))
                 requireActivity().finish()
             }
         }
@@ -976,7 +976,7 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>(), Ra
                             val mealId = response.body()?.inserted_ids?.meal_log_id?: ""
                             CommonAPICall.updateChecklistStatus(requireContext(),"meal_snap", AppConstants.CHECKLIST_COMPLETED)
                             CommonAPICall.updateChecklistStatus(requireContext(),"snap_mealId", mealId)
-                            startActivity(Intent(context, HomeDashboardActivity::class.java))
+                            startActivity(Intent(context, HomeNewActivity::class.java))
                             requireActivity().finish()
                         }
                     } else {

@@ -150,11 +150,14 @@ public class MindAuditBasicScreeningQuestionsActivity extends BaseActivity {
             dialog.dismiss();
             //this.finish();
             finishAffinity(); // Finishes Activity D and all activities below it in the same task
-            Intent intent = new Intent(MindAuditBasicScreeningQuestionsActivity.this, HomeActivity.class);
+            Intent intent = new Intent(MindAuditBasicScreeningQuestionsActivity.this, HomeNewActivity.class);
             startActivity(intent);
         });
 
         // Show the dialog
         dialog.show();
+    }
+    public interface OnNextButtonClickListener {
+        void onNextClicked();
     }
 }
