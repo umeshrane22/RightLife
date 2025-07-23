@@ -18,8 +18,6 @@ class YourActivitiesWeeklyListAdapter(private val context: Context, private var 
                                       private var isClickView : Boolean, val onWorkoutLogDateItem: (WorkoutWeeklyDayModel, Int, Boolean) -> Unit,) :
     RecyclerView.Adapter<YourActivitiesWeeklyListAdapter.ViewHolder>() {
 
-    private var selectedItem = -1
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_your_activities_date_layout_ai, parent, false)
         return ViewHolder(view)

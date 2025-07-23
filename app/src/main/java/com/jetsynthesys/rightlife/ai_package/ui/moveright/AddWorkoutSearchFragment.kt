@@ -19,6 +19,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.os.BundleCompat
 import androidx.fragment.app.setFragmentResult
+import com.bumptech.glide.Glide
 import com.google.gson.Gson
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
@@ -67,6 +68,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
     private var routine: String = ""
     private var routineName: String = ""
     private lateinit var workoutName : TextView
+    private lateinit var workoutIcon : ImageView
     private var workoutListRoutine = ArrayList<WorkoutSessionRecord>()
 
     // Normalize intensity to match API's expected values
@@ -92,6 +94,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
         workoutModel = arguments?.getParcelable("WORKOUT_MODEL")
         edit = arguments?.getString("edit") ?: ""
         edit_routine = arguments?.getString("edit_routine") ?: ""
+        val allworkout = arguments?.getString("allworkout") ?: ""
         workout = arguments?.getParcelable("workout")
         if (edit == "edit") {
             if (activityModel == null) {
@@ -130,6 +133,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
         intensityProgressBar = view.findViewById(R.id.customSeekBar)
         caloriesText = view.findViewById(R.id.calories_text)
         workoutName = view.findViewById(R.id.workoutName)
+        workoutIcon = view.findViewById(R.id.workoutIcon)
 
         // Initially disable the addLog button until conditions are met
         addLog.isEnabled = false
@@ -152,8 +156,9 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                 }
                 fragment.arguments = args
                 navigateToFragment(fragment, "CreateRoutineFragment")
-            }
-            else{
+            } else if (allworkout.equals("allworkout")){
+                navigateToFragment(SearchWorkoutFragment(), "SearchWorkoutFragment")
+            }else{
                 navigateToFragment(YourActivityFragment(), "AllWorkoutFragment")
             }
         }
@@ -239,8 +244,9 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                     }
                     fragment.arguments = args
                     navigateToFragment(fragment, "CreateRoutineFragment")
-                }
-                else{
+                } else if (allworkout.equals("allworkout")){
+                    navigateToFragment(SearchWorkoutFragment(), "SearchWorkoutFragment")
+                }else{
                     navigateToFragment(YourActivityFragment(), "AllWorkoutFragment")
                 }
             }
@@ -372,6 +378,12 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
 
         if (workout != null){
             workoutName.text = workout?.title
+            val imageBaseUrl = "https://d1sacaybzizpm5.cloudfront.net/" + workout?.iconUrl
+            Glide.with(requireContext())
+                .load(imageBaseUrl)
+                .placeholder(R.drawable.athelete_search)
+                .error(R.drawable.athelete_search)
+                .into(workoutIcon)
         }else if (activityModel != null){
             workoutName.text = activityModel?.workoutType
         }else if (workoutModel != null){

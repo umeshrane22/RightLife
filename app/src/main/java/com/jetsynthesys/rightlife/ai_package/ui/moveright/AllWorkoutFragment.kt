@@ -112,6 +112,7 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
         }
         val fragment = AddWorkoutSearchFragment()
         val args = Bundle().apply {
+            putString("allworkout", "allworkout")
             putParcelable("workout", workout)
         }
         fragment.arguments = args
