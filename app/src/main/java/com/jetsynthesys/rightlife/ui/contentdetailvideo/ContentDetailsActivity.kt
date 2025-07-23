@@ -594,14 +594,12 @@ class ContentDetailsActivity : BaseActivity() {
         val intent = Intent(Intent.ACTION_SEND)
         intent.setType("text/plain")
 
-        val shareText =
-            """
-                I'm inviting you to join me on the RightLife App, where health meets happiness in every tap.
-                HealthCam and Voice Scan: Get insights into your physical and emotional well-being through facial recognition and voice pattern analysis.
-                
-                Together, let's craft our own adventure towards wellbeing!
-                Download Now:  https://rightlife.sng.link/Afiju/ui5f/r_ccc1b019cd
-                """.trimIndent()
+        val shareText = """
+    Been using this app called RightLife that tracks food, workouts, sleep, and mood. Super simple, no wearable needed.
+    Try it and get 7 days for free. Here’s the link:
+    https://rightlife.sng.link/Afiju/ui5f/r_ccc1b019cd
+""".trimIndent()
+
 
         intent.putExtra(Intent.EXTRA_TEXT, shareText)
 

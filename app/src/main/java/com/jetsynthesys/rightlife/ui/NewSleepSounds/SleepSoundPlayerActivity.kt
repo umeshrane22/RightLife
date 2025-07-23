@@ -342,11 +342,8 @@ Toast.makeText(this, "Playlist button clicked", Toast.LENGTH_SHORT).show()      
             putExtra(
                 Intent.EXTRA_TEXT,
                 """
-                    I'm inviting you to join me on the RightLife App, where health meets happiness in every tap.
-                    HealthCam and Voice Scan: Get insights into your physical and emotional well-being through facial recognition and voice pattern analysis."
-                    
-                    Together, let's craft our own adventure towards wellbeing! 
-                    Download Now:  Play Store:\n https://play.google.com/store/apps/details?id=${packageName}
+                    “Been using this app called RightLife that tracks food, workouts, sleep, and mood. Super simple, no wearable needed.
+                     Try it and get 7 days for free. Here’s the link:\n https://play.google.com/store/apps/details?id=${packageName}
                     """.trimIndent()
             )
         }

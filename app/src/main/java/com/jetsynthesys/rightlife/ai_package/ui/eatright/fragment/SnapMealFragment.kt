@@ -61,8 +61,7 @@ import com.jetsynthesys.rightlife.ai_package.model.ScanMealNutritionResponse
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.MoveRightLandingFragment
 import com.jetsynthesys.rightlife.ai_package.utils.FileUtils
-import com.jetsynthesys.rightlife.ai_package.utils.LoaderUtil
-import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity
+import com.jetsynthesys.rightlife.newdashboard.HomeDashboardActivity
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import java.io.File
 import java.io.FileInputStream
@@ -156,7 +155,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
             takePhotoInfoLayout.visibility = View.GONE
          //   enterMealDescriptionLayout.visibility = View.VISIBLE
             videoView.visibility = View.GONE
-            val cameraDialog = CameraDialogFragment("")
+            val cameraDialog = CameraDialogFragment("", moduleName)
             cameraDialog.imageSelectedListener = object : OnImageSelectedListener {
                 override fun onImageSelected(imageUri: Uri) {
                     val path = getRealPathFromURI(requireContext(), imageUri)
@@ -221,7 +220,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                         Toast.makeText(context, "Please capture food",Toast.LENGTH_SHORT).show()
                     }
                 }else{
-                    val cameraDialog = CameraDialogFragment("")
+                    val cameraDialog = CameraDialogFragment("", moduleName)
                     cameraDialog.imageSelectedListener = object : OnImageSelectedListener {
                         override fun onImageSelected(imageUri: Uri) {
                             val path = getRealPathFromURI(requireContext(), imageUri)
@@ -269,7 +268,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 if (moduleName.equals("HomeDashboard")){
-                    startActivity(Intent(context, HomeNewActivity::class.java))
+                    startActivity(Intent(context, HomeDashboardActivity::class.java))
                     requireActivity().finish()
                 }else{
                     val fragment = HomeBottomTabFragment()
@@ -287,7 +286,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
 
         backButton.setOnClickListener {
             if (moduleName.equals("HomeDashboard")){
-                startActivity(Intent(context, HomeNewActivity::class.java))
+                startActivity(Intent(context, HomeDashboardActivity::class.java))
                 requireActivity().finish()
             }else{
                 val fragment = HomeBottomTabFragment()
@@ -419,7 +418,6 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
         when (resultCode) {
             Activity.RESULT_OK -> {
                 when (requestCode) {
@@ -471,12 +469,23 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
 
             Activity.RESULT_CANCELED -> {
                 // ✅ Only here when user presses back or closes camera
-                startActivity(Intent(context, HomeNewActivity::class.java))
-                requireActivity().finish()
+                if (moduleName.equals("HomeDashboard")){
+                    startActivity(Intent(context, HomeDashboardActivity::class.java))
+                    requireActivity().finish()
+                }else{
+                    val fragment = HomeBottomTabFragment()
+                    val args = Bundle()
+                    args.putString("ModuleName", "EatRight")
+                    fragment.arguments = args
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.flFragment, fragment, "landing")
+                        addToBackStack("landing")
+                        commit()
+                    }
+                }
             }
         }
     }
-
 
     private fun rotateImageIfRequired(context: Context, bitmap: Bitmap, imageUri: Uri): Bitmap {
         val inputStream = context.contentResolver.openInputStream(imageUri)
@@ -673,7 +682,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
     }
 }
 
-class CameraDialogFragment(private val imagePath: String) : DialogFragment() {
+class CameraDialogFragment(private val imagePath: String, val moduleName : String) : DialogFragment() {
 
     private lateinit var viewFinder: PreviewView
     private var imageCapture: ImageCapture? = null
@@ -716,8 +725,20 @@ class CameraDialogFragment(private val imagePath: String) : DialogFragment() {
 
         view.findViewById<ImageView>(R.id.closeButton)?.setOnClickListener {
             dismiss()
-            startActivity(Intent(context, HomeNewActivity::class.java))
-            requireActivity().finish()
+            if (moduleName.equals("HomeDashboard")){
+                startActivity(Intent(context, HomeDashboardActivity::class.java))
+                requireActivity().finish()
+            }else{
+                val fragment = HomeBottomTabFragment()
+                val args = Bundle()
+                args.putString("ModuleName", "EatRight")
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "landing")
+                    addToBackStack("landing")
+                    commit()
+                }
+            }
         }
 
         view.findViewById<ImageView>(R.id.captureButton)?.setOnClickListener {
@@ -759,6 +780,19 @@ class CameraDialogFragment(private val imagePath: String) : DialogFragment() {
             )
         }
     }
+
+    private fun requestGalleryPermissionIfNeeded(): Boolean {
+        return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 101)
+            false
+        } else {
+            true
+        }
+    }
+
 
     private fun startCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
@@ -838,22 +872,35 @@ class CameraDialogFragment(private val imagePath: String) : DialogFragment() {
                 Toast.makeText(requireContext(), "Flash not supported", Toast.LENGTH_SHORT).show()
                 return
             }
-            isTorchOn = !isTorchOn
-            it.cameraControl.enableTorch(isTorchOn)
+            if (isTorchOn){
+                isTorchOn = !isTorchOn
+                it.cameraControl.enableTorch(isTorchOn)
+                view?.findViewById<ImageView>(R.id.flashToggle)?.setImageResource(R.drawable.ic_flash_off)
+            }else{
+                isTorchOn = true
+                it.cameraControl.enableTorch(isTorchOn)
+                view?.findViewById<ImageView>(R.id.flashToggle)?.setImageResource(R.drawable.flash_icon)
+            }
 
-            Toast.makeText(
-                requireContext(),
-                "Flash ${if (isTorchOn) "ON" else "OFF"}",
-                Toast.LENGTH_SHORT
-            ).show()
+
+
+         //   Toast.makeText(requireContext(), "Flash ${if (isTorchOn) "ON" else "OFF"}", Toast.LENGTH_SHORT).show()
         } ?: run {
             Toast.makeText(requireContext(), "Camera not initialized", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun openGallery() {
-        Handler(Looper.getMainLooper()).post {
+        if (allPermissionsGranted()) {
+            Handler(Looper.getMainLooper()).post {
             pickImageLauncher.launch("image/*")
+        }
+        } else {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                REQUIRED_PERMISSIONS,
+                REQUEST_CODE_PERMISSIONS
+            )
         }
     }
 
@@ -873,6 +920,17 @@ class CameraDialogFragment(private val imagePath: String) : DialogFragment() {
             }
         }
     }
+
+    private val REQUIRED_PERMISSIONS = mutableListOf(
+        Manifest.permission.CAMERA
+    ).apply {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            add(Manifest.permission.READ_MEDIA_IMAGES)
+        } else {
+            add(Manifest.permission.READ_EXTERNAL_STORAGE)
+        }
+    }.toTypedArray()
+
 
     private fun navigateToFragment(fragment: Fragment, tag: String) {
         requireActivity().supportFragmentManager.beginTransaction().apply {

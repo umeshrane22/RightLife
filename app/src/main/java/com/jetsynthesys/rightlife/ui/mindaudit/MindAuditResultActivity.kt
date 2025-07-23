@@ -293,6 +293,14 @@ class MindAuditResultActivity : BaseActivity() {
                         )
                         binding.tvResultExplanationTitle.text = explanation.first
                         binding.tvResultExplanation.text = explanation.second
+                        cardviewMainscore.setOnClickListener {
+                            setRainbowView(assessmentTaken.interpretations.anxiety.score.toInt())
+                            val explanation = getDASS21AnxietyExplanation(
+                                assessmentTaken.interpretations.anxiety.score.toFloat()
+                            )
+                            binding.tvResultExplanationTitle.text = explanation.first
+                            binding.tvResultExplanation.text = explanation.second
+                        }
                     }
                     assessmentTaken.interpretations.depression?.let {
                         cardviewMainscore2.visibility = View.VISIBLE
@@ -318,6 +326,15 @@ class MindAuditResultActivity : BaseActivity() {
                         )
                         binding.tvResultExplanationTitle.text = explanation.first
                         binding.tvResultExplanation.text = explanation.second
+                        cardviewMainscore2.setOnClickListener {
+                            setCenterRainbowView(assessmentTaken.interpretations.depression.score.toInt())
+
+                            val explanation = getDASS21DepressionExplanation(
+                                assessmentTaken.interpretations.depression.score.toFloat()
+                            )
+                            binding.tvResultExplanationTitle.text = explanation.first
+                            binding.tvResultExplanation.text = explanation.second
+                        }
                     }
                     assessmentTaken.interpretations.stress?.let {
                         cardviewMainscore3.visibility = View.VISIBLE
@@ -340,7 +357,14 @@ class MindAuditResultActivity : BaseActivity() {
                         )
                         binding.tvResultExplanationTitle.text = explanation.first
                         binding.tvResultExplanation.text = explanation.second
-
+                        cardviewMainscore3.setOnClickListener {
+                            setRightRainbowView(assessmentTaken.interpretations.stress.score.toInt())
+                            val explanation = getDASS21StressExplanation(
+                                assessmentTaken.interpretations.stress.score.toFloat()
+                            )
+                            binding.tvResultExplanationTitle.text = explanation.first
+                            binding.tvResultExplanation.text = explanation.second
+                        }
                     }
                     scoreBarContainer.visibility = View.VISIBLE
                     scoreBarContainerhappiness.visibility = View.GONE

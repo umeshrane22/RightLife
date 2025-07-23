@@ -1,8 +1,10 @@
 package com.jetsynthesys.rightlife.ai_package.data.repository
 
+import android.util.Log
 import com.jetsynthesys.rightlife.BuildConfig
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
@@ -23,7 +25,18 @@ object RetrofitClient {
     private const val BASE_URL_FOOD_CAPTURE_NEW_API =
         "https://us-central1-snapcalorieb2bapi.cloudfunctions.net/"
 
+    private val loggingInterceptor = HttpLoggingInterceptor { message ->
+        when {
+            message.startsWith("-->") -> Log.d("API_REQUEST", message)
+            message.startsWith("<--") -> Log.d("API_RESPONSE", message)
+            else -> Log.d("API_DETAIL", message)
+        }
+    }.apply {
+        level = HttpLoggingInterceptor.Level.BODY
+    }
+
     private val okHttpClient = OkHttpClient.Builder()
+        .addInterceptor(loggingInterceptor)
         .connectTimeout(40, TimeUnit.SECONDS) // Set connection timeout (default: 10s)
         .readTimeout(40, TimeUnit.SECONDS)    // Set read timeout
         .writeTimeout(40, TimeUnit.SECONDS)   // Set write timeout
@@ -43,7 +56,6 @@ object RetrofitClient {
         Retrofit.Builder()
             .baseUrl(BASE_URL_FAST_API)
             .addConverterFactory(GsonConverterFactory.create())
-            .client(okHttpClient) // Attach custom OkHttpClient with timeouts
             .build()
     }
 

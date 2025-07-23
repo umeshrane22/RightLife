@@ -60,37 +60,39 @@ class SelectMealTypeBottomSheet : BottomSheetDialogFragment() {
         layoutDinner = view.findViewById(R.id.layoutDinner)
 
         val items = arrayOf("Breakfast", "Morning Snack", "Lunch", "Evening Snacks", "Dinner")
+        val moduleName = arguments?.getString("ModuleName").toString()
 
         layoutBreakfast.setOnClickListener {
             dismiss()
-            callTabMealFragment("breakfast")
+            callTabMealFragment("breakfast", moduleName)
         }
 
         layoutMorningSnack.setOnClickListener {
             dismiss()
-            callTabMealFragment("morning_snack")
+            callTabMealFragment("morning_snack", moduleName)
         }
 
         layoutLunch.setOnClickListener {
             dismiss()
-            callTabMealFragment("lunch")
+            callTabMealFragment("lunch", moduleName)
         }
 
         layoutEveningSnacks.setOnClickListener {
             dismiss()
-            callTabMealFragment("evening_snack")
+            callTabMealFragment("evening_snack", moduleName)
         }
 
         layoutDinner.setOnClickListener {
             dismiss()
-            callTabMealFragment("dinner")
+            callTabMealFragment("dinner", moduleName)
         }
     }
 
-    private fun callTabMealFragment(mealType: String) {
+    private fun callTabMealFragment(mealType: String, moduleName : String) {
         listener?.onMealTypeSelected("selected")
         val fragment = HomeTabMealFragment()
         val args = Bundle()
+        args.putString("ModuleName", moduleName)
         args.putString("mealType", mealType)
         fragment.arguments = args
         requireActivity().supportFragmentManager.beginTransaction().apply {

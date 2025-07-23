@@ -79,6 +79,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 import kotlin.math.floor
+import kotlin.math.round
 
 class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), SelectMealTypeEatLandingBottomSheet.OnOtherRecipeLogListener {
 
@@ -281,7 +282,8 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
         // onFrequentlyLoggedItemRefresh()
         //  halfCurveProgressBar.setValues(2000,2000)
         glassWithWaterView = view.findViewById(R.id.glass_with_water_view)
-        fetchThinkRecomendedData()
+
+        fetchEatRecommendedData()
 
         if (bottomSeatName.contentEquals("LogWeightEat")){
             showLogWeightBottomSheet()
@@ -566,7 +568,8 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
             }
         })
     }
-    private fun fetchThinkRecomendedData() {
+
+    private fun fetchEatRecommendedData() {
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
         val call = ApiClient.apiService.fetchThinkRecomended(token,"HOME","EAT_RIGHT")
         call.enqueue(object : Callback<ThinkRecomendedResponse> {
@@ -602,12 +605,6 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
                 macroTitle.text = landingPageResponse.insight.heading
                 macroOnTrackTextLine.text = landingPageResponse.insight.macros_message
             }
-        }else{
-            todayMacrosWithDataLayout.visibility = View.GONE
-            todayMacroNoDataLayout.visibility = View.VISIBLE
-        }
-
-        if(landingPageResponse.micros.value > 0){
             todayMicrosWithDataLayout.visibility = View.VISIBLE
             todayMacroNoDataLayoutOne.visibility = View.GONE
             microsMessage.text = landingPageResponse.micros.micros_message
@@ -615,9 +612,23 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
             unitMicroTv.text = landingPageResponse.micros.unit
             energyTypeTv.text = landingPageResponse.micros.micros_name
         }else{
+            todayMacrosWithDataLayout.visibility = View.GONE
+            todayMacroNoDataLayout.visibility = View.VISIBLE
             todayMicrosWithDataLayout.visibility = View.GONE
             todayMacroNoDataLayoutOne.visibility = View.VISIBLE
         }
+
+//        if(landingPageResponse.micros.value > 0){
+//            todayMicrosWithDataLayout.visibility = View.VISIBLE
+//            todayMacroNoDataLayoutOne.visibility = View.GONE
+//            microsMessage.text = landingPageResponse.micros.micros_message
+//            microValueTv.text = landingPageResponse.micros.value.toInt().toString()
+//            unitMicroTv.text = landingPageResponse.micros.unit
+//            energyTypeTv.text = landingPageResponse.micros.micros_name
+//        }else{
+//            todayMicrosWithDataLayout.visibility = View.GONE
+//            todayMacroNoDataLayoutOne.visibility = View.VISIBLE
+//        }
 
         if(landingPageResponse.other_recipes_you_might_like.size > 0){
             logNextMealSuggestionLayout.visibility = View.GONE
@@ -701,9 +712,9 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
         }
 
       //  tvCaloriesValue.text = landingPageResponse.total_calories.toString()
-        tvProteinValue.text = landingPageResponse.total_protein.toInt().toString()
-        tvCabsValue.text = landingPageResponse.total_carbs.toInt().toString()
-        tvFatsValue.text = landingPageResponse.total_fat.toInt().toString()
+        tvProteinValue.text = round(landingPageResponse.total_protein).toInt().toString()
+        tvCabsValue.text = round(landingPageResponse.total_carbs).toInt().toString()
+        tvFatsValue.text = round(landingPageResponse.total_fat).toInt().toString()
         carbsUnitTv.text = " / " + landingPageResponse.max_carbs.toInt().toString() +" g"
         proteinUnitTv.text = " / " + landingPageResponse.max_protein.toInt().toString() +" g"
         fatsUnitTv.text = " / " + landingPageResponse.max_fat.toInt().toString() +" g"
@@ -727,7 +738,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
         fatsProgressBar.max = landingPageResponse.max_fat.toInt()
         fatsProgressBar.progress = landingPageResponse.total_fat.toInt()
 
-        halfCurveProgressBar.setValues(landingPageResponse.total_calories.toInt(),landingPageResponse.max_calories.toInt())
+        halfCurveProgressBar.setValues(round(landingPageResponse.total_calories).toInt(),landingPageResponse.max_calories.toInt())
         halfCurveProgressBar.setProgress(100f)
         val animator = ValueAnimator.ofFloat(0f, 100f)
         animator.duration = 1000

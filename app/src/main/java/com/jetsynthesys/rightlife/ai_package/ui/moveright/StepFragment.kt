@@ -42,6 +42,8 @@ import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.response.StepTrackerData
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
+import com.jetsynthesys.rightlife.ai_package.ui.moveright.customProgressBar.BasicProgressBar
+import com.jetsynthesys.rightlife.ai_package.ui.moveright.customProgressBar.SimpleProgressBar
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.RestorativeSleepFragment
 import com.jetsynthesys.rightlife.ai_package.ui.steps.SetYourStepGoalFragment
 import com.jetsynthesys.rightlife.databinding.FragmentStepBinding
@@ -84,10 +86,14 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
     private lateinit var percentageTv: TextView
     private lateinit var percentageIc: ImageView
     private lateinit var back_button_calorie_balance: ImageView
+    private lateinit var perDayStepAverage : TextView
+    private lateinit var valuePreviousWeek : TextView
     private lateinit var layoutLineChart: FrameLayout
     private lateinit var stripsContainer: FrameLayout
     private lateinit var lineChart: LineChart
     private var loadingOverlay : FrameLayout? = null
+    private lateinit var customProgressPreviousWeek : BasicProgressBar
+    private lateinit var customProgressBarFatBurn : SimpleProgressBar
     private var currentGoal = 0
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -116,6 +122,11 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         stripsContainer = view.findViewById(R.id.stripsContainer)
         lineChart = view.findViewById(R.id.heartLineChart)
         total_steps_count = view.findViewById(R.id.total_steps_count)
+        perDayStepAverage = view.findViewById(R.id.total_steps_progress_layout)
+        valuePreviousWeek = view.findViewById(R.id.value_previous_week)
+        customProgressPreviousWeek = view.findViewById(R.id.customProgressPreviousWeek)
+        customProgressBarFatBurn = view.findViewById(R.id.customProgressBarFatBurn)
+
         layout_btn_log_meal.setOnClickListener {
             val args = Bundle().apply {
                 // Add your arguments here
@@ -362,29 +373,19 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
                 }
             }
         }
-        total_steps_count.text = "Total Steps Taken This Week: ${stepData.totalStepsCount}"
+        total_steps_count.text = "Total Steps Taken This Week: ${stepData.totalStepsCount.toInt()}"
         // Set granularity to 500f for finer control, adjust based on max value
         leftYAxis.granularity = if (adjustedMax <= 5000f) 500f else 1000f // 500 for small range, 1000 for larger
 
-        val totalStepsLine = LimitLine(stepData.totalStepsCount.toFloat(), "Total Steps: ${stepData.totalStepsCount.toInt()}")
-        totalStepsLine.lineColor = Color.BLUE
-        totalStepsLine.lineWidth = 1f
-        totalStepsLine.enableDashedLine(10f, 10f, 0f)
-        totalStepsLine.textColor = Color.BLUE
-        totalStepsLine.textSize = 10f
-        totalStepsLine.labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
-
-        val avgStepsLine = LimitLine(stepData.stepsGoal.toFloat(), "Goal Steps: ${stepData.stepsGoal.toInt()}")
-        avgStepsLine.lineColor = Color.GREEN
+        val avgStepsLine = LimitLine(stepData.totalStepsAvg.toFloat(), "A")
+        avgStepsLine.lineColor = ContextCompat.getColor(requireContext(), R.color.text_color_kcal)
         avgStepsLine.lineWidth = 1f
         avgStepsLine.enableDashedLine(10f, 10f, 0f)
-        avgStepsLine.textColor = Color.GREEN
+        avgStepsLine.textColor = ContextCompat.getColor(requireContext(), R.color.text_color_kcal)
         avgStepsLine.textSize = 10f
         avgStepsLine.labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
-        currentGoal = stepData.stepsGoal
 
         leftYAxis.removeAllLimitLines()
-        leftYAxis.addLimitLine(totalStepsLine)
         leftYAxis.addLimitLine(avgStepsLine)
 
         // Multiline X-axis labels
@@ -849,6 +850,15 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
                 percentageTv.text = "0$periodLabel"
                 percentageIc.setImageResource(R.drawable.ic_up)
             }
+            perDayStepAverage.text = stepData.comparison.currentAverageStepsPerDay.toInt().toString()
+            valuePreviousWeek.text = stepData.comparison.previousAverageStepsPerDay.toInt().toString()
+
+            val currentPercentage = (stepData.comparison.currentAverageStepsPerDay.toFloat() / stepData.stepsGoal.toFloat()).coerceIn(0f, 1f)
+
+            val previousPercentage = (stepData.comparison.previousAverageStepsPerDay.toFloat() / stepData.stepsGoal.toFloat()).coerceIn(0f, 1f)
+
+            customProgressBarFatBurn.progress = currentPercentage
+            customProgressPreviousWeek.progress = previousPercentage
         }
     }
 

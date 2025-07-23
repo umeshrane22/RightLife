@@ -67,6 +67,7 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>(), DeleteMealBottomSh
     private val mergedList = mutableListOf<MergedMealItem>()
     private  var snapDishLocalListModel : SnapDishLocalListModel? = null
     private var loadingOverlay : FrameLayout? = null
+    private var moduleName : String = ""
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentMyMealBinding
         get() = FragmentMyMealBinding::inflate
@@ -90,6 +91,7 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>(), DeleteMealBottomSh
         mealPlanTitleLayout = view.findViewById(R.id.layout_meal_plan_title)
         addLayout = view.findViewById(R.id.addLayout)
 
+        moduleName = arguments?.getString("ModuleName").toString()
         mealType = arguments?.getString("mealType").toString()
         myMealRecyclerView.layoutManager = LinearLayoutManager(context)
         myMealRecyclerView.adapter = myMealListAdapter
@@ -98,6 +100,7 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>(), DeleteMealBottomSh
             override fun handleOnBackPressed() {
                 val fragment = YourMealLogsFragment()
                 val args = Bundle()
+                args.putString("ModuleName", moduleName)
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
                     replace(R.id.flFragment, fragment, "landing")
@@ -112,6 +115,7 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>(), DeleteMealBottomSh
         addLayout.setOnClickListener {
             val fragment = CreateMealFragment()
             val args = Bundle()
+            args.putString("ModuleName", moduleName)
             args.putString("mealType", mealType)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -124,6 +128,7 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>(), DeleteMealBottomSh
         layoutCreateMeal.setOnClickListener {
             val fragment = CreateMealFragment()
             val args = Bundle()
+            args.putString("ModuleName", moduleName)
             args.putString("mealType", mealType)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -136,6 +141,7 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>(), DeleteMealBottomSh
         layoutBottomCreateMeal.setOnClickListener {
             val fragment = CreateMealFragment()
             val args = Bundle()
+            args.putString("ModuleName", moduleName)
             args.putString("mealType", mealType)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -170,11 +176,12 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>(), DeleteMealBottomSh
     private fun onDeleteMealItem(mealDetails: MealDetails, position: Int, isRefresh: Boolean) {
         val deleteBottomSheetFragment = DeleteMealBottomSheet()
         deleteBottomSheetFragment.isCancelable = true
-        val bundle = Bundle()
-        bundle.putString("mealId",mealDetails._id)
-        bundle.putString("mealName", mealDetails.meal_name)
-        bundle.putString("deleteType", "MyMeal")
-        deleteBottomSheetFragment.arguments = bundle
+        val args = Bundle()
+        args.putString("ModuleName", moduleName)
+        args.putString("mealId",mealDetails._id)
+        args.putString("mealName", mealDetails.meal_name)
+        args.putString("deleteType", "MyMeal")
+        deleteBottomSheetFragment.arguments = args
         parentFragment.let { deleteBottomSheetFragment.show(childFragmentManager, "DeleteMealBottomSheet") }
     }
 
@@ -275,6 +282,7 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>(), DeleteMealBottomSh
             snapDishLocalListModel = SnapDishLocalListModel(dishLists)
             val fragment = CreateMealFragment()
             val args = Bundle()
+            args.putString("ModuleName", moduleName)
             args.putString("mealId", mealDetails._id)
             args.putString("mealName", mealDetails.meal_name)
             args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
@@ -290,10 +298,11 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>(), DeleteMealBottomSh
     private fun onDeleteSnapMealItem(snapMealDetail: SnapMealDetail, position: Int, isRefresh: Boolean) {
         val deleteBottomSheetFragment = DeleteMealBottomSheet()
         deleteBottomSheetFragment.isCancelable = true
-        val bundle = Bundle()
-        bundle.putString("mealId",snapMealDetail._id)
-        bundle.putString("deleteType", "MyMeal")
-        deleteBottomSheetFragment.arguments = bundle
+        val args = Bundle()
+        args.putString("ModuleName", moduleName)
+        args.putString("mealId",snapMealDetail._id)
+        args.putString("deleteType", "MyMeal")
+        deleteBottomSheetFragment.arguments = args
         parentFragment.let { deleteBottomSheetFragment.show(childFragmentManager, "DeleteMealBottomSheet") }
     }
 
@@ -443,6 +452,7 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>(), DeleteMealBottomSh
             snapDishLocalListModel = SnapDishLocalListModel(dishLists)
             val fragment = MealScanResultFragment()
             val args = Bundle()
+            args.putString("ModuleName", moduleName)
             args.putString("mealId", snapMealDetail._id)
             args.putString("mealName", snapMealDetail.meal_name)
             args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)

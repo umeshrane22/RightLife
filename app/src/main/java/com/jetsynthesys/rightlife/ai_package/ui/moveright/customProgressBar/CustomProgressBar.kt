@@ -23,7 +23,7 @@ class CustomProgressBar(context: Context, attrs: AttributeSet?) : View(context, 
 
     private val textPaint = Paint().apply {
         color = Color.BLACK
-        textSize = 20f
+        textSize = 25f
         textAlign = Paint.Align.CENTER
         typeface = Typeface.DEFAULT_BOLD
         isAntiAlias = true

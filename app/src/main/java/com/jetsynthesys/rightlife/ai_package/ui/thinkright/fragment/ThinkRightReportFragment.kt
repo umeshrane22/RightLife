@@ -80,6 +80,8 @@ import com.jetsynthesys.rightlife.databinding.FragmentThinkRightLandingBinding
 import com.jetsynthesys.rightlife.ui.affirmation.PractiseAffirmationPlaylistActivity
 import com.jetsynthesys.rightlife.ui.affirmation.TodaysAffirmationActivity
 import com.jetsynthesys.rightlife.ui.breathwork.BreathworkActivity
+import com.jetsynthesys.rightlife.ui.breathwork.BreathworkSessionActivity
+import com.jetsynthesys.rightlife.ui.breathwork.pojo.BreathingData
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalListActivity
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalNewActivity
 import com.jetsynthesys.rightlife.ui.mindaudit.MASuggestedAssessmentActivity
@@ -92,6 +94,7 @@ import retrofit2.Response
 import java.io.File
 import java.io.IOException
 import java.io.OutputStream
+import java.time.Instant
 import java.time.LocalDate
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -681,6 +684,11 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                             tvBreathingTitle2.setText(breathingResponse.data.getOrNull(1)?.title.toString())
                             tvBreathingDuration2.setText(breathingResponse.data.getOrNull(1)?.duration.toString())
                         }
+
+                        lytBreathing1.setOnClickListener { breathingResponse.data.getOrNull(0)
+                            ?.let { it1 -> navigateToBreathworkSession(it1) } }
+                        lytBreathing2.setOnClickListener { breathingResponse.data.getOrNull(1)
+                            ?.let { it1 -> navigateToBreathworkSession(it1) } }
                     }else{
                         breathingCard.visibility = View.GONE
                     }
@@ -711,6 +719,15 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         })
     }
 
+    private fun navigateToBreathworkSession(breathingData: BreathingData) {
+        val intent = Intent(requireContext(), BreathworkSessionActivity::class.java).apply {
+            var startDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
+            putExtra("BREATHWORK", breathingData)
+            putExtra("StartDate", startDate)
+            // Add StartDate if available: putExtra("StartDate", startDate)
+        }
+        startActivity(intent)
+    }
     private fun fetchToolList() {
         // progressDialog.show()
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken

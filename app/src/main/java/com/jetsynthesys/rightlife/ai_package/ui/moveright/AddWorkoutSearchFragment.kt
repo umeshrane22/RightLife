@@ -66,6 +66,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
     private var lastWorkoutRecord: WorkoutSessionRecord? = null
     private var routine: String = ""
     private var routineName: String = ""
+    private lateinit var workoutName : TextView
     private var workoutListRoutine = ArrayList<WorkoutSessionRecord>()
 
     // Normalize intensity to match API's expected values
@@ -98,7 +99,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                 Log.e("AddWorkoutSearch", "ActivityModel is null in edit mode")
                 return
             } else {
-                Log.d("AddWorkoutSearch", "Editing activity: ${activityModel?.activityType}, Calorie ID: ${activityModel?.calorieId}")
+                Log.d("AddWorkoutSearch", "Editing activity: ${activityModel?.workoutType}, Calorie ID: ${activityModel?.id}")
             }
         } else if(edit_routine == "edit_routine"){
             if (workoutModel == null) {
@@ -106,7 +107,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                 Log.e("AddWorkoutSearch", "ActivityModel is null in edit mode")
                 return
             } else {
-                Log.d("AddWorkoutSearch", "Editing activity: ${activityModel?.activityType}, Calorie ID: ${activityModel?.calorieId}")
+                Log.d("AddWorkoutSearch", "Editing activity: ${activityModel?.workoutType}, Calorie ID: ${activityModel?.id}")
             }
         }
         else {
@@ -128,6 +129,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
         val addSearchFragmentBackButton = view.findViewById<ImageView>(R.id.back_button)
         intensityProgressBar = view.findViewById(R.id.customSeekBar)
         caloriesText = view.findViewById(R.id.calories_text)
+        workoutName = view.findViewById(R.id.workoutName)
 
         // Initially disable the addLog button until conditions are met
         addLog.isEnabled = false
@@ -137,13 +139,11 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                 navigateToFragment(YourActivityFragment(), "AllWorkoutFragment")
             } else if(edit_routine.equals("edit_routine")){
                 navigateToFragment(SearchWorkoutFragment(), "SearchWorkoutFragment")
-            }
-            else if (routine.equals("routine"))  {
+            } else if (routine.equals("routine"))  {
                 // Send updated workoutListRoutine to AllWorkoutFragment
                 setFragmentResult("workoutListUpdate", Bundle().apply {
                     putParcelableArrayList("workoutList", workoutListRoutine)
                 })
-
                 val fragment = CreateRoutineFragment()
                 val args = Bundle().apply {
                     putParcelableArrayList("workoutList", workoutListRoutine)
@@ -163,7 +163,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
             val minutes = minutePicker.value
             val durationMinutes = hours * 60 + minutes
             if (edit == "edit") {
-                activityModel?.calorieId?.let { calorieId ->
+                activityModel?.id?.let { calorieId ->
                     val normalizedIntensity = normalizeIntensity(selectedIntensity)
                     updateCalories(calorieId, durationMinutes, normalizedIntensity)
                 } ?: run {
@@ -203,7 +203,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                         lastWorkoutRecord = newWorkoutRecord
                         if (lastWorkoutRecord?.caloriesBurned == null) {
                             Toast.makeText(requireContext(), "Calculating calories...", Toast.LENGTH_SHORT).show()
-                            val activityId = workout._id ?: activityModel?.activity_id
+                            val activityId = workout._id ?: activityModel?.id
                             if (activityId != null) {
                                 calculateUserCalories(durationMinutes, normalizedIntensity, activityId)
                             } else {
@@ -222,17 +222,27 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if (edit_routine.equals("edit_routine")){
+                if (edit.equals("edit")) {
+                    navigateToFragment(YourActivityFragment(), "AllWorkoutFragment")
+                } else if(edit_routine.equals("edit_routine")){
                     navigateToFragment(SearchWorkoutFragment(), "SearchWorkoutFragment")
-                }else{
-                    if (edit != "edit") {
-                        navigateToFragment(YourActivityFragment(), "AllWorkoutFragment")
+                } else if (routine.equals("routine"))  {
+                    // Send updated workoutListRoutine to AllWorkoutFragment
+                    setFragmentResult("workoutListUpdate", Bundle().apply {
+                        putParcelableArrayList("workoutList", workoutListRoutine)
+                    })
+                    val fragment = CreateRoutineFragment()
+                    val args = Bundle().apply {
+                        putParcelableArrayList("workoutList", workoutListRoutine)
+                        putString("routine", routine)
+                        putString("routineName", routineName)
                     }
-                    else {
-                        navigateToFragment(AllWorkoutFragment(), "AllWorkoutFragment")
-                    }
+                    fragment.arguments = args
+                    navigateToFragment(fragment, "CreateRoutineFragment")
                 }
-
+                else{
+                    navigateToFragment(YourActivityFragment(), "AllWorkoutFragment")
+                }
             }
         })
 
@@ -243,7 +253,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
 
         // Prefill data in edit mode
         if (edit == "edit" && activityModel != null) {
-            val durationMin = activityModel?.duration?.replace(" min", "")?.toIntOrNull() ?: 0
+            val durationMin = activityModel?.duration?.replace(" mins", "")?.toIntOrNull() ?: 0
             val hours = durationMin / 60
             val minutes = durationMin % 60
             hourPicker.value = hours
@@ -259,12 +269,12 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
             Log.d("AddWorkoutSearch", "Edit mode - Initial intensity: $selectedIntensity, Progress: ${intensityProgressBar.progress}")
             selectedTime = "$hours hr ${minutes.toString().padStart(2, '0')} min"
             // Trigger initial calorie calculation in edit mode
-            activityModel?.activity_id?.let { calorieId ->
+            activityModel?.id?.let { calorieId ->
                 calculateUserCalories(durationMin, selectedIntensity, calorieId)
                 addLog.isEnabled = true
             }
         }else if(edit_routine.equals("edit_routine")&& workoutModel != null){
-            val durationMin = workoutModel?.duration?.replace(" min", "")?.toIntOrNull() ?: 0
+            val durationMin = workoutModel?.duration?.replace(" mins", "")?.toIntOrNull() ?: 0
             val hours = durationMin / 60
             val minutes = durationMin % 60
             hourPicker.value = hours
@@ -312,7 +322,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
             selectedTime = "$hours hr ${minutes.toString().padStart(2, '0')} min"
             val durationMinutes = hours * 60 + minutes
             if (durationMinutes > 0) {
-                val activityId = if (edit == "edit") activityModel?.activity_id else if (edit_routine.equals("edit_routine")) workoutModel?.activityId else workout?._id
+                val activityId = if (edit == "edit") activityModel?.id else if (edit_routine.equals("edit_routine")) workoutModel?.activityId else workout?._id
                 if (activityId != null) {
                     val normalizedIntensity = normalizeIntensity(selectedIntensity)
                     calculateUserCalories(durationMinutes, normalizedIntensity, activityId)
@@ -345,7 +355,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
             val minutes = minutePicker.value
             val durationMinutes = hours * 60 + minutes
             if (durationMinutes > 0) {
-                val activityId = if (edit == "edit") activityModel?.activity_id else if (edit_routine.equals("edit_routine")) workoutModel?.activityId else workout?._id
+                val activityId = if (edit == "edit") activityModel?.id else if (edit_routine.equals("edit_routine")) workoutModel?.activityId else workout?._id
                 if (activityId != null) {
                     //caloriesText.text = "Calculating..."
                     calculateUserCalories(durationMinutes, selectedIntensity, activityId)
@@ -358,6 +368,14 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                 Toast.makeText(requireContext(), "Please select a duration", Toast.LENGTH_SHORT).show()
                 addLog.isEnabled = false
             }
+        }
+
+        if (workout != null){
+            workoutName.text = workout?.title
+        }else if (activityModel != null){
+            workoutName.text = activityModel?.workoutType
+        }else if (workoutModel != null){
+            workoutName.text = workoutModel?.activityName
         }
 
         // Initial API call with default values if in non-edit mode
@@ -394,8 +412,6 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-                    ?: "64763fe2fa0e40d9c0bc8264"
-
                 val request = CalculateCaloriesRequest(
                     userId = userId,
                     activityId = lastEntry.activityId!!,
@@ -404,9 +420,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                     sessions = lastEntry.sessions,
                     date = getCurrentDate()
                 )
-
                 val response: Response<CalculateCaloriesResponse> = ApiClient.apiServiceFastApi.calculateCalories(request)
-
                 if (response.isSuccessful) {
                     val caloriesResponse = response.body()
                     if (caloriesResponse != null) {
@@ -507,8 +521,6 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-                    ?: "64763fe2fa0e40d9c0bc8264"
-
                 val currentDate = getCurrentDate()
                 val request = workoutSession?.let {
                     CreateWorkoutRequest(
@@ -569,8 +581,6 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-                    ?: "64763fe2fa0e40d9c0bc8264"
-
                 val request = CalculateCaloriesRequest(
                     userId = userId,
                     activityId = activityId,
@@ -579,7 +589,6 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                     sessions = 1,
                     date = getCurrentDate()
                 )
-
                 val requestJson = Gson().toJson(request)
                 Log.d("CalculateCalories", "Request: $requestJson")
 
@@ -679,6 +688,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
             }
         }
     }
+
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     private fun updateCalories(calorieId: String, durationMinutes: Int, intensity: String) {
         CoroutineScope(Dispatchers.IO).launch {
