@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.jetsynthesys.rightlife.BaseActivity;
@@ -46,7 +47,14 @@ public class MindAuditBasicScreeningQuestionsActivity extends BaseActivity {
         viewPager.setAdapter(adapter);
 
         prevButton.setOnClickListener(v -> navigateToPreviousPage());
-        nextButton.setOnClickListener(v -> navigateToNextPage());
+        nextButton.setOnClickListener(v -> {
+            int currentItem = viewPager.getCurrentItem();
+            Fragment fragment = adapter.getRegisteredFragment(currentItem);
+
+            if (fragment instanceof OnNextButtonClickListener) {
+                ((OnNextButtonClickListener) fragment).onNextClicked();
+            }
+        });
 
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
@@ -149,4 +157,9 @@ public class MindAuditBasicScreeningQuestionsActivity extends BaseActivity {
         // Show the dialog
         dialog.show();
     }
+
+    public interface OnNextButtonClickListener {
+        void onNextClicked();
+    }
+
 }

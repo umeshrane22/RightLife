@@ -38,7 +38,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MindAuditReasonsFragment extends Fragment {
+public class MindAuditReasonsFragment extends Fragment implements MindAuditBasicScreeningQuestionsActivity.OnNextButtonClickListener {
 
     private static final String ARG_PAGE_INDEX = "page_index";
     private static final String ARG_EMOTION = "emotion";
@@ -99,19 +99,6 @@ public class MindAuditReasonsFragment extends Fragment {
             }
         });
         recyclerView.setAdapter(adapter);
-
-        ((MindAuditBasicScreeningQuestionsActivity) requireActivity()).nextButton.setOnClickListener(view1 -> {
-            if (selectedEmotionReasons.isEmpty()) {
-                Toast.makeText(requireContext(),"Please select reason!!",Toast.LENGTH_SHORT).show();
-            } else {
-                if (((MindAuditBasicScreeningQuestionsActivity) requireActivity()).nextButton.getText().equals("Submit")) {
-                    showDisclaimerDialog();
-                } else {
-                    ((MindAuditBasicScreeningQuestionsActivity) requireActivity()).navigateToNextPage();
-                }
-            }
-
-        });
 
         return view;
     }
@@ -191,5 +178,18 @@ public class MindAuditReasonsFragment extends Fragment {
 
         // Show the dialog
         dialog.show();
+    }
+
+    @Override
+    public void onNextClicked() {
+        if (selectedEmotionReasons.isEmpty()) {
+            Toast.makeText(requireContext(),"Please select reason!!",Toast.LENGTH_SHORT).show();
+        } else {
+            if (((MindAuditBasicScreeningQuestionsActivity) requireActivity()).nextButton.getText().equals("Submit")) {
+                showDisclaimerDialog();
+            } else {
+                ((MindAuditBasicScreeningQuestionsActivity) requireActivity()).navigateToNextPage();
+            }
+        }
     }
 }

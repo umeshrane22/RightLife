@@ -6,10 +6,13 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MindAuditBasicQuestionsAdapter extends FragmentStateAdapter {
     private BasicScreeningQuestion basicScreeningQuestion;
     private ArrayList<String> basicQuestionsList = new ArrayList<>();
+    private final Map<Integer, Fragment> fragmentMap = new HashMap<>();
 
     public MindAuditBasicQuestionsAdapter(@NonNull FragmentActivity fragmentActivity) {
         super(fragmentActivity);
@@ -41,7 +44,9 @@ public class MindAuditBasicQuestionsAdapter extends FragmentStateAdapter {
                 break;
 
         }
-        return MindAuditReasonsFragment.newInstance(position, reasonList, emotion);
+        Fragment fragment = MindAuditReasonsFragment.newInstance(position, reasonList, emotion);
+        fragmentMap.put(position, fragment);
+        return fragment;
     }
 
     public void setData(BasicScreeningQuestion basicScreeningQuestion) {
@@ -69,5 +74,9 @@ public class MindAuditBasicQuestionsAdapter extends FragmentStateAdapter {
     @Override
     public int getItemCount() {
         return basicQuestionsList.size();
+    }
+
+    public Fragment getRegisteredFragment(int position) {
+        return fragmentMap.get(position);
     }
 }
