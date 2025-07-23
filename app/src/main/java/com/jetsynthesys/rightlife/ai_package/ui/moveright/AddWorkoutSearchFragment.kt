@@ -285,11 +285,11 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                 addLog.isEnabled = true
             }
         }else if(edit_routine.equals("edit_routine")&& workoutModel != null){
-            val timeStr = activityModel?.duration!!
-            val regex = Regex("\\d+")
-            val numbers = regex.findAll(timeStr).map { it.value.toInt() }.toList()
-            hourPicker.value = numbers.getOrNull(0)!!
-            minutePicker.value = numbers.getOrNull(1)!!
+            val durationMin = workoutModel?.duration?.replace(" mins", "")?.toIntOrNull() ?: 0
+            val hours = durationMin / 60
+            val minutes = durationMin % 60
+            hourPicker.value = hours
+            minutePicker.value = minutes
             selectedIntensity = normalizeIntensity(workoutModel?.intensity ?: "Low")
             // Set progress based on intensity (progress range is 0 to 1)
             when (selectedIntensity) {
@@ -299,7 +299,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                 "Very High" -> intensityProgressBar.progress = 1.0f
             }
             Log.d("AddWorkoutSearch", "Edit mode - Initial intensity: $selectedIntensity, Progress: ${intensityProgressBar.progress}")
-            selectedTime = "${numbers.getOrNull(0)!!} hr ${numbers.getOrNull(1)!!} min"
+            selectedTime = "$hours hr ${minutes.toString().padStart(2, '0')} min"
             // Trigger initial calorie calculation in edit mode
             workoutModel?.activityId?.let { activityId ->
               //  calculateUserCalories(durationMin, selectedIntensity, activityId)
@@ -391,6 +391,12 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                 .into(workoutIcon)
         }else if (activityModel != null){
             workoutName.text = activityModel?.workoutType
+            val imageBaseUrl = activityModel?.icon
+            Glide.with(requireContext())
+                .load(imageBaseUrl)
+                .placeholder(R.drawable.athelete_search)
+                .error(R.drawable.athelete_search)
+                .into(workoutIcon)
         }else if (workoutModel != null){
             workoutName.text = workoutModel?.activityName
         }
@@ -679,9 +685,9 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                     }
                 }
             } catch (e: Exception) {
-                lastWorkoutRecord = workout?.let {
-                    WorkoutSessionRecord(userId = "64763fe2fa0e40d9c0bc8264", activityId = activityId, durationMin = durationMinutes, intensity = selectedIntensity, sessions = 1, moduleName = it.title)
-                }
+//                lastWorkoutRecord = workout?.let {
+//                    WorkoutSessionRecord(userId = "64763fe2fa0e40d9c0bc8264", activityId = activityId, durationMin = durationMinutes, intensity = selectedIntensity, sessions = 1, moduleName = it.title)
+//                }
                 withContext(Dispatchers.Main) {
                     //caloriesText.text = "Error"
                     Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
