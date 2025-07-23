@@ -488,115 +488,115 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>(), Ra
         val vitaminD = if (totalVitaminD != null){
             String.format("%.1f", totalVitaminD)
         }else{
-            "0"
+            "0.0"
         }
 
         val b12_mcg = if (totalB12 != null){
             String.format("%.1f", totalB12)
         }else{
-            "0"
+            "0.0"
         }
 
         val folate = if (totalFolate != null){
             String.format("%.1f", totalFolate)
         }else{
-            "0"
+            "0.0"
         }
 
         val vitaminC = if (totalVitaminC != null){
             String.format("%.1f", totalVitaminC)
         }else{
-            "0"
+            "0.0"
         }
 
         val vitaminA = if (totalVitaminA != null){
             String.format("%.1f", totalVitaminA)
         }else{
-            "0"
+            "0.0"
         }
 
         val vitaminK = if (totalVitaminK != null){
             String.format("%.1f", totalVitaminK)
         }else{
-            "0"
+            "0.0"
         }
 
         val iron_mg = if (totalIron != null){
             String.format("%.1f", totalIron)
         }else{
-            "0"
+            "0.0"
         }
 
         val calcium = if (totalCalcium != null){
             String.format("%.1f", totalCalcium)
         }else{
-            "0"
+            "0.0"
         }
 
         val magnesium_mg = if (totalMagnesium != null){
             String.format("%.1f", totalMagnesium)
         }else{
-            "0"
+            "0.0"
         }
 
         val zinc_mg = if (totalZinc != null){
             String.format("%.1f", totalZinc)
         }else{
-            "0"
+            "0.0"
         }
 
         val omega3 = if (totalOmega3 != null){
             String.format("%.1f", totalOmega3)
         }else{
-            "0"
+            "0.0"
         }
 
         val sodium = if (totalSodium != null){
             String.format("%.1f", totalSodium)
         }else{
-            "0"
+            "0.0"
         }
 
         val cholesterol = if (totalCholesterol != null){
             String.format("%.1f", totalCholesterol)
         }else{
-            "0"
+            "0.0"
         }
 
         val sugar = if (totalSugar != null){
             String.format("%.1f", totalSugar)
         }else{
-            "0"
+            "0.0"
         }
 
         val phosphorus_mg = if (totalPhosphorus != null){
             String.format("%.1f", totalPhosphorus)
         }else{
-            "0"
+            "0.0"
         }
         val potassium_mg = if (totalPotassium != null){
             String.format("%.1f", totalPotassium)
         }else{
-            "0"
+            "0.0"
         }
 
         val mealLogs = listOf(
 //            MicroNutrientsModel(phosphorus_mg, "mg", "Phasphorus", R.drawable.ic_fats),
-//            MicroNutrientsModel(potassium_mg, "mg", "Potassium", R.drawable.ic_fats),
-            MicroNutrientsModel(vitaminD, "μg", "Vitamin D", R.drawable.ic_fats),
-            MicroNutrientsModel(b12_mcg, "μg", "Vitamin B12", R.drawable.ic_fats),
-            MicroNutrientsModel(folate, "μg", "Folate", R.drawable.ic_fats),
-            MicroNutrientsModel(vitaminC, "mg", "Vitamin C", R.drawable.ic_fats),
-            MicroNutrientsModel(vitaminA, "IU", "Vitamin A", R.drawable.ic_fats),
-            MicroNutrientsModel(vitaminK, "μg", "Vitamin K", R.drawable.ic_fats),
-            MicroNutrientsModel(iron_mg, "mg", "Iron", R.drawable.ic_fats),
             MicroNutrientsModel(calcium, "mg", "Calcium", R.drawable.ic_fats),
-            MicroNutrientsModel(magnesium_mg, "mg", "Magnesium", R.drawable.ic_fats),
-            MicroNutrientsModel(zinc_mg, "mg", "Zinc", R.drawable.ic_fats),
-            MicroNutrientsModel(omega3, "mg", "Omega-3", R.drawable.ic_fats),
-            MicroNutrientsModel(sodium, "mg", "Sodium", R.drawable.ic_fats),
             MicroNutrientsModel(cholesterol, "mg", "Cholesterol", R.drawable.ic_fats),
-            MicroNutrientsModel(sugar, "g", "Sugar", R.drawable.ic_fats)
+            MicroNutrientsModel(folate, "μg", "Folate", R.drawable.ic_fats),
+            MicroNutrientsModel(iron_mg, "mg", "Iron", R.drawable.ic_fats),
+            MicroNutrientsModel(magnesium_mg, "mg", "Magnesium", R.drawable.ic_fats),
+            MicroNutrientsModel(omega3, "mg", "Omega-3", R.drawable.ic_fats),
+            MicroNutrientsModel(potassium_mg, "mg", "Potassium", R.drawable.ic_fats),
+            MicroNutrientsModel(sodium, "mg", "Sodium", R.drawable.ic_fats),
+            MicroNutrientsModel(sugar, "g", "Sugar", R.drawable.ic_fats),
+            MicroNutrientsModel(vitaminA, "IU", "Vitamin A", R.drawable.ic_fats),
+            MicroNutrientsModel(b12_mcg, "μg", "Vitamin B12", R.drawable.ic_fats),
+            MicroNutrientsModel(vitaminC, "mg", "Vitamin C", R.drawable.ic_fats),
+            MicroNutrientsModel(vitaminD, "μg", "Vitamin D", R.drawable.ic_fats),
+            MicroNutrientsModel(vitaminK, "μg", "Vitamin K", R.drawable.ic_fats),
+            MicroNutrientsModel(zinc_mg, "mg", "Zinc", R.drawable.ic_fats)
         )
         val valueLists : ArrayList<MicroNutrientsModel> = ArrayList()
        // valueLists.addAll(mealLogs as Collection<MicroNutrientsModel>)

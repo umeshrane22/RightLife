@@ -31,13 +31,15 @@
 
         <TextView
             android:id="@+id/tv_meal_title"
-            android:layout_width="wrap_content"
+            android:layout_width="280dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
+            android:ellipsize="end"
+            android:maxLines="2"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:textSize="15sp"
+            android:textSize="13sp"
             android:fontFamily="@font/merriweather_bold"
             android:textColor="@color/black_no_meals"
             android:text="Monday Routine" />
@@ -73,6 +75,7 @@
                 android:id="@+id/image_circle_plus"
                 android:layout_width="18dp"
                 android:layout_height="18dp"
+                android:visibility="gone"
                 android:scaleType="fitXY"
                 android:layout_marginStart="10dp"
                 android:src="@drawable/three_dot_my_routine" />
@@ -198,7 +201,7 @@
             app:layout_constraintTop_toBottomOf="@+id/tv_meal_name">
         </View>
 
-        <androidx.appcompat.widget.LinearLayoutCompat
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -213,8 +216,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:gravity="center"
-                android:layout_marginEnd="10dp">
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:gravity="center">
 
                 <ImageView
                     android:id="@+id/image_serve"
@@ -267,6 +271,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 android:gravity="center"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp">
@@ -305,9 +312,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 android:visibility="gone"
                 android:gravity="center"
-                android:layout_marginStart="5dp"
                 android:layout_marginEnd="10dp"
                 android:background="@drawable/add_cart_button_background">
 
@@ -339,11 +347,12 @@
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
-
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 android:visibility="visible"
                 android:gravity="center"
                 android:layout_marginStart="10dp"
@@ -383,6 +392,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 android:gravity="center"
                 android:visibility="gone"
                 android:layout_marginStart="10dp"
@@ -421,6 +432,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 android:gravity="center"
                 android:visibility="gone"
                 android:layout_marginStart="10dp">
@@ -454,7 +467,7 @@
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
-        </androidx.appcompat.widget.LinearLayoutCompat>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

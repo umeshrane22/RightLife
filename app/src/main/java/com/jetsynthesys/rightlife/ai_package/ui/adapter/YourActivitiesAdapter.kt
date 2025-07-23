@@ -50,13 +50,14 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
            holder.subtractionValue.text = item.intensity
            holder.subtraction.setImageResource(R.drawable.intensity_meter)
        }
-        val formattedTime = formatTimeString(item.duration!!)
-        holder.duration.text = formattedTime
+      //  val formattedTime = formatTimeString(item.duration!!)
+        holder.duration.text = item.duration
         val formattedCalories = item.caloriesBurned!!.substringBefore(".")
         holder.calValue.text = formattedCalories
         holder.calUnit.visibility = View.VISIBLE
         holder.calUnit.text = item.caloriesUnit
         holder.mealName.visibility = View.GONE
+
         holder.delete.setOnClickListener {
             val bottomSheet = DeleteWorkoutBottomSheet.newInstance(
                 calorieId = item.id!!,
