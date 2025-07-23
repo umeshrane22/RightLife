@@ -40,6 +40,8 @@ data class SyncedWorkout(
     val averageHeartRate : Double,
     @SerializedName("_id")
     val id: String,
+    @SerializedName("activity_id")
+    val activity_id: String,
     @SerializedName("user_id")
     val userId: String,
     @SerializedName("heart_rate_zones")

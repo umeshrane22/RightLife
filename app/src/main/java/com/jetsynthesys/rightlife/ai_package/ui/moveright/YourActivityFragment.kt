@@ -24,6 +24,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -55,7 +56,7 @@ import java.time.format.DateTimeFormatter
 class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
 
     private lateinit var usernameReset: EditText
-    private lateinit var signupConfirm: TextView
+    private lateinit var createWorkout: TextView
     private lateinit var activitySync: ImageView
     private lateinit var yourActivityBackButton: ImageView
     private lateinit var confirmResetBtn: AppCompatButton
@@ -63,10 +64,13 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
     private lateinit var mealLogDateListAdapter: RecyclerView
     private lateinit var myActivityRecyclerView: RecyclerView
     private lateinit var imageCalender: ImageView
-    private lateinit var btnLogMeal: LinearLayoutCompat
+    private lateinit var layoutAddWorkout: LinearLayoutCompat
+    private lateinit var layoutSaveWorkout : LinearLayoutCompat
     private lateinit var workoutDateTv: TextView
     private lateinit var nextWeekBtn: ImageView
     private lateinit var prevWeekBtn: ImageView
+    private lateinit var layoutNoDataCard : LinearLayoutCompat
+    private lateinit var layoutWorkoutData : ConstraintLayout
     private lateinit var layout_btn_addWorkout: LinearLayoutCompat
     private lateinit var healthConnectSyncButton: LinearLayoutCompat
     private var workoutWeeklyDayList: List<WorkoutWeeklyDayModel> = ArrayList()
@@ -87,24 +91,11 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
     var snackbar: Snackbar? = null
 
     private val yourActivitiesWeeklyListAdapter by lazy {
-        YourActivitiesWeeklyListAdapter(
-            requireContext(),
-            arrayListOf(),
-            -1,
-            null,
-            false,
-            ::onWorkoutLogDateItem
-        )
+        YourActivitiesWeeklyListAdapter(requireContext(), arrayListOf(), -1, null, false, ::onWorkoutLogDateItem)
     }
 
     private val myActivityAdapter by lazy {
-        YourActivitiesAdapter(
-            requireContext(),
-            arrayListOf(),
-            -1,
-            null,
-            false,
-            ::onWorkoutItemClick,
+        YourActivitiesAdapter(requireContext(), arrayListOf(), -1, null, false, ::onWorkoutItemClick,
             onCirclePlusClick = { activityModel, position ->
                 val fragment = AddWorkoutSearchFragment()
                 val args = Bundle().apply {
@@ -130,7 +121,8 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         mealLogDateListAdapter = view.findViewById(R.id.recyclerview_calender)
         myActivityRecyclerView = view.findViewById(R.id.recyclerview_my_meals_item)
         imageCalender = view.findViewById(R.id.image_calender)
-        btnLogMeal = view.findViewById(R.id.layout_btn_log_meal)
+        layoutAddWorkout = view.findViewById(R.id.layoutAddWorkout)
+        layoutSaveWorkout = view.findViewById(R.id.layoutSaveWorkout)
         activitySync = view.findViewById(R.id.activities_sync)
         healthConnectSyncButton = view.findViewById(R.id.health_connect_sync_button)
         yourActivityBackButton = view.findViewById(R.id.back_button)
@@ -138,8 +130,23 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         workoutDateTv = view.findViewById(R.id.workoutDateTv)
         nextWeekBtn = view.findViewById(R.id.nextWeekBtn)
         prevWeekBtn = view.findViewById(R.id.prevWeekBtn)
+        layoutNoDataCard = view.findViewById(R.id.layoutNoDataCard)
+        layoutWorkoutData = view.findViewById(R.id.layoutWorkoutData)
+        createWorkout = view.findViewById(R.id.tvCreateWorkout)
 
         layout_btn_addWorkout.setOnClickListener {
+            val fragment = SearchWorkoutFragment()
+            val args = Bundle()
+            args.putString("selected_date", workoutDateTv.text.toString()) // Put the string in the bundle
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "searchWorkoutFragment")
+                addToBackStack("searchWorkoutFragment")
+                commit()
+            }
+        }
+
+        layoutAddWorkout.setOnClickListener {
             val fragment = SearchWorkoutFragment()
             val args = Bundle()
             args.putString("selected_date", workoutDateTv.text.toString()) // Put the string in the bundle
@@ -202,11 +209,16 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         val formattedDate = currentDateTime.format(formatter)
         val formatFullDate = DateTimeFormatter.ofPattern("E, d MMM yyyy")
         workoutDateTv.text = currentDateTime.format(formatFullDate)
-        getWorkoutLogHistory(formattedDate)
+        if (selectedDate != null){
+            getWorkoutLogHistory(selectedDate)
+        }else{
+            getWorkoutLogHistory(formattedDate)
+        }
+
 
         workoutWeeklyDayList = getWeekFrom(currentWeekStart)
         lastDayOfCurrentWeek = workoutWeeklyDayList.get(workoutWeeklyDayList.size - 1).fullDate.toString()
-        onWorkoutLogWeeklyDayList(workoutWeeklyDayList, workoutLogHistory)
+        onWorkoutLogWeeklyDayList(workoutWeeklyDayList, workoutLogHistory,selectedDate)
         val current = LocalDate.parse(formattedDate, formatter)
         val updated = LocalDate.parse(lastDayOfCurrentWeek, formatter)
         if (current > updated){
@@ -218,7 +230,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
             currentWeekStart = currentWeekStart.minusWeeks(1)
             workoutWeeklyDayList = getWeekFrom(currentWeekStart)
             lastDayOfCurrentWeek = workoutWeeklyDayList.get(workoutWeeklyDayList.size - 1).fullDate.toString()
-            onWorkoutLogWeeklyDayList(workoutWeeklyDayList, workoutLogHistory)
+            onWorkoutLogWeeklyDayList(workoutWeeklyDayList, workoutLogHistory, null)
             getWorkoutLogHistory(currentWeekStart.toString())
             nextWeekBtn.setImageResource(R.drawable.forward_activity)
         }
@@ -229,17 +241,20 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                 currentWeekStart = currentWeekStart.plusWeeks(1)
                 workoutWeeklyDayList = getWeekFrom(currentWeekStart)
                 lastDayOfCurrentWeek = workoutWeeklyDayList.get(workoutWeeklyDayList.size - 1).fullDate.toString()
-                onWorkoutLogWeeklyDayList(workoutWeeklyDayList, workoutLogHistory)
+                onWorkoutLogWeeklyDayList(workoutWeeklyDayList, workoutLogHistory, null)
                 getWorkoutLogHistory(currentWeekStart.toString())
                 nextWeekBtn.setImageResource(R.drawable.forward_activity)
             }else{
                 Toast.makeText(context, "Not selected future date", Toast.LENGTH_SHORT).show()
                 nextWeekBtn.setImageResource(R.drawable.right_arrow_grey)
             }
-
         }
        // fetchCalories(formattedDate)
-        fetchUserWorkouts(formattedDate)
+        if (selectedDate != null){
+            fetchUserWorkouts(selectedDate)
+        }else{
+            fetchUserWorkouts(formattedDate)
+        }
 
         imageCalender.setOnClickListener {
             val fragment = ActivitySyncCalenderFragment()
@@ -252,7 +267,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
             }
         }
 
-        btnLogMeal.setOnClickListener {
+        layoutSaveWorkout.setOnClickListener {
             val fragment = CreateRoutineFragment()
             val args = Bundle().apply {
                 putParcelableArrayList("ACTIVITY_LIST", activityList)
@@ -308,13 +323,8 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
             try {
                 val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
                 val currentDate = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
-                val response = ApiClient.apiServiceFastApi.getNewUserWorkouts(
-                    userId = userid,
-                start_date = formattedDate,
-                    end_date = formattedDate,
-                    page = 1,
-                    limit = 10
-                )
+                val response = ApiClient.apiServiceFastApi.getNewUserWorkouts(userId = userid, start_date = formattedDate, end_date = formattedDate,
+                    page = 1, limit = 10)
                 if (response.isSuccessful) {
                     val workouts = response.body()
                     workouts?.let {
@@ -347,7 +357,8 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                                 caloriesUnit = workout.caloriesUnit,
                                 icon = "",
                                 intensity = "",
-                                isSynced = true
+                                isSynced = true,
+                                activityId = workout.activity_id
                             )
                         }
                         // Map unsyncedWorkouts to CardItem objects
@@ -372,7 +383,8 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                                 caloriesUnit = workout.caloriesUnit,
                                 icon = workout.icon,
                                 intensity = workout.intensity,
-                                isSynced = false
+                                isSynced = false,
+                                activityId = workout.activity_id
                             )
                         }
                         // Combine synced and unsynced CardItems
@@ -393,14 +405,20 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                             // Update RecyclerView visibility
                             if (activityList.isNotEmpty()) {
                                 myActivityRecyclerView.visibility = View.VISIBLE
-                                btnLogMeal.visibility = View.VISIBLE
+                                layoutSaveWorkout.visibility = View.VISIBLE
+                                layoutAddWorkout.visibility = View.GONE
+                                layoutWorkoutData.visibility = View.VISIBLE
+                                layoutNoDataCard.visibility = View.GONE
                                 Log.d("FetchCalories", "Adapter updated with ${newActivities.size} activities, RecyclerView visible for date $formattedDate")
                             } else {
                                 myActivityRecyclerView.visibility = View.GONE
-                                btnLogMeal.visibility = View.GONE
+                                layoutAddWorkout.visibility = View.VISIBLE
+                                layoutSaveWorkout.visibility = View.GONE
+                                layoutWorkoutData.visibility = View.GONE
+                                layoutNoDataCard.visibility = View.VISIBLE
                                 Log.d("FetchCalories", "No activities to display for date $formattedDate")
                             }
-                            btnLogMeal.isEnabled = true
+                            layoutSaveWorkout.isEnabled = true
                             if (isAdded  && view != null){
                                 requireActivity().runOnUiThread {
                                     dismissLoader(requireView())
@@ -409,7 +427,10 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                         }
                     } ?: withContext(Dispatchers.Main) {
                         myActivityRecyclerView.visibility = View.GONE
-                        btnLogMeal.visibility = View.GONE
+                        layoutAddWorkout.visibility = View.VISIBLE
+                        layoutSaveWorkout.visibility = View.GONE
+                        layoutWorkoutData.visibility = View.GONE
+                        layoutNoDataCard.visibility = View.VISIBLE
                         Toast.makeText(requireContext(), "No workout data received", Toast.LENGTH_SHORT).show()
                     }
                 } else {
@@ -446,12 +467,12 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         }
         handler.postDelayed(tooltipRunnable1!!, 1000)
 
-        tooltipRunnable2 = Runnable {
-            if (isResumed) {
-                showTooltipDialog(imageCalender, "You can access calendar \n view from here.")
-            }
-        }
-        handler.postDelayed(tooltipRunnable2!!, 5000)
+//        tooltipRunnable2 = Runnable {
+//            if (isResumed) {
+//                showTooltipDialog(imageCalender, "You can access calendar \n view from here.")
+//            }
+//        }
+//        handler.postDelayed(tooltipRunnable2!!, 5000)
 
         val prefs = requireContext().getSharedPreferences("TooltipPrefs", Context.MODE_PRIVATE)
         prefs.edit().putBoolean("hasShownTooltips", true).apply()
@@ -537,7 +558,11 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                         workoutHistoryResponse = response.body()
                         if (workoutHistoryResponse?.data?.record_details!!.size > 0) {
                             workoutLogHistory.addAll(workoutHistoryResponse!!.data.record_details)
-                            onWorkoutLogWeeklyDayList(workoutWeeklyDayList, workoutLogHistory)
+                            onWorkoutLogWeeklyDayList(
+                                workoutWeeklyDayList,
+                                workoutLogHistory,
+                                formattedDate
+                            )
                         }
                     }
                 } else {
@@ -563,35 +588,77 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         })
     }
 
-    private fun onWorkoutLogWeeklyDayList(weekList: List<WorkoutWeeklyDayModel>, workoutLogHistory: ArrayList<WorkoutRecord>) {
-        val today = LocalDate.now()
-        val weekLists: ArrayList<WorkoutWeeklyDayModel> = ArrayList()
-        if (workoutLogHistory.size > 0 && weekList.isNotEmpty()) {
-            workoutLogHistory.forEach { workoutLog ->
-                for (item in weekList) {
-                    if (item.fullDate.toString() == workoutLog.date) {
-                        if (workoutLog.is_available_workout == true) {
-                            item.is_available = true
+    private fun onWorkoutLogWeeklyDayList(weekList: List<WorkoutWeeklyDayModel>, workoutLogHistory: ArrayList<WorkoutRecord>, selectedDate: String?) {
+        if (selectedDate != null) {
+            val today = LocalDate.parse(selectedDate)
+            val weekLists: ArrayList<WorkoutWeeklyDayModel> = ArrayList()
+            if (workoutLogHistory.size > 0 && weekList.isNotEmpty()) {
+                workoutLogHistory.forEach { workoutLog ->
+                    for (item in weekList) {
+                        if (item.fullDate.toString() == workoutLog.date) {
+                            if (workoutLog.is_available_workout == true) {
+                                item.is_available = true
+                            }
                         }
                     }
                 }
             }
-        }
 
-        if (weekList.isNotEmpty()) {
-            weekLists.addAll(weekList as Collection<WorkoutWeeklyDayModel>)
-            var workoutLogDateData: WorkoutWeeklyDayModel? = null
-            var isClick = false
-            var index = -1
-            for (currentDay in weekLists) {
-                if (currentDay.fullDate == today) {
-                    workoutLogDateData = currentDay
-                    isClick = true
-                    index = weekLists.indexOfFirst { it.fullDate == currentDay.fullDate }
-                    break
+            if (weekList.isNotEmpty()) {
+                weekLists.addAll(weekList as Collection<WorkoutWeeklyDayModel>)
+                var workoutLogDateData: WorkoutWeeklyDayModel? = null
+                var isClick = false
+                var index = -1
+                for (currentDay in weekLists) {
+                    if (currentDay.fullDate == today) {
+                        workoutLogDateData = currentDay
+                        isClick = true
+                        index = weekLists.indexOfFirst { it.fullDate == currentDay.fullDate }
+                        break
+                    }
+                }
+                yourActivitiesWeeklyListAdapter.addAll(
+                    weekLists,
+                    index,
+                    workoutLogDateData,
+                    isClick
+                )
+            }
+        }else{
+            val today = LocalDate.now()
+            val weekLists: ArrayList<WorkoutWeeklyDayModel> = ArrayList()
+            if (workoutLogHistory.size > 0 && weekList.isNotEmpty()) {
+                workoutLogHistory.forEach { workoutLog ->
+                    for (item in weekList) {
+                        if (item.fullDate.toString() == workoutLog.date) {
+                            if (workoutLog.is_available_workout == true) {
+                                item.is_available = true
+                            }
+                        }
+                    }
                 }
             }
-            yourActivitiesWeeklyListAdapter.addAll(weekLists, index, workoutLogDateData, isClick)
+
+            if (weekList.isNotEmpty()) {
+                weekLists.addAll(weekList as Collection<WorkoutWeeklyDayModel>)
+                var workoutLogDateData: WorkoutWeeklyDayModel? = null
+                var isClick = false
+                var index = -1
+                for (currentDay in weekLists) {
+                    if (currentDay.fullDate == today) {
+                        workoutLogDateData = currentDay
+                        isClick = true
+                        index = weekLists.indexOfFirst { it.fullDate == currentDay.fullDate }
+                        break
+                    }
+                }
+                yourActivitiesWeeklyListAdapter.addAll(
+                    weekLists,
+                    index,
+                    workoutLogDateData,
+                    isClick
+                )
+            }
         }
     }
 

@@ -726,8 +726,9 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
         view.findViewById<ImageView>(R.id.closeButton)?.setOnClickListener {
             dismiss()
             if (moduleName.equals("HomeDashboard")){
-                startActivity(Intent(context, HomeNewActivity::class.java))
-                requireActivity().finish()
+//                startActivity(Intent(context, HomeDashboardActivity::class.java))
+//                requireActivity().finish()
+                requireActivity().onBackPressedDispatcher.onBackPressed()
             }else{
                 val fragment = HomeBottomTabFragment()
                 val args = Bundle()
