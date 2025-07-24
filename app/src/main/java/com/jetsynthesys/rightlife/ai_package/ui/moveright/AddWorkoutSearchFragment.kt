@@ -119,8 +119,13 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                 val timeStr = activityModel?.duration!!
                 val regex = Regex("\\d+")
                 val numbers = regex.findAll(timeStr).map { it.value.toInt() }.toList()
-                hourPicker.value = numbers.getOrNull(0)!!
-                minutePicker.value = numbers.getOrNull(1)!!
+                if (numbers.size > 1) {
+                    hourPicker.value = numbers.getOrNull(0)!!
+                    minutePicker.value = numbers.getOrNull(1)!!
+                }else{
+                    hourPicker.value = 0
+                    minutePicker.value = numbers.getOrNull(0)!!
+                }
                 Log.d("AddWorkoutSearch", "Editing activity: ${activityModel?.workoutType}, Calorie ID: ${activityModel?.id}")
             }
         } else if(edit_routine == "edit_routine"){
@@ -267,8 +272,13 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
             val timeStr = activityModel?.duration!!
             val regex = Regex("\\d+")
             val numbers = regex.findAll(timeStr).map { it.value.toInt() }.toList()
-            hourPicker.value = numbers.getOrNull(0)!!
-            minutePicker.value = numbers.getOrNull(1)!!
+            if (numbers.size > 1) {
+                hourPicker.value = numbers.getOrNull(0)!!
+                minutePicker.value = numbers.getOrNull(1)!!
+            }else{
+                hourPicker.value = 0
+                minutePicker.value = numbers.getOrNull(0)!!
+            }
             selectedIntensity = normalizeIntensity(activityModel?.intensity ?: "Low")
             // Set progress based on intensity (progress range is 0 to 1)
             when (selectedIntensity) {
