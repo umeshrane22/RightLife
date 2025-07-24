@@ -57,6 +57,7 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
         holder.calUnit.visibility = View.VISIBLE
         holder.calUnit.text = item.caloriesUnit
         holder.mealName.visibility = View.GONE
+
         holder.delete.setOnClickListener {
             val bottomSheet = DeleteWorkoutBottomSheet.newInstance(
                 calorieId = item.id!!,

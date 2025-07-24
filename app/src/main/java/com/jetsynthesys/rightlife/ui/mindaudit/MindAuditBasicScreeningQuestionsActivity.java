@@ -12,11 +12,12 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.jetsynthesys.rightlife.BaseActivity;
 import com.jetsynthesys.rightlife.R;
-import com.jetsynthesys.rightlife.ui.HomeActivity;
+import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity;
 
 public class MindAuditBasicScreeningQuestionsActivity extends BaseActivity {
     public Button nextButton, submitButton;
@@ -46,7 +47,14 @@ public class MindAuditBasicScreeningQuestionsActivity extends BaseActivity {
         viewPager.setAdapter(adapter);
 
         prevButton.setOnClickListener(v -> navigateToPreviousPage());
-        nextButton.setOnClickListener(v -> navigateToNextPage());
+        nextButton.setOnClickListener(v -> {
+            int currentItem = viewPager.getCurrentItem();
+            Fragment fragment = adapter.getRegisteredFragment(currentItem);
+
+            if (fragment instanceof OnNextButtonClickListener) {
+                ((OnNextButtonClickListener) fragment).onNextClicked();
+            }
+        });
 
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
@@ -142,11 +150,14 @@ public class MindAuditBasicScreeningQuestionsActivity extends BaseActivity {
             dialog.dismiss();
             //this.finish();
             finishAffinity(); // Finishes Activity D and all activities below it in the same task
-            Intent intent = new Intent(MindAuditBasicScreeningQuestionsActivity.this, HomeActivity.class);
+            Intent intent = new Intent(MindAuditBasicScreeningQuestionsActivity.this, HomeNewActivity.class);
             startActivity(intent);
         });
 
         // Show the dialog
         dialog.show();
+    }
+    public interface OnNextButtonClickListener {
+        void onNextClicked();
     }
 }

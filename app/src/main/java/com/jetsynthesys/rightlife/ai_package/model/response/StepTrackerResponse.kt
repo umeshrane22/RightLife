@@ -6,7 +6,6 @@ import com.google.gson.annotations.SerializedName
 data class StepTrackerResponse(
     @SerializedName("status_code")
     val statusCode: Int,
-
     @SerializedName("data")
     val data: List<StepTrackerData>
 )
@@ -15,34 +14,24 @@ data class StepTrackerResponse(
 data class StepTrackerData(
     @SerializedName("period")
     val period: String,
-
     @SerializedName("start_date")
     val startDate: String,
-
     @SerializedName("end_date")
     val endDate: String,
-
     @SerializedName("is_step_goal_set")
     val isStepGoalSet: Boolean,
-
     @SerializedName("steps_goal")
     val stepsGoal: Int,
-
     @SerializedName("total_steps_count")
     val totalStepsCount: Double,
-
     @SerializedName("total_steps_avg")
     val totalStepsAvg: Double,
-
     @SerializedName("record_details")
     val recordDetails: List<StepTrackerRecord>,
-
     @SerializedName("comparison")
     val comparison: StepTrackerComparison,
-
     @SerializedName("heading")
     val heading: String,
-
     @SerializedName("description")
     val description: String
 )
@@ -51,7 +40,6 @@ data class StepTrackerData(
 data class StepTrackerRecord(
     @SerializedName("date")
     val date: String,
-
     @SerializedName("total_steps_count_per_day")
     val totalStepsCountPerDay: Double
 )
@@ -60,16 +48,12 @@ data class StepTrackerRecord(
 data class StepTrackerComparison(
     @SerializedName("current_average_steps_per_day")
     val currentAverageStepsPerDay: Double,
-
     @SerializedName("current_period_label")
     val currentPeriodLabel: String,
-
     @SerializedName("previous_average_steps_per_day")
     val previousAverageStepsPerDay: Double,
-
     @SerializedName("previous_period_label")
     val previousPeriodLabel: String,
-
     @SerializedName("comparison_message")
     val comparisonMessage: String
 )

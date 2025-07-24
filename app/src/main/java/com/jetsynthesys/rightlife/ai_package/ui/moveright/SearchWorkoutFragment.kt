@@ -48,8 +48,11 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
         val searchEditText: EditText = view.findViewById(R.id.searchEditText)
         val tabLayout = view.findViewById<TabLayout>(R.id.tabLayout)
 
-        mSelectedDate = convertDate(selectedDate!!)
+        if (selectedDate != null){
+            mSelectedDate = convertDate(selectedDate)
+        }
         searchWorkoutBackButton = view.findViewById(R.id.search_workout_back_button)
+
         searchWorkoutBackButton.setOnClickListener {
             navigateToYourActivityFragment()
         }
@@ -119,7 +122,6 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
 
         // Handle back press
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
-            @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
             override fun handleOnBackPressed() {
                 navigateToYourActivityFragment()
             }

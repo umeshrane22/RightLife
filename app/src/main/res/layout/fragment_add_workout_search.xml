@@ -50,9 +50,9 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <ImageView
-                android:id="@+id/functional_strength_icon"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:id="@+id/workoutIcon"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="25dp"
                 android:scaleType="fitXY"
@@ -61,17 +61,17 @@
                 app:layout_constraintTop_toBottomOf="@+id/layout_toolbar" />
 
             <TextView
-                android:id="@+id/functional_strength_text_heading"
+                android:id="@+id/workoutName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:fontFamily="@font/dmsans_bold"
                 android:text="Functional Strength Training"
                 android:textColor="@color/black"
-                android:textSize="18dp"
-                app:layout_constraintBottom_toBottomOf="@+id/functional_strength_icon"
-                app:layout_constraintStart_toEndOf="@+id/functional_strength_icon"
-                app:layout_constraintTop_toTopOf="@+id/functional_strength_icon" />
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="@+id/workoutIcon"
+                app:layout_constraintStart_toEndOf="@+id/workoutIcon"
+                app:layout_constraintTop_toTopOf="@+id/workoutIcon" />
 
             <TextView
                 android:id="@+id/calories_text"
@@ -84,7 +84,7 @@
                 android:textSize="64dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/functional_strength_text_heading" />
+                app:layout_constraintTop_toBottomOf="@+id/workoutName" />
 
             <TextView
                 android:layout_width="wrap_content"
