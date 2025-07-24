@@ -96,7 +96,7 @@ class YourMorningSnackMealLogsAdapter(val context: Context, private var dataList
                 servesLayout.visibility = View.GONE
             }else {
                 delete.visibility = View.VISIBLE
-                edit.visibility = View.GONE
+                edit.visibility = View.VISIBLE
                 layoutEatTime.visibility = View.VISIBLE
                 layoutVegNonveg.visibility = View.VISIBLE
                 servesLayout.visibility = View.VISIBLE
@@ -173,7 +173,7 @@ class YourMorningSnackMealLogsAdapter(val context: Context, private var dataList
                 servesLayout.visibility = View.GONE
             }else {
                 delete.visibility = View.VISIBLE
-                edit.visibility = View.GONE
+                edit.visibility = View.VISIBLE
                 layoutEatTime.visibility = View.VISIBLE
                 layoutVegNonveg.visibility = View.VISIBLE
                 servesLayout.visibility = View.VISIBLE

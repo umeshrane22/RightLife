@@ -151,7 +151,7 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
             val tabText = tab?.customView?.findViewById<TextView>(R.id.tabText)
             tabText?.setTextColor(
                 if (tab?.isSelected == true) ContextCompat.getColor(requireContext(), R.color.white)
-                else ContextCompat.getColor(requireContext(), R.color.dotted_red)
+                else ContextCompat.getColor(requireContext(), R.color.black_no_meals)
             )
         }
     }
