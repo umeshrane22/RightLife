@@ -275,9 +275,11 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
             if (numbers.size > 1) {
                 hourPicker.value = numbers.getOrNull(0)!!
                 minutePicker.value = numbers.getOrNull(1)!!
+                selectedTime = "${numbers.getOrNull(0)!!} hr ${numbers.getOrNull(1)!!} min"
             }else{
                 hourPicker.value = 0
                 minutePicker.value = numbers.getOrNull(0)!!
+                selectedTime = " ${numbers.getOrNull(0)!!} min"
             }
             selectedIntensity = normalizeIntensity(activityModel?.intensity ?: "Low")
             // Set progress based on intensity (progress range is 0 to 1)
@@ -288,7 +290,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                 "Very High" -> intensityProgressBar.progress = 1.0f
             }
             Log.d("AddWorkoutSearch", "Edit mode - Initial intensity: $selectedIntensity, Progress: ${intensityProgressBar.progress}")
-            selectedTime = "${numbers.getOrNull(0)!!} hr ${numbers.getOrNull(1)!!} min"
+
             // Trigger initial calorie calculation in edit mode
             activityModel?.id?.let { calorieId ->
              //   calculateUserCalories(durationMin, selectedIntensity, calorieId)
