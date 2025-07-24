@@ -12,12 +12,13 @@ import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.ai_package.model.FrequentLoggedRoutine
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.frequentlylogged.LoggedBottomSheet
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MyMealModel
 
-class FrequentltLoggedSearchAdapter(private val context: Context, private var dataLists: ArrayList<MyMealModel>,
-                                    private var clickPos: Int, private var mealLogListData : MyMealModel?,
-                                    private var isClickView : Boolean, val onMealLogDateItem: (MyMealModel, Int, Boolean) -> Unit,) :
+class FrequentltLoggedSearchAdapter(private val context: Context, private var dataLists: ArrayList<FrequentLoggedRoutine>,
+                                    private var clickPos: Int, private var mealLogListData : FrequentLoggedRoutine?,
+                                    private var isClickView : Boolean, val onMealLogDateItem: (FrequentLoggedRoutine, Int, Boolean) -> Unit,) :
     RecyclerView.Adapter<FrequentltLoggedSearchAdapter.ViewHolder>() {
 
     private var selectedItem = -1
@@ -37,6 +38,7 @@ class FrequentltLoggedSearchAdapter(private val context: Context, private var da
         holder.subtractionValue.text = item.subtraction
         holder.baguetteValue.text = item.baguette
         holder.dewpointValue.text = item.dewpoint
+
         holder.edit.setOnClickListener {
 
         }
@@ -105,6 +107,7 @@ class FrequentltLoggedSearchAdapter(private val context: Context, private var da
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         val mealTitle: TextView = itemView.findViewById(R.id.tv_meal_title)
+        val mealIcon: ImageView = itemView.findViewById(R.id.main_heading_icon)
         val delete: ImageView = itemView.findViewById(R.id.image_delete)
         val deleteLayout: LinearLayoutCompat = itemView.findViewById(R.id.layout_delete)
         val edit: ImageView = itemView.findViewById(R.id.image_edit)
@@ -130,7 +133,7 @@ class FrequentltLoggedSearchAdapter(private val context: Context, private var da
         val dewpointUnit: TextView = itemView.findViewById(R.id.tv_dewpoint_unit)
     }
 
-    fun addAll(item : ArrayList<MyMealModel>?, pos: Int, mealLogItem : MyMealModel?, isClick : Boolean) {
+    fun addAll(item : ArrayList<FrequentLoggedRoutine>?, pos: Int, mealLogItem : FrequentLoggedRoutine?, isClick : Boolean) {
         dataLists.clear()
         if (item != null) {
             dataLists = item

@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
+import com.jetsynthesys.rightlife.ai_package.model.FrequentLoggedRoutine
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MyMealModel
 import com.jetsynthesys.rightlife.databinding.FragmentFrequentlyLoggedSearchBinding
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
@@ -39,7 +40,7 @@ class FrequentlyLoggedSearchFragment : BaseFragment<FragmentFrequentlyLoggedSear
         fetchUserWorkouts() // Fetch and display only API data
     }
 
-    private fun onMealLogDateItem(mealLogDateModel: MyMealModel, position: Int, isRefresh: Boolean) {
+    private fun onMealLogDateItem(mealLogDateModel: FrequentLoggedRoutine, position: Int, isRefresh: Boolean) {
         // This method is currently unused but required by the adapter's callback
         // You can implement it if needed for future functionality
     }
@@ -63,7 +64,7 @@ class FrequentlyLoggedSearchFragment : BaseFragment<FragmentFrequentlyLoggedSear
                     val workouts = response.body()
                     if (workouts != null) {
                         val mealList = workouts.unsyncedWorkouts.map { workoutItem ->
-                            MyMealModel(
+                            FrequentLoggedRoutine(
                                 mealName = workoutItem.workoutType,
                                 mealType = workoutItem.recordType,
                                 serve = "min",
@@ -75,7 +76,7 @@ class FrequentlyLoggedSearchFragment : BaseFragment<FragmentFrequentlyLoggedSear
                             )
                         }
 
-                        val valueLists: ArrayList<MyMealModel> = ArrayList(mealList)
+                        val valueLists: ArrayList<FrequentLoggedRoutine> = ArrayList(mealList)
                         withContext(Dispatchers.Main) {
                             if (valueLists.isNotEmpty()) {
                                 myMealRecyclerView.visibility = View.VISIBLE

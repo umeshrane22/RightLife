@@ -62,16 +62,20 @@
 
             <TextView
                 android:id="@+id/workoutName"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
+                android:paddingEnd="5dp"
                 android:fontFamily="@font/dmsans_bold"
                 android:text="Functional Strength Training"
                 android:textColor="@color/black"
-                android:textSize="18sp"
+                android:textSize="16sp"
+                android:ellipsize="end"
+                android:maxLines="2"
                 app:layout_constraintBottom_toBottomOf="@+id/workoutIcon"
                 app:layout_constraintStart_toEndOf="@+id/workoutIcon"
-                app:layout_constraintTop_toTopOf="@+id/workoutIcon" />
+                app:layout_constraintTop_toTopOf="@+id/workoutIcon"
+                app:layout_constraintEnd_toEndOf="parent" />
 
             <TextView
                 android:id="@+id/calories_text"

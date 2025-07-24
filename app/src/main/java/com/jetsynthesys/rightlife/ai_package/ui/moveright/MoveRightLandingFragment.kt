@@ -1135,8 +1135,10 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
             }
             if (dataOrigin.equals("com.google.android.apps.fitness")){
                 storeHealthData()
-            }else{
-
+            }else if(dataOrigin.equals("com.sec.android.app.shealth")){
+                storeSamsungHealthData()
+            }else if(dataOrigin.equals("com.samsung.android.wear.shealth")){
+                storeSamsungHealthData()
             }
         } catch (e: Exception) {
             e.printStackTrace()
