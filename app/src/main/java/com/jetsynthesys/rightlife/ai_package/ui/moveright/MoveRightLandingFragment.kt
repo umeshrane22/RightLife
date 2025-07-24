@@ -1103,9 +1103,30 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 respiratoryRateRecord = emptyList()
                 Log.d("HealthData", "Respiratory rate permission denied")
             }
-            withContext(Dispatchers.Main) {
-              //  Toast.makeText(context, "Health Data Fetched", Toast.LENGTH_SHORT).show()
+            var dataOrigin = ""
+            if (HealthPermission.getReadPermission(StepsRecord::class) in grantedPermissions) {
+                val stepsResponse = healthConnectClient.readRecords(
+                    ReadRecordsRequest(
+                        recordType = StepsRecord::class,
+                        timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                    )
+                )
+                for (record in stepsResponse.records) {
+                    dataOrigin = record.metadata.dataOrigin.packageName
+                    val deviceInfo = record.metadata.device
+                    if (deviceInfo != null) {
+                        SharedPreferenceManager.getInstance(requireContext()).saveDeviceName(deviceInfo.manufacturer)
+                        Log.d("Device Info", """ Manufacturer: ${deviceInfo.manufacturer}
+                Model: ${deviceInfo.model} Type: ${deviceInfo.type} """.trimIndent())
+                    } else {
+                        Log.d("Device Info", "No device info available")
+                    }
+                }
+            }
+            if (dataOrigin.equals("com.google.android.apps.fitness")){
                 storeHealthData()
+            }else{
+
             }
         } catch (e: Exception) {
             e.printStackTrace()
