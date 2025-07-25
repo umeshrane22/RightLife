@@ -78,7 +78,7 @@
                 android:textSize="18sp"
                 android:textColor="@color/white"
                 android:fontFamily="@font/dmsans_bold"
-                android:text="Create A Work Routine" />
+                android:text="Create A Routine" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -161,7 +161,7 @@
             android:textSize="20sp"
             android:textColor="@color/white"
             android:fontFamily="@font/dmsans_bold"
-            android:text="Create A Work Routine" />
+            android:text="Create A Routine" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 

@@ -99,8 +99,10 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
     private lateinit var imageFood : ImageView
     private lateinit var videoView : VideoView
     private var imagePath : String = ""
+    private var gallery : String = ""
     private lateinit var imagePathsecond : Uri
     private var isProceedResult : Boolean = false
+    private var isGalleryOpen : Boolean = false
     private lateinit var sharedPreferenceManager: SharedPreferenceManager
     private lateinit var backButton : ImageView
     private var loadingOverlay : FrameLayout? = null
@@ -123,6 +125,10 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
         backButton = view.findViewById(R.id.backButton)
 
         moduleName = arguments?.getString("ModuleName").toString()
+        gallery = arguments?.getString("gallery").toString()
+        if(gallery.equals("gallery")){
+            isGalleryOpen = true
+        }
 
         skipTV.setOnClickListener {
 //            requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -156,7 +162,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
             takePhotoInfoLayout.visibility = View.GONE
          //   enterMealDescriptionLayout.visibility = View.VISIBLE
             videoView.visibility = View.GONE
-            val cameraDialog = CameraDialogFragment("", moduleName)
+            val cameraDialog = CameraDialogFragment("", moduleName,gallery)
             cameraDialog.imageSelectedListener = object : OnImageSelectedListener {
                 override fun onImageSelected(imageUri: Uri) {
                     val path = getRealPathFromURI(requireContext(), imageUri)
@@ -221,7 +227,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                         Toast.makeText(context, "Please capture food",Toast.LENGTH_SHORT).show()
                     }
                 }else{
-                    val cameraDialog = CameraDialogFragment("", moduleName)
+                    val cameraDialog = CameraDialogFragment("", moduleName,gallery)
                     cameraDialog.imageSelectedListener = object : OnImageSelectedListener {
                         override fun onImageSelected(imageUri: Uri) {
                             val path = getRealPathFromURI(requireContext(), imageUri)
@@ -588,13 +594,14 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
     }
 }
 
-class CameraDialogFragment(private val imagePath: String, val moduleName : String) : DialogFragment() {
+class CameraDialogFragment(private val imagePath: String, val moduleName : String, val gallery:String) : DialogFragment() {
 
     private lateinit var viewFinder: PreviewView
     private var imageCapture: ImageCapture? = null
     private lateinit var cameraExecutor: ExecutorService
     private var camera: Camera? = null
     private var isTorchOn = false
+    private var isGalleryOpen = false
 
     var imageSelectedListener: OnImageSelectedListener? = null
 
@@ -669,6 +676,15 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
             view.findViewById<ImageView>(R.id.galleryButton)?.postDelayed({
                 view.findViewById<ImageView>(R.id.galleryButton)?.isEnabled = true
             }, 700) // 500 ms delay
+        }
+        if(gallery.equals("gallery")){
+            isGalleryOpen = true
+        }
+
+        if(isGalleryOpen){
+            Handler(Looper.getMainLooper()).post {
+                pickImageLauncher.launch("image/*")
+            }
         }
 
         cameraExecutor = Executors.newSingleThreadExecutor()
