@@ -9,7 +9,9 @@
         android:id="@+id/viewFinder"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center" />
+        android:layout_gravity="center"
+        app:implementationMode="performance"
+        app:scaleType="fitCenter" />
     <ImageView
         android:id="@+id/capturedImageView"
         android:layout_width="250dp"
@@ -21,7 +23,7 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="250dp"
+        android:layout_height="300dp"
         android:layout_gravity="center"
        android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"

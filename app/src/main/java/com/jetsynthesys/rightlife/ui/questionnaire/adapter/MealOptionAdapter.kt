@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.ItemMealOptionBinding
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.MealOption
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 
 class MealOptionAdapter(
     private val options: List<MealOption>,
@@ -28,6 +29,7 @@ class MealOptionAdapter(
             }
 
             binding.root.setOnClickListener {
+                binding.root.disableViewForSeconds()
                 val prevPos = selectedPosition
                 selectedPosition = adapterPosition
                 notifyItemChanged(prevPos)

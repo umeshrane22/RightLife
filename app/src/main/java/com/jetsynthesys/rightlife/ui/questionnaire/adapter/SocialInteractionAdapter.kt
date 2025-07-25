@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.RowSocialInteractionsBinding
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.SocialInteraction
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 
 class SocialInteractionAdapter(
     private val items: List<SocialInteraction>,
@@ -25,6 +26,7 @@ class SocialInteractionAdapter(
                 binding.root.setBackgroundResource(R.drawable.bg_food_item)
             }
             binding.root.setOnClickListener {
+                binding.root.disableViewForSeconds()
                 val previousPosition = selectedPosition
                 selectedPosition = adapterPosition
                 notifyItemChanged(previousPosition)

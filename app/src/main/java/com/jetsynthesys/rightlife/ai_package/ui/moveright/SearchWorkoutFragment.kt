@@ -44,7 +44,7 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
         val routine = arguments?.getString("routine")
         val routineName = arguments?.getString("routineName")
         workoutList = arguments?.getParcelableArrayList("workoutList") ?: ArrayList()
-        val selectedTab = arguments?.getInt("selectedTab", 0) ?: 0  // 🔥 get selected tab index
+        var selectedTab = arguments?.getInt("selectedTab", 0) ?: 0  // 🔥 get selected tab index
         val searchEditText: EditText = view.findViewById(R.id.searchEditText)
         val tabLayout = view.findViewById<TabLayout>(R.id.tabLayout)
 
@@ -69,6 +69,10 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
 
         // Initial fragment load based on selectedTab
         if (savedInstanceState == null) {
+            val selectTab = arguments?.getString("routineBack")
+            if (selectTab == "routineBack") {
+                selectedTab = 1
+            }
             val initialFragment: Fragment = when (selectedTab) {
                 1 -> MyRoutineFragment(mSelectedDate)
                 2 -> FrequentlyLoggedSearchFragment()
@@ -151,7 +155,7 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
             val tabText = tab?.customView?.findViewById<TextView>(R.id.tabText)
             tabText?.setTextColor(
                 if (tab?.isSelected == true) ContextCompat.getColor(requireContext(), R.color.white)
-                else ContextCompat.getColor(requireContext(), R.color.dotted_red)
+                else ContextCompat.getColor(requireContext(), R.color.black_no_meals)
             )
         }
     }
