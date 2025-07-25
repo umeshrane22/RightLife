@@ -1,12 +1,14 @@
 package com.jetsynthesys.rightlife.ai_package.model.request
 
-data class UpdateSnapMealRequest(
+data class UpdateSnapMealLogRequest(
     val meal_name: String,
-    val meal_log: List<SnapMealLogItem>
+    val meal_log: List<SnapMealLogItems>
 )
 
-data class SnapMealLogItem(
+data class SnapMealLogItems(
+    val _id: String,
     val name: String,
+    val servings: Int,
     val b12_mcg: Double?,
     val b1_mg: Double?,
     val b2_mg: Double?,
@@ -45,6 +47,5 @@ data class SnapMealLogItem(
     val vitamin_e_mg: Double?,
     val vitamin_k_mcg: Double?,
     val zinc_mg: Double?,
-    val mealQuantity: Double?,
-    val servings : Int
+    val mealQuantity: Double?
 )

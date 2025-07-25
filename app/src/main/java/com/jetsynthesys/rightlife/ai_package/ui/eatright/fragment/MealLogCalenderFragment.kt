@@ -118,9 +118,9 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
         val ninetyDaysAgo = currentDateTime.minusDays(60)
         val dateRange  = ninetyDaysAgo.format(formatter) + "_to_" + formattedCurrentDate
         getMealsLogHistory(dateRange)
-        mealLogYearlyList = generateLast6MonthsCalendar()
+        mealLogYearlyList = generateYearCalendar()
 
-      //  onMealLogCalenderItemRefresh()
+        //  onMealLogCalenderItemRefresh()
         onMealLogCalenderSummaryRefresh()
     }
 
@@ -144,18 +144,18 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
         val mealLogDateData: CalendarDateModel? = null
         calendarAdapter.addAll(valueLists, -1, mealLogDateData, false)
 
-//        val now = Calendar.getInstance()
-//        val currentYear = now.get(Calendar.YEAR)
-//        val currentMonth = now.get(Calendar.MONTH) // 0-11
-//        val targetIndex = mealLogYearlyList.indexOfFirst {
-//            it.year == currentYear && it.month == getMonthAbbreviation(currentMonth) && it.date == 1
-//        }
-//        if (targetIndex != -1) {
-//            recyclerCalendar.post {
-//                recyclerCalendar.scrollToPosition(targetIndex+50)
-//            }
-//        }
- //       Log.d("CalendarScroll", "Scrolling to index: $targetIndex, month: ${getMonthAbbreviation(currentMonth)}")
+        val now = Calendar.getInstance()
+        val currentYear = now.get(Calendar.YEAR)
+        val currentMonth = now.get(Calendar.MONTH) // 0-11
+        val targetIndex = mealLogYearlyList.indexOfFirst {
+            it.year == currentYear && it.month == getMonthAbbreviation(currentMonth) && it.date == 1
+        }
+        if (targetIndex != -1) {
+            recyclerCalendar.post {
+                recyclerCalendar.scrollToPosition(targetIndex+50)
+            }
+        }
+        Log.d("CalendarScroll", "Scrolling to index: $targetIndex, month: ${getMonthAbbreviation(currentMonth)}")
     }
 
     private fun onMealLogCalenderSummaryRefresh (){
@@ -177,8 +177,8 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
     }
 
     private fun onMealLogCalenderItem(mealLogDateModel: CalendarDateModel, position: Int, isRefresh: Boolean) {
-        val yearDays = generateLast6MonthsCalendar()
-     //   val calendarDays = List(60) { CalendarDateModel(it + 1, it % 5 == 0) }
+        val yearDays = generateYearCalendar()
+        //   val calendarDays = List(60) { CalendarDateModel(it + 1, it % 5 == 0) }
         val valueLists : ArrayList<CalendarDateModel> = ArrayList()
         valueLists.addAll(yearDays as Collection<CalendarDateModel>)
         calendarAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
@@ -224,99 +224,60 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
 //        return daysList
 //    }
 
-//    private fun generateYearCalendar(): List<CalendarDateModel> {
-//        val calendar = Calendar.getInstance()
-//        val year = calendar.get(Calendar.YEAR)
-//        val daysList = mutableListOf<CalendarDateModel>()
-//        val currentMonth = getMonthAbbreviation(calendar.get(Calendar.MONTH))
-//        val dateFormat = SimpleDateFormat("EEE, dd MMM yyyy")
-//        val currentDate = dateFormat.format(calendar.time)
-//        txtDate.text = currentDate
-//
-//        // Set calendar to January 1st of the given year
-//        calendar.set(year, Calendar.JANUARY, 1)
-//        val firstDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK) // Sunday = 1, Monday = 2, etc.
-//
-//        // Calculate how many previous year days we need to add to start from Monday
-//        val daysToFill = if (firstDayOfWeek == Calendar.MONDAY) 0 else (firstDayOfWeek - 2 + 7) % 7
-//
-//        // Add previous year days
-//        calendar.add(Calendar.DAY_OF_YEAR, -daysToFill)
-//        for (i in 0 until daysToFill) {
-//            val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-//            daysList.add(
-//                CalendarDateModel(
-//                    date = calendar.get(Calendar.DAY_OF_MONTH),
-//                    month = getMonthAbbreviation(calendar.get(Calendar.MONTH)),
-//                    year = calendar.get(Calendar.YEAR),
-//                    dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK),
-//                    currentDate = currentDate,
-//                    currentMonth = currentMonth,
-//                    fullDate = formatter.format(calendar.time),
-//                    surplus = (i * 50) % 500 // Random surplus example
-//                )
-//            )
-//            calendar.add(Calendar.DAY_OF_YEAR, 1) // Move forward
-//        }
-//        // Now reset to actual year and start adding days
-//        calendar.set(year, Calendar.JANUARY, 1)
-//        while (calendar.get(Calendar.YEAR) == year) {
-//            val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-//            daysList.add(
-//                CalendarDateModel(
-//                    date = calendar.get(Calendar.DAY_OF_MONTH),
-//                    month = getMonthAbbreviation(calendar.get(Calendar.MONTH)),
-//                    year = calendar.get(Calendar.YEAR),
-//                    dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK),
-//                    currentDate = currentDate,
-//                    currentMonth = currentMonth,
-//                    fullDate = formatter.format(calendar.time),
-//                    surplus = (1 * 50) % 500 // Random surplus example
-//                )
-//            )
-//            calendar.add(Calendar.DAY_OF_YEAR, 1) // Move forward
-//        }
-//        return daysList
-//    }
-
-    private fun generateLast6MonthsCalendar(): List<CalendarDateModel> {
+    private fun generateYearCalendar(): List<CalendarDateModel> {
+        val calendar = Calendar.getInstance()
+        val year = calendar.get(Calendar.YEAR)
         val daysList = mutableListOf<CalendarDateModel>()
-        val currentCalendar = Calendar.getInstance()
-        val dateFormat = SimpleDateFormat("EEE, dd MMM yyyy", Locale.getDefault())
-        val fullFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val currentDate = dateFormat.format(currentCalendar.time)
-        val currentMonthAbbr = getMonthAbbreviation(currentCalendar.get(Calendar.MONTH))
+        val currentMonth = getMonthAbbreviation(calendar.get(Calendar.MONTH))
+        val dateFormat = SimpleDateFormat("EEE, dd MMM yyyy")
+        val currentDate = dateFormat.format(calendar.time)
         txtDate.text = currentDate
 
-        // Loop through current month to 5 previous months
-        for (i in 0 until 6) {
-            val monthCalendar = Calendar.getInstance()
-            monthCalendar.add(Calendar.MONTH, -i)
-            monthCalendar.set(Calendar.DAY_OF_MONTH, 1)
+        // Set calendar to January 1st of the given year
+        calendar.set(year, Calendar.JANUARY, 1)
+        val firstDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK) // Sunday = 1, Monday = 2, etc.
 
-            val month = monthCalendar.get(Calendar.MONTH)
-            val year = monthCalendar.get(Calendar.YEAR)
-            val daysInMonth = monthCalendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+        // Calculate how many previous year days we need to add to start from Monday
+        val daysToFill = if (firstDayOfWeek == Calendar.MONDAY) 0 else (firstDayOfWeek - 2 + 7) % 7
 
-            for (day in 1..daysInMonth) {
-                monthCalendar.set(Calendar.DAY_OF_MONTH, day)
-                daysList.add(
-                    CalendarDateModel(
-                        date = day,
-                        month = getMonthAbbreviation(month),
-                        year = year,
-                        dayOfWeek = monthCalendar.get(Calendar.DAY_OF_WEEK),
-                        currentDate = currentDate,
-                        currentMonth = currentMonthAbbr,
-                        fullDate = fullFormatter.format(monthCalendar.time),
-                        surplus = (day * 50) % 500 // Example surplus logic
-                    )
+        // Add previous year days
+        calendar.add(Calendar.DAY_OF_YEAR, -daysToFill)
+        for (i in 0 until daysToFill) {
+            val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            daysList.add(
+                CalendarDateModel(
+                    date = calendar.get(Calendar.DAY_OF_MONTH),
+                    month = getMonthAbbreviation(calendar.get(Calendar.MONTH)),
+                    year = calendar.get(Calendar.YEAR),
+                    dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK),
+                    currentDate = currentDate,
+                    currentMonth = currentMonth,
+                    fullDate = formatter.format(calendar.time),
+                    surplus = (i * 50) % 500 // Random surplus example
                 )
-            }
+            )
+            calendar.add(Calendar.DAY_OF_YEAR, 1) // Move forward
+        }
+        // Now reset to actual year and start adding days
+        calendar.set(year, Calendar.JANUARY, 1)
+        while (calendar.get(Calendar.YEAR) == year) {
+            val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            daysList.add(
+                CalendarDateModel(
+                    date = calendar.get(Calendar.DAY_OF_MONTH),
+                    month = getMonthAbbreviation(calendar.get(Calendar.MONTH)),
+                    year = calendar.get(Calendar.YEAR),
+                    dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK),
+                    currentDate = currentDate,
+                    currentMonth = currentMonth,
+                    fullDate = formatter.format(calendar.time),
+                    surplus = (1 * 50) % 500 // Random surplus example
+                )
+            )
+            calendar.add(Calendar.DAY_OF_YEAR, 1) // Move forward
         }
         return daysList
     }
-
 
     private fun getMonthAbbreviation(monthNumber: Int): String {
         val calendar = Calendar.getInstance()
