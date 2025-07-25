@@ -30,6 +30,7 @@ import com.jetsynthesys.rightlife.apimodel.submodule.SubModuleResponse
 import com.jetsynthesys.rightlife.apimodel.welnessresponse.ContentWellness
 import com.jetsynthesys.rightlife.apimodel.welnessresponse.WellnessApiResponse
 import com.jetsynthesys.rightlife.databinding.FragmentHomeExploreBinding
+import com.jetsynthesys.rightlife.runWhenAttached
 import com.jetsynthesys.rightlife.ui.Articles.ArticlesDetailActivity
 import com.jetsynthesys.rightlife.ui.CardItem
 import com.jetsynthesys.rightlife.ui.CategoryListActivity
@@ -314,7 +315,7 @@ class HomeExploreFragment : BaseFragment() {
                         jsonResponse,
                         AffirmationResponse::class.java
                     )
-                    setupAffirmationContent(responseObj)
+                    runWhenAttached { setupAffirmationContent(responseObj) }
                 } else {
                     //Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
@@ -343,7 +344,7 @@ class HomeExploreFragment : BaseFragment() {
                         PromotionResponse::class.java
                     )
                     if (promotionResponse.success) {
-                        handlePromotionResponse(promotionResponse)
+                        runWhenAttached { handlePromotionResponse(promotionResponse) }
                     } else {
                         Toast.makeText(
                             requireActivity(),
@@ -374,7 +375,7 @@ class HomeExploreFragment : BaseFragment() {
                         jsonResponse,
                         ServicePaneResponse::class.java
                     )
-                    handleServicePaneResponse(responseObj)
+                    runWhenAttached { handleServicePaneResponse(responseObj) }
                 } else {
                     // Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
@@ -402,7 +403,7 @@ class HomeExploreFragment : BaseFragment() {
                         jsonResponse,
                         RightLifeEditResponse::class.java
                     )
-                    setupRLEditContent(rightLifeEditResponse)
+                    runWhenAttached { setupRLEditContent(rightLifeEditResponse) }
                 } else {
                     val statusCode = response.code()
                     try {
@@ -437,7 +438,13 @@ class HomeExploreFragment : BaseFragment() {
                         jsonResponse,
                         WellnessApiResponse::class.java
                     )
-                    wellnessApiResponse?.data?.contentList?.let { setupWellnessContent(it) }
+                    wellnessApiResponse?.data?.contentList?.let {
+                        runWhenAttached {
+                            setupWellnessContent(
+                                it
+                            )
+                        }
+                    }
                 } else {
                     // Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
@@ -480,30 +487,32 @@ class HomeExploreFragment : BaseFragment() {
                     val affirmationsResponse = response.body()
                     val gson = Gson()
 
-                    if (moduleid.equals("THINK_RIGHT", ignoreCase = true)) {
-                        ThinkRSubModuleResponse = gson.fromJson(
-                            affirmationsResponse.toString(),
-                            SubModuleResponse::class.java
-                        )
-                        handleThinkRightResponse()
-                    } else if (moduleid.equals("MOVE_RIGHT", ignoreCase = true)) {
-                        MoveRSubModuleResponse = gson.fromJson(
-                            affirmationsResponse.toString(),
-                            SubModuleResponse::class.java
-                        )
-                        handleMoveRightResponse()
-                    } else if (moduleid.equals("EAT_RIGHT", ignoreCase = true)) {
-                        EatRSubModuleResponse = gson.fromJson(
-                            affirmationsResponse.toString(),
-                            SubModuleResponse::class.java
-                        )
-                        handleEatRightResponse()
-                    } else if (moduleid.equals("SLEEP_RIGHT", ignoreCase = true)) {
-                        SleepRSubModuleResponse = gson.fromJson(
-                            affirmationsResponse.toString(),
-                            SubModuleResponse::class.java
-                        )
-                        handleSleepRightResponse()
+                    runWhenAttached {
+                        if (moduleid.equals("THINK_RIGHT", ignoreCase = true)) {
+                            ThinkRSubModuleResponse = gson.fromJson(
+                                affirmationsResponse.toString(),
+                                SubModuleResponse::class.java
+                            )
+                            handleThinkRightResponse()
+                        } else if (moduleid.equals("MOVE_RIGHT", ignoreCase = true)) {
+                            MoveRSubModuleResponse = gson.fromJson(
+                                affirmationsResponse.toString(),
+                                SubModuleResponse::class.java
+                            )
+                            handleMoveRightResponse()
+                        } else if (moduleid.equals("EAT_RIGHT", ignoreCase = true)) {
+                            EatRSubModuleResponse = gson.fromJson(
+                                affirmationsResponse.toString(),
+                                SubModuleResponse::class.java
+                            )
+                            handleEatRightResponse()
+                        } else if (moduleid.equals("SLEEP_RIGHT", ignoreCase = true)) {
+                            SleepRSubModuleResponse = gson.fromJson(
+                                affirmationsResponse.toString(),
+                                SubModuleResponse::class.java
+                            )
+                            handleSleepRightResponse()
+                        }
                     }
                 } else {
                     // Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
@@ -516,7 +525,7 @@ class HomeExploreFragment : BaseFragment() {
         })
     }
 
-    private fun handleThinkRightResponse(){
+    private fun handleThinkRightResponse() {
         if (ThinkRSubModuleResponse?.data?.isNotEmpty() == true) {
             with(binding) {
                 tvThinkRightCategory1.text = ThinkRSubModuleResponse?.data?.get(0)?.name
@@ -559,7 +568,7 @@ class HomeExploreFragment : BaseFragment() {
         }
     }
 
-    private fun handleMoveRightResponse(){
+    private fun handleMoveRightResponse() {
         if (MoveRSubModuleResponse?.data?.isNotEmpty() == true) {
             with(binding) {
                 tvMoveRightCategory1.text = MoveRSubModuleResponse?.data?.get(0)?.name
@@ -592,7 +601,7 @@ class HomeExploreFragment : BaseFragment() {
         }
     }
 
-    private fun handleEatRightResponse(){
+    private fun handleEatRightResponse() {
         if (EatRSubModuleResponse?.data?.isNotEmpty() == true) {
             with(binding) {
                 tvEatRightCategory1.text = EatRSubModuleResponse?.data?.get(0)?.name
@@ -623,7 +632,7 @@ class HomeExploreFragment : BaseFragment() {
                     .into(imageEatRightCategory3)
             }
         }
-        if (ThinkRSubModuleResponse?.data?.size!! > 3) {
+        if (EatRSubModuleResponse?.data?.size!! > 3) {
             with(binding) {
                 tvEatRightCategory4.text = EatRSubModuleResponse?.data?.get(3)?.name
                 Glide.with(requireActivity())
@@ -635,7 +644,7 @@ class HomeExploreFragment : BaseFragment() {
         }
     }
 
-    private fun handleSleepRightResponse(){
+    private fun handleSleepRightResponse() {
         if (SleepRSubModuleResponse?.data?.isNotEmpty() == true) {
             with(binding) {
                 tvSleepRightCategory1.text = SleepRSubModuleResponse?.data?.get(0)?.name

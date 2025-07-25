@@ -49,6 +49,7 @@ import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistResponse
 import com.jetsynthesys.rightlife.newdashboard.model.DiscoverDataItem
 import com.jetsynthesys.rightlife.newdashboard.model.SleepStage
 import com.jetsynthesys.rightlife.newdashboard.model.UpdatedModule
+import com.jetsynthesys.rightlife.runWhenAttached
 import com.jetsynthesys.rightlife.subscriptions.SubscriptionPlanListActivity
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.DialogUtils
@@ -303,7 +304,7 @@ class HomeDashboardFragment : BaseFragment() {
 //                fetchAllHealthData()
                 CommonAPICall.updateChecklistStatus(
                     requireContext(), "sync_health_data", AppConstants.CHECKLIST_COMPLETED
-                ){ status ->
+                ) { status ->
                     if (status)
                         lifecycleScope.launch {
                             getDashboardChecklist()
@@ -325,7 +326,7 @@ class HomeDashboardFragment : BaseFragment() {
                 lifecycleScope.launch {
                     CommonAPICall.updateChecklistStatus(
                         requireContext(), "sync_health_data", AppConstants.CHECKLIST_COMPLETED
-                    ){ status ->
+                    ) { status ->
                         if (status)
                             lifecycleScope.launch {
                                 getDashboardChecklist()
@@ -350,7 +351,7 @@ class HomeDashboardFragment : BaseFragment() {
                     val checklistResponse = gson.fromJson(
                         promotionResponse2, ChecklistResponse::class.java
                     )
-                    handleChecklistResponse(checklistResponse)
+                    runWhenAttached { handleChecklistResponse(checklistResponse) }
                     checkListCount = 0
                 } else {
                     //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
@@ -494,11 +495,16 @@ class HomeDashboardFragment : BaseFragment() {
                     val aiDashboardResponseMain = gson.fromJson(
                         promotionResponse2, AiDashboardResponseMain::class.java
                     )
-                    handleSelectedModule(aiDashboardResponseMain)
-                    handleDescoverList(aiDashboardResponseMain)
-                    binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
-                    binding.recyclerView.adapter =
-                        HeartRateAdapter(aiDashboardResponseMain.data?.facialScan, requireContext())
+                    runWhenAttached {
+                        handleSelectedModule(aiDashboardResponseMain)
+                        handleDescoverList(aiDashboardResponseMain)
+                        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
+                        binding.recyclerView.adapter =
+                            HeartRateAdapter(
+                                aiDashboardResponseMain.data?.facialScan,
+                                requireContext()
+                            )
+                    }
                 } else {
                     //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
@@ -520,25 +526,28 @@ class HomeDashboardFragment : BaseFragment() {
                     if (response.isSuccessful && response.body() != null) {
                         response.body()?.data?.let {
                             DashboardChecklistManager.updateFrom(it)
-
                         }
-                        if (DashboardChecklistManager.isDataLoaded) {
-                            // Chceklist completion logic
-                            if (DashboardChecklistManager.checklistStatus) {
-                                binding.llDashboardMainData.visibility = View.VISIBLE
-                                binding.includeChecklist.llLayoutChecklist.visibility = View.GONE
-                                binding.llDiscoverLayout.visibility = View.GONE
+                        runWhenAttached {
+                            if (DashboardChecklistManager.isDataLoaded) {
+                                // Chceklist completion logic
+                                if (DashboardChecklistManager.checklistStatus) {
+                                    binding.llDashboardMainData.visibility = View.VISIBLE
+                                    binding.includeChecklist.llLayoutChecklist.visibility =
+                                        View.GONE
+                                    binding.llDiscoverLayout.visibility = View.GONE
+                                } else {
+                                    binding.llDashboardMainData.visibility = View.GONE
+                                    binding.includeChecklist.llLayoutChecklist.visibility =
+                                        View.VISIBLE
+                                    binding.llDiscoverLayout.visibility = View.VISIBLE
+                                }
                             } else {
-                                binding.llDashboardMainData.visibility = View.GONE
-                                binding.includeChecklist.llLayoutChecklist.visibility = View.VISIBLE
-                                binding.llDiscoverLayout.visibility = View.VISIBLE
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Server Error: " + response.code(),
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
-                        } else {
-                            Toast.makeText(
-                                requireContext(),
-                                "Server Error: " + response.code(),
-                                Toast.LENGTH_SHORT
-                            ).show()
                         }
                     }
                 }
