@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.ItemScheduleOptionBinding
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.ScheduleOption
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 
 class ScheduleOptionAdapter(
     private val options: List<ScheduleOption>,
@@ -40,6 +41,7 @@ class ScheduleOptionAdapter(
             }
 
             binding.root.setOnClickListener {
+                binding.root.disableViewForSeconds()
                 val prevPos = selectedPosition
                 selectedPosition = adapterPosition
                 notifyItemChanged(prevPos)

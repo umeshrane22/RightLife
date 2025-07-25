@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.ItemSleepOptionBinding
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.SleepOption
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 
 class SleepSelectionAdapter(
     private val options: List<SleepOption>,
@@ -30,6 +31,7 @@ class SleepSelectionAdapter(
             }
 
             binding.itemContainer.setOnClickListener {
+                binding.itemContainer.disableViewForSeconds()
                 val previousPosition = selectedPosition
                 selectedPosition = adapterPosition
                 notifyItemChanged(previousPosition)

@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.RowShakeOffBadDayBinding
+import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 
 class ShakeOffBadDayAdapter(
     private val items: List<String>,
@@ -23,6 +24,7 @@ class ShakeOffBadDayAdapter(
                 binding.root.setBackgroundResource(R.drawable.bg_food_item)
             }
             binding.root.setOnClickListener {
+                binding.root.disableViewForSeconds()
                 val previousPosition = selectedPosition
                 selectedPosition = adapterPosition
                 notifyItemChanged(previousPosition)

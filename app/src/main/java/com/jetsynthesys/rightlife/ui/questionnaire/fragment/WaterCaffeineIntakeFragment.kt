@@ -17,7 +17,6 @@ import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Coffee
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.ERQuestionFive
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Water
-import com.jetsynthesys.rightlife.ui.utility.Utils
 import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 
 class WaterCaffeineIntakeFragment : Fragment() {
