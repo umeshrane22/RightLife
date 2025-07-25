@@ -50,12 +50,12 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
            holder.subtractionValue.text = item.intensity
            holder.subtraction.setImageResource(R.drawable.intensity_meter)
        }
-      //  val formattedTime = formatTimeString(item.duration!!)
-        holder.duration.text = item.duration
+        val formattedTime = formatTimeString(item.duration!!)
+        holder.duration.text = formattedTime
         val formattedCalories = item.caloriesBurned!!.substringBefore(".")
         holder.calValue.text = formattedCalories
         holder.calUnit.visibility = View.VISIBLE
-        holder.calUnit.text = item.caloriesUnit
+        holder.calUnit.text = "cal"
         holder.mealName.visibility = View.GONE
 
         holder.delete.setOnClickListener {
@@ -126,7 +126,7 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
     private fun formatCalorieString(calorieString: String): SpannableStringBuilder {
         // Step 1: Parse the input string (e.g., "488 kcal" -> 488)
         val calories = calorieString.replace(" kcal", "").toIntOrNull() ?: 0
-        val formattedText = "$calories kcal"
+        val formattedText = "$calories cal"
         // Step 2: Create SpannableStringBuilder for styling
         val spannable = SpannableStringBuilder(formattedText)
         // Step 3: Apply bold and 18sp to the number
@@ -154,21 +154,35 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
     }
 
     private fun formatTimeString(timeString: String): SpannableStringBuilder {
-        // Step 1: Parse the input string (e.g., "61 min" -> 61)
-        val minutes = timeString.replace(" mins", "").toIntOrNull() ?: 0
-        // Step 2: Convert minutes to hours and minutes
-        val hours = minutes / 60
-        val remainingMinutes = minutes % 60
-        // Step 3: Build the formatted string (e.g., "1 hr 1 min")
+        // Step 1: Parse the input string (e.g., "2 hr 01 mins")
+        var hours = 0
+        var minutes = 0
+        val parts = timeString.split(" ")
+        when (parts.size) {
+            2 -> { // Format: "61 mins"
+                minutes = parts[0].toIntOrNull() ?: 0
+            }
+            4 -> { // Format: "2 hr 01 mins"
+                hours = parts[0].toIntOrNull() ?: 0
+                minutes = parts[2].toIntOrNull() ?: 0
+            }
+        }
+
+        // Step 2: Build the formatted string (e.g., "2 hr 1 mins")
         val formattedText = buildString {
             if (hours > 0) {
                 append("$hours hr ")
             }
-            append("$remainingMinutes mins")
-        }
-        // Step 4: Create SpannableStringBuilder for styling
+            if (minutes > 0 || hours == 0) { // Show minutes even if 0 when hours is 0
+                append("$minutes mins")
+            }
+        }.trim()
+
+        // Step 3: Create SpannableStringBuilder for styling
         val spannable = SpannableStringBuilder(formattedText)
+
         // Apply bold and 18sp to numbers
+        var currentIndex = 0
         if (hours > 0) {
             // Style the hours number
             spannable.setSpan(
@@ -183,36 +197,41 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
                 hours.toString().length,
                 SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
             )
-            // Style the "hr" unit (normal, 12sp)
+            // Style the "hr" unit (normal, 12sp, no bold)
             spannable.setSpan(
                 AbsoluteSizeSpan(12, true), // 12sp
                 hours.toString().length,
                 hours.toString().length + 3, // " hr "
                 SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
             )
+            currentIndex = hours.toString().length + 4 // Move index past "X hr "
         }
+
         // Style the minutes number
-        val minutesStart = if (hours > 0) hours.toString().length + 4 else 0
-        val minutesEnd = minutesStart + remainingMinutes.toString().length
-        spannable.setSpan(
-            StyleSpan(Typeface.BOLD),
-            minutesStart,
-            minutesEnd,
-            SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
-        )
-        spannable.setSpan(
-            AbsoluteSizeSpan(18, true), // 18sp
-            minutesStart,
-            minutesEnd,
-            SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
-        )
-        // Style the "min" unit (normal, 12sp)
-        spannable.setSpan(
-            AbsoluteSizeSpan(12, true), // 12sp
-            minutesEnd,
-            formattedText.length, // " min"
-            SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
-        )
+        if (minutes > 0 || hours == 0) {
+            val minutesStart = currentIndex
+            val minutesEnd = minutesStart + minutes.toString().length
+            spannable.setSpan(
+                StyleSpan(Typeface.BOLD),
+                minutesStart,
+                minutesEnd,
+                SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            spannable.setSpan(
+                AbsoluteSizeSpan(18, true), // 18sp
+                minutesStart,
+                minutesEnd,
+                SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            // Style the "mins" unit (normal, 12sp, no bold)
+            spannable.setSpan(
+                AbsoluteSizeSpan(12, true), // 12sp
+                minutesEnd,
+                formattedText.length, // " mins"
+                SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        }
+
         return spannable
     }
 }

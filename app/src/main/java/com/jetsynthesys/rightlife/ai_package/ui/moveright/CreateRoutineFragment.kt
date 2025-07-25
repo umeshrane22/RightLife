@@ -209,7 +209,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
 
             val workoutRecord = WorkoutSessionRecord(
                 userId = activity.userId!!,
-                activityId = activity.id!!,
+                activityId = activity.activityId!!,
                 durationMin = durationValue,
                 intensity = activity.intensity!!,
                 sessions = 1,
