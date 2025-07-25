@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -37,6 +38,9 @@ class MyRoutineFragment(mSelectedDate: String) : BaseFragment<FragmentMyRoutineB
 
     private lateinit var myRoutineRecyclerView: RecyclerView
     private lateinit var layoutBtnLogWorkout: LinearLayoutCompat
+    private lateinit var dataFilledMyRoutine : ConstraintLayout
+    private lateinit var noDataMyRoutine : ConstraintLayout
+    private lateinit var btnCreateRoutine : LinearLayoutCompat
 
     private val myRoutineListAdapter by lazy {
         MyRoutineMainListAdapter(
@@ -92,13 +96,20 @@ class MyRoutineFragment(mSelectedDate: String) : BaseFragment<FragmentMyRoutineB
         super.onViewCreated(view, savedInstanceState)
         view.setBackgroundColor(Color.TRANSPARENT)
 
-        layoutBtnLogWorkout = view.findViewById(R.id.layout_btn_log_meal)
-        myRoutineRecyclerView = view.findViewById(R.id.recyclerview_my_meals_item)
+        layoutBtnLogWorkout = view.findViewById(R.id.layoutCreateWorkRoutine)
+        myRoutineRecyclerView = view.findViewById(R.id.myRoutineRecyclerView)
+        dataFilledMyRoutine = view.findViewById(R.id.dataFilledMyRoutine)
+        noDataMyRoutine = view.findViewById(R.id.noDataMyRoutine)
+       btnCreateRoutine = view.findViewById(R.id.layoutBtnCreateRoutine)
+
         myRoutineRecyclerView.layoutManager = LinearLayoutManager(context)
         myRoutineRecyclerView.adapter = myRoutineListAdapter
 
-
         layoutBtnLogWorkout.setOnClickListener {
+            openAddWorkoutFragment()
+        }
+
+        btnCreateRoutine.setOnClickListener {
             openAddWorkoutFragment()
         }
 
@@ -122,15 +133,11 @@ class MyRoutineFragment(mSelectedDate: String) : BaseFragment<FragmentMyRoutineB
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-                    ?: "64763fe2fa0e40d9c0bc8264"
                 Log.d("FetchRoutines", "Fetching routines for userId: $userId")
-
                 val response = ApiClient.apiServiceFastApi.getRoutines(userId)
-
                 if (response.isSuccessful) {
                     val routineResponse = response.body()
                     Log.d("FetchRoutines", "Received ${routineResponse?.routines?.size ?: 0} routines")
-
                     val workoutList = ArrayList<WorkoutRoutineItem>()
                     routineResponse?.routines?.forEach { plan ->
                         if (plan.workouts.isNotEmpty()) {
@@ -157,15 +164,20 @@ class MyRoutineFragment(mSelectedDate: String) : BaseFragment<FragmentMyRoutineB
                             Log.d("FetchRoutines", "Routine ${plan.routineName} has no workouts, skipping")
                         }
                     }
-
                     withContext(Dispatchers.Main) {
                         if (isAdded && view != null) {
                             if (workoutList.isNotEmpty()) {
-                                myRoutineRecyclerView.visibility = View.VISIBLE
+                                dataFilledMyRoutine.visibility = View.VISIBLE
+                               // myRoutineRecyclerView.visibility = View.VISIBLE
+                                layoutBtnLogWorkout.visibility = View.VISIBLE
+                                noDataMyRoutine.visibility = View.GONE
                                 myRoutineListAdapter.addAll(workoutList, -1, null, false)
                                 Log.d("FetchRoutines", "Displaying ${workoutList.size} merged routines")
                             } else {
-                                myRoutineRecyclerView.visibility = View.GONE
+                                noDataMyRoutine.visibility = View.VISIBLE
+                                dataFilledMyRoutine.visibility = View.GONE
+                              //  myRoutineRecyclerView.visibility = View.GONE
+                                layoutBtnLogWorkout.visibility = View.GONE
                                 Log.d("FetchRoutines", "No routines to display")
                             }
                         }
@@ -175,11 +187,7 @@ class MyRoutineFragment(mSelectedDate: String) : BaseFragment<FragmentMyRoutineB
                     withContext(Dispatchers.Main) {
                         if (isAdded && view != null) {
                             Log.e("FetchRoutines", "API Error ${response.code()}: $errorBody")
-                            Toast.makeText(
-                                context,
-                                "Failed to fetch routines: ${response.code()}",
-                                Toast.LENGTH_LONG
-                            ).show()
+                            Toast.makeText(context, "Failed to fetch routines: ${response.code()}", Toast.LENGTH_LONG).show()
                         }
                     }
                 }
@@ -187,11 +195,7 @@ class MyRoutineFragment(mSelectedDate: String) : BaseFragment<FragmentMyRoutineB
                 withContext(Dispatchers.Main) {
                     if (isAdded && view != null) {
                         Log.e("FetchRoutines", "Exception: ${e.message}", e)
-                        Toast.makeText(
-                            context,
-                            "Error fetching routines: ${e.message}",
-                            Toast.LENGTH_LONG
-                        ).show()
+                        Toast.makeText(context, "Error fetching routines: ${e.message}", Toast.LENGTH_LONG).show()
                     }
                 }
             }

@@ -9,5 +9,5 @@
     android:paddingTop="2dp"
     android:textSize="10sp"
     android:fontFamily="@font/dmsans_regular"
-    android:textColor="@color/search_tablayout_color_selector"
+    android:textColor="@color/tab_color_selector"
     android:gravity="center" />

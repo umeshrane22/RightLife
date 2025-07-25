@@ -56,7 +56,11 @@ class MyRoutineMainListAdapter(
         holder.baguetteValue.text = ""
         holder.dewpointValue.text = ""
         // Set CardView visibility based on selectedItem
-        holder.editDeleteLayout.visibility = if (selectedItem == position) View.VISIBLE else View.GONE
+            if (selectedItem == position) {
+                holder.editDeleteLayout.visibility = View.VISIBLE
+            }else {
+                holder.editDeleteLayout.visibility = View.GONE
+            }
         holder.edit.setOnClickListener {
             // Implement edit functionality
         }
@@ -73,6 +77,7 @@ class MyRoutineMainListAdapter(
             )
             bottomSheet.setOnDeleteSuccessListener {
                 dataLists.removeAt(position)
+                selectedItem = -1
                 notifyDataSetChanged()
             }
             bottomSheet.show((context as AppCompatActivity).supportFragmentManager, "EditWorkoutBottomSheet")
@@ -105,7 +110,7 @@ class MyRoutineMainListAdapter(
         val edit: ImageView = itemView.findViewById(R.id.image_edit)
         val editDeleteLayout: CardView = itemView.findViewById(R.id.btn_edit_delete)
         val addToWorkout: LinearLayoutCompat = itemView.findViewById(R.id.layout_btn_log)
-        val circlePlus: ImageView = itemView.findViewById(R.id.image_circle_plus)
+       // val circlePlus: ImageView = itemView.findViewById(R.id.image_circle_plus)
         val threedots: ImageView = itemView.findViewById(R.id.image_circle_plus)
         val mealName: TextView = itemView.findViewById(R.id.tv_meal_name)
         val serve: ImageView = itemView.findViewById(R.id.image_serve)
