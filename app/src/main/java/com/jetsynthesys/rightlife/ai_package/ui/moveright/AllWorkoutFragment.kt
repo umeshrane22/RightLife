@@ -103,6 +103,7 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
             searchResultTextView.isVisible = false
             searchResultView.isVisible = false
         }
+
     }
 
     private fun openAddWorkoutFragment(workout: WorkoutList) {
@@ -191,6 +192,7 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
                     workoutViewModel.searchQuery.observe(viewLifecycleOwner) { query ->
                         filterWorkouts(query)
                     }
+                    filterWorkouts("")
                 } else {
                     Log.e("AllWorkoutFragment", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()

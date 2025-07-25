@@ -42,6 +42,9 @@ class FrequentltLoggedSearchAdapter(private val context: Context, private var da
         holder.edit.setOnClickListener {
 
         }
+        holder.delete.setOnClickListener {
+
+        }
         holder.addToWorkout.setOnClickListener {
             val bottomSheet = LoggedBottomSheet()
             bottomSheet.show((context as AppCompatActivity).supportFragmentManager, "EditWorkoutBottomSheet")

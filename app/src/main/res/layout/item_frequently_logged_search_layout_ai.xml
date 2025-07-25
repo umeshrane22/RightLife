@@ -59,7 +59,7 @@
                 android:layout_width="18dp"
                 android:layout_height="18dp"
                 android:scaleType="fitXY"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:src="@drawable/delete_icon" />
 
             <ImageView
@@ -67,7 +67,7 @@
                 android:layout_width="18dp"
                 android:layout_height="18dp"
                 android:scaleType="fitXY"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:layout_marginStart="10dp"
                 android:src="@drawable/edit_icon_myroutine_recyler" />
 

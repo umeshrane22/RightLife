@@ -75,7 +75,7 @@
                 android:layout_height="23dp"
                 android:layout_marginTop="24dp"
                 android:scaleType="fitXY"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:src="@drawable/ic_scan"
                 app:layout_constraintStart_toEndOf="@+id/searchLayout"
                 app:layout_constraintEnd_toStartOf="@+id/image"
@@ -87,7 +87,7 @@
                 android:layout_height="23dp"
                 android:layout_marginTop="24dp"
                 android:scaleType="fitXY"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:src="@drawable/ic_gallry"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
