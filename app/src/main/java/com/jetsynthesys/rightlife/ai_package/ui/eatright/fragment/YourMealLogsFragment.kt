@@ -171,19 +171,19 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
         null, false, :: onMealLogDateItem) }
     private val breakfastMealLogsAdapter by lazy { YourBreakfastMealLogsAdapter(requireContext(), arrayListOf(), -1,
         null, null, false, ::onBreakFastRegularRecipeDeleteItem,
-        :: onBreakFastRegularRecipeEditItem, :: onBreakFastSnapMealDeleteItem, :: onBreakFastSnapMealEditItem, false) }
+        :: onBreakFastRegularRecipeEditItem, :: onBreakFastSnapMealDeleteItem, :: onBreakFastSnapMealEditItem, false, false) }
     private val morningSnackMealLogsAdapter by lazy { YourMorningSnackMealLogsAdapter(requireContext(), arrayListOf(), -1,
         null, null,false, :: onMSRegularRecipeDeleteItem, :: onMSRegularRecipeEditItem,
-        :: onMSSnapMealDeleteItem, :: onMSSnapMealEditItem, false) }
+        :: onMSSnapMealDeleteItem, :: onMSSnapMealEditItem, false, false) }
     private val lunchMealLogsAdapter by lazy { YourLunchMealLogsAdapter(requireContext(), arrayListOf(), -1,
         null, null,false, :: onLunchRegularRecipeDeleteItem, :: onLunchRegularRecipeEditItem,
-        :: onLunchSnapMealDeleteItem, :: onLunchSnapMealEditItem, false) }
+        :: onLunchSnapMealDeleteItem, :: onLunchSnapMealEditItem, false, false) }
     private val eveningSnacksMealLogsAdapter by lazy { YourEveningSnacksMealLogsAdapter(requireContext(), arrayListOf(), -1,
         null, null,false, :: onESRegularRecipeDeleteItem, :: onESRegularRecipeEditItem,
-        :: onESSnapMealDeleteItem, :: onESSnapMealEditItem, false) }
+        :: onESSnapMealDeleteItem, :: onESSnapMealEditItem, false, false) }
     private val dinnerMealLogsAdapter by lazy { YourDinnerMealLogsAdapter(requireContext(), arrayListOf(), -1,
         null, null,false, :: onDinnerRegularRecipeDeleteItem, :: onDinnerRegularRecipeEditItem,
-        :: onDinnerSnapMealDeleteItem, :: onDinnerSnapMealEditItem, false) }
+        :: onDinnerSnapMealDeleteItem, :: onDinnerSnapMealEditItem, false, false) }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -260,7 +260,6 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             selectMealTypeBottomSheet.isCancelable = true
             val args = Bundle()
             args.putString("ModuleName", moduleName)
-            args.putBoolean("test",false)
             selectMealTypeBottomSheet.arguments = args
             parentFragment.let { selectMealTypeBottomSheet.show(childFragmentManager, "SelectMealTypeBottomSheet") }
         }else if (moduleName.contentEquals("EatRightLanding")){
@@ -268,7 +267,6 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             selectMealTypeBottomSheet.isCancelable = true
             val args = Bundle()
             args.putString("ModuleName", moduleName)
-            args.putBoolean("test",false)
             selectMealTypeBottomSheet.arguments = args
             parentFragment.let { selectMealTypeBottomSheet.show(childFragmentManager, "SelectMealTypeBottomSheet") }
         }else if (moduleName.contentEquals("MoveRightLanding")) {
@@ -276,7 +274,6 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             selectMealTypeBottomSheet.isCancelable = true
             val args = Bundle()
             args.putString("ModuleName", moduleName)
-            args.putBoolean("test", false)
             selectMealTypeBottomSheet.arguments = args
             parentFragment.let { selectMealTypeBottomSheet.show(childFragmentManager, "SelectMealTypeBottomSheet") }
         }
@@ -370,6 +367,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
           //  showTooltipDialog( layoutToolbar,"You can access Calender \n view from here.")
             val fragment = MealLogCalenderFragment()
             val args = Bundle()
+            args.putString("ModuleName", moduleName)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "mealLog")

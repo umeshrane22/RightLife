@@ -175,19 +175,19 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
         -1, null, false, ::onMealSuggestionItem) }
     private val breakfastMealLogsAdapter by lazy { YourBreakfastMealLogsAdapter(requireContext(), arrayListOf(), -1,
         null, null, false, ::onBreakFastRegularRecipeDeleteItem,
-        :: onBreakFastRegularRecipeEditItem, :: onBreakFastSnapMealDeleteItem, :: onBreakFastSnapMealEditItem, true) }
+        :: onBreakFastRegularRecipeEditItem, :: onBreakFastSnapMealDeleteItem, :: onBreakFastSnapMealEditItem, true, false) }
     private val morningSnackMealLogsAdapter by lazy { YourMorningSnackMealLogsAdapter(requireContext(), arrayListOf(), -1,
         null, null,false, :: onMSRegularRecipeDeleteItem, :: onMSRegularRecipeEditItem,
-        :: onMSSnapMealDeleteItem, :: onMSSnapMealEditItem, true) }
+        :: onMSSnapMealDeleteItem, :: onMSSnapMealEditItem, true, false) }
     private val lunchMealLogsAdapter by lazy { YourLunchMealLogsAdapter(requireContext(), arrayListOf(), -1,
         null, null,false, :: onLunchRegularRecipeDeleteItem, :: onLunchRegularRecipeEditItem,
-        :: onLunchSnapMealDeleteItem, :: onLunchSnapMealEditItem, true) }
+        :: onLunchSnapMealDeleteItem, :: onLunchSnapMealEditItem, true, false) }
     private val eveningSnacksMealLogsAdapter by lazy { YourEveningSnacksMealLogsAdapter(requireContext(), arrayListOf(), -1,
         null, null,false, :: onESRegularRecipeDeleteItem, :: onESRegularRecipeEditItem,
-        :: onESSnapMealDeleteItem, :: onESSnapMealEditItem, true) }
+        :: onESSnapMealDeleteItem, :: onESSnapMealEditItem, true, false) }
     private val dinnerMealLogsAdapter by lazy { YourDinnerMealLogsAdapter(requireContext(), arrayListOf(), -1,
         null, null,false, :: onDinnerRegularRecipeDeleteItem, :: onDinnerRegularRecipeEditItem,
-        :: onDinnerSnapMealDeleteItem, :: onDinnerSnapMealEditItem, true) }
+        :: onDinnerSnapMealDeleteItem, :: onDinnerSnapMealEditItem, true, false) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

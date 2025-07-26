@@ -1,17 +1,17 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,7 +20,6 @@ import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.CalendarAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.CalendarSummaryAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.CalendarDateModel
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.CalendarSummaryModel
 import com.jetsynthesys.rightlife.databinding.FragmentMealLogCalenderBinding
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.response.LoggedMeal
@@ -45,6 +44,7 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
     private lateinit var btnClose : ImageView
     private lateinit var recyclerCalendar : RecyclerView
     private lateinit var recyclerSummary : RecyclerView
+    private lateinit var nestedScrollView : NestedScrollView
     private var mealLogsHistoryResponse : MealLogsHistoryResponse? = null
     private var  mealLogHistory :  ArrayList<LoggedMeal> = ArrayList()
     private var mealLogYearlyList : List<CalendarDateModel> = ArrayList()
@@ -72,18 +72,23 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
         txtDate = view.findViewById(R.id.txtDate)
         icRightArrow = view.findViewById(R.id.icRightArrow)
         btnClose = view.findViewById(R.id.btnClose)
+        nestedScrollView = view.findViewById(R.id.nestedScrollView)
 
-        recyclerCalendar.overScrollMode = View.OVER_SCROLL_NEVER
+        recyclerCalendar.isNestedScrollingEnabled = false
+        recyclerCalendar.overScrollMode = RecyclerView.OVER_SCROLL_NEVER
         recyclerCalendar.layoutManager = GridLayoutManager(context, 7)
         recyclerCalendar.adapter = calendarAdapter
 
         recyclerSummary.layoutManager = LinearLayoutManager(context)
         recyclerSummary.adapter = calendarSummaryAdapter
 
+        val moduleName = arguments?.getString("ModuleName").toString()
+
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 val fragment = YourMealLogsFragment()
                 val args = Bundle()
+                args.putString("ModuleName", moduleName)
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
                     replace(R.id.flFragment, fragment, "landing")
@@ -96,20 +101,13 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
         btnClose.setOnClickListener {
             val fragment = YourMealLogsFragment()
             val args = Bundle()
+            args.putString("ModuleName", moduleName)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "landing")
                 addToBackStack("landing")
                 commit()
             }
-        }
-
-        icLeftArrow.setOnClickListener {
-            txtDate.text = "Thur, 5 Feb 2025"
-        }
-
-        icRightArrow.setOnClickListener {
-            txtDate.text = "Thur, 7 Feb 2025"
         }
 
         val currentDateTime = LocalDateTime.now()
@@ -119,9 +117,6 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
         val dateRange  = ninetyDaysAgo.format(formatter) + "_to_" + formattedCurrentDate
         getMealsLogHistory(dateRange)
         mealLogYearlyList = generateYearCalendar()
-
-        //  onMealLogCalenderItemRefresh()
-        onMealLogCalenderSummaryRefresh()
     }
 
     private fun onMealLogCalenderList (yearList: List<CalendarDateModel>, mealLogHistory: ArrayList<LoggedMeal>){
@@ -138,91 +133,86 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
                 }
             }
         }
-
         val valueLists : ArrayList<CalendarDateModel> = ArrayList()
         valueLists.addAll(yearList as Collection<CalendarDateModel>)
         val mealLogDateData: CalendarDateModel? = null
         calendarAdapter.addAll(valueLists, -1, mealLogDateData, false)
 
+        val sampledList = ArrayList<CalendarDateModel>()
+        val step = valueLists.size / 53f
+        for (i in 0 until 53) {
+            val index = (i * step).toInt().coerceAtMost(valueLists.lastIndex)
+            sampledList.add(valueLists[index])
+        }
+        calendarSummaryAdapter.addAll(sampledList, -1, mealLogDateData, false)
+
         val now = Calendar.getInstance()
         val currentYear = now.get(Calendar.YEAR)
         val currentMonth = now.get(Calendar.MONTH) // 0-11
+
         val targetIndex = mealLogYearlyList.indexOfFirst {
             it.year == currentYear && it.month == getMonthAbbreviation(currentMonth) && it.date == 1
         }
-        if (targetIndex != -1) {
+
+        Log.d("CalendarScroll", "Trying to scroll to: $targetIndex")
+        recyclerCalendar.post {
+            recyclerCalendar.scrollToPosition(targetIndex)
             recyclerCalendar.post {
-                recyclerCalendar.scrollToPosition(targetIndex+50)
+                val holder = recyclerCalendar.findViewHolderForAdapterPosition(targetIndex)
+                if (holder != null) {
+                    val y = holder.itemView.top
+                    nestedScrollView.smoothScrollTo(0, recyclerCalendar.top + y)
+                }
             }
         }
-        Log.d("CalendarScroll", "Scrolling to index: $targetIndex, month: ${getMonthAbbreviation(currentMonth)}")
+
+        val layoutManager = recyclerCalendar.layoutManager as GridLayoutManager
+        val daysPerMonth = 30 // average days per month
+
+// 👉 Right arrow = Next month (scroll down)
+        icRightArrow.setOnClickListener {
+            val currentPosition = layoutManager.findFirstVisibleItemPosition()
+            val targetPosition = (currentPosition + daysPerMonth).coerceAtMost(calendarAdapter.itemCount - 1)
+
+            recyclerCalendar.smoothScrollToPosition(targetPosition)
+            recyclerCalendar.post {
+                val holder = recyclerCalendar.findViewHolderForAdapterPosition(targetPosition)
+                holder?.let {
+                    val y = it.itemView.top
+                    nestedScrollView.smoothScrollTo(0, recyclerCalendar.top + y)
+                }
+            }
+        }
+
+// 👉 Left arrow = Previous month (scroll up)
+        icLeftArrow.setOnClickListener {
+            val currentPosition = layoutManager.findFirstVisibleItemPosition()
+            val targetPosition = (currentPosition - daysPerMonth).coerceAtLeast(0)
+
+            recyclerCalendar.smoothScrollToPosition(targetPosition)
+            recyclerCalendar.post {
+                val holder = recyclerCalendar.findViewHolderForAdapterPosition(targetPosition)
+                holder?.let {
+                    val y = it.itemView.top
+                    nestedScrollView.smoothScrollTo(0, recyclerCalendar.top + y)
+                }
+            }
+        }
+
     }
 
-    private fun onMealLogCalenderSummaryRefresh (){
-        val summaryList = listOf(
-            CalendarSummaryModel("Deficit", "2140"),
-            CalendarSummaryModel("Surplus", "12.3 kCal"),
-            CalendarSummaryModel("Surplus", "0"),
-            CalendarSummaryModel("Surplus", "0"),
-            CalendarSummaryModel("Surplus", "0"),
-            CalendarSummaryModel("Surplus", "0"),
-            CalendarSummaryModel("Surplus", "0"),
-            CalendarSummaryModel("Surplus", "0"),
-            CalendarSummaryModel("Surplus", "0")
-        )
-        val valueLists : ArrayList<CalendarSummaryModel> = ArrayList()
-        valueLists.addAll(summaryList as Collection<CalendarSummaryModel>)
-        val mealLogDateData: CalendarSummaryModel? = null
-        calendarSummaryAdapter.addAll(valueLists, -1, mealLogDateData, false)
+    private fun onMealLogCalenderItem(calendarDateModel: CalendarDateModel, position: Int, isRefresh: Boolean) {
+        val mealLogCalenderBottomSheet = MealLogCalenderBottomSheet()
+        mealLogCalenderBottomSheet.isCancelable = true
+        val args = Bundle()
+        args.putString("SelectedDate", calendarDateModel.fullDate)
+        mealLogCalenderBottomSheet.arguments = args
+        parentFragment.let { mealLogCalenderBottomSheet.show(childFragmentManager, "MealLogCalenderBottomSheet") }
     }
 
-    private fun onMealLogCalenderItem(mealLogDateModel: CalendarDateModel, position: Int, isRefresh: Boolean) {
-        val yearDays = generateYearCalendar()
-        //   val calendarDays = List(60) { CalendarDateModel(it + 1, it % 5 == 0) }
-        val valueLists : ArrayList<CalendarDateModel> = ArrayList()
-        valueLists.addAll(yearDays as Collection<CalendarDateModel>)
-        calendarAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
-    }
+    private fun onMealLogCalenderSummaryItem(mealLogDateModel: CalendarDateModel, position: Int, isRefresh: Boolean) {
 
-    private fun onMealLogCalenderSummaryItem(mealLogDateModel: CalendarSummaryModel, position: Int, isRefresh: Boolean) {
-        val summaryList = listOf(
-            CalendarSummaryModel("Deficit", "2140"),
-            CalendarSummaryModel("Surplus", "12.3 kCal"),
-            CalendarSummaryModel("Surplus", "0"),
-            CalendarSummaryModel("Surplus", "0"),
-            CalendarSummaryModel("Surplus", "0"),
-            CalendarSummaryModel("Surplus", "0"),
-            CalendarSummaryModel("Surplus", "0"),
-            CalendarSummaryModel("Surplus", "0"),
-            CalendarSummaryModel("Surplus", "0"),
-            CalendarSummaryModel("Surplus", "0")
-        )
-        val valueLists : ArrayList<CalendarSummaryModel> = ArrayList()
-        valueLists.addAll(summaryList as Collection<CalendarSummaryModel>)
-        calendarSummaryAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
     }
-
-//    private fun generateYearDays(year: Int): List<CalendarDateModel> {
-//        val calendar = Calendar.getInstance()
-//        val daysList = mutableListOf<CalendarDateModel>()
-//
-//        for (month in 0..11) { // 0 = January, 11 = December
-//            calendar.set(year, month, 1)
-//            val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
-//
-//            for (day in 1..daysInMonth) {
-//                daysList.add(
-//                    CalendarDateModel(
-//                        date = day,
-//                        month = month,
-//                        year = year,
-//                        surplus = (day * 50) % 500 // Random surplus example
-//                    )
-//                )
-//            }
-//        }
-//        return daysList
-//    }
 
     private fun generateYearCalendar(): List<CalendarDateModel> {
         val calendar = Calendar.getInstance()

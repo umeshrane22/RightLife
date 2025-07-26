@@ -27,6 +27,7 @@ class ActivityAsyncCalenderAdapter(private val context: Context, private var dat
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = dataLists[position]
 
+        holder.viewDate.visibility = View.INVISIBLE
         holder.txtDate.text = item.date.toString()
         holder.txtMonth.text = item.month
         if (item.month.contentEquals(item.currentMonth)){
@@ -40,6 +41,7 @@ class ActivityAsyncCalenderAdapter(private val context: Context, private var dat
         }else{
             holder.itemView.setBackgroundColor(ContextCompat.getColor(context,R.color.meal_log_background))
         }
+
         if (item.date == 1){
             if (item.month.contentEquals("Jan")){
                 holder.txtMonth.visibility = View.VISIBLE
@@ -54,20 +56,18 @@ class ActivityAsyncCalenderAdapter(private val context: Context, private var dat
 
         if (item.is_available){
             holder.imgCheck.setImageResource(R.drawable.ic_check_circle)
-
-
             if (mealLogListData != null){
-                if (clickPos == position && mealLogListData == item && isClickView == true){
-                    holder.imgCheck.setImageResource(R.drawable.ic_check_circle)
-                }else{
-                    holder.imgCheck.setImageResource(R.drawable.ic_check_circle)
-                }
+//                if (clickPos == position && mealLogListData == item && isClickView == true){
+//                    holder.imgCheck.setImageResource(R.drawable.ic_check_circle)
+//                }else{
+//                    holder.imgCheck.setImageResource(R.drawable.ic_check_circle)
+//                }
             }
         }else{
             //holder.imgCheck.setImageResource(R.drawable.ic_uncheck_circle)
             if (mealLogListData != null){
                 if (clickPos == position && mealLogListData == item && isClickView == true){
-                    holder.imgCheck.setImageResource(R.drawable.ic_check_circle)
+                    holder.imgCheck.setImageResource(R.drawable.ic_uncheck_circle)
                 }else{
                     holder.imgCheck.setImageResource(R.drawable.ic_uncheck_circle)
                 }

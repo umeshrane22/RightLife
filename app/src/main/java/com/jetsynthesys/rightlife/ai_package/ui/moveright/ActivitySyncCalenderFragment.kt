@@ -12,6 +12,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
+import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -24,6 +25,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.response.WorkoutHistoryResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.WorkoutRecord
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.MealLogCalenderBottomSheet
 import com.jetsynthesys.rightlife.ai_package.utils.LoaderUtil
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
@@ -32,6 +34,7 @@ import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Calendar
 import java.util.Locale
 
 class ActivitySyncCalenderFragment : BaseFragment<FragmentActivitySyncCalenderBinding>() {
@@ -42,6 +45,7 @@ class ActivitySyncCalenderFragment : BaseFragment<FragmentActivitySyncCalenderBi
     private lateinit var btnClose : ImageView
     private lateinit var recyclerCalendar : RecyclerView
     private lateinit var recyclerSummary : RecyclerView
+    private lateinit var nestedScrollView : NestedScrollView
     private var workoutHistoryResponse : WorkoutHistoryResponse? = null
     private var  workoutLogHistory :  ArrayList<WorkoutRecord> = ArrayList()
     private var workoutLogYearlyList : List<CalendarDateModel> = ArrayList()
@@ -71,6 +75,7 @@ class ActivitySyncCalenderFragment : BaseFragment<FragmentActivitySyncCalenderBi
         txtDate = view.findViewById(R.id.txtDate)
         icRightArrow = view.findViewById(R.id.icRightArrow)
         btnClose = view.findViewById(R.id.btnClose)
+        nestedScrollView = view.findViewById(R.id.nestedScrollView)
 
         recyclerCalendar.layoutManager = GridLayoutManager(context, 7)
         recyclerCalendar.adapter = calendarAdapter
@@ -143,32 +148,17 @@ class ActivitySyncCalenderFragment : BaseFragment<FragmentActivitySyncCalenderBi
         calendarSummaryAdapter.addAll(valueLists, -1, mealLogDateData, false)
     }
 
-    private fun onMealLogCalenderItem(mealLogDateModel: CalendarDateModel, position: Int, isRefresh: Boolean) {
-
-        val yearDays = generateYearCalendar()
-        //   val calendarDays = List(60) { CalendarDateModel(it + 1, it % 5 == 0) }
-        val valueLists : ArrayList<CalendarDateModel> = ArrayList()
-        valueLists.addAll(yearDays as Collection<CalendarDateModel>)
-        calendarAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
+    private fun onMealLogCalenderItem(calendarDateModel: CalendarDateModel, position: Int, isRefresh: Boolean) {
+        val calendarBottomSheetFragment = CalendarBottomSheetFragment()
+        calendarBottomSheetFragment.isCancelable = true
+        val args = Bundle()
+        args.putString("SelectedDate", calendarDateModel.fullDate)
+        calendarBottomSheetFragment.arguments = args
+        parentFragment.let { calendarBottomSheetFragment.show(childFragmentManager, "CalendarBottomSheetFragment") }
     }
 
     private fun onMealLogCalenderSummaryItem(mealLogDateModel: CalendarSummaryModel, position: Int, isRefresh: Boolean) {
 
-        val summaryList = listOf(
-            CalendarSummaryModel("Over", "2140"),
-            CalendarSummaryModel("Under", "12.3 kCal"),
-            CalendarSummaryModel("Under", "0"),
-            CalendarSummaryModel("Under", "0"),
-            CalendarSummaryModel("Under", "0"),
-            CalendarSummaryModel("Under", "0"),
-            CalendarSummaryModel("Under", "0"),
-            CalendarSummaryModel("Under", "0"),
-            CalendarSummaryModel("Under", "0"),
-            CalendarSummaryModel("Under", "0")
-        )
-        val valueLists : ArrayList<CalendarSummaryModel> = ArrayList()
-        valueLists.addAll(summaryList as Collection<CalendarSummaryModel>)
-        calendarSummaryAdapter.addAll(valueLists, position, mealLogDateModel, isRefresh)
     }
 
     private fun generateYearCalendar(): List<CalendarDateModel> {
@@ -297,6 +287,33 @@ class ActivitySyncCalenderFragment : BaseFragment<FragmentActivitySyncCalenderBi
         valueLists.addAll(yearList as Collection<CalendarDateModel>)
         val mealLogDateData: CalendarDateModel? = null
         calendarAdapter.addAll(valueLists, -1, mealLogDateData, false)
+
+        val sampledList = ArrayList<CalendarDateModel>()
+        val step = valueLists.size / 53f
+        for (i in 0 until 53) {
+            val index = (i * step).toInt().coerceAtMost(valueLists.lastIndex)
+            sampledList.add(valueLists[index])
+        }
+
+        val now = Calendar.getInstance()
+        val currentYear = now.get(Calendar.YEAR)
+        val currentMonth = now.get(Calendar.MONTH) // 0-11
+
+        val targetIndex = workoutLogYearlyList.indexOfFirst {
+            it.year == currentYear && it.month == getMonthAbbreviation(currentMonth) && it.date == 1
+        }
+
+        Log.d("CalendarScroll", "Trying to scroll to: $targetIndex")
+        recyclerCalendar.post {
+            recyclerCalendar.scrollToPosition(targetIndex)
+            recyclerCalendar.post {
+                val holder = recyclerCalendar.findViewHolderForAdapterPosition(targetIndex)
+                if (holder != null) {
+                    val y = holder.itemView.top
+                    nestedScrollView.smoothScrollTo(0, recyclerCalendar.top + y)
+                }
+            }
+        }
     }
 
     fun showLoader(view: View) {
