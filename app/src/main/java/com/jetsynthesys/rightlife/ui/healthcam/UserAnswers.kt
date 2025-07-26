@@ -1,132 +1,50 @@
-package com.jetsynthesys.rightlife.ui.healthcam;
+package com.jetsynthesys.rightlife.ui.healthcam
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import com.google.gson.annotations.Expose
+import com.google.gson.annotations.SerializedName
 
-import java.util.List;
-
-public class UserAnswers {
-
+class UserAnswers {
     @SerializedName("_id")
     @Expose
-    private String id;
+    var id: String? = null
+
     @SerializedName("userId")
     @Expose
-    private String userId;
+    var userId: String? = null
+
     @SerializedName("questionId")
     @Expose
-    private String questionId;
+    var questionId: String? = null
+
     @SerializedName("status")
     @Expose
-    private String status;
+    var status: String? = null
+
     @SerializedName("type")
     @Expose
-    private String type;
+    var type: String? = null
+
     @SerializedName("answers")
     @Expose
-    private List<Answer> answers;
+    var answers: List<Answer>? = null
+
     @SerializedName("error")
     @Expose
-    private List<Object> error;
+    var error: List<Any>? = null
+
     @SerializedName("createdAt")
     @Expose
-    private String createdAt;
+    var createdAt: String? = null
+
     @SerializedName("updatedAt")
     @Expose
-    private String updatedAt;
+    var updatedAt: String? = null
+
     @SerializedName("__v")
     @Expose
-    private Integer v;
+    var v: Int? = null
+
     @SerializedName("subscriptionId")
     @Expose
-    private String subscriptionId;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public String getQuestionId() {
-        return questionId;
-    }
-
-    public void setQuestionId(String questionId) {
-        this.questionId = questionId;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public List<Answer> getAnswers() {
-        return answers;
-    }
-
-    public void setAnswers(List<Answer> answers) {
-        this.answers = answers;
-    }
-
-    public List<Object> getError() {
-        return error;
-    }
-
-    public void setError(List<Object> error) {
-        this.error = error;
-    }
-
-    public String getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public String getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(String updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public Integer getV() {
-        return v;
-    }
-
-    public void setV(Integer v) {
-        this.v = v;
-    }
-
-    public String getSubscriptionId() {
-        return subscriptionId;
-    }
-
-    public void setSubscriptionId(String subscriptionId) {
-        this.subscriptionId = subscriptionId;
-    }
-
+    var subscriptionId: String? = null
 }

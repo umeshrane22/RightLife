@@ -1,294 +1,293 @@
-package com.jetsynthesys.rightlife.ui.healthcam;
+package com.jetsynthesys.rightlife.ui.healthcam
 
-import android.app.Activity;
-import android.app.Dialog;
-import android.app.DownloadManager;
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.Color;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.Environment;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.annotation.SuppressLint
+import android.app.Dialog
+import android.app.DownloadManager
+import android.content.Intent
+import android.graphics.Color
+import android.net.Uri
+import android.os.Bundle
+import android.os.Environment
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.widget.Button
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.GridLayoutManager
+import com.google.gson.Gson
+import com.jetsynthesys.rightlife.BaseActivity
+import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.apimodel.newreportfacescan.FacialReportResponseNew
+import com.jetsynthesys.rightlife.apimodel.newreportfacescan.HealthCamItem
+import com.jetsynthesys.rightlife.databinding.ActivityNewhealthcamreportBinding
+import com.jetsynthesys.rightlife.databinding.ItemScanCircleBinding
+import com.jetsynthesys.rightlife.databinding.LayoutScanProgressBinding
+import com.jetsynthesys.rightlife.newdashboard.FacialScanReportDetailsActivity
+import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity
+import com.jetsynthesys.rightlife.subscriptions.SubscriptionPlanListActivity
+import com.jetsynthesys.rightlife.ui.CommonAPICall.updateChecklistStatus
+import com.jetsynthesys.rightlife.ui.healthcam.basicdetails.HealthCamBasicDetailsNewActivity
+import com.jetsynthesys.rightlife.ui.settings.SubscriptionHistoryActivity
+import com.jetsynthesys.rightlife.ui.utility.AppConstants
+import com.jetsynthesys.rightlife.ui.utility.ConversionUtils
+import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils
+import com.jetsynthesys.rightlife.ui.utility.Utils
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.io.IOException
 
-import androidx.activity.OnBackPressedCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.GridLayoutManager;
+class NewHealthCamReportActivity : BaseActivity() {
+    var binding: ActivityNewhealthcamreportBinding? = null
+    private var scanBinding: LayoutScanProgressBinding? = null
+    private var allHealthCamItems: MutableList<HealthCamItem> = ArrayList()
+    private var facialReportResponseNew: FacialReportResponseNew? = null
+    private var reportId: String? = null
+    private var isFrom: String? = null
+    private var resultLauncher: ActivityResultLauncher<Intent>? = null
 
-import com.google.gson.Gson;
-import com.jetsynthesys.rightlife.BaseActivity;
-import com.jetsynthesys.rightlife.R;
-import com.jetsynthesys.rightlife.apimodel.newreportfacescan.FacialReportResponseNew;
-import com.jetsynthesys.rightlife.apimodel.newreportfacescan.HealthCamItem;
-import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse;
-import com.jetsynthesys.rightlife.apimodel.userdata.Userdata;
-import com.jetsynthesys.rightlife.databinding.ActivityNewhealthcamreportBinding;
-import com.jetsynthesys.rightlife.databinding.ItemScanCircleBinding;
-import com.jetsynthesys.rightlife.databinding.LayoutScanProgressBinding;
-import com.jetsynthesys.rightlife.newdashboard.FacialScanReportDetailsActivity;
-import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity;
-import com.jetsynthesys.rightlife.subscriptions.SubscriptionPlanListActivity;
-import com.jetsynthesys.rightlife.ui.CommonAPICall;
-import com.jetsynthesys.rightlife.ui.healthcam.basicdetails.HealthCamBasicDetailsNewActivity;
-import com.jetsynthesys.rightlife.ui.settings.SubscriptionHistoryActivity;
-import com.jetsynthesys.rightlife.ui.utility.AppConstants;
-import com.jetsynthesys.rightlife.ui.utility.ConversionUtils;
-import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils;
-import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager;
-import com.jetsynthesys.rightlife.ui.utility.Utils;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
-public class NewHealthCamReportActivity extends BaseActivity {
-    private static final String TAG = "NewHealthCamReportActivity";
-    ActivityNewhealthcamreportBinding binding;
-    LayoutScanProgressBinding scanBinding;
-    List<HealthCamItem> allHealthCamItems = new ArrayList<>();
-    private FacialReportResponseNew facialReportResponseNew;
-    private String reportId;
-    private String isFrom = null;
-    private ActivityResultLauncher<Intent> resultLauncher;
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setChildContentView(R.layout.activity_newhealthcamreport);
-        binding = ActivityNewhealthcamreportBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-        scanBinding = LayoutScanProgressBinding.bind(binding.scanProgressLayout.getRoot());
-        reportId = getIntent().getStringExtra("REPORT_ID");
-        isFrom = getIntent().getStringExtra("FROM");
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setChildContentView(R.layout.activity_newhealthcamreport)
+        binding = ActivityNewhealthcamreportBinding.inflate(
+            layoutInflater
+        )
+        setContentView(binding!!.root)
+        scanBinding = LayoutScanProgressBinding.bind(binding!!.scanProgressLayout.root)
+        reportId = intent.getStringExtra("REPORT_ID")
+        isFrom = intent.getStringExtra("FROM")
 
         // Register the result launcher
         resultLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == Activity.RESULT_OK) {
-                        Intent data = result.getData();
-                        if (data != null) {
-                            boolean returnedValue = data.getBooleanExtra("result", false);
-                            getMyRLHealthCamResult();
-                        }
-                    }
+            ActivityResultContracts.StartActivityForResult()
+        ) { result: ActivityResult ->
+            if (result.resultCode == RESULT_OK) {
+                val data = result.data
+                if (data != null) {
+                    //val returnedValue = data.getBooleanExtra("result", false)
+                    myRLHealthCamResult
                 }
-        );
-
-        findViewById(R.id.ic_back_dialog).setOnClickListener(view -> onBackPressHandle());
-
-        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                onBackPressHandle();
             }
-        });
+        }
+
+        findViewById<View>(R.id.ic_back_dialog).setOnClickListener { onBackPressHandle() }
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                onBackPressHandle()
+            }
+        })
 
 
-        binding.icCloseDialog.setOnClickListener(v -> showDisclaimerDialog());
-        binding.cardviewLastCheckin.setOnClickListener(v -> {
-            Intent intent = new Intent(this, SubscriptionPlanListActivity.class);
-            intent.putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN");
-            resultLauncher.launch(intent);
-        });
+        binding!!.icCloseDialog.setOnClickListener { showDisclaimerDialog() }
+        binding!!.cardviewLastCheckin.setOnClickListener {
+            val intent = Intent(this, SubscriptionPlanListActivity::class.java)
+            intent.putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN")
+            resultLauncher!!.launch(intent)
+        }
 
-        binding.cardviewRightlifedays.setOnClickListener(view -> startNextOverAllWellnessDetails());
+        binding!!.cardviewRightlifedays.setOnClickListener { startNextOverAllWellnessDetails() }
 
-        binding.imageNext.setOnClickListener(view -> startNextOverAllWellnessDetails());
+        binding!!.imageNext.setOnClickListener { startNextOverAllWellnessDetails() }
 
-        binding.btnBuyFacescan.setOnClickListener(v -> {
-            // put check here if facescan remaning count is 0 buy new else Scan again
-            if (facialReportResponseNew.data.boosterLimit > 0 && facialReportResponseNew.data.boosterUsed < facialReportResponseNew.data.boosterLimit) {
-                startActivity(new Intent(NewHealthCamReportActivity.this, HealthCamBasicDetailsNewActivity.class));
+        binding!!.btnBuyFacescan.setOnClickListener {
+            // put check here if face scan remaining count is 0 buy new else Scan again
+            if (facialReportResponseNew!!.data.boosterLimit > 0 && facialReportResponseNew!!.data.boosterUsed < facialReportResponseNew!!.data.boosterLimit) {
+                startActivity(
+                    Intent(
+                        this@NewHealthCamReportActivity,
+                        HealthCamBasicDetailsNewActivity::class.java
+                    )
+                )
             } else {
-                Intent intent = new Intent(this, SubscriptionPlanListActivity.class);
-                intent.putExtra("SUBSCRIPTION_TYPE", "FACIAL_SCAN");
-                resultLauncher.launch(intent);
+                val intent = Intent(this, SubscriptionPlanListActivity::class.java)
+                intent.putExtra("SUBSCRIPTION_TYPE", "FACIAL_SCAN")
+                resultLauncher!!.launch(intent)
             }
-
-        });
-        binding.scanProgressLayout.btnScanAgain.setOnClickListener(v -> startActivity(new Intent(NewHealthCamReportActivity.this, HealthCamBasicDetailsNewActivity.class)));
-        getMyRLHealthCamResult();
-
-        UserProfileResponse userProfileResponse = SharedPreferenceManager.getInstance(this).getUserProfile();
-        if (userProfileResponse == null) return;
-        Userdata userdata = userProfileResponse.getUserdata();
-        /*if (userdata != null) {
-            binding.txtuserName.setText("Hi " + userdata.getFirstName());
-        }*/
-        updateChecklistStatus();
-       /* if (DashboardChecklistManager.INSTANCE.getPaymentStatus()) {
-            binding.cardFacescanBooster.setVisibility(View.GONE);
-            binding.scanProgressLayout.scanContainer.setVisibility(View.VISIBLE);
-        } else {
-            binding.cardFacescanBooster.setVisibility(View.VISIBLE);
-            binding.scanProgressLayout.scanContainer.setVisibility(View.GONE);
-        }*/
-
-        binding.btnSyncNow.setOnClickListener(v -> DownLaodReport(facialReportResponseNew.data.pdf));
-    }
-
-    private void startNextOverAllWellnessDetails() {
-        ArrayList<ParameterModel> unifiedList = getUnifiedParameterList();
-        Intent intent = new Intent(this, FacialScanReportDetailsActivity.class);
-        List<HealthCamItem> healthCamItems = new ArrayList<>();
-        intent.putExtra("healthCamItemList", new ArrayList<>(healthCamItems)); // Serializable list
-        intent.putExtra("UNIFIED_LIST", new ArrayList<>(unifiedList)); // Serializable list
-        intent.putExtra("position", 0);
-        startActivity(intent);
-    }
-
-    private ArrayList<ParameterModel> getUnifiedParameterList() {
-        ArrayList<ParameterModel> resultList = new ArrayList<>();
-        if (facialReportResponseNew.data.overallWellnessScore != null) {
-            String key = facialReportResponseNew.data.overallWellnessScore.fieldName;
-            String name = facialReportResponseNew.data.overallWellnessScore.parameter;
-            resultList.add(new ParameterModel(key, name));
         }
-        return resultList;
-    }
+        binding!!.scanProgressLayout.btnScanAgain.setOnClickListener {
+            startActivity(
+                Intent(
+                    this@NewHealthCamReportActivity, HealthCamBasicDetailsNewActivity::class.java
+                )
+            )
+        }
+        myRLHealthCamResult
 
-    private void onBackPressHandle() {
-        finish();
-        if (isFrom != null && !isFrom.isEmpty()) {
-            Intent intent = new Intent(this, HomeNewActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            intent.putExtra("finish_healthCam", true);
-            startActivity(intent);
+        updateChecklistStatus()
+
+        binding!!.btnSyncNow.setOnClickListener {
+            downloadReport(
+                facialReportResponseNew!!.data.pdf
+            )
         }
     }
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        getMyRLHealthCamResult();
+    private fun startNextOverAllWellnessDetails() {
+        val unifiedList = unifiedParameterList
+        val intent = Intent(this, FacialScanReportDetailsActivity::class.java)
+        val healthCamItems: List<HealthCamItem> = ArrayList()
+        intent.putExtra("healthCamItemList", ArrayList(healthCamItems)) // Serializable list
+        intent.putExtra("UNIFIED_LIST", ArrayList(unifiedList)) // Serializable list
+        intent.putExtra("position", 0)
+        startActivity(intent)
     }
 
-    private void updateChecklistStatus() {
-        CommonAPICall.INSTANCE.updateChecklistStatus(this, "vital_facial_scan", AppConstants.CHECKLIST_COMPLETED,null);
+    private val unifiedParameterList: ArrayList<ParameterModel>
+        get() {
+            val resultList = ArrayList<ParameterModel>()
+            if (facialReportResponseNew!!.data.overallWellnessScore != null) {
+                val key = facialReportResponseNew!!.data.overallWellnessScore.fieldName
+                val name = facialReportResponseNew!!.data.overallWellnessScore.parameter
+                resultList.add(ParameterModel(key, name))
+            }
+            return resultList
+        }
+
+    private fun onBackPressHandle() {
+        finish()
+        if (isFrom != null && isFrom!!.isNotEmpty()) {
+            val intent = Intent(this, HomeNewActivity::class.java)
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            intent.putExtra("finish_healthCam", true)
+            startActivity(intent)
+        }
     }
 
-    private void getMyRLHealthCamResult() {
-        Utils.showLoader(this);
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        myRLHealthCamResult
+    }
 
-        Call<ResponseBody> call;
-        if (reportId != null && !reportId.isEmpty())
-            call = apiService.getHealthCamByReportId(sharedPreferenceManager.getAccessToken(), reportId);
-        else
-            call = apiService.getMyRLHealthCamResult(sharedPreferenceManager.getAccessToken());
+    private fun updateChecklistStatus() {
+        updateChecklistStatus(this, "vital_facial_scan", AppConstants.CHECKLIST_COMPLETED, null)
+    }
 
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                Utils.dismissLoader(NewHealthCamReportActivity.this);
-                if (response.isSuccessful() && response.body() != null) {
-                    //Toast.makeText(NewHealthCamReportActivity.this, "Success: " + response.code(), Toast.LENGTH_SHORT).show();
-                    try {
-                        String jsonString = response.body().string();
-                        Gson gson = new Gson();
-                        facialReportResponseNew = gson.fromJson(jsonString, FacialReportResponseNew.class);
-                        HandleNewReportUI(facialReportResponseNew);
-                        //  HandleContinueWatchUI(facialReportResponseNew);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+    private val myRLHealthCamResult: Unit
+        get() {
+            Utils.showLoader(this)
+            val call =
+                if (reportId != null && reportId!!.isNotEmpty()) apiService.getHealthCamByReportId(
+                    sharedPreferenceManager.accessToken,
+                    reportId
+                )
+                else apiService.getMyRLHealthCamResult(sharedPreferenceManager.accessToken)
+
+            call.enqueue(object : Callback<ResponseBody?> {
+                override fun onResponse(
+                    call: Call<ResponseBody?>,
+                    response: Response<ResponseBody?>
+                ) {
+                    Utils.dismissLoader(this@NewHealthCamReportActivity)
+                    if (response.isSuccessful && response.body() != null) {
+                        //Toast.makeText(NewHealthCamReportActivity.this, "Success: " + response.code(), Toast.LENGTH_SHORT).show();
+                        try {
+                            val jsonString = response.body()!!.string()
+                            val gson = Gson()
+                            facialReportResponseNew =
+                                gson.fromJson(jsonString, FacialReportResponseNew::class.java)
+                            handleNewReportUI(facialReportResponseNew)
+                            //  HandleContinueWatchUI(facialReportResponseNew);
+                        } catch (e: IOException) {
+                            throw RuntimeException(e)
+                        }
+                    } else {
+                        //   Toast.makeText(RLPageActivity.this, "Error: " + response.code(), Toast.LENGTH_SHORT).show();
+                        Log.d("MyRLHealthCamResult", "Error:" + response.message())
                     }
-                } else {
-                    //   Toast.makeText(RLPageActivity.this, "Error: " + response.code(), Toast.LENGTH_SHORT).show();
-                    Log.d("MyRLHealthCamResult", "Error:" + response.message());
                 }
-            }
 
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Utils.dismissLoader(NewHealthCamReportActivity.this);
-                handleNoInternetView(t);
-            }
-        });
-    }
+                override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+                    Utils.dismissLoader(this@NewHealthCamReportActivity)
+                    handleNoInternetView(t)
+                }
+            })
+        }
 
-    private void HandleNewReportUI(FacialReportResponseNew facialReportResponseNew) {
-        if (facialReportResponseNew.success) {
-
+    private fun handleNewReportUI(facialReportResponseNew: FacialReportResponseNew?) {
+        if (facialReportResponseNew!!.success) {
             if (facialReportResponseNew.data.overallWellnessScore != null) {
-                String formatted = ConversionUtils.decimalFormat0Decimal.format(facialReportResponseNew.data.overallWellnessScore.value);
-                Log.d("FormattedValue", formatted);
-                binding.txtWellnessScore1.setText(formatted);
-                setTextAccordingToWellnessScore(facialReportResponseNew.data.overallWellnessScore.value);
-                binding.halfCurveProgressBar.setProgress(facialReportResponseNew.data.overallWellnessScore.value.floatValue(), Color.parseColor("#" + facialReportResponseNew.data.overallWellnessScore.colour));
+                val formatted = ConversionUtils.decimalFormat0Decimal.format(
+                    facialReportResponseNew.data.overallWellnessScore.value
+                )
+                Log.d("FormattedValue", formatted)
+                binding!!.txtWellnessScore1.text = formatted
+                setTextAccordingToWellnessScore(facialReportResponseNew.data.overallWellnessScore.value)
+                binding!!.halfCurveProgressBar.setProgress(
+                    facialReportResponseNew.data.overallWellnessScore.value.toFloat(),
+                    Color.parseColor("#" + facialReportResponseNew.data.overallWellnessScore.colour)
+                )
             }
 
-            binding.txtAlertMessage.setText(facialReportResponseNew.data.summary);
-            binding.tvLastReportDate.setText(DateTimeUtils.convertAPIDateMonthFormatWithTime(facialReportResponseNew.data.createdAt));
-            allHealthCamItems.clear();
+            binding!!.txtAlertMessage.text = facialReportResponseNew.data.summary
+            binding!!.tvLastReportDate.text = DateTimeUtils.convertAPIDateMonthFormatWithTime(
+                facialReportResponseNew.data.createdAt
+            )
+            allHealthCamItems.clear()
             if (facialReportResponseNew.data.healthCamReportByCategory != null) {
-
                 if (facialReportResponseNew.data.healthCamReportByCategory.healthCamGood != null) {
-                    List<HealthCamItem> healthCamGoodItems = facialReportResponseNew.data.healthCamReportByCategory.healthCamGood;
-                    allHealthCamItems.addAll(healthCamGoodItems);
+                    val healthCamGoodItems =
+                        facialReportResponseNew.data.healthCamReportByCategory.healthCamGood
+                    allHealthCamItems.addAll(healthCamGoodItems)
                 }
                 if (facialReportResponseNew.data.healthCamReportByCategory.healthCamPayAttention != null) {
-                    List<HealthCamItem> healthCamPayAttentionItems = facialReportResponseNew.data.healthCamReportByCategory.healthCamPayAttention;
-                    allHealthCamItems.addAll(healthCamPayAttentionItems);
+                    val healthCamPayAttentionItems =
+                        facialReportResponseNew.data.healthCamReportByCategory.healthCamPayAttention
+                    allHealthCamItems.addAll(healthCamPayAttentionItems)
                 }
+
 
                 // Combine the lists if you want to display them together
+                val adapter = HealthCamVitalsAdapter(this, allHealthCamItems)
 
-
-                HealthCamVitalsAdapter adapter = new HealthCamVitalsAdapter(this, allHealthCamItems);
-
-                binding.recyclerViewVitalCards.setLayoutManager(new GridLayoutManager(this, 2)); // 2 columns
-                binding.recyclerViewVitalCards.setAdapter(adapter);
+                binding!!.recyclerViewVitalCards.layoutManager = GridLayoutManager(
+                    this, 2
+                ) // 2 columns
+                binding!!.recyclerViewVitalCards.adapter = adapter
                 if (facialReportResponseNew.data.limit > 0) {  //if (facialReportResponseNew.data.usedCount > 0 && facialReportResponseNew.data.limit > 0) {
-                    setupScanTracker(scanBinding, facialReportResponseNew.data.usedCount, facialReportResponseNew.data.limit);
-                    binding.cardFacescanBooster.setVisibility(View.VISIBLE);
-                    binding.scanProgressLayout.scanContainer.setVisibility(View.VISIBLE);
-                    binding.cardviewLastCheckin.setVisibility(View.GONE);
+                    setupScanTracker(
+                        scanBinding,
+                        facialReportResponseNew.data.usedCount,
+                        facialReportResponseNew.data.limit
+                    )
+                    binding!!.cardFacescanBooster.visibility = View.VISIBLE
+                    binding!!.scanProgressLayout.scanContainer.visibility = View.VISIBLE
+                    binding!!.cardviewLastCheckin.visibility = View.GONE
                 } else {
-                    binding.cardviewLastCheckin.setVisibility(View.VISIBLE);
-                    binding.cardFacescanBooster.setVisibility(View.VISIBLE);
-                    binding.scanProgressLayout.scanContainer.setVisibility(View.GONE);
+                    binding!!.cardviewLastCheckin.visibility = View.VISIBLE
+                    binding!!.cardFacescanBooster.visibility = View.VISIBLE
+                    binding!!.scanProgressLayout.scanContainer.visibility = View.GONE
                 }
-                setupBoosterTracker(facialReportResponseNew.data.boosterUsed, facialReportResponseNew.data.boosterLimit);
-            } else {
-
+                setupBoosterTracker(
+                    facialReportResponseNew.data.boosterUsed,
+                    facialReportResponseNew.data.boosterLimit
+                )
             }
         }
     }
 
-    private void setTextAccordingToWellnessScore(Double wellnessScore) {
-        String message;
-
-        if (wellnessScore >= 0 && wellnessScore <= 19.99) {
-            message = "Your wellness needs urgent attention—let’s work on getting you back on track.";
+    private fun setTextAccordingToWellnessScore(wellnessScore: Double) {
+        val message = if (wellnessScore in 0.0..19.99) {
+            "Your wellness needs urgent attention—let’s work on getting you back on track."
         } else if (wellnessScore <= 40.0) {
-            message = "Your wellness is under strain—time to make a few adjustments for improvement.";
+            "Your wellness is under strain—time to make a few adjustments for improvement."
         } else if (wellnessScore <= 60.0) {
-            message = "You’re doing okay, but there’s room to optimize your health and resilience.";
+            "You’re doing okay, but there’s room to optimize your health and resilience."
         } else if (wellnessScore <= 80.0) {
-            message = "Great job! Your vitals are strong, and you’re building a solid foundation.";
+            "Great job! Your vitals are strong, and you’re building a solid foundation."
         } else if (wellnessScore <= 100.0) {
-            message = "You're thriving! Your vitals are at their peak—keep up the fantastic work.";
+            "You're thriving! Your vitals are at their peak—keep up the fantastic work."
         } else {
-            message = "Invalid wellness score.";
+            "Invalid wellness score."
         }
 
-        binding.txtWellStreak.setText(message);
+        binding!!.txtWellStreak.text = message
     }
 
     /*private void HandleContinueWatchUI(FacialReportResponseNew facialReportResponseNew) {
@@ -299,115 +298,134 @@ public class NewHealthCamReportActivity extends BaseActivity {
             binding.recyclerViewContinue.setAdapter(adapter);
         }
     }*/
-
-    private void showDisclaimerDialog() {
+    private fun showDisclaimerDialog() {
         // Create the dialog
-        Dialog dialog = new Dialog(this);
-        dialog.setContentView(R.layout.layout_disclaimer_facescan_result);
-        dialog.setCancelable(true);
-        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-        Window window = dialog.getWindow();
+        val dialog = Dialog(this)
+        dialog.setContentView(R.layout.layout_disclaimer_facescan_result)
+        dialog.setCancelable(true)
+        dialog.window!!.setBackgroundDrawableResource(android.R.color.transparent)
+        val window = dialog.window
         // Set the dim amount
-        WindowManager.LayoutParams layoutParams = window.getAttributes();
-        layoutParams.dimAmount = 0.7f; // Adjust the dim amount (0.0 - 1.0)
-        window.setAttributes(layoutParams);
+        val layoutParams = window!!.attributes
+        layoutParams.dimAmount = 0.7f // Adjust the dim amount (0.0 - 1.0)
+        window.attributes = layoutParams
 
         // Find views from the dialog layout
         //ImageView dialogIcon = dialog.findViewById(R.id.img_close_dialog);
-        ImageView dialogImage = dialog.findViewById(R.id.dialog_image);
-        TextView dialogText = dialog.findViewById(R.id.dialog_text);
-        Button dialogButtonStay = dialog.findViewById(R.id.dialog_button_stay);
-        Button dialogButtonExit = dialog.findViewById(R.id.dialog_button_exit);
+        //val dialogImage = dialog.findViewById<ImageView>(R.id.dialog_image)
+        //val dialogText = dialog.findViewById<TextView>(R.id.dialog_text)
+        val dialogButtonStay = dialog.findViewById<Button>(R.id.dialog_button_stay)
+        //val dialogButtonExit = dialog.findViewById<Button>(R.id.dialog_button_exit)
 
         // Optional: Set dynamic content
         // dialogText.setText("Please find a quiet and comfortable place before starting");
 
         // Set button click listener
-        dialogButtonStay.setOnClickListener(v -> {
+        dialogButtonStay.setOnClickListener {
             // Perform your action
-            dialog.dismiss();
-        });
+            dialog.dismiss()
+        }
         // Show the dialog
-        dialog.show();
+        dialog.show()
     }
 
 
     // new Booster ui
-    private void setupBoosterTracker(int boosterUsed, int boosterLimit) {
-        if ((boosterLimit-boosterUsed) == 0) {
+    @SuppressLint("SetTextI18n")
+    private fun setupBoosterTracker(boosterUsed: Int, boosterLimit: Int) {
+        if ((boosterLimit - boosterUsed) == 0) {
             //binding.txtBoosterCount.setText("0");
-            binding.txtBoosterCount.setVisibility(View.GONE);
-            binding.txtRemainingMsg.setText("Need More Scans? \nBuy booster packs anytime.");
-            binding.viewDivider.setVisibility(View.GONE);
+            binding!!.txtBoosterCount.visibility = View.GONE
+            binding!!.txtRemainingMsg.text = "Need More Scans? \nBuy booster packs anytime."
+            binding!!.viewDivider.visibility = View.GONE
         } else if (boosterLimit > 0 && boosterUsed < boosterLimit) {
-            binding.btnBuyFacescan.setText("Scan Again");
-            binding.txtBoosterCount.setText(String.valueOf(boosterLimit - boosterUsed));
-            binding.viewDivider.setVisibility(View.VISIBLE);
-            binding.txtRemainingMsg.setText("Your scans remaining.");
+            binding!!.btnBuyFacescan.text = "Scan Again"
+            binding!!.txtBoosterCount.text = (boosterLimit - boosterUsed).toString()
+            binding!!.viewDivider.visibility = View.VISIBLE
+            binding!!.txtRemainingMsg.text = "Your scans remaining."
         }
     }
 
     // new scan ui
-    private void setupScanTracker(LayoutScanProgressBinding layout, int usedCount, int limit) {
-        layout.scanIndicators.removeAllViews();
+    @SuppressLint("SetTextI18n")
+    private fun setupScanTracker(layout: LayoutScanProgressBinding?, usedCount: Int, limit: Int) {
+        layout!!.scanIndicators.removeAllViews()
 
-        LayoutInflater inflater = LayoutInflater.from(layout.getRoot().getContext());
+        val inflater = LayoutInflater.from(layout.root.context)
 
-        for (int i = 1; i <= limit; i++) {
-            ItemScanCircleBinding itemBinding = ItemScanCircleBinding.inflate(inflater);
+        for (i in 1..limit) {
+            val itemBinding = ItemScanCircleBinding.inflate(inflater)
 
-            itemBinding.circleNumber.setText(String.valueOf(i));
+            itemBinding.circleNumber.text = i.toString()
 
             if (i <= usedCount) {
-                itemBinding.circleImage.setImageResource(R.drawable.ic_checklist_complete);
-                itemBinding.circleNumber.setTextColor(ContextCompat.getColor(layout.getRoot().getContext(), android.R.color.black));
-                itemBinding.txtGreenDot.setVisibility(View.VISIBLE);
+                itemBinding.circleImage.setImageResource(R.drawable.ic_checklist_complete)
+                itemBinding.circleNumber.setTextColor(
+                    ContextCompat.getColor(
+                        layout.root.context,
+                        android.R.color.black
+                    )
+                )
+                itemBinding.txtGreenDot.visibility = View.VISIBLE
             } else {
-                itemBinding.circleImage.setImageResource(R.drawable.ic_checklist_tick_bg);
-                itemBinding.circleNumber.setTextColor(ContextCompat.getColor(layout.getRoot().getContext(), android.R.color.black));
-                itemBinding.txtGreenDot.setVisibility(View.INVISIBLE);
+                itemBinding.circleImage.setImageResource(R.drawable.ic_checklist_tick_bg)
+                itemBinding.circleNumber.setTextColor(
+                    ContextCompat.getColor(
+                        layout.root.context,
+                        android.R.color.black
+                    )
+                )
+                itemBinding.txtGreenDot.visibility = View.INVISIBLE
             }
 
-            layout.scanIndicators.addView(itemBinding.getRoot());
+            layout.scanIndicators.addView(itemBinding.root)
         }
         if (usedCount == 1) {
-            layout.infoText.setText("One scan a week is all you need to stay on top of your vitals.");
+            layout.infoText.text = "One scan a week is all you need to stay on top of your vitals."
         } else {
-            layout.infoText.setText("One scan a week is all you need to stay on top of your vitals.");
+            layout.infoText.text = "One scan a week is all you need to stay on top of your vitals."
             // layout.infoText.setText("One step closer to better health! Your scans refresh monthly—stay on track!");
         }
         if (usedCount == limit) {
-            layout.buttonText.setText("Scan Again");
-            layout.btnScanAgain.setVisibility(View.GONE);
-            layout.infoText.setText("One step closer to better health! Your scans refresh monthly—stay on track!");
-            binding.cardFacescanBooster.setVisibility(View.VISIBLE);
+            layout.buttonText.text = "Scan Again"
+            layout.btnScanAgain.visibility = View.GONE
+            layout.infoText.text =
+                "One step closer to better health! Your scans refresh monthly—stay on track!"
+            binding!!.cardFacescanBooster.visibility = View.VISIBLE
         } else {
-            layout.buttonText.setText("Scan Again");
-            layout.btnScanAgain.setVisibility(View.VISIBLE);
+            layout.buttonText.text = "Scan Again"
+            layout.btnScanAgain.visibility = View.VISIBLE
         }
-        layout.btnScanAgain.setOnClickListener(v -> {
-            if (layout.buttonText.getText().toString().equalsIgnoreCase("Scan Again @ 99")) {
-                startActivity(new Intent(NewHealthCamReportActivity.this, SubscriptionHistoryActivity.class));
+        layout.btnScanAgain.setOnClickListener {
+            if (layout.buttonText.text.toString().equals("Scan Again @ 99", ignoreCase = true)) {
+                startActivity(
+                    Intent(
+                        this@NewHealthCamReportActivity,
+                        SubscriptionHistoryActivity::class.java
+                    )
+                )
             } else {
-                startActivity(new Intent(NewHealthCamReportActivity.this, HealthCamBasicDetailsNewActivity.class));
+                startActivity(
+                    Intent(
+                        this@NewHealthCamReportActivity,
+                        HealthCamBasicDetailsNewActivity::class.java
+                    )
+                )
             }
-        });
-
+        }
     }
 
-    private void DownLaodReport(String pdf) {
-        String pdfUrl = pdf;//"https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf";
+    private fun downloadReport(pdf: String) {
 
-        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(pdfUrl));
-        request.setTitle("Downloading PDF");
-        request.setDescription("Downloading file, please wait...");
-        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "sample.pdf");
+        val request = DownloadManager.Request(Uri.parse(pdf))
+        request.setTitle("Downloading PDF")
+        request.setDescription("Downloading file, please wait...")
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "sample.pdf")
 
-// Enqueue download
-        DownloadManager downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
-        downloadManager.enqueue(request);
-        Toast.makeText(this, "Download Started...", Toast.LENGTH_SHORT).show();
+        // Enqueue download
+        val downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
+        downloadManager.enqueue(request)
+        Toast.makeText(this, "Download Started...", Toast.LENGTH_SHORT).show()
     }
-
 }

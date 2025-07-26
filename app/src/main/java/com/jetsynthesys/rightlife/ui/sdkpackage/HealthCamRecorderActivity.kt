@@ -140,7 +140,7 @@ class HealthCamRecorderActivity : BaseActivity() {
         editor.putString(USER_PROFILE_AGE_KEY, USER_PROFILE_AGE)
         editor.putString(USER_PROFILE_GENDER_KEY, USER_PROFILE_GENDER)
         editor.putString(PARTNER_ID_KEY, PARTNER_ID)
-        editor.commit()
+        editor.apply()
     }
 
     /**
@@ -192,7 +192,7 @@ class HealthCamRecorderActivity : BaseActivity() {
         if (checkEmbeddedDeepAffexLicenseAndStudyID()) {
             lifecycleScope.launch {
                 /**
-                 * Before launching [RLAnuraMeasurementActivity], we need to ensure that the
+                 * Before launching cam, we need to ensure that the
                  * application has a valid DeepAffex Cloud access token. The application also needs
                  * to ensure it has the latest study configuration binary that's required to
                  * initialize DeepAffex Extraction Library
@@ -371,7 +371,7 @@ class HealthCamRecorderActivity : BaseActivity() {
                             HealthCamReportIdResponse::class.java
                         )
 
-                        healthCamFacialScanRequest.reportId = reportIdResponse.data.id
+                        healthCamFacialScanRequest.reportId = reportIdResponse.data?.id
                         submitReport(healthCamFacialScanRequest)
 
                     } catch (e: IOException) {

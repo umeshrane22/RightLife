@@ -1,154 +1,58 @@
-package com.jetsynthesys.rightlife.ui.healthcam;
+package com.jetsynthesys.rightlife.ui.healthcam
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import com.google.gson.annotations.Expose
+import com.google.gson.annotations.SerializedName
 
-import java.util.List;
-
-public class ReportIdData {
-
+class ReportIdData {
     @SerializedName("_id")
     @Expose
-    private String id;
+    var id: String? = null
+
     @SerializedName("userId")
     @Expose
-    private String userId;
+    var userId: String? = null
+
     @SerializedName("answerId")
     @Expose
-    private String answerId;
+    var answerId: String? = null
+
     @SerializedName("service")
     @Expose
-    private Service service;
+    var service: Service? = null
+
     @SerializedName("status")
     @Expose
-    private String status;
+    var status: String? = null
+
     @SerializedName("createdAt")
     @Expose
-    private String createdAt;
+    var createdAt: String? = null
+
     @SerializedName("updatedAt")
     @Expose
-    private String updatedAt;
+    var updatedAt: String? = null
+
     @SerializedName("__v")
     @Expose
-    private Integer v;
+    var v: Int? = null
+
     @SerializedName("count")
     @Expose
-    private Integer count;
+    var count: Int? = null
+
     @SerializedName("healthCamReportByCategory")
     @Expose
-    private Object healthCamReportByCategory;
+    var healthCamReportByCategory: Any? = null
+
     @SerializedName("userAnswers")
     @Expose
-    private UserAnswers userAnswers;
+    var userAnswers: UserAnswers? = null
+
     @SerializedName("scoreComponents")
     @Expose
-    private List<ScoreComponent> scoreComponents;
+    var scoreComponents: List<ScoreComponent>? = null
+
     @SerializedName("recommendation")
     @Expose
-    private List<Object> recommendation;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public String getAnswerId() {
-        return answerId;
-    }
-
-    public void setAnswerId(String answerId) {
-        this.answerId = answerId;
-    }
-
-    public Service getService() {
-        return service;
-    }
-
-    public void setService(Service service) {
-        this.service = service;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public String getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public String getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(String updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public Integer getV() {
-        return v;
-    }
-
-    public void setV(Integer v) {
-        this.v = v;
-    }
-
-    public Integer getCount() {
-        return count;
-    }
-
-    public void setCount(Integer count) {
-        this.count = count;
-    }
-
-    public Object getHealthCamReportByCategory() {
-        return healthCamReportByCategory;
-    }
-
-    public void setHealthCamReportByCategory(Object healthCamReportByCategory) {
-        this.healthCamReportByCategory = healthCamReportByCategory;
-    }
-
-    public UserAnswers getUserAnswers() {
-        return userAnswers;
-    }
-
-    public void setUserAnswers(UserAnswers userAnswers) {
-        this.userAnswers = userAnswers;
-    }
-
-    public List<ScoreComponent> getScoreComponents() {
-        return scoreComponents;
-    }
-
-    public void setScoreComponents(List<ScoreComponent> scoreComponents) {
-        this.scoreComponents = scoreComponents;
-    }
-
-    public List<Object> getRecommendation() {
-        return recommendation;
-    }
-
-    public void setRecommendation(List<Object> recommendation) {
-        this.recommendation = recommendation;
-    }
-
+    var recommendation: List<Any>? = null
 }

@@ -1011,7 +1011,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
                             this@HealthCamBasicDetailsNewActivity,
                             HealthCamRecorderActivity::class.java
                         )
-                        intent.putExtra("reportID", healthCamSubmitResponse.data.answerId)
+                        intent.putExtra("reportID", healthCamSubmitResponse.data?.answerId)
                         intent.putExtra("USER_PROFILE_HEIGHT", heightInCms)
                         intent.putExtra("USER_PROFILE_WEIGHT", weightInKg)
                         intent.putExtra("USER_PROFILE_AGE", age)

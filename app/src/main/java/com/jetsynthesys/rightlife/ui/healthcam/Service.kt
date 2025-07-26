@@ -1,42 +1,18 @@
-package com.jetsynthesys.rightlife.ui.healthcam;
+package com.jetsynthesys.rightlife.ui.healthcam
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import com.google.gson.annotations.Expose
+import com.google.gson.annotations.SerializedName
 
-public class Service {
-
+class Service {
     @SerializedName("identifier")
     @Expose
-    private String identifier;
+    var identifier: String? = null
+
     @SerializedName("measurementId")
     @Expose
-    private String measurementId;
+    var measurementId: String? = null
+
     @SerializedName("scanUrl")
     @Expose
-    private String scanUrl;
-
-    public String getIdentifier() {
-        return identifier;
-    }
-
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
-    }
-
-    public String getMeasurementId() {
-        return measurementId;
-    }
-
-    public void setMeasurementId(String measurementId) {
-        this.measurementId = measurementId;
-    }
-
-    public String getScanUrl() {
-        return scanUrl;
-    }
-
-    public void setScanUrl(String scanUrl) {
-        this.scanUrl = scanUrl;
-    }
-
+    var scanUrl: String? = null
 }
