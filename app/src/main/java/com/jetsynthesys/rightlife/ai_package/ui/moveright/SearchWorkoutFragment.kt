@@ -40,7 +40,7 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
         super.onViewCreated(view, savedInstanceState)
         view.setBackgroundResource(R.drawable.gradient_color_background_workout)
 
-        val selectedDate = arguments?.getString("selected_date")
+        val selectedDate = arguments?.getString("SelectedDate")
         val routine = arguments?.getString("routine")
         val routineName = arguments?.getString("routineName")
         workoutList = arguments?.getParcelableArrayList("workoutList") ?: ArrayList()

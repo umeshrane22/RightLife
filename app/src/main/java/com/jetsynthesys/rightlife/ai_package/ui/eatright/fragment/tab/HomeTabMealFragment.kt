@@ -208,6 +208,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 val mealSearchFragment = SnapMealFragment()
                 val args = Bundle()
+                args.putBoolean("isHomeTab", true)
                 args.putString("ModuleName", moduleName)
                 mealSearchFragment.arguments = args
                 replace(R.id.flFragment, mealSearchFragment, "Steps")
@@ -355,6 +356,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 val mealSearchFragment = SnapMealFragment()
                 val args = Bundle()
+                args.putBoolean("isHomeTab", true)
                 args.putString("ModuleName", moduleName)
                 args.putString("gallery","gallery")
                 mealSearchFragment.arguments = args

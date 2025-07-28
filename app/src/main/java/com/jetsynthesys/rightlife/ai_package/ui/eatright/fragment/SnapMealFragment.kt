@@ -124,6 +124,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
         mealDescriptionET = view.findViewById(R.id.mealDescriptionET)
         backButton = view.findViewById(R.id.backButton)
 
+        val isHomeTab = arguments?.getBoolean("isHomeTab", false)
         moduleName = arguments?.getString("ModuleName").toString()
         gallery = arguments?.getString("gallery").toString()
         if(gallery.equals("gallery")){
