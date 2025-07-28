@@ -24,12 +24,14 @@ import com.jetsynthesys.rightlife.databinding.FragmentMealLogCalenderBinding
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.response.LoggedMeal
 import com.jetsynthesys.rightlife.ai_package.model.response.MealLogsHistoryResponse
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.CalendarSummaryModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealLogWeeklyDayModel
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -128,6 +130,7 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
                     if (item.fullDate == mealLog.date){
                         if (mealLog.is_available == true){
                             item.is_available = true
+                            item.surplus = mealLog.calories_data.total_calories_burned
                         }
                     }
                 }
@@ -138,13 +141,50 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
         val mealLogDateData: CalendarDateModel? = null
         calendarAdapter.addAll(valueLists, -1, mealLogDateData, false)
 
-        val sampledList = ArrayList<CalendarDateModel>()
-        val step = valueLists.size / 53f
-        for (i in 0 until 53) {
-            val index = (i * step).toInt().coerceAtMost(valueLists.lastIndex)
-            sampledList.add(valueLists[index])
-        }
-        calendarSummaryAdapter.addAll(sampledList, -1, mealLogDateData, false)
+        val weeklySurplusList = generateWeeklySurplus(valueLists)
+
+
+//        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+//        val sortedDates = valueLists.sortedBy { LocalDate.parse(it.fullDate, formatter) }
+//        val firstDate = LocalDate.parse(sortedDates.first().fullDate, formatter)
+//
+//// Align to previous or same Monday
+//        val startDate = firstDate.with(DayOfWeek.MONDAY)
+//
+//        val weeklyList = ArrayList<CalendarSummaryModel>()
+//        var weekNumber = 1
+//
+//        var current = startDate
+//        while (current <= LocalDate.parse(sortedDates.last().fullDate, formatter)) {
+//            val week = ArrayList<CalendarDateModel>()
+//            for (i in 0 until 7) {
+//                val date = current.plusDays(i.toLong()).format(formatter)
+//                val model = valueLists.find { it.fullDate == date }
+//                if (model != null) {
+//                    week.add(model)
+//                } else {
+//                    // Optional: Add empty date for padding
+//                    week.add(CalendarDateModel(fullDate = date, is_available = false))
+//                }
+//            }
+//            weeklyList.add(CalendarSummaryModel(weekNumber++, week))
+//            current = current.plusWeeks(1)
+//        }
+
+        println(weeklySurplusList)
+
+
+        val calendarSummaryModelList = ArrayList<CalendarSummaryModel>()
+
+//        val sampledList = ArrayList<CalendarDateModel>()
+//        val step = valueLists.size / 53f
+//        for (i in 0 until 53) {
+//            val index = (i * step).toInt().coerceAtMost(valueLists.lastIndex)
+//            sampledList.add(valueLists[index])
+//        }
+        calendarSummaryModelList.addAll(weeklySurplusList)
+        val calendarSummaryModel: CalendarSummaryModel? = null
+        calendarSummaryAdapter.addAll(calendarSummaryModelList, -1, calendarSummaryModel, false)
 
         val now = Calendar.getInstance()
         val currentYear = now.get(Calendar.YEAR)
@@ -201,6 +241,56 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
 
     }
 
+    private fun generateWeeklySurplus(dateModels: List<CalendarDateModel>): List<CalendarSummaryModel> {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val sortedDates = dateModels.sortedBy { LocalDate.parse(it.fullDate, formatter) }
+
+        var weekNumber = 1
+        val firstDate = LocalDate.parse(sortedDates.first().fullDate, formatter)
+        val lastDate = LocalDate.parse(sortedDates.last().fullDate, formatter)
+        var current = firstDate.with(DayOfWeek.MONDAY)
+        val result = ArrayList<CalendarSummaryModel>()
+
+        while (current <= lastDate) {
+            val weekDays = mutableListOf<CalendarDateModel>()
+
+            for (i in 0 until 7) {
+                val dateStr = current.plusDays(i.toLong()).format(formatter)
+                val model = dateModels.find { it.fullDate == dateStr }
+                if (model != null) {
+                    weekDays.add(model)
+                } else {
+                    weekDays.add(
+                        CalendarDateModel(
+                            fullDate = dateStr,
+                            surplus = 0.0,
+                            is_available = false
+                        )
+                    )
+                }
+            }
+            val weekSurplus = weekDays.sumOf { it.surplus }
+            val sign = if (weekSurplus >= 0.0) "positive" else "negative"
+            val isAvailable = if (weekSurplus > 0.0){
+                true
+            }else{
+                false
+            }
+            result.add(
+                CalendarSummaryModel(
+                    isAvailable = isAvailable,
+                    weekNumber++,
+                    weekStartDate = current.format(formatter),
+                    totalWeekCaloriesBurned = weekSurplus,
+                    weekDays = weekDays,
+                    sign = sign
+                )
+            )
+            current = current.plusWeeks(1)
+        }
+        return result
+    }
+
     private fun onMealLogCalenderItem(calendarDateModel: CalendarDateModel, position: Int, isRefresh: Boolean) {
         val mealLogCalenderBottomSheet = MealLogCalenderBottomSheet()
         mealLogCalenderBottomSheet.isCancelable = true
@@ -210,7 +300,7 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
         parentFragment.let { mealLogCalenderBottomSheet.show(childFragmentManager, "MealLogCalenderBottomSheet") }
     }
 
-    private fun onMealLogCalenderSummaryItem(mealLogDateModel: CalendarDateModel, position: Int, isRefresh: Boolean) {
+    private fun onMealLogCalenderSummaryItem(mealLogDateModel: CalendarSummaryModel, position: Int, isRefresh: Boolean) {
 
     }
 
@@ -243,7 +333,7 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
                     currentDate = currentDate,
                     currentMonth = currentMonth,
                     fullDate = formatter.format(calendar.time),
-                    surplus = (i * 50) % 500 // Random surplus example
+                    surplus = 0.0
                 )
             )
             calendar.add(Calendar.DAY_OF_YEAR, 1) // Move forward
@@ -261,7 +351,7 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
                     currentDate = currentDate,
                     currentMonth = currentMonth,
                     fullDate = formatter.format(calendar.time),
-                    surplus = (1 * 50) % 500 // Random surplus example
+                    surplus = 0.0
                 )
             )
             calendar.add(Calendar.DAY_OF_YEAR, 1) // Move forward

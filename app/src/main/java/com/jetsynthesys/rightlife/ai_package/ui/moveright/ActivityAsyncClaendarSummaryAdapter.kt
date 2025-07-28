@@ -26,8 +26,8 @@ class ActivityAsyncClaendarSummaryAdapter(private val context: Context, private 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = dataLists[position]
 
-        holder.txtSummary.text = item.surplusType
-        holder.txtValue.text = item.surplusValue
+        holder.txtSummary.text = ""//item.surplusType
+        holder.txtValue.text = ""//item.surplusValue
 
        // if (item.surplusType.contentEquals("Deficit")){
             holder.txtSummary.setTextColor(ContextCompat.getColor(context, R.color.week_red))

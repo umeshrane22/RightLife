@@ -12,9 +12,9 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.CalendarDateModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.CalendarSummaryModel
 
-class CalendarSummaryAdapter(private val context: Context, private var dataLists: ArrayList<CalendarDateModel>,
-                             private var clickPos: Int, private var mealLogListData : CalendarDateModel?,
-                             private var isClickView : Boolean, val onMealLogDateItem: (CalendarDateModel, Int, Boolean) -> Unit,) :
+class CalendarSummaryAdapter(private val context: Context, private var dataLists: ArrayList<CalendarSummaryModel>,
+                             private var clickPos: Int, private var mealLogListData : CalendarSummaryModel?,
+                             private var isClickView : Boolean, val onMealLogDateItem: (CalendarSummaryModel, Int, Boolean) -> Unit,) :
     RecyclerView.Adapter<CalendarSummaryAdapter.ViewHolder>() {
 
     private var selectedItem = -1
@@ -28,7 +28,7 @@ class CalendarSummaryAdapter(private val context: Context, private var dataLists
         val item = dataLists[position]
 
       //  holder.txtSummary.text = item.surplusType
-        holder.txtValue.text = item.surplus.toString()
+        holder.txtValue.text = item.totalWeekCaloriesBurned.toInt().toString()
 
 //        if (item.surplusType.contentEquals("Deficit")){
 //            holder.txtSummary.setTextColor(ContextCompat.getColor(context,R.color.week_red))
@@ -59,7 +59,7 @@ class CalendarSummaryAdapter(private val context: Context, private var dataLists
         val layoutValue : LinearLayoutCompat = itemView.findViewById(R.id.layoutValue)
     }
 
-    fun addAll(item : ArrayList<CalendarDateModel>?, pos: Int, mealLogItem : CalendarDateModel?, isClick : Boolean) {
+    fun addAll(item : ArrayList<CalendarSummaryModel>?, pos: Int, mealLogItem : CalendarSummaryModel?, isClick : Boolean) {
         dataLists.clear()
         if (item != null) {
             dataLists = item

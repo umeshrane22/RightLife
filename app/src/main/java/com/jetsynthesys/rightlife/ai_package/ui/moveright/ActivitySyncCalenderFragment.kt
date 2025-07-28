@@ -130,20 +130,20 @@ class ActivitySyncCalenderFragment : BaseFragment<FragmentActivitySyncCalenderBi
 
     private fun onMealLogCalenderSummaryRefresh (){
 
-        val summaryList = listOf(
-            CalendarSummaryModel("Over", "2140"),
-            CalendarSummaryModel("Under", "12.3 kCal"),
-            CalendarSummaryModel("Under", "0"),
-            CalendarSummaryModel("Under", "0"),
-            CalendarSummaryModel("Under", "0"),
-            CalendarSummaryModel("Under", "0"),
-            CalendarSummaryModel("Under", "0"),
-            CalendarSummaryModel("Under", "0"),
-            CalendarSummaryModel("Under", "0")
-        )
+//        val summaryList = listOf(
+//            CalendarSummaryModel("Over", "2140"),
+//            CalendarSummaryModel("Under", "12.3 kCal"),
+//            CalendarSummaryModel("Under", "0"),
+//            CalendarSummaryModel("Under", "0"),
+//            CalendarSummaryModel("Under", "0"),
+//            CalendarSummaryModel("Under", "0"),
+//            CalendarSummaryModel("Under", "0"),
+//            CalendarSummaryModel("Under", "0"),
+//            CalendarSummaryModel("Under", "0")
+//        )
 
         val valueLists : ArrayList<CalendarSummaryModel> = ArrayList()
-        valueLists.addAll(summaryList as Collection<CalendarSummaryModel>)
+      //  valueLists.addAll(summaryList as Collection<CalendarSummaryModel>)
         val mealLogDateData: CalendarSummaryModel? = null
         calendarSummaryAdapter.addAll(valueLists, -1, mealLogDateData, false)
     }
@@ -190,7 +190,7 @@ class ActivitySyncCalenderFragment : BaseFragment<FragmentActivitySyncCalenderBi
                     currentDate = currentDate,
                     currentMonth = currentMonth,
                     fullDate = formatter.format(calendar.time),
-                    surplus = (i * 50) % 500 // Random surplus example
+                    surplus = 0.0
                 )
             )
             calendar.add(java.util.Calendar.DAY_OF_YEAR, 1) // Move forward
@@ -208,7 +208,7 @@ class ActivitySyncCalenderFragment : BaseFragment<FragmentActivitySyncCalenderBi
                     currentDate = currentDate,
                     currentMonth = currentMonth,
                     fullDate = formatter.format(calendar.time),
-                    surplus = (1 * 50) % 500 // Random surplus example
+                    surplus = 0.0
                 )
             )
             calendar.add(java.util.Calendar.DAY_OF_YEAR, 1) // Move forward
