@@ -343,7 +343,9 @@ Toast.makeText(this, "Playlist button clicked", Toast.LENGTH_SHORT).show()      
                 Intent.EXTRA_TEXT,
                 """
                     “Been using this app called RightLife that tracks food, workouts, sleep, and mood. Super simple, no wearable needed.
-                     Try it and get 7 days for free. Here’s the link:\n https://play.google.com/store/apps/details?id=${packageName}
+                     Try it and get 7 days for free. Here’s the link:\n 
+                     Play Store Link  https://play.google.com/store/apps/details?id=${packageName} 
+                     App Store Link https://apps.apple.com/app/rightlife/id6444228850
                     """.trimIndent()
             )
         }

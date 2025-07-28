@@ -468,7 +468,8 @@ public class ArticlesDetailActivity extends BaseActivity {
         intent.setType("text/plain");
 
         String shareText = "“Been using this app called RightLife that tracks food, workouts, sleep, and mood. Super simple, no wearable needed.\n" +
-                "                     Try it and get 7 days for free. Here’s the link:\n  https://rightlife.sng.link/Afiju/ui5f/r_ccc1b019cd";
+                "                     Try it and get 7 days for free. Here’s the link:\n " + "Play Store Link  https://play.google.com/store/apps/details?id=${packageName} \n" +
+                "App Store Link https://apps.apple.com/app/rightlife/id6444228850";
 
         intent.putExtra(Intent.EXTRA_TEXT, shareText);
 

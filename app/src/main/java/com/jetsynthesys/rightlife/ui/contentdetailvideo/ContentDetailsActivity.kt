@@ -597,7 +597,8 @@ class ContentDetailsActivity : BaseActivity() {
         val shareText = """
     Been using this app called RightLife that tracks food, workouts, sleep, and mood. Super simple, no wearable needed.
     Try it and get 7 days for free. Here’s the link:
-    https://rightlife.sng.link/Afiju/ui5f/r_ccc1b019cd
+     + "Play Store Link  https://play.google.com/store/apps/details?id=${packageName}" +
+       "App Store Link https://apps.apple.com/app/rightlife/id6444228850";
 """.trimIndent()
 
 

@@ -37,6 +37,7 @@ import com.jetsynthesys.rightlife.subscriptions.SubscriptionPlanListActivity
 import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.NewSleepSoundActivity
 import com.jetsynthesys.rightlife.ui.affirmation.TodaysAffirmationActivity
+import com.jetsynthesys.rightlife.ui.aireport.AIReportWebViewActivity
 import com.jetsynthesys.rightlife.ui.breathwork.BreathworkActivity
 import com.jetsynthesys.rightlife.ui.healthcam.HealthCamActivity
 import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity
@@ -298,6 +299,21 @@ class HomeNewActivity : BaseActivity() {
                     putExtra("ModuleName", "EatRight")
                     putExtra("BottomSeatName", "LogWaterIntakeEat")
                 })
+            }
+        }
+
+        // Open AI Report WebView on click   // Also logic to hide this button if Report is not generated pending
+        binding.rightLifeReportCard.setOnClickListener {
+            var dynamicReportId = "" // This Is User ID
+            dynamicReportId = SharedPreferenceManager.getInstance(applicationContext).userId
+            if (dynamicReportId.isEmpty()) {
+                // Some error handling if the ID is not available
+            }else{
+                val intent = Intent(this, AIReportWebViewActivity::class.java).apply {
+                    // Put the dynamic ID as an extra
+                    putExtra(AIReportWebViewActivity.EXTRA_REPORT_ID, dynamicReportId)
+                }
+                startActivity(intent)
             }
         }
     }
