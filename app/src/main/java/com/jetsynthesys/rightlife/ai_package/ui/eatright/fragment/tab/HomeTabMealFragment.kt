@@ -1,8 +1,13 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.graphics.PorterDuff
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,9 +19,11 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.google.android.flexbox.FlexboxLayout
@@ -37,7 +44,9 @@ import com.jetsynthesys.rightlife.ai_package.model.response.MealUpdateResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SearchResultItem
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealDetailsResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.SnapMealLogResponse
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.OnImageSelectedListener
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.SearchDishToLogFragment
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.SnapMealFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.frequentlylogged.FrequentlyAddDishBottomSheet
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealLogItems
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SelectedMealLogList
@@ -65,6 +74,8 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
     private lateinit var layoutTitle : LinearLayout
     private lateinit var btnLogMeal: LinearLayoutCompat
     private lateinit var checkCircle : ImageView
+    private lateinit var imageScan : ImageView
+    private lateinit var imageGallery : ImageView
     private lateinit var loggedSuccess : TextView
     private var dishLists : ArrayList<SearchResultItem> = ArrayList()
     private  var snapDishLocalListModel : SnapDishLocalListModel? = null
@@ -79,6 +90,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
     private var loadingOverlay : FrameLayout? = null
     private var tabType : String = ""
     private var moduleName : String = ""
+    var imageSelectedListener: OnImageSelectedListener? = null
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentHomeTabMealBinding
         get() = FragmentHomeTabMealBinding::inflate
@@ -91,6 +103,8 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
         super.onViewCreated(view, savedInstanceState)
         view.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.meal_log_background))
 
+        imageScan = view.findViewById(R.id.image_calender)
+        imageGallery = view.findViewById(R.id.image)
         tabLayout = view.findViewById<TabLayout>(R.id.tabLayout)
         backIc = view.findViewById(R.id.backIc)
         searchLayout = view.findViewById(R.id.searchLayout)
@@ -190,6 +204,20 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
             }
         }
 
+        imageScan.setOnClickListener {
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                val mealSearchFragment = SnapMealFragment()
+                val args = Bundle()
+                args.putString("ModuleName", moduleName)
+                mealSearchFragment.arguments = args
+                replace(R.id.flFragment, mealSearchFragment, "Steps")
+                addToBackStack(null)
+                commit()
+            }
+        }
+        imageGallery.setOnClickListener {
+            openGallery()
+        }
         // Handle tab clicks manually
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
@@ -322,6 +350,50 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
             }
         }
     }
+    private fun openGallery() {
+        if (allPermissionsGranted()) {
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                val mealSearchFragment = SnapMealFragment()
+                val args = Bundle()
+                args.putString("ModuleName", moduleName)
+                args.putString("gallery","gallery")
+                mealSearchFragment.arguments = args
+                replace(R.id.flFragment, mealSearchFragment, "Steps")
+                addToBackStack(null)
+                commit()
+            }
+        } else {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                REQUIRED_PERMISSIONS,
+                REQUEST_CODE_PERMISSIONS
+            )
+        }
+    }
+    companion object {
+        private const val TAG = "CameraFragment"
+        private const val REQUEST_CODE_PERMISSIONS = 10
+        private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
+    }
+    private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
+        ContextCompat.checkSelfPermission(requireContext(), it) == PackageManager.PERMISSION_GRANTED
+    }
+    private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        uri?.let {
+            imageSelectedListener?.onImageSelected(it)
+           // dismiss()
+            Toast.makeText(requireContext(), "Image loaded from gallery!", Toast.LENGTH_SHORT).show()
+        } ?: Toast.makeText(requireContext(), "No image selected", Toast.LENGTH_SHORT).show()
+    }
+    private val REQUIRED_PERMISSIONS = mutableListOf(
+        Manifest.permission.CAMERA
+    ).apply {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            add(Manifest.permission.READ_MEDIA_IMAGES)
+        } else {
+            add(Manifest.permission.READ_EXTERNAL_STORAGE)
+        }
+    }.toTypedArray()
 
     // Function to replace fragments
     private fun replaceFragment(fragment: Fragment) {

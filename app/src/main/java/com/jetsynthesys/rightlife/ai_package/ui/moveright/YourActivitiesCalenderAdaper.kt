@@ -1,4 +1,4 @@
-package com.jetsynthesys.rightlife.ai_package.ui.adapter
+package com.jetsynthesys.rightlife.ai_package.ui.moveright
 
 import android.content.Context
 import android.graphics.Typeface
@@ -17,16 +17,16 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.model.ActivityModel
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.DeleteWorkoutBottomSheet
 
-class YourActivitiesAdapter(private val context: Context, private var dataLists: ArrayList<ActivityModel>,
-    private var clickPos: Int,
-    private var workoutData: ActivityModel?,
-    private var isClickView: Boolean,
-    val onWorkoutItemClick: (ActivityModel, Int, Boolean) -> Unit,
-    private val onCirclePlusClick: (ActivityModel, Int) -> Unit
-) : RecyclerView.Adapter<YourActivitiesAdapter.ViewHolder>() {
+class YourActivitiesCalenderAdaper(private val context: Context, private var dataLists: ArrayList<ActivityModel>,
+                                   private var clickPos: Int,
+                                   private var workoutData: ActivityModel?,
+                                   private var isClickView: Boolean,
+                                   val onWorkoutItemClick: (ActivityModel, Int, Boolean) -> Unit,
+                                   private val onCirclePlusClick: (ActivityModel, Int) -> Unit
+) : RecyclerView.Adapter<YourActivitiesCalenderAdaper.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_your_workouts_ai, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_your_workout_calender_ai, parent, false)
         return ViewHolder(view)
     }
 
@@ -34,22 +34,22 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
         val item = dataLists[position]
 
         holder.mealTitle.text = item.workoutType
-       if (item.isSynced){
-           holder.edit.visibility = View.GONE
-           holder.delete.visibility = View.GONE
-           holder.bpmUnit.visibility = View.VISIBLE
-           holder.wearable.visibility = View.VISIBLE
-           holder.bpmUnit.text = "bpm"
-           holder.subtractionValue.text = item.averageHeartRate.toInt().toString()
-           holder.subtraction.setImageResource(R.drawable.avg_heart_rate)
-       }else{
-           holder.edit.visibility = View.VISIBLE
-           holder.delete.visibility = View.VISIBLE
-           holder.wearable.visibility = View.GONE
-           holder.bpmUnit.visibility = View.GONE
-           holder.subtractionValue.text = item.intensity
-           holder.subtraction.setImageResource(R.drawable.intensity_meter)
-       }
+        if (item.isSynced){
+            holder.edit.visibility = View.GONE
+            holder.delete.visibility = View.GONE
+            holder.bpmUnit.visibility = View.VISIBLE
+            holder.wearable.visibility = View.VISIBLE
+            holder.bpmUnit.text = "bpm"
+            holder.subtractionValue.text = item.averageHeartRate.toInt().toString()
+            holder.subtraction.setImageResource(R.drawable.avg_heart_rate)
+        }else{
+            holder.edit.visibility = View.GONE
+            holder.delete.visibility = View.GONE
+            holder.wearable.visibility = View.GONE
+            holder.bpmUnit.visibility = View.GONE
+            holder.subtractionValue.text = item.intensity
+            holder.subtraction.setImageResource(R.drawable.intensity_meter)
+        }
         val formattedTime = formatTimeString(item.duration!!)
         holder.duration.text = formattedTime
         val formattedCalories = item.caloriesBurned!!.substringBefore(".")
@@ -80,9 +80,9 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
             .load(item.icon) // <-- your image URL string
             .into(holder.main_heading_icon)
         // Set up item click listener
-       /* holder.itemView.setOnClickListener {
-            onWorkoutItemClick(item, position, true)
-        }*/
+        /* holder.itemView.setOnClickListener {
+             onWorkoutItemClick(item, position, true)
+         }*/
     }
 
     override fun getItemCount(): Int {

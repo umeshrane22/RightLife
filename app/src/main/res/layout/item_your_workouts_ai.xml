@@ -181,7 +181,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 android:gravity="center"
                 android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp">
+                android:layout_marginEnd="70dp">
 
                 <ImageView
                     android:id="@+id/image_cal"
@@ -207,8 +207,8 @@
                     android:layout_marginStart="2dp"
                     android:textSize="10sp"
                     android:visibility="gone"
-                    android:fontFamily="@font/dmsans_regular"
-                    android:textColor="@color/workout_textcolor"
+                    android:fontFamily="@font/dmsans_bold"
+                    android:textColor="@color/black"
                     android:text="cal" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
@@ -239,6 +239,14 @@
                     android:fontFamily="@font/dmsans_bold"
                     android:textColor="@color/workout_textcolor"
                     android:text="Low Intensity" />
+                <TextView
+                    android:id="@+id/tv_subtraction_value_Intensity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:fontFamily="@font/dmsans_bold"
+                    android:textColor="@color/workout_textcolor"
+                    android:text=" Intensity" />
 
                 <TextView
                     android:id="@+id/tv_subtraction_unit"

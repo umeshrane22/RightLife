@@ -171,19 +171,19 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
         null, false, :: onMealLogDateItem) }
     private val breakfastMealLogsAdapter by lazy { YourBreakfastMealLogsAdapter(requireContext(), arrayListOf(), -1,
         null, null, false, ::onBreakFastRegularRecipeDeleteItem,
-        :: onBreakFastRegularRecipeEditItem, :: onBreakFastSnapMealDeleteItem, :: onBreakFastSnapMealEditItem, false) }
+        :: onBreakFastRegularRecipeEditItem, :: onBreakFastSnapMealDeleteItem, :: onBreakFastSnapMealEditItem, false, false) }
     private val morningSnackMealLogsAdapter by lazy { YourMorningSnackMealLogsAdapter(requireContext(), arrayListOf(), -1,
         null, null,false, :: onMSRegularRecipeDeleteItem, :: onMSRegularRecipeEditItem,
-        :: onMSSnapMealDeleteItem, :: onMSSnapMealEditItem, false) }
+        :: onMSSnapMealDeleteItem, :: onMSSnapMealEditItem, false, false) }
     private val lunchMealLogsAdapter by lazy { YourLunchMealLogsAdapter(requireContext(), arrayListOf(), -1,
         null, null,false, :: onLunchRegularRecipeDeleteItem, :: onLunchRegularRecipeEditItem,
-        :: onLunchSnapMealDeleteItem, :: onLunchSnapMealEditItem, false) }
+        :: onLunchSnapMealDeleteItem, :: onLunchSnapMealEditItem, false, false) }
     private val eveningSnacksMealLogsAdapter by lazy { YourEveningSnacksMealLogsAdapter(requireContext(), arrayListOf(), -1,
         null, null,false, :: onESRegularRecipeDeleteItem, :: onESRegularRecipeEditItem,
-        :: onESSnapMealDeleteItem, :: onESSnapMealEditItem, false) }
+        :: onESSnapMealDeleteItem, :: onESSnapMealEditItem, false, false) }
     private val dinnerMealLogsAdapter by lazy { YourDinnerMealLogsAdapter(requireContext(), arrayListOf(), -1,
         null, null,false, :: onDinnerRegularRecipeDeleteItem, :: onDinnerRegularRecipeEditItem,
-        :: onDinnerSnapMealDeleteItem, :: onDinnerSnapMealEditItem, false) }
+        :: onDinnerSnapMealDeleteItem, :: onDinnerSnapMealEditItem, false, false) }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -260,7 +260,6 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             selectMealTypeBottomSheet.isCancelable = true
             val args = Bundle()
             args.putString("ModuleName", moduleName)
-            args.putBoolean("test",false)
             selectMealTypeBottomSheet.arguments = args
             parentFragment.let { selectMealTypeBottomSheet.show(childFragmentManager, "SelectMealTypeBottomSheet") }
         }else if (moduleName.contentEquals("EatRightLanding")){
@@ -268,7 +267,6 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             selectMealTypeBottomSheet.isCancelable = true
             val args = Bundle()
             args.putString("ModuleName", moduleName)
-            args.putBoolean("test",false)
             selectMealTypeBottomSheet.arguments = args
             parentFragment.let { selectMealTypeBottomSheet.show(childFragmentManager, "SelectMealTypeBottomSheet") }
         }else if (moduleName.contentEquals("MoveRightLanding")) {
@@ -276,7 +274,6 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             selectMealTypeBottomSheet.isCancelable = true
             val args = Bundle()
             args.putString("ModuleName", moduleName)
-            args.putBoolean("test", false)
             selectMealTypeBottomSheet.arguments = args
             parentFragment.let { selectMealTypeBottomSheet.show(childFragmentManager, "SelectMealTypeBottomSheet") }
         }
@@ -370,6 +367,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
           //  showTooltipDialog( layoutToolbar,"You can access Calender \n view from here.")
             val fragment = MealLogCalenderFragment()
             val args = Bundle()
+            args.putString("ModuleName", moduleName)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "mealLog")
@@ -783,7 +781,91 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
         deleteSnapLogDishDialog(mealItem, "SnapMeal")
     }
 
-    private fun onBreakFastSnapMealEditItem(mealItem: SnapMeal, position: Int, isRefresh: Boolean) {
+    private fun onBreakFastSnapMealEditItem(snapMealDetail: SnapMeal, position: Int, isRefresh: Boolean) {
+        if (snapMealDetail != null){
+            var snapDishLocalListModel : SnapDishLocalListModel? = null
+            val dishList = snapMealDetail.dish
+            val dishLists : ArrayList<SearchResultItem> = ArrayList()
+            dishList?.forEach { foodData ->
+                val macrosData = Macros(
+                    Calories = foodData.calories_kcal,
+                    Carbs = foodData.carb_g,
+                    Fats = foodData.fat_g,
+                    Protein = foodData.protein_g
+                )
+                val microsData = Micros(
+                    Cholesterol = foodData.cholesterol_mg,
+                    Vitamin_A = foodData.vitamin_a_mcg,
+                    Vitamin_C = foodData.vitamin_c_mg,
+                    Vitamin_K = foodData.calories_kcal,
+                    Vitamin_D = foodData.vitamin_d_iu,
+                    Folate = foodData.folate_mcg,
+                    Iron = foodData.iron_mg,
+                    Calcium =foodData.calcium_mg,
+                    Magnesium = foodData.magnesium_mg,
+                    Potassium = foodData.potassium_mg,
+                    Fiber = foodData.fiber_g,
+                    Zinc = foodData.zinc_mg,
+                    Sodium = foodData.sodium_mg,
+                    Sugar = foodData.sugar_g,
+                    b12_mcg = foodData.b12_mcg,
+                    b1_mg = foodData.b1_mg,
+                    b2_mg = foodData.b2_mg,
+                    b5_mg = 0.0,
+                    b3_mg = foodData.b3_mg,
+                    b6_mg = foodData.b6_mg,
+                    vitamin_e_mg = foodData.vitamin_e_mg,
+                    omega_3_fatty_acids_g = foodData.omega_3_fatty_acids_g,
+                    omega_6_fatty_acids_g = foodData.omega_6_fatty_acids_g,
+                    copper_mg = foodData.copper_mg,
+                    phosphorus_mg = foodData.phosphorus_mg,
+                    saturated_fats_g = foodData.saturated_fats_g,
+                    selenium_mcg = foodData.selenium_mcg,
+                    trans_fats_g = 0.0,
+                    polyunsaturated_g = foodData.polyunsaturated_g,
+                    is_beverage = false,
+                    mass_g = foodData.mass_g,
+                    monounsaturated_g = foodData.monounsaturated_g,
+                    percent_fruit = foodData.percent_fruit,
+                    percent_vegetable = foodData.percent_vegetable,
+                    percent_legume_or_nuts = foodData.percent_legume_or_nuts,
+                    source_urls = foodData.source_urls
+                )
+                val nutrientsData = Nutrients(
+                    macros = macrosData,
+                    micros = microsData
+                )
+                val snapRecipeData = SearchResultItem(
+                    id = foodData._id?: "",
+                    name = foodData.name,
+                    category = "",
+                    photo_url = "",
+                    servings = foodData.servings,
+                    cooking_time_in_seconds = 0,
+                    calories = foodData.calories_kcal,
+                    nutrients = nutrientsData,
+                    source = "",
+                    unit = "serving",
+                    mealQuantity = foodData.mealQuantity
+                )
+                dishLists.add(snapRecipeData)
+            }
+            snapDishLocalListModel = SnapDishLocalListModel(dishLists)
+            val fragment = MealScanResultFragment()
+            val args = Bundle()
+            args.putString("ModuleName", moduleName)
+            args.putString("mealId", snapMealDetail._id)
+            args.putString("mealType", "Breakfast")
+            args.putString("snapMealLog", "snapMealLog")
+            args.putString("mealName", snapMealDetail.meal_name)
+            args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "mealLog")
+                addToBackStack("mealLog")
+                commit()
+            }
+        }
     }
 
     private fun onMSRegularRecipeDeleteItem(mealItem: RegularRecipeEntry, position: Int, isRefresh: Boolean) {

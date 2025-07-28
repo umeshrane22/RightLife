@@ -114,7 +114,9 @@ data class SnapDishList(
     val vitamin_e_mg: Double?,
     val vitamin_k_mcg: Double?,
     val zinc_mg: Double?,
-    val _id : String?
+    val _id : String?,
+    val servings : Int,
+    val mealQuantity : Double?
 ):Parcelable
 
 @Parcelize

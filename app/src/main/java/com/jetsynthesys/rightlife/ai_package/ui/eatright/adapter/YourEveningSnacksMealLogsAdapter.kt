@@ -21,8 +21,8 @@ class YourEveningSnacksMealLogsAdapter(val context: Context, private var dataLis
                                        val onESRegularRecipeDeleteItem: (RegularRecipeEntry, Int, Boolean) -> Unit,
                                        val onESRegularRecipeEditItem: (RegularRecipeEntry, Int, Boolean) -> Unit,
                                        val onESSnapMealDeleteItem: (SnapMeal, Int, Boolean) -> Unit,
-                                       val onESSnapMealEditItem: (SnapMeal, Int, Boolean) -> Unit, val isLanding : Boolean) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+                                       val onESSnapMealEditItem: (SnapMeal, Int, Boolean) -> Unit, val isLanding : Boolean,
+                                       val isCalender : Boolean) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
         private const val TYPE_REGULAR_RECIPE = 0
@@ -93,7 +93,11 @@ class YourEveningSnacksMealLogsAdapter(val context: Context, private var dataLis
                 edit.visibility = View.GONE
                 layoutEatTime.visibility = View.GONE
                 layoutVegNonveg.visibility = View.GONE
-                servesLayout.visibility = View.GONE
+                if (isCalender){
+                    servesLayout.visibility = View.VISIBLE
+                }else{
+                    servesLayout.visibility = View.GONE
+                }
             }else {
                 delete.visibility = View.VISIBLE
                 edit.visibility = View.VISIBLE
@@ -170,7 +174,11 @@ class YourEveningSnacksMealLogsAdapter(val context: Context, private var dataLis
                 edit.visibility = View.GONE
                 layoutEatTime.visibility = View.GONE
                 layoutVegNonveg.visibility = View.GONE
-                servesLayout.visibility = View.GONE
+                if (isCalender){
+                    servesLayout.visibility = View.VISIBLE
+                }else{
+                    servesLayout.visibility = View.GONE
+                }
             }else {
                 delete.visibility = View.VISIBLE
                 edit.visibility = View.VISIBLE

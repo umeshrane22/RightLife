@@ -74,9 +74,9 @@ class CalendarAdapter(private val context: Context, private var dataLists: Array
             }
         }
 
-//        holder.layoutCalendar.setOnClickListener {
-//            onMealLogCalenderItem(item, position, true)
-//        }
+        holder.layoutCalendar.setOnClickListener {
+            onMealLogCalenderItem(item, position, true)
+        }
     }
 
     override fun getItemCount(): Int {

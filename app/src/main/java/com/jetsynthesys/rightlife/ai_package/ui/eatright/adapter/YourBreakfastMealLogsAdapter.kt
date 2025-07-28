@@ -21,8 +21,8 @@ class YourBreakfastMealLogsAdapter(val context: Context, private var dataLists: 
                                    val onBreakFastRegularRecipeDeleteItem: (RegularRecipeEntry, Int, Boolean) -> Unit,
                                    val onBreakFastRegularRecipeEditItem: (RegularRecipeEntry, Int, Boolean) -> Unit,
                                    val onBreakFastSnapMealDeleteItem: (SnapMeal, Int, Boolean) -> Unit,
-                                   val onBreakFastSnapMealEditItem: (SnapMeal, Int, Boolean) -> Unit, val isLanding : Boolean) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+                                   val onBreakFastSnapMealEditItem: (SnapMeal, Int, Boolean) -> Unit, val isLanding : Boolean,
+                                   val isCalender : Boolean) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var selectedItem = -1
 
@@ -95,7 +95,11 @@ class YourBreakfastMealLogsAdapter(val context: Context, private var dataLists: 
                 edit.visibility = View.GONE
                 layoutEatTime.visibility = View.GONE
                 layoutVegNonveg.visibility = View.GONE
-                servesLayout.visibility = View.GONE
+                if (isCalender){
+                    servesLayout.visibility = View.VISIBLE
+                }else{
+                    servesLayout.visibility = View.GONE
+                }
             }else {
                 delete.visibility = View.VISIBLE
                 edit.visibility = View.VISIBLE
@@ -172,7 +176,11 @@ class YourBreakfastMealLogsAdapter(val context: Context, private var dataLists: 
                 edit.visibility = View.GONE
                 layoutEatTime.visibility = View.GONE
                 layoutVegNonveg.visibility = View.GONE
-                servesLayout.visibility = View.GONE
+                if (isCalender){
+                    servesLayout.visibility = View.VISIBLE
+                }else{
+                    servesLayout.visibility = View.GONE
+                }
             }else {
                 delete.visibility = View.VISIBLE
                 edit.visibility = View.VISIBLE

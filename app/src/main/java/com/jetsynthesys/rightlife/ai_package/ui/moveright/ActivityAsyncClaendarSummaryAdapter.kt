@@ -29,13 +29,13 @@ class ActivityAsyncClaendarSummaryAdapter(private val context: Context, private 
         holder.txtSummary.text = item.surplusType
         holder.txtValue.text = item.surplusValue
 
-        if (item.surplusType.contentEquals("Deficit")){
+       // if (item.surplusType.contentEquals("Deficit")){
             holder.txtSummary.setTextColor(ContextCompat.getColor(context, R.color.week_red))
             holder.layoutValue.setBackgroundResource(R.drawable.red_circle_background)
-        }else{
-            holder.txtSummary.setTextColor(ContextCompat.getColor(context, R.color.border_green))
-            holder.layoutValue.setBackgroundResource(R.drawable.circle_background)
-        }
+       // }else{
+      //      holder.txtSummary.setTextColor(ContextCompat.getColor(context, R.color.border_green))
+       //     holder.layoutValue.setBackgroundResource(R.drawable.circle_background)
+       // }
 
 //        holder.txtValue.setBackgroundResource(
 //            if (item.value < 0) R.drawable.bg_deficit else R.drawable.bg_surplus
