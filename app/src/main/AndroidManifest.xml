@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
-    <!--<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />-->
+    <!-- <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
@@ -25,8 +24,10 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <!--<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />-->
+    <!--
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.health.READ_HEART_RATE" />
     <uses-permission android:name="android.permission.health.READ_STEPS" />
@@ -62,6 +63,10 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="35">
         <activity
+            android:name=".ui.aireport.AIReportWebViewActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme" />
+        <activity
             android:name=".subsciptions.BillingActivity"
             android:exported="false" />
         <activity
@@ -88,15 +93,13 @@
         <activity
             android:name=".ui.rlpagemain.RLPageActivity"
             android:exported="false"
-            android:screenOrientation="portrait"
             android:label="@string/title_activity_rlpage"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity
             android:name=".ui.new_design.SplashScreenActivity"
             android:exported="true"
             android:screenOrientation="portrait">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -303,8 +306,8 @@
         <activity
             android:name=".ui.healthcam.NewHealthCamReportActivity"
             android:exported="false"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTop" />
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ui.jounal.MyJournalActivity"
             android:exported="false"
@@ -360,9 +363,9 @@
         <activity
             android:name=".newdashboard.HomeNewActivity"
             android:exported="false"
-            android:screenOrientation="portrait"
             android:label="@string/title_activity_homepage"
-            android:launchMode="singleTop" />
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".newdashboard.FacialScanReportDetailsActivity"
             android:exported="false"
@@ -504,12 +507,10 @@
             android:name=".ui.contentdetailvideo.NewSeriesDetailsActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".subscriptions.SubscriptionPlanListActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".subscriptions.PlanInfoActivity"
             android:exported="false"

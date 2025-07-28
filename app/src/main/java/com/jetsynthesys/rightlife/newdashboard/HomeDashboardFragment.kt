@@ -810,6 +810,8 @@ class HomeDashboardFragment : BaseFragment() {
     private fun handleDescoverList(aiDashboardResponseMain: AiDashboardResponseMain?) {
         if (aiDashboardResponseMain?.data?.discoverData != null) {
             setHealthNoDataCardAdapter(aiDashboardResponseMain.data.discoverData)
+        }else{
+            binding.llDiscoverLayout.visibility = View.GONE
         }
     }
 
@@ -859,6 +861,11 @@ class HomeDashboardFragment : BaseFragment() {
             adapter = HealthCardAdapter(discoverData)
             isNestedScrollingEnabled = false // 👈 important for smooth scroll
             overScrollMode = View.OVER_SCROLL_NEVER
+        }
+        if (discoverData.isNullOrEmpty()) {
+            binding.llDiscoverLayout.visibility = View.GONE
+        } else {
+            binding.llDiscoverLayout.visibility = View.VISIBLE
         }
     }
 

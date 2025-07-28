@@ -12,6 +12,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="#F7F7F7"
             android:orientation="vertical">
 
             <RelativeLayout
@@ -116,12 +117,81 @@
 
             </RelativeLayout>
 
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/rightLifeReportCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/white"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardCornerRadius="16dp"
+                android:layout_margin="@dimen/margin_card_16dp"
+                app:cardElevation="4dp"
+                app:strokeColor="@color/rightlife"
+                app:strokeWidth="2dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="@dimen/pageMargin"
+                    android:paddingVertical="@dimen/pageMargin">
+
+                    <ImageView
+                        android:id="@+id/iconImageView"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:src="@drawable/logo_ai_report"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/titleTextView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:maxLines="1"
+                        android:text="Your RightLife Report Is In"
+                        android:textColor="@color/txt_color_header"
+
+                        android:textSize="@dimen/textsize_medium"
+                        app:layout_constraintEnd_toStartOf="@id/arrowImageView"
+                        app:layout_constraintStart_toEndOf="@id/iconImageView"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/subtitleTextView"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="4dp"
+                        android:ellipsize="end"
+                        android:maxLines="2"
+                        android:text="See how your habits are shaping your health."
+                        android:textColor="@color/txt_color_header"
+                        android:textSize="@dimen/textsize_small"
+                        app:layout_constraintEnd_toStartOf="@id/arrowImageView"
+                        app:layout_constraintStart_toEndOf="@id/iconImageView"
+                        app:layout_constraintTop_toBottomOf="@id/titleTextView" />
+
+                    <ImageView
+                        android:id="@+id/arrowImageView"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/arrow_right"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
             <!-- Fragment Container -->
             <FrameLayout
                 android:id="@+id/fragmentContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/white" />
+                android:background="#F7F7F7" />
 
         </LinearLayout>
 
