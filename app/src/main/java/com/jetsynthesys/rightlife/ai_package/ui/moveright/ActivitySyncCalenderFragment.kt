@@ -32,6 +32,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -172,29 +173,6 @@ class ActivitySyncCalenderFragment : BaseFragment<FragmentActivitySyncCalenderBi
         val dateRange  = ninetyDaysAgo.format(formatter) + "_to_" + formattedCurrentDate
         getWorkoutLogHistory(dateRange)
         workoutLogYearlyList = generateYearCalendar()
-
-        //  onMealLogCalenderItemRefresh()
-        onMealLogCalenderSummaryRefresh()
-    }
-
-    private fun onMealLogCalenderSummaryRefresh (){
-
-//        val summaryList = listOf(
-//            CalendarSummaryModel("Over", "2140"),
-//            CalendarSummaryModel("Under", "12.3 kCal"),
-//            CalendarSummaryModel("Under", "0"),
-//            CalendarSummaryModel("Under", "0"),
-//            CalendarSummaryModel("Under", "0"),
-//            CalendarSummaryModel("Under", "0"),
-//            CalendarSummaryModel("Under", "0"),
-//            CalendarSummaryModel("Under", "0"),
-//            CalendarSummaryModel("Under", "0")
-//        )
-
-        val valueLists : ArrayList<CalendarSummaryModel> = ArrayList()
-      //  valueLists.addAll(summaryList as Collection<CalendarSummaryModel>)
-        val mealLogDateData: CalendarSummaryModel? = null
-        calendarSummaryAdapter.addAll(valueLists, -1, mealLogDateData, false)
     }
 
     private fun onMealLogCalenderItem(calendarDateModel: CalendarDateModel, position: Int, isRefresh: Boolean) {
@@ -218,14 +196,11 @@ class ActivitySyncCalenderFragment : BaseFragment<FragmentActivitySyncCalenderBi
         val dateFormat = java.text.SimpleDateFormat("EEE, dd MMM yyyy")
         val currentDate = dateFormat.format(calendar.time)
         txtDate.text = currentDate
-
         // Set calendar to January 1st of the given year
         calendar.set(year, java.util.Calendar.JANUARY, 1)
         val firstDayOfWeek = calendar.get(java.util.Calendar.DAY_OF_WEEK) // Sunday = 1, Monday = 2, etc.
-
         // Calculate how many previous year days we need to add to start from Monday
         val daysToFill = if (firstDayOfWeek == java.util.Calendar.MONDAY) 0 else (firstDayOfWeek - 2 + 7) % 7
-
         // Add previous year days
         calendar.add(java.util.Calendar.DAY_OF_YEAR, -daysToFill)
         for (i in 0 until daysToFill) {
@@ -337,12 +312,11 @@ class ActivitySyncCalenderFragment : BaseFragment<FragmentActivitySyncCalenderBi
         val mealLogDateData: CalendarDateModel? = null
         calendarAdapter.addAll(valueLists, -1, mealLogDateData, false)
 
-        val sampledList = ArrayList<CalendarDateModel>()
-        val step = valueLists.size / 53f
-        for (i in 0 until 53) {
-            val index = (i * step).toInt().coerceAtMost(valueLists.lastIndex)
-            sampledList.add(valueLists[index])
-        }
+        val weeklySurplusList = generateWeeklySurplus(valueLists)
+        val calendarSummaryModelList = ArrayList<CalendarSummaryModel>()
+        calendarSummaryModelList.addAll(weeklySurplusList)
+        val calendarSummaryModel: CalendarSummaryModel? = null
+        calendarSummaryAdapter.addAll(calendarSummaryModelList, -1, calendarSummaryModel, false)
 
         val now = Calendar.getInstance()
         val currentYear = now.get(Calendar.YEAR)
@@ -363,6 +337,56 @@ class ActivitySyncCalenderFragment : BaseFragment<FragmentActivitySyncCalenderBi
                 }
             }
         }
+    }
+
+    private fun generateWeeklySurplus(dateModels: List<CalendarDateModel>): List<CalendarSummaryModel> {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val sortedDates = dateModels.sortedBy { LocalDate.parse(it.fullDate, formatter) }
+
+        var weekNumber = 1
+        val firstDate = LocalDate.parse(sortedDates.first().fullDate, formatter)
+        val lastDate = LocalDate.parse(sortedDates.last().fullDate, formatter)
+        var current = firstDate.with(DayOfWeek.MONDAY)
+        val result = ArrayList<CalendarSummaryModel>()
+
+        while (current <= lastDate) {
+            val weekDays = mutableListOf<CalendarDateModel>()
+
+            for (i in 0 until 7) {
+                val dateStr = current.plusDays(i.toLong()).format(formatter)
+                val model = dateModels.find { it.fullDate == dateStr }
+                if (model != null) {
+                    weekDays.add(model)
+                } else {
+                    weekDays.add(
+                        CalendarDateModel(
+                            fullDate = dateStr,
+                            surplus = 0.0,
+                            is_available = false
+                        )
+                    )
+                }
+            }
+            val weekSurplus = weekDays.sumOf { it.surplus }
+            val sign = if (weekSurplus >= 0.0) "positive" else "negative"
+            val isAvailable = if (weekSurplus > 0.0){
+                true
+            }else{
+                false
+            }
+            result.add(
+                CalendarSummaryModel(
+                    isAvailable = isAvailable,
+                    weekNumber++,
+                    weekStartDate = current.format(formatter),
+                    totalWeekCaloriesBurned = weekSurplus,
+                    weekDays = weekDays,
+                    sign = sign
+                )
+            )
+            current = current.plusWeeks(1)
+        }
+        return result
     }
 
     fun showLoader(view: View) {

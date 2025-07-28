@@ -119,6 +119,62 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
         val dateRange  = ninetyDaysAgo.format(formatter) + "_to_" + formattedCurrentDate
         getMealsLogHistory(dateRange)
         mealLogYearlyList = generateYearCalendar()
+
+        icLeftArrow.setOnClickListener {
+            val currentYear = LocalDate.now().year
+            val selectedDate = txtDate.text
+            val formatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy", Locale.ENGLISH)
+            val date = LocalDate.parse(selectedDate, formatter)
+            val year = date.year
+            val month = date.monthValue - 2
+            if (month >= 0) {
+                val targetIndex = mealLogYearlyList.indexOfFirst {
+                    it.year == year && it.month == getMonthAbbreviation(month) && it.date == 1
+                }
+                recyclerCalendar.post {
+                    recyclerCalendar.scrollToPosition(targetIndex)
+                    recyclerCalendar.post {
+                        val holder = recyclerCalendar.findViewHolderForAdapterPosition(targetIndex)
+                        if (holder != null) {
+                            val y = holder.itemView.top
+                            nestedScrollView.smoothScrollTo(0, recyclerCalendar.top + y)
+                            val oneMonthBack = date.minusMonths(1)
+                            txtDate.text = oneMonthBack.format(formatter)
+                        }
+                    }
+                }
+            }else{
+                Toast.makeText(requireContext(),"Current year calendar only", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        icRightArrow.setOnClickListener {
+            val currentYear = LocalDate.now().year
+            val selectedDate = txtDate.text
+            val formatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy", Locale.ENGLISH)
+            val date = LocalDate.parse(selectedDate, formatter)
+            val year = date.year
+            val month = date.monthValue
+            if (month < 12) {
+                val targetIndex = mealLogYearlyList.indexOfFirst {
+                    it.year == year && it.month == getMonthAbbreviation(month) && it.date == 1
+                }
+                recyclerCalendar.post {
+                    recyclerCalendar.scrollToPosition(targetIndex)
+                    recyclerCalendar.post {
+                        val holder = recyclerCalendar.findViewHolderForAdapterPosition(targetIndex)
+                        if (holder != null) {
+                            val y = holder.itemView.top
+                            nestedScrollView.smoothScrollTo(0, recyclerCalendar.top + y)
+                            val oneMonthBack = date.plusMonths(1)
+                            txtDate.text = oneMonthBack.format(formatter)
+                        }
+                    }
+                }
+            }else{
+                Toast.makeText(requireContext(),"Current year calendar only", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun onMealLogCalenderList (yearList: List<CalendarDateModel>, mealLogHistory: ArrayList<LoggedMeal>){
@@ -142,46 +198,7 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
         calendarAdapter.addAll(valueLists, -1, mealLogDateData, false)
 
         val weeklySurplusList = generateWeeklySurplus(valueLists)
-
-
-//        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-//        val sortedDates = valueLists.sortedBy { LocalDate.parse(it.fullDate, formatter) }
-//        val firstDate = LocalDate.parse(sortedDates.first().fullDate, formatter)
-//
-//// Align to previous or same Monday
-//        val startDate = firstDate.with(DayOfWeek.MONDAY)
-//
-//        val weeklyList = ArrayList<CalendarSummaryModel>()
-//        var weekNumber = 1
-//
-//        var current = startDate
-//        while (current <= LocalDate.parse(sortedDates.last().fullDate, formatter)) {
-//            val week = ArrayList<CalendarDateModel>()
-//            for (i in 0 until 7) {
-//                val date = current.plusDays(i.toLong()).format(formatter)
-//                val model = valueLists.find { it.fullDate == date }
-//                if (model != null) {
-//                    week.add(model)
-//                } else {
-//                    // Optional: Add empty date for padding
-//                    week.add(CalendarDateModel(fullDate = date, is_available = false))
-//                }
-//            }
-//            weeklyList.add(CalendarSummaryModel(weekNumber++, week))
-//            current = current.plusWeeks(1)
-//        }
-
-        println(weeklySurplusList)
-
-
         val calendarSummaryModelList = ArrayList<CalendarSummaryModel>()
-
-//        val sampledList = ArrayList<CalendarDateModel>()
-//        val step = valueLists.size / 53f
-//        for (i in 0 until 53) {
-//            val index = (i * step).toInt().coerceAtMost(valueLists.lastIndex)
-//            sampledList.add(valueLists[index])
-//        }
         calendarSummaryModelList.addAll(weeklySurplusList)
         val calendarSummaryModel: CalendarSummaryModel? = null
         calendarSummaryAdapter.addAll(calendarSummaryModelList, -1, calendarSummaryModel, false)
@@ -193,7 +210,6 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
         val targetIndex = mealLogYearlyList.indexOfFirst {
             it.year == currentYear && it.month == getMonthAbbreviation(currentMonth) && it.date == 1
         }
-
         Log.d("CalendarScroll", "Trying to scroll to: $targetIndex")
         recyclerCalendar.post {
             recyclerCalendar.scrollToPosition(targetIndex)
@@ -205,40 +221,6 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
                 }
             }
         }
-
-        val layoutManager = recyclerCalendar.layoutManager as GridLayoutManager
-        val daysPerMonth = 30 // average days per month
-
-// 👉 Right arrow = Next month (scroll down)
-        icRightArrow.setOnClickListener {
-            val currentPosition = layoutManager.findFirstVisibleItemPosition()
-            val targetPosition = (currentPosition + daysPerMonth).coerceAtMost(calendarAdapter.itemCount - 1)
-
-            recyclerCalendar.smoothScrollToPosition(targetPosition)
-            recyclerCalendar.post {
-                val holder = recyclerCalendar.findViewHolderForAdapterPosition(targetPosition)
-                holder?.let {
-                    val y = it.itemView.top
-                    nestedScrollView.smoothScrollTo(0, recyclerCalendar.top + y)
-                }
-            }
-        }
-
-// 👉 Left arrow = Previous month (scroll up)
-        icLeftArrow.setOnClickListener {
-            val currentPosition = layoutManager.findFirstVisibleItemPosition()
-            val targetPosition = (currentPosition - daysPerMonth).coerceAtLeast(0)
-
-            recyclerCalendar.smoothScrollToPosition(targetPosition)
-            recyclerCalendar.post {
-                val holder = recyclerCalendar.findViewHolderForAdapterPosition(targetPosition)
-                holder?.let {
-                    val y = it.itemView.top
-                    nestedScrollView.smoothScrollTo(0, recyclerCalendar.top + y)
-                }
-            }
-        }
-
     }
 
     private fun generateWeeklySurplus(dateModels: List<CalendarDateModel>): List<CalendarSummaryModel> {
@@ -312,14 +294,11 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
         val dateFormat = SimpleDateFormat("EEE, dd MMM yyyy")
         val currentDate = dateFormat.format(calendar.time)
         txtDate.text = currentDate
-
         // Set calendar to January 1st of the given year
         calendar.set(year, Calendar.JANUARY, 1)
         val firstDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK) // Sunday = 1, Monday = 2, etc.
-
         // Calculate how many previous year days we need to add to start from Monday
         val daysToFill = if (firstDayOfWeek == Calendar.MONDAY) 0 else (firstDayOfWeek - 2 + 7) % 7
-
         // Add previous year days
         calendar.add(Calendar.DAY_OF_YEAR, -daysToFill)
         for (i in 0 until daysToFill) {
