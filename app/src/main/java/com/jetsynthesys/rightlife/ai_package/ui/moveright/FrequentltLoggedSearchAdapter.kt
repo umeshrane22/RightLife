@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.model.FrequentLoggedRoutine
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.frequentlylogged.LoggedBottomSheet
@@ -32,6 +33,9 @@ class FrequentltLoggedSearchAdapter(private val context: Context, private var da
         val item = dataLists[position]
 
         holder.mealTitle.text = item.mealName
+        Glide.with(context)
+            .load(item.icon) // <-- your image URL string
+            .into(holder.mealIcon)
         holder.mealName.text = item.mealType
         holder.servesCount.text = item.serve
         holder.calValue.text = item.cal
