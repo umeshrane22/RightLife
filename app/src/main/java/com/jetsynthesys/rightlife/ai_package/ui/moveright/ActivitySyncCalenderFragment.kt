@@ -32,6 +32,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
@@ -108,13 +109,61 @@ class ActivitySyncCalenderFragment : BaseFragment<FragmentActivitySyncCalenderBi
             }
         }
 
-//        icLeftArrow.setOnClickListener {
-//            txtDate.text = "Thur, 5 Feb 2025"
-//        }
-//
-//        icRightArrow.setOnClickListener {
-//            txtDate.text = "Thur, 7 Feb 2025"
-//        }
+        icLeftArrow.setOnClickListener {
+            val currentYear = LocalDate.now().year
+            val selectedDate = txtDate.text
+            val formatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy", Locale.ENGLISH)
+            val date = LocalDate.parse(selectedDate, formatter)
+            val year = date.year
+            val month = date.monthValue - 2
+            if (month >= 0) {
+                val targetIndex = workoutLogYearlyList.indexOfFirst {
+                    it.year == year && it.month == getMonthAbbreviation(month) && it.date == 1
+                }
+                recyclerCalendar.post {
+                    recyclerCalendar.scrollToPosition(targetIndex)
+                    recyclerCalendar.post {
+                        val holder = recyclerCalendar.findViewHolderForAdapterPosition(targetIndex)
+                        if (holder != null) {
+                            val y = holder.itemView.top
+                            nestedScrollView.smoothScrollTo(0, recyclerCalendar.top + y)
+                            val oneMonthBack = date.minusMonths(1)
+                            txtDate.text = oneMonthBack.format(formatter)
+                        }
+                    }
+                }
+            }else{
+                Toast.makeText(requireContext(),"Current year calendar only", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        icRightArrow.setOnClickListener {
+            val currentYear = LocalDate.now().year
+            val selectedDate = txtDate.text
+            val formatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy", Locale.ENGLISH)
+            val date = LocalDate.parse(selectedDate, formatter)
+            val year = date.year
+            val month = date.monthValue
+            if (month < 12) {
+                val targetIndex = workoutLogYearlyList.indexOfFirst {
+                    it.year == year && it.month == getMonthAbbreviation(month) && it.date == 1
+                }
+                recyclerCalendar.post {
+                    recyclerCalendar.scrollToPosition(targetIndex)
+                    recyclerCalendar.post {
+                        val holder = recyclerCalendar.findViewHolderForAdapterPosition(targetIndex)
+                        if (holder != null) {
+                            val y = holder.itemView.top
+                            nestedScrollView.smoothScrollTo(0, recyclerCalendar.top + y)
+                            val oneMonthBack = date.plusMonths(1)
+                            txtDate.text = oneMonthBack.format(formatter)
+                        }
+                    }
+                }
+            }else{
+                Toast.makeText(requireContext(),"Current year calendar only", Toast.LENGTH_SHORT).show()
+            }
+        }
 
         val currentDateTime = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")

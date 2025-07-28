@@ -80,6 +80,9 @@ data class WorkoutItem(
     @SerializedName("source")
     val source: String,
 
+    @SerializedName("icon")
+    val icon: String,
+
     @SerializedName("routine_id")
     val routineId: String? = null // Optional field, nullable in Kotlin
 )
