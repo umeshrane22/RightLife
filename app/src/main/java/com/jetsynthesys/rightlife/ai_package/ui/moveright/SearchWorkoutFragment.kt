@@ -80,6 +80,7 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
                     arguments = Bundle().apply {
                         putString("routine", routine)
                         putString("routineName", routineName)
+                        putString("selected_date", mSelectedDate)
                         putParcelableArrayList("workoutList", workoutList)
                     }
                 }
