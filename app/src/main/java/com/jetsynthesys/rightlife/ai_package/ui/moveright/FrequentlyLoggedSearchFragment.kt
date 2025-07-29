@@ -50,13 +50,15 @@ class FrequentlyLoggedSearchFragment : BaseFragment<FragmentFrequentlyLoggedSear
                 val currentDateTime = LocalDateTime.now()
                 val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
                 val formattedDate = currentDateTime.format(formatter)
+                val startDate = currentDateTime.minusDays(30)
+                val formattedStartDate = startDate.format(formatter)
                 val response = ApiClient.apiServiceFastApi.getUserFrequentlyWorkouts(
                     userId = SharedPreferenceManager.getInstance(requireActivity()).userId,
-                    startDate = formattedDate,
+                    startDate = formattedStartDate,
                     endDate = formattedDate,
                     page = 1,
                     limit = 10,
-                    minCount = 2
+                    minCount = 5
                 )
 
                 if (response.isSuccessful) {
