@@ -5,12 +5,26 @@ import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
 import com.jetsynthesys.rightlife.R
+import kotlin.math.cos
+import kotlin.math.sin
 
 class HalfCurveProgressBar @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
+
+    private val indicatorFillPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.FILL
+        color = Color.WHITE
+    }
+
+    private val indicatorStrokePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        strokeWidth = 4f
+        strokeCap = Paint.Cap.ROUND
+        color = resources.getColor(R.color.eat_circle_indicator)
+    }
 
     private val backgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
@@ -65,7 +79,6 @@ class HalfCurveProgressBar @JvmOverloads constructor(
         progressPaint.strokeWidth = typedArray.getDimension(R.styleable.HalfCurveProgressBar_strokeWidth, 60f)
         textPaintMain.textSize = typedArray.getDimension(R.styleable.HalfCurveProgressBar_textSizeMain, 100f)
         typedArray.recycle()
-
         updateProgress()
     }
 
@@ -126,6 +139,20 @@ class HalfCurveProgressBar @JvmOverloads constructor(
         // Draw the progress arc
         val sweepAngle = (animatedProgress / 100f) * sweepAngleMax
         canvas.drawArc(rectF, startAngle, sweepAngle, false, progressPaint)
+
+        // 🔴 Draw indicator at end of progress arc
+        val angleRad = Math.toRadians((startAngle + sweepAngle).toDouble())
+        val dotRadius = 22f
+        val strokeWidth = 3f
+        // Position on the arc border
+        val dotX = (rectF.centerX() + rectF.width() / 2 * cos(angleRad)).toFloat()
+        val dotY = (rectF.centerY() + rectF.height() / 2 * sin(angleRad)).toFloat()
+       // canvas.drawCircle(dotX, dotY, dotRadius, indicatorPaint)
+
+       // Filled circle (slightly smaller to avoid overflow)
+        canvas.drawCircle(dotX, dotY, dotRadius - strokeWidth / 2, indicatorFillPaint)
+       // Stroke around the same center
+        canvas.drawCircle(dotX, dotY, dotRadius - strokeWidth / 2, indicatorStrokePaint)
 
         // Draw the text (adjust positions based on the new centerY)
         drawMainText(canvas, centerX, centerY)

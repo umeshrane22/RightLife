@@ -44,6 +44,7 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
     private var workoutList: ArrayList<WorkoutList> = ArrayList()
     private var routine: String = ""
     private var routineName: String = ""
+    private var mSelectedDate: String = ""
     private var workoutListRoutine = ArrayList<WorkoutSessionRecord>()
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentAllWorkoutBinding
@@ -66,6 +67,7 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
         view.setBackgroundColor(Color.TRANSPARENT)
         routine = arguments?.getString("routine").toString()
         routineName = arguments?.getString("routineName").toString()
+        mSelectedDate = arguments?.getString("selected_date").toString()
         workoutListRoutine = arguments?.getParcelableArrayList("workoutList") ?: ArrayList()
         appPreference = AppPreference(requireContext())
         progressDialog = ProgressDialog(activity)
@@ -114,6 +116,7 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
         val fragment = AddWorkoutSearchFragment()
         val args = Bundle().apply {
             putString("allworkout", "allworkout")
+            putString("selected_date",mSelectedDate)
             putParcelable("workout", workout)
         }
         fragment.arguments = args
@@ -154,6 +157,7 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
             putParcelable("workout", workout)
             putString("routine", routine)
             putString("routineName", routineName)
+            putString("selected_date", mSelectedDate)
             putParcelableArrayList("workoutList", workoutListRoutine)
         }
         fragment.arguments = args

@@ -68,6 +68,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
     private var lastWorkoutRecord: WorkoutSessionRecord? = null
     private var routine: String = ""
     private var routineName: String = ""
+    private var mSelectedDate: String = ""
     private lateinit var workoutName : TextView
     private lateinit var workoutIcon : ImageView
     private var workoutListRoutine = ArrayList<WorkoutSessionRecord>()
@@ -90,6 +91,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
         // Retrieve workout from arguments
         routine = arguments?.getString("routine").toString()
         routineName = arguments?.getString("routineName").toString()
+        mSelectedDate = arguments?.getString("selected_date").toString()
         workoutListRoutine = arguments?.getParcelableArrayList("workoutList") ?: ArrayList()
         activityModel = arguments?.getParcelable("ACTIVITY_MODEL")
         workoutModel = arguments?.getParcelable("WORKOUT_MODEL")
@@ -109,6 +111,9 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
         hourPicker.maxValue = 23
         minutePicker.minValue = 0
         minutePicker.maxValue = 59
+        if (mSelectedDate.isNullOrEmpty()){
+            mSelectedDate = getCurrentDate()
+        }
         if (edit == "edit") {
             if (activityModel == null) {
                 Toast.makeText(requireContext(), "No activity data provided for editing", Toast.LENGTH_SHORT).show()
@@ -570,7 +575,6 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-                val currentDate = getCurrentDate()
                 val request = workoutSession?.let {
                     CreateWorkoutRequest(
                         userId = userId,
@@ -578,7 +582,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                         durationMin = it.durationMin,
                         intensity = it.intensity,
                         sessions = 1,
-                        date = currentDate
+                        date = mSelectedDate
                     )
                 } ?: run {
                     withContext(Dispatchers.Main) {

@@ -1,29 +1,44 @@
 package com.jetsynthesys.rightlife.ai_package.model.response
 
+import com.google.gson.annotations.SerializedName
+
 data class MealLogsHistoryResponse(
-    val status_code: Int,
+    @SerializedName("status_code")
+    val statusCode: Int,
+    @SerializedName("message")
     val message: String,
-    val start_date: String,
-    val end_date: String,
-    val is_logged_meal_list: List<LoggedMeal>?,
-    val total_calories_data: TotalCaloriesData
+    @SerializedName("start_date")
+    val startDate: String,
+    @SerializedName("end_date")
+    val endDate: String,
+    @SerializedName("user_goal")
+    val userGoal: String,
+    @SerializedName("is_logged_meal_list")
+    val loggedMealList: List<LoggedMealHistory>
 )
 
-data class LoggedMeal(
+data class LoggedMealHistory(
+    @SerializedName("date")
     val date: String,
-    val data: Any?, // can be an object or list or empty, based on your structure
-    val is_available: Boolean,
-    val calories_data: CaloriesData
+    @SerializedName("data")
+    val data: Any?,
+    @SerializedName("is_available")
+    val isAvailable: Boolean,
+    @SerializedName("calories_data")
+    val caloriesData: CaloriesData
 )
 
 data class CaloriesData(
-    val workout: Double,
-    val manual: Double,
-    val total_calories_burned: Double
+    @SerializedName("calories_intake")
+    val caloriesIntake: Double,
+    @SerializedName("calories_outtake")
+    val caloriesOuttake: Double,
+    @SerializedName("difference")
+    val difference: Double,
+    @SerializedName("sign")
+    val sign: String
 )
 
-data class TotalCaloriesData(
-    val total_workout_burned: Double,
-    val total_manual_burned: Double,
-    val total_all_burned: Double
-)
+
+
+

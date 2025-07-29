@@ -26,5 +26,7 @@ data class CalendarDateModel(
     @SerializedName("fullDate")
     var fullDate: String = "",
     @SerializedName("is_available")
-    var is_available: Boolean = false
+    var is_available: Boolean = false,
+    @SerializedName("sign")
+    var sign : String
 ): Parcelable

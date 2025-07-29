@@ -4,8 +4,6 @@ import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -20,7 +18,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.LinearLayoutCompat
-import androidx.camera.core.impl.utils.ContextUtil.getApplicationContext
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
@@ -33,7 +30,7 @@ import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.MealLists
 import com.jetsynthesys.rightlife.ai_package.model.MealLogData
 import com.jetsynthesys.rightlife.ai_package.model.response.FullDaySummary
-import com.jetsynthesys.rightlife.ai_package.model.response.LoggedMeal
+import com.jetsynthesys.rightlife.ai_package.model.response.LoggedMealHistory
 import com.jetsynthesys.rightlife.ai_package.model.response.Macros
 import com.jetsynthesys.rightlife.ai_package.model.response.MealDetailsLog
 import com.jetsynthesys.rightlife.ai_package.model.response.MealLogDataResponse
@@ -138,7 +135,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
 
     private var currentWeekStart: LocalDate = LocalDate.now().with(DayOfWeek.MONDAY)
     private var mealLogsHistoryResponse : MealLogsHistoryResponse? = null
-    private var  mealLogHistory :  ArrayList<LoggedMeal> = ArrayList()
+    private var  mealLogHistory :  ArrayList<LoggedMealHistory> = ArrayList()
 
     private var mealLogWeeklyDayList : List<MealLogWeeklyDayModel> = ArrayList()
     private var mealPlanData : ArrayList<MealLogData> = ArrayList()
@@ -573,14 +570,14 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
         }
     }
 
-    private fun onMealLogWeeklyDayList(weekList: List<MealLogWeeklyDayModel>, mealLogHistory: ArrayList<LoggedMeal>) {
+    private fun onMealLogWeeklyDayList(weekList: List<MealLogWeeklyDayModel>, mealLogHistory: ArrayList<LoggedMealHistory>) {
         val today = LocalDate.now()
         val weekLists : ArrayList<MealLogWeeklyDayModel> = ArrayList()
         if (mealLogHistory.size > 0 && weekList.isNotEmpty()){
             mealLogHistory.forEach { mealLog ->
                 for (item in weekList){
                     if (item.fullDate.toString() == mealLog.date){
-                        if (mealLog.is_available == true){
+                        if (mealLog.isAvailable == true){
                            item.is_available = true
                         }
                     }
@@ -1362,8 +1359,8 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
                     }
                     if (response.body() != null){
                         mealLogsHistoryResponse = response.body()
-                        if (mealLogsHistoryResponse?.is_logged_meal_list!!.size > 0){
-                            mealLogHistory.addAll(mealLogsHistoryResponse!!.is_logged_meal_list!!)
+                        if (mealLogsHistoryResponse?.loggedMealList!!.size > 0){
+                            mealLogHistory.addAll(mealLogsHistoryResponse!!.loggedMealList!!)
                             onMealLogWeeklyDayList(mealLogWeeklyDayList, mealLogHistory)
                         }
                     }

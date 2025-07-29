@@ -487,7 +487,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
             }
         }
         val base64Image = encodeImageToBase64(imagePath)
-        val apiKey = "BTmhNkVTRxElUNrSym77"
+        val apiKey = "HanN8X1baCEM0E49xNcN"
         val request = AnalysisRequest(apiKey, base64Image, description)
         val call = ApiClient.apiServiceFoodCaptureImageApi.analyzeFoodImage(
             "analysis", request)

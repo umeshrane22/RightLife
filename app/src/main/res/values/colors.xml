@@ -90,6 +90,7 @@
     <color name="color_move_right">#B11414</color>
     <color name="color_eat_right">#005439</color>
     <color name="color_sleep_right">#002C5F</color>
+    <color name="eat_circle_indicator">#26795D</color>
 
     <color name="color_green">#03B27B</color>
     <color name="color_blue">#1292E5</color>

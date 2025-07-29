@@ -51,6 +51,7 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
@@ -147,14 +148,22 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         }
 
         layoutAddWorkout.setOnClickListener {
-            val fragment = SearchWorkoutFragment()
-            val args = Bundle()
-            args.putString("selected_date", workoutDateTv.text.toString()) // Put the string in the bundle
-            fragment.arguments = args
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                replace(R.id.flFragment, fragment, "searchWorkoutFragment")
-                addToBackStack("searchWorkoutFragment")
-                commit()
+            val selectedDate = workoutDateTv.text
+            val formatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy", Locale.ENGLISH)
+            val date = LocalDate.parse(selectedDate, formatter)
+            val currentDate = LocalDate.now()
+            if (date <= currentDate) {
+                val fragment = SearchWorkoutFragment()
+                val args = Bundle()
+                args.putString("selected_date", workoutDateTv.text.toString()) // Put the string in the bundle
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "searchWorkoutFragment")
+                    addToBackStack("searchWorkoutFragment")
+                    commit()
+                }
+            }else{
+                Toast.makeText(requireContext(), "Workout cannot be logged on future date", Toast.LENGTH_SHORT).show()
             }
         }
 
