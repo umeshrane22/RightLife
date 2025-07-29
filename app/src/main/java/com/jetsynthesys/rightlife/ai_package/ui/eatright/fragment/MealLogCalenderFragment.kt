@@ -253,15 +253,17 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
                 }
             }
             val weekSurplus = weekDays.sumOf { it.surplus }
-            val sign = if (weekSurplus >= 0.0) "positive" else "negative"
-            val isAvailable = if (weekSurplus > 0.0){
-                true
+            var sign = ""
+            sign = if (weekSurplus > 0.0) {
+                "plus"
+            }else if (weekSurplus < 0.0) {
+                "minus"
             }else{
-                false
+                "0"
             }
             result.add(
                 CalendarSummaryModel(
-                    isAvailable = isAvailable,
+                    isAvailable = false,
                     weekNumber++,
                     weekStartDate = current.format(formatter),
                     totalWeekCaloriesBurned = weekSurplus,

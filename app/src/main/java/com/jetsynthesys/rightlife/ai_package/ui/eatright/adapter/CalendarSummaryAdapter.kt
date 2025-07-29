@@ -27,17 +27,51 @@ class CalendarSummaryAdapter(private val context: Context, private var dataLists
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = dataLists[position]
 
-      //  holder.txtSummary.text = item.surplusType
-        holder.txtValue.text = item.totalWeekCaloriesBurned.toInt().toString()
-
-//        if (item.surplusType.contentEquals("Deficit")){
-//            holder.txtSummary.setTextColor(ContextCompat.getColor(context,R.color.week_red))
-//            holder.layoutValue.setBackgroundResource(R.drawable.red_circle_background)
-//        }else{
-            holder.txtSummary.setTextColor(ContextCompat.getColor(context,R.color.border_green))
-            holder.layoutValue.setBackgroundResource(R.drawable.green_circle_background)
-     //   }
-
+        val totalWeekCaloriesBurned = item.totalWeekCaloriesBurned.toInt().toString().replace("-", "")
+        holder.txtValue.text = totalWeekCaloriesBurned
+        if (item.userGoal.equals("weight_loss")){
+            if (item.sign.equals("plus")){
+                holder.txtSummary.text = "Deficit"
+                holder.txtSummary.setTextColor(ContextCompat.getColor(context,R.color.week_red))
+                holder.layoutValue.setBackgroundResource(R.drawable.red_circle_background)
+            }else if(item.sign.equals("minus")){
+                holder.txtSummary.text = "Surplus"
+                holder.txtSummary.setTextColor(ContextCompat.getColor(context,R.color.border_green))
+                holder.layoutValue.setBackgroundResource(R.drawable.green_circle_background)
+            }else {
+                holder.txtSummary.text = "Surplus"
+                holder.txtSummary.setTextColor(ContextCompat.getColor(context,R.color.border_green))
+                holder.layoutValue.setBackgroundResource(R.drawable.green_circle_background)
+            }
+        }else if (item.userGoal.equals("weight_gain")){
+            if (item.sign.equals("minus")){
+                holder.txtSummary.text = "Deficit"
+                holder.txtSummary.setTextColor(ContextCompat.getColor(context,R.color.week_red))
+                holder.layoutValue.setBackgroundResource(R.drawable.red_circle_background)
+            }else if(item.sign.equals("plus")){
+                holder.txtSummary.text = "Surplus"
+                holder.txtSummary.setTextColor(ContextCompat.getColor(context,R.color.border_green))
+                holder.layoutValue.setBackgroundResource(R.drawable.green_circle_background)
+            }else {
+                holder.txtSummary.text = "Surplus"
+                holder.txtSummary.setTextColor(ContextCompat.getColor(context,R.color.border_green))
+                holder.layoutValue.setBackgroundResource(R.drawable.green_circle_background)
+            }
+        }else{
+            if (item.sign.equals("plus")){
+                holder.txtSummary.text = "Deficit"
+                holder.txtSummary.setTextColor(ContextCompat.getColor(context,R.color.week_red))
+                holder.layoutValue.setBackgroundResource(R.drawable.red_circle_background)
+            }else if(item.sign.equals("minus")){
+                holder.txtSummary.text = "Surplus"
+                holder.txtSummary.setTextColor(ContextCompat.getColor(context,R.color.border_green))
+                holder.layoutValue.setBackgroundResource(R.drawable.green_circle_background)
+            }else {
+                holder.txtSummary.text = "Surplus"
+                holder.txtSummary.setTextColor(ContextCompat.getColor(context,R.color.border_green))
+                holder.layoutValue.setBackgroundResource(R.drawable.green_circle_background)
+            }
+        }
 //        holder.txtValue.setBackgroundResource(
 //            if (item.value < 0) R.drawable.bg_deficit else R.drawable.bg_surplus
 //        )

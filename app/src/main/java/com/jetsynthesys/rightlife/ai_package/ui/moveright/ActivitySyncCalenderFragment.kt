@@ -376,19 +376,13 @@ class ActivitySyncCalenderFragment : BaseFragment<FragmentActivitySyncCalenderBi
             }
             val weekSurplus = weekDays.sumOf { it.surplus }
             var sign = ""
-//            if (weekSurplus == 0.0) {
-//                sign =  "0"
-//            }else{
-//               sign = weekDays.
-//            }
-            if (userGoal.equals("weight_loss")){
-            }else if (userGoal.equals("weight_gain")){
-
+            sign = if (weekSurplus > 0.0) {
+                "plus"
+            }else if (weekSurplus < 0.0) {
+                "minus"
             }else{
-
+                "0"
             }
-
-
             result.add(
                 CalendarSummaryModel(
                     isAvailable = false,

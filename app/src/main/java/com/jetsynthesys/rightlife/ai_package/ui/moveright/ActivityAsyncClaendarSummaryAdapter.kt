@@ -29,23 +29,52 @@ class ActivityAsyncClaendarSummaryAdapter(private val context: Context, private 
         val totalWeekCaloriesBurned = item.totalWeekCaloriesBurned.toInt().toString().replace("-", "")
         holder.txtValue.text = totalWeekCaloriesBurned
         if (item.userGoal.equals("weight_loss")){
-            if (item.sign.equals("positive")){
-
-            }else if(item.sign.equals("negative")){
-
+            if (item.sign.equals("plus")){
+                holder.txtSummary.text = "Over"
+                holder.txtSummary.setTextColor(ContextCompat.getColor(context,R.color.week_red))
+                holder.layoutValue.setBackgroundResource(R.drawable.red_circle_background)
+            }else if(item.sign.equals("minus")){
+                holder.txtSummary.text = "Under"
+                holder.txtSummary.setTextColor(ContextCompat.getColor(context,R.color.border_green))
+                holder.layoutValue.setBackgroundResource(R.drawable.green_circle_background)
             }else {
-
+                holder.txtSummary.text = "Under"
+                holder.txtSummary.setTextColor(ContextCompat.getColor(context,R.color.border_green))
+                holder.layoutValue.setBackgroundResource(R.drawable.green_circle_background)
             }
-            holder.txtSummary.text = ""
         }else if (item.userGoal.equals("weight_gain")){
-            holder.txtSummary.text = ""
+            if (item.sign.equals("minus")){
+                holder.txtSummary.text = "Over"
+                holder.txtSummary.setTextColor(ContextCompat.getColor(context,R.color.week_red))
+                holder.layoutValue.setBackgroundResource(R.drawable.red_circle_background)
+            }else if(item.sign.equals("plus")){
+                holder.txtSummary.text = "Under"
+                holder.txtSummary.setTextColor(ContextCompat.getColor(context,R.color.border_green))
+                holder.layoutValue.setBackgroundResource(R.drawable.green_circle_background)
+            }else {
+                holder.txtSummary.text = "Under"
+                holder.txtSummary.setTextColor(ContextCompat.getColor(context,R.color.border_green))
+                holder.layoutValue.setBackgroundResource(R.drawable.green_circle_background)
+            }
         }else{
-
+            if (item.sign.equals("plus")){
+                holder.txtSummary.text = "Over"
+                holder.txtSummary.setTextColor(ContextCompat.getColor(context,R.color.week_red))
+                holder.layoutValue.setBackgroundResource(R.drawable.red_circle_background)
+            }else if(item.sign.equals("minus")){
+                holder.txtSummary.text = "Under"
+                holder.txtSummary.setTextColor(ContextCompat.getColor(context,R.color.border_green))
+                holder.layoutValue.setBackgroundResource(R.drawable.green_circle_background)
+            }else {
+                holder.txtSummary.text = "Under"
+                holder.txtSummary.setTextColor(ContextCompat.getColor(context,R.color.border_green))
+                holder.layoutValue.setBackgroundResource(R.drawable.green_circle_background)
+            }
         }
 
        // if (item.surplusType.contentEquals("Deficit")){
-            holder.txtSummary.setTextColor(ContextCompat.getColor(context, R.color.week_red))
-            holder.layoutValue.setBackgroundResource(R.drawable.red_circle_background)
+    //        holder.txtSummary.setTextColor(ContextCompat.getColor(context, R.color.week_red))
+    //        holder.layoutValue.setBackgroundResource(R.drawable.red_circle_background)
        // }else{
       //      holder.txtSummary.setTextColor(ContextCompat.getColor(context, R.color.border_green))
        //     holder.layoutValue.setBackgroundResource(R.drawable.circle_background)
