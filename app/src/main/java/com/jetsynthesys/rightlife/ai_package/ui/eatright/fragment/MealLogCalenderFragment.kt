@@ -50,6 +50,7 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
     private var  mealLogHistory :  ArrayList<LoggedMealHistory> = ArrayList()
     private var mealLogYearlyList : List<CalendarDateModel> = ArrayList()
     private var loadingOverlay : FrameLayout? = null
+    private var userGoal: String = ""
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentMealLogCalenderBinding
         get() = FragmentMealLogCalenderBinding::inflate
@@ -245,7 +246,8 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
                         CalendarDateModel(
                             fullDate = dateStr,
                             surplus = 0.0,
-                            is_available = false
+                            is_available = false,
+                            sign = "0"
                         )
                     )
                 }
@@ -264,7 +266,8 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
                     weekStartDate = current.format(formatter),
                     totalWeekCaloriesBurned = weekSurplus,
                     weekDays = weekDays,
-                    sign = sign
+                    sign = sign,
+                    userGoal = userGoal
                 )
             )
             current = current.plusWeeks(1)
@@ -311,7 +314,8 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
                     currentDate = currentDate,
                     currentMonth = currentMonth,
                     fullDate = formatter.format(calendar.time),
-                    surplus = 0.0
+                    surplus = 0.0,
+                    sign = "0"
                 )
             )
             calendar.add(Calendar.DAY_OF_YEAR, 1) // Move forward
@@ -329,7 +333,8 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
                     currentDate = currentDate,
                     currentMonth = currentMonth,
                     fullDate = formatter.format(calendar.time),
-                    surplus = 0.0
+                    surplus = 0.0,
+                    sign = "0"
                 )
             )
             calendar.add(Calendar.DAY_OF_YEAR, 1) // Move forward
@@ -363,6 +368,7 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
                     if (response.body() != null){
                         mealLogsHistoryResponse = response.body()
                         if (mealLogsHistoryResponse?.loggedMealList!!.isNotEmpty()){
+                            userGoal = mealLogsHistoryResponse?.userGoal.toString()
                             mealLogHistory.addAll(mealLogsHistoryResponse!!.loggedMealList!!)
                             onMealLogCalenderList(mealLogYearlyList , mealLogHistory)
                         }
