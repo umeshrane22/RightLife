@@ -127,6 +127,7 @@
                 app:cardCornerRadius="16dp"
                 android:layout_margin="@dimen/margin_card_16dp"
                 app:cardElevation="4dp"
+                android:visibility="gone"
                 app:strokeColor="@color/rightlife"
                 app:strokeWidth="2dp">
 

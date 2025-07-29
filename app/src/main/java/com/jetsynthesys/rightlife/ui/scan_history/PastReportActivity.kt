@@ -9,6 +9,7 @@ import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.databinding.ActivityPastReportBinding
+import com.jetsynthesys.rightlife.ui.aireport.AIReportWebViewActivity
 import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity
 import com.jetsynthesys.rightlife.ui.mindaudit.MindAuditResultActivity
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
@@ -35,6 +36,19 @@ class PastReportActivity : BaseActivity() {
         }
 
         fetchPastReports()
+        binding.llAiReport.setOnClickListener {
+            var dynamicReportId = "" // This Is User ID
+            dynamicReportId = SharedPreferenceManager.getInstance(applicationContext).userId
+            if (dynamicReportId.isEmpty()) {
+                // Some error handling if the ID is not available
+            }else{
+                val intent = Intent(this, AIReportWebViewActivity::class.java).apply {
+                    // Put the dynamic ID as an extra
+                    putExtra(AIReportWebViewActivity.EXTRA_REPORT_ID, dynamicReportId)
+                }
+                startActivity(intent)
+            }
+        }
     }
 
     private fun fetchPastReports() {
