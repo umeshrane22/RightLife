@@ -24,12 +24,14 @@ import com.jetsynthesys.rightlife.databinding.FragmentMealLogCalenderBinding
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.response.LoggedMeal
 import com.jetsynthesys.rightlife.ai_package.model.response.MealLogsHistoryResponse
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.CalendarSummaryModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealLogWeeklyDayModel
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -117,6 +119,62 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
         val dateRange  = ninetyDaysAgo.format(formatter) + "_to_" + formattedCurrentDate
         getMealsLogHistory(dateRange)
         mealLogYearlyList = generateYearCalendar()
+
+        icLeftArrow.setOnClickListener {
+            val currentYear = LocalDate.now().year
+            val selectedDate = txtDate.text
+            val formatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy", Locale.ENGLISH)
+            val date = LocalDate.parse(selectedDate, formatter)
+            val year = date.year
+            val month = date.monthValue - 2
+            if (month >= 0) {
+                val targetIndex = mealLogYearlyList.indexOfFirst {
+                    it.year == year && it.month == getMonthAbbreviation(month) && it.date == 1
+                }
+                recyclerCalendar.post {
+                    recyclerCalendar.scrollToPosition(targetIndex)
+                    recyclerCalendar.post {
+                        val holder = recyclerCalendar.findViewHolderForAdapterPosition(targetIndex)
+                        if (holder != null) {
+                            val y = holder.itemView.top
+                            nestedScrollView.smoothScrollTo(0, recyclerCalendar.top + y)
+                            val oneMonthBack = date.minusMonths(1)
+                            txtDate.text = oneMonthBack.format(formatter)
+                        }
+                    }
+                }
+            }else{
+                Toast.makeText(requireContext(),"Current year calendar only", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        icRightArrow.setOnClickListener {
+            val currentYear = LocalDate.now().year
+            val selectedDate = txtDate.text
+            val formatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy", Locale.ENGLISH)
+            val date = LocalDate.parse(selectedDate, formatter)
+            val year = date.year
+            val month = date.monthValue
+            if (month < 12) {
+                val targetIndex = mealLogYearlyList.indexOfFirst {
+                    it.year == year && it.month == getMonthAbbreviation(month) && it.date == 1
+                }
+                recyclerCalendar.post {
+                    recyclerCalendar.scrollToPosition(targetIndex)
+                    recyclerCalendar.post {
+                        val holder = recyclerCalendar.findViewHolderForAdapterPosition(targetIndex)
+                        if (holder != null) {
+                            val y = holder.itemView.top
+                            nestedScrollView.smoothScrollTo(0, recyclerCalendar.top + y)
+                            val oneMonthBack = date.plusMonths(1)
+                            txtDate.text = oneMonthBack.format(formatter)
+                        }
+                    }
+                }
+            }else{
+                Toast.makeText(requireContext(),"Current year calendar only", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun onMealLogCalenderList (yearList: List<CalendarDateModel>, mealLogHistory: ArrayList<LoggedMeal>){
@@ -128,6 +186,7 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
                     if (item.fullDate == mealLog.date){
                         if (mealLog.is_available == true){
                             item.is_available = true
+                            item.surplus = mealLog.calories_data.total_calories_burned
                         }
                     }
                 }
@@ -138,13 +197,11 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
         val mealLogDateData: CalendarDateModel? = null
         calendarAdapter.addAll(valueLists, -1, mealLogDateData, false)
 
-        val sampledList = ArrayList<CalendarDateModel>()
-        val step = valueLists.size / 53f
-        for (i in 0 until 53) {
-            val index = (i * step).toInt().coerceAtMost(valueLists.lastIndex)
-            sampledList.add(valueLists[index])
-        }
-        calendarSummaryAdapter.addAll(sampledList, -1, mealLogDateData, false)
+        val weeklySurplusList = generateWeeklySurplus(valueLists)
+        val calendarSummaryModelList = ArrayList<CalendarSummaryModel>()
+        calendarSummaryModelList.addAll(weeklySurplusList)
+        val calendarSummaryModel: CalendarSummaryModel? = null
+        calendarSummaryAdapter.addAll(calendarSummaryModelList, -1, calendarSummaryModel, false)
 
         val now = Calendar.getInstance()
         val currentYear = now.get(Calendar.YEAR)
@@ -153,7 +210,6 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
         val targetIndex = mealLogYearlyList.indexOfFirst {
             it.year == currentYear && it.month == getMonthAbbreviation(currentMonth) && it.date == 1
         }
-
         Log.d("CalendarScroll", "Trying to scroll to: $targetIndex")
         recyclerCalendar.post {
             recyclerCalendar.scrollToPosition(targetIndex)
@@ -165,40 +221,56 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
                 }
             }
         }
+    }
 
-        val layoutManager = recyclerCalendar.layoutManager as GridLayoutManager
-        val daysPerMonth = 30 // average days per month
+    private fun generateWeeklySurplus(dateModels: List<CalendarDateModel>): List<CalendarSummaryModel> {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val sortedDates = dateModels.sortedBy { LocalDate.parse(it.fullDate, formatter) }
 
-// 👉 Right arrow = Next month (scroll down)
-        icRightArrow.setOnClickListener {
-            val currentPosition = layoutManager.findFirstVisibleItemPosition()
-            val targetPosition = (currentPosition + daysPerMonth).coerceAtMost(calendarAdapter.itemCount - 1)
+        var weekNumber = 1
+        val firstDate = LocalDate.parse(sortedDates.first().fullDate, formatter)
+        val lastDate = LocalDate.parse(sortedDates.last().fullDate, formatter)
+        var current = firstDate.with(DayOfWeek.MONDAY)
+        val result = ArrayList<CalendarSummaryModel>()
 
-            recyclerCalendar.smoothScrollToPosition(targetPosition)
-            recyclerCalendar.post {
-                val holder = recyclerCalendar.findViewHolderForAdapterPosition(targetPosition)
-                holder?.let {
-                    val y = it.itemView.top
-                    nestedScrollView.smoothScrollTo(0, recyclerCalendar.top + y)
+        while (current <= lastDate) {
+            val weekDays = mutableListOf<CalendarDateModel>()
+
+            for (i in 0 until 7) {
+                val dateStr = current.plusDays(i.toLong()).format(formatter)
+                val model = dateModels.find { it.fullDate == dateStr }
+                if (model != null) {
+                    weekDays.add(model)
+                } else {
+                    weekDays.add(
+                        CalendarDateModel(
+                            fullDate = dateStr,
+                            surplus = 0.0,
+                            is_available = false
+                        )
+                    )
                 }
             }
-        }
-
-// 👉 Left arrow = Previous month (scroll up)
-        icLeftArrow.setOnClickListener {
-            val currentPosition = layoutManager.findFirstVisibleItemPosition()
-            val targetPosition = (currentPosition - daysPerMonth).coerceAtLeast(0)
-
-            recyclerCalendar.smoothScrollToPosition(targetPosition)
-            recyclerCalendar.post {
-                val holder = recyclerCalendar.findViewHolderForAdapterPosition(targetPosition)
-                holder?.let {
-                    val y = it.itemView.top
-                    nestedScrollView.smoothScrollTo(0, recyclerCalendar.top + y)
-                }
+            val weekSurplus = weekDays.sumOf { it.surplus }
+            val sign = if (weekSurplus >= 0.0) "positive" else "negative"
+            val isAvailable = if (weekSurplus > 0.0){
+                true
+            }else{
+                false
             }
+            result.add(
+                CalendarSummaryModel(
+                    isAvailable = isAvailable,
+                    weekNumber++,
+                    weekStartDate = current.format(formatter),
+                    totalWeekCaloriesBurned = weekSurplus,
+                    weekDays = weekDays,
+                    sign = sign
+                )
+            )
+            current = current.plusWeeks(1)
         }
-
+        return result
     }
 
     private fun onMealLogCalenderItem(calendarDateModel: CalendarDateModel, position: Int, isRefresh: Boolean) {
@@ -210,7 +282,7 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
         parentFragment.let { mealLogCalenderBottomSheet.show(childFragmentManager, "MealLogCalenderBottomSheet") }
     }
 
-    private fun onMealLogCalenderSummaryItem(mealLogDateModel: CalendarDateModel, position: Int, isRefresh: Boolean) {
+    private fun onMealLogCalenderSummaryItem(mealLogDateModel: CalendarSummaryModel, position: Int, isRefresh: Boolean) {
 
     }
 
@@ -222,14 +294,11 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
         val dateFormat = SimpleDateFormat("EEE, dd MMM yyyy")
         val currentDate = dateFormat.format(calendar.time)
         txtDate.text = currentDate
-
         // Set calendar to January 1st of the given year
         calendar.set(year, Calendar.JANUARY, 1)
         val firstDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK) // Sunday = 1, Monday = 2, etc.
-
         // Calculate how many previous year days we need to add to start from Monday
         val daysToFill = if (firstDayOfWeek == Calendar.MONDAY) 0 else (firstDayOfWeek - 2 + 7) % 7
-
         // Add previous year days
         calendar.add(Calendar.DAY_OF_YEAR, -daysToFill)
         for (i in 0 until daysToFill) {
@@ -243,7 +312,7 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
                     currentDate = currentDate,
                     currentMonth = currentMonth,
                     fullDate = formatter.format(calendar.time),
-                    surplus = (i * 50) % 500 // Random surplus example
+                    surplus = 0.0
                 )
             )
             calendar.add(Calendar.DAY_OF_YEAR, 1) // Move forward
@@ -261,7 +330,7 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
                     currentDate = currentDate,
                     currentMonth = currentMonth,
                     fullDate = formatter.format(calendar.time),
-                    surplus = (1 * 50) % 500 // Random surplus example
+                    surplus = 0.0
                 )
             )
             calendar.add(Calendar.DAY_OF_YEAR, 1) // Move forward

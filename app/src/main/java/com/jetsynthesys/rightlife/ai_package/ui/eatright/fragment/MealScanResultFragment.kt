@@ -115,13 +115,12 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>(), Ra
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentMealScanResultsBinding
         get() = FragmentMealScanResultsBinding::inflate
 
+    private val macroNutrientsAdapter by lazy { MacroNutrientsAdapter(requireContext(), arrayListOf(), -1,
+        null, false, :: onMealLogDateItem) }
     private val microNutrientsAdapter by lazy { MicroNutrientsAdapter(requireContext(), arrayListOf(), -1,
         null, false, :: onMicroNutrientsItem) }
     private val mealListAdapter by lazy { SnapMealScanResultAdapter(requireContext(), arrayListOf(), -1,
         null, false, :: onMenuEditItem, :: onMenuDeleteItem) }
-
-    private val macroNutrientsAdapter by lazy { MacroNutrientsAdapter(requireContext(), arrayListOf(), -1,
-        null, false, :: onMealLogDateItem) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

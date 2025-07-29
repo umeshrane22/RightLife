@@ -6,8 +6,15 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class CalendarSummaryModel(
-    @SerializedName("surplusType")
-    val surplusType: String,
-    @SerializedName("surplusValue")
-    val surplusValue: String
+    @SerializedName("isAvailable")
+    val isAvailable: Boolean = false,
+    @SerializedName("weekNumber")
+    val weekNumber: Int,
+    val weekDays: List<CalendarDateModel>,
+    @SerializedName("totalWeekCaloriesBurned")
+    val totalWeekCaloriesBurned : Double,
+    @SerializedName("weekStartDate")
+    val weekStartDate: String,
+    @SerializedName("sign")
+    val sign : String
 ): Parcelable

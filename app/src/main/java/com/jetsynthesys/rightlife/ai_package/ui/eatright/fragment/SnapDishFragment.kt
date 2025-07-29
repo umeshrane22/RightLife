@@ -605,11 +605,13 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
         if (!isEdit){
             if (snapRecipeData.mealQuantity != null ){
                 if (snapRecipeData.mealQuantity > 0.0){
-                    quantityEdit.setText(snapRecipeData.mealQuantity?.toInt().toString())
+                    val mealQuantity = String.format("%.1f", snapRecipeData.mealQuantity)
+                    quantityEdit.setText(mealQuantity)
                 }else if (snapRecipeData.servings > 0){
-                    quantityEdit.setText(snapRecipeData.servings?.toInt().toString())
+                    val servings = String.format("%.1f", snapRecipeData.servings?.toDouble())
+                    quantityEdit.setText(servings)
                 }else{
-                    quantityEdit.setText("1")
+                    quantityEdit.setText("1.0")
                 }
             }
         }

@@ -20,6 +20,8 @@ data class FrequentLoggedRoutine(
     var baguette: String?,
     @SerializedName("dewpoint")
     var dewpoint: String?,
+    @SerializedName("icon")
+    var icon: String?,
     @SerializedName("isAddDish")
     var isAddDish: Boolean?
 ):Parcelable

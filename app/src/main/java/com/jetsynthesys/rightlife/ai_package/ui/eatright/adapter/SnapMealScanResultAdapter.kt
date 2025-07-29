@@ -33,10 +33,10 @@ class SnapMealScanResultAdapter(private val context: Context, private var dataLi
             if (item.unit != null){
                 unit = item.unit
             }
-            holder.mealQuantityTv.text = item.mealQuantity?.toInt().toString() + " " + unit
+            holder.mealQuantityTv.text = item.mealQuantity?.toInt().toString() + " Serving"
         }else{
             if (item.servings > 0){
-                holder.mealQuantityTv.text = item.servings?.toInt().toString()
+                holder.mealQuantityTv.text = item.servings?.toInt().toString() + " Serving"
             }else{
                 holder.mealQuantityTv.text = "1 Serving"
             }

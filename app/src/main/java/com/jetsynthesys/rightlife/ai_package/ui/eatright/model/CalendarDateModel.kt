@@ -8,23 +8,23 @@ import java.time.LocalDate
 @Parcelize
 data class CalendarDateModel(
     @SerializedName("date")
-    val date: Int,
+    var date: Int = 0,
     @SerializedName("month")
-    val month: String,
+    var month: String = "",
     @SerializedName("year")
-    val year: Int,
+    var year: Int = 0,
     @SerializedName("dayOfWeek")
-    val dayOfWeek: Int,
+    var dayOfWeek: Int = 0,
     @SerializedName("surplus")
-    val surplus: Int,
+    var surplus: Double = 0.0,
     @SerializedName("currentDate")
-    val currentDate: String,
+    var currentDate: String = "",
     @SerializedName("currentMonth")
-    val currentMonth: String,
+    var currentMonth: String ="",
     @SerializedName("isSelected")
-    val isSelected: Boolean = false,
+    var isSelected: Boolean = false,
     @SerializedName("fullDate")
-    val fullDate: String,
+    var fullDate: String = "",
     @SerializedName("is_available")
     var is_available: Boolean = false
 ): Parcelable

@@ -14,7 +14,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
-import android.widget.Button
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -39,12 +38,6 @@ import com.jetsynthesys.rightlife.ai_package.model.response.WorkoutRecord
 import com.jetsynthesys.rightlife.ai_package.ui.adapter.YourActivitiesWeeklyListAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.CalendarDateModel
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
-import com.jetsynthesys.rightlife.ai_package.ui.moveright.ActivitySyncBottomSheet
-import com.jetsynthesys.rightlife.ai_package.ui.moveright.ActivitySyncCalenderFragment
-import com.jetsynthesys.rightlife.ai_package.ui.moveright.AddWorkoutSearchFragment
-import com.jetsynthesys.rightlife.ai_package.ui.moveright.CreateRoutineFragment
-import com.jetsynthesys.rightlife.ai_package.ui.moveright.SearchWorkoutFragment
-import com.jetsynthesys.rightlife.ai_package.ui.moveright.YourActivitiesCalenderAdaper
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -135,7 +128,7 @@ class CalendarBottomSheetFragment : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: android.os.Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val selectedDate = arguments?.getString("selected_date")
+        val selectedDate = arguments?.getString("SelectedDate")
         mealLogDateListAdapter = view.findViewById(R.id.recyclerview_calender)
         myActivityRecyclerView = view.findViewById(R.id.recyclerview_my_meals_item)
         imageCalender = view.findViewById(R.id.image_calender)
@@ -151,12 +144,11 @@ class CalendarBottomSheetFragment : BottomSheetDialogFragment() {
         layoutNoDataCard = view.findViewById(R.id.layoutNoDataCard)
         layoutWorkoutData = view.findViewById(R.id.layoutWorkoutData)
         createWorkout = view.findViewById(R.id.tvCreateWorkout)
-        layoutNoDataCard.visibility = View.VISIBLE
 
         layout_btn_addWorkout.setOnClickListener {
             val fragment = SearchWorkoutFragment()
             val args = android.os.Bundle()
-            args.putString("selected_date", workoutDateTv.text.toString()) // Put the string in the bundle
+            args.putString("SelectedDate", workoutDateTv.text.toString()) // Put the string in the bundle
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "searchWorkoutFragment")
@@ -168,7 +160,7 @@ class CalendarBottomSheetFragment : BottomSheetDialogFragment() {
         layoutAddWorkout.setOnClickListener {
             val fragment = SearchWorkoutFragment()
             val args = android.os.Bundle()
-            args.putString("selected_date", workoutDateTv.text.toString()) // Put the string in the bundle
+            args.putString("SelectedDate", workoutDateTv.text.toString()) // Put the string in the bundle
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "searchWorkoutFragment")
@@ -458,6 +450,7 @@ class CalendarBottomSheetFragment : BottomSheetDialogFragment() {
                 } else {
                     withContext(Dispatchers.Main) {
                         myActivityRecyclerView.visibility = View.GONE
+                        layoutNoDataCard.visibility = View.VISIBLE
                         Toast.makeText(requireContext(), "Error: ${response.code()} - ${response.message()}", Toast.LENGTH_SHORT).show()
                         if (isAdded  && view != null){
                             requireActivity().runOnUiThread {
@@ -470,6 +463,7 @@ class CalendarBottomSheetFragment : BottomSheetDialogFragment() {
                 e.printStackTrace()
                 withContext(Dispatchers.Main) {
                     myActivityRecyclerView.visibility = View.GONE
+                    layoutNoDataCard.visibility = View.VISIBLE
                     Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
                     if (isAdded  && view != null){
                         requireActivity().runOnUiThread {

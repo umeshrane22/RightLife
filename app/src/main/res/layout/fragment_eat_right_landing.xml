@@ -672,10 +672,11 @@
                             />
                         <TextView
                             android:id="@+id/today_macro_no_data_description"
-                            android:layout_width="297dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="10dp"
-                            android:layout_marginTop="10dp"
+                            android:layout_marginEnd="10dp"
+                            android:layout_marginTop="5dp"
                             android:textSize="16sp"
                             android:textColor="@color/black"
                             android:fontFamily="@font/dmsans_regular"
@@ -939,10 +940,14 @@
                             app:layout_constraintStart_toStartOf="parent"/>
 
                         <TextView
-                            android:layout_width="295dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textSize="16sp"
+                            android:layout_marginTop="5dp"
+                            android:textColor="@color/black"
+                            android:fontFamily="@font/dmsans_regular"
                             android:layout_marginStart="10dp"
+                            android:layout_marginEnd="10dp"
                             android:text="Iron, calcium, magnesium—we’ll handle the math. Just log a meal to turn on the insights."
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/today_micros_no_data_heading"/>
@@ -1154,10 +1159,11 @@
 
                         <TextView
                             android:id="@+id/today_log_meal_description"
-                            android:layout_width="295dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="16sp"
                             android:layout_marginStart="20dp"
+                            android:layout_marginEnd="20dp"
                             android:text="We’re standing by with insights—but we need a meal first. Log one to get rolling!"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/today_meal_log_no_data_heading"/>
@@ -2156,7 +2162,8 @@
                                     android:background="@color/view_border"
                                     app:layout_constraintEnd_toEndOf="parent"
                                     app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintTop_toBottomOf="@+id/progressBarLayout"></View>
+                                    app:layout_constraintTop_toBottomOf="@+id/progressBarLayout">
+                                </View>
 
                                 <androidx.appcompat.widget.LinearLayoutCompat
                                     android:layout_width="wrap_content"
