@@ -26,8 +26,22 @@ class ActivityAsyncClaendarSummaryAdapter(private val context: Context, private 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = dataLists[position]
 
-        //holder.txtSummary.text = ""//item.surplusType
-        holder.txtValue.text = item.totalWeekCaloriesBurned.toInt().toString()
+        val totalWeekCaloriesBurned = item.totalWeekCaloriesBurned.toInt().toString().replace("-", "")
+        holder.txtValue.text = totalWeekCaloriesBurned
+        if (item.userGoal.equals("weight_loss")){
+            if (item.sign.equals("positive")){
+
+            }else if(item.sign.equals("negative")){
+
+            }else {
+
+            }
+            holder.txtSummary.text = ""
+        }else if (item.userGoal.equals("weight_gain")){
+            holder.txtSummary.text = ""
+        }else{
+
+        }
 
        // if (item.surplusType.contentEquals("Deficit")){
             holder.txtSummary.setTextColor(ContextCompat.getColor(context, R.color.week_red))

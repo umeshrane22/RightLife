@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewTreeObserver
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
@@ -17,12 +16,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
+import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.CalendarAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.CalendarSummaryAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.CalendarDateModel
 import com.jetsynthesys.rightlife.databinding.FragmentMealLogCalenderBinding
-import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
-import com.jetsynthesys.rightlife.ai_package.model.response.LoggedMeal
+import com.jetsynthesys.rightlife.ai_package.model.response.LoggedMealHistory
 import com.jetsynthesys.rightlife.ai_package.model.response.MealLogsHistoryResponse
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.CalendarSummaryModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealLogWeeklyDayModel
@@ -48,7 +47,7 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
     private lateinit var recyclerSummary : RecyclerView
     private lateinit var nestedScrollView : NestedScrollView
     private var mealLogsHistoryResponse : MealLogsHistoryResponse? = null
-    private var  mealLogHistory :  ArrayList<LoggedMeal> = ArrayList()
+    private var  mealLogHistory :  ArrayList<LoggedMealHistory> = ArrayList()
     private var mealLogYearlyList : List<CalendarDateModel> = ArrayList()
     private var loadingOverlay : FrameLayout? = null
 
@@ -177,16 +176,16 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
         }
     }
 
-    private fun onMealLogCalenderList (yearList: List<CalendarDateModel>, mealLogHistory: ArrayList<LoggedMeal>){
+    private fun onMealLogCalenderList (yearList: List<CalendarDateModel>, mealLogHistory: ArrayList<LoggedMealHistory>){
         val today = LocalDate.now()
         val yearLists : ArrayList<MealLogWeeklyDayModel> = ArrayList()
         if (mealLogHistory.size > 0 && yearList.isNotEmpty()){
             mealLogHistory.forEach { mealLog ->
                 for (item in yearList){
                     if (item.fullDate == mealLog.date){
-                        if (mealLog.is_available == true){
+                        if (mealLog.isAvailable == true){
                             item.is_available = true
-                            item.surplus = mealLog.calories_data.total_calories_burned
+                            item.surplus = mealLog.caloriesData.difference
                         }
                     }
                 }
@@ -363,8 +362,8 @@ class MealLogCalenderFragment : BaseFragment<FragmentMealLogCalenderBinding>() {
                     }
                     if (response.body() != null){
                         mealLogsHistoryResponse = response.body()
-                        if (mealLogsHistoryResponse?.is_logged_meal_list!!.isNotEmpty()){
-                            mealLogHistory.addAll(mealLogsHistoryResponse!!.is_logged_meal_list!!)
+                        if (mealLogsHistoryResponse?.loggedMealList!!.isNotEmpty()){
+                            mealLogHistory.addAll(mealLogsHistoryResponse!!.loggedMealList!!)
                             onMealLogCalenderList(mealLogYearlyList , mealLogHistory)
                         }
                     }

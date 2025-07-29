@@ -16,5 +16,7 @@ data class CalendarSummaryModel(
     @SerializedName("weekStartDate")
     val weekStartDate: String,
     @SerializedName("sign")
-    val sign : String
+    val sign : String,
+    @SerializedName("user_goal")
+    val userGoal: String
 ): Parcelable

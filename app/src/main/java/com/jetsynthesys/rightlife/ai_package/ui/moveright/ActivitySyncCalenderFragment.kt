@@ -52,6 +52,7 @@ class ActivitySyncCalenderFragment : BaseFragment<FragmentActivitySyncCalenderBi
     private var  workoutLogHistory :  ArrayList<WorkoutRecord> = ArrayList()
     private var workoutLogYearlyList : List<CalendarDateModel> = ArrayList()
     private var loadingOverlay : FrameLayout? = null
+    private var userGoal: String = ""
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentActivitySyncCalenderBinding
         get() = FragmentActivitySyncCalenderBinding::inflate
@@ -214,7 +215,8 @@ class ActivitySyncCalenderFragment : BaseFragment<FragmentActivitySyncCalenderBi
                     currentDate = currentDate,
                     currentMonth = currentMonth,
                     fullDate = formatter.format(calendar.time),
-                    surplus = 0.0
+                    surplus = 0.0,
+                    sign = "0"
                 )
             )
             calendar.add(java.util.Calendar.DAY_OF_YEAR, 1) // Move forward
@@ -232,7 +234,8 @@ class ActivitySyncCalenderFragment : BaseFragment<FragmentActivitySyncCalenderBi
                     currentDate = currentDate,
                     currentMonth = currentMonth,
                     fullDate = formatter.format(calendar.time),
-                    surplus = 0.0
+                    surplus = 0.0,
+                    sign = "0"
                 )
             )
             calendar.add(java.util.Calendar.DAY_OF_YEAR, 1) // Move forward
@@ -267,6 +270,7 @@ class ActivitySyncCalenderFragment : BaseFragment<FragmentActivitySyncCalenderBi
                     if (response.body() != null){
                         workoutHistoryResponse = response.body()
                         if (workoutHistoryResponse?.data?.record_details!!.size > 0){
+                            userGoal = workoutHistoryResponse?.data?.user_goal.toString()
                             workoutLogHistory.addAll(workoutHistoryResponse!!.data.record_details)
                             onWorkoutLogCalenderList(workoutLogYearlyList, workoutLogHistory)
                         }
@@ -296,12 +300,14 @@ class ActivitySyncCalenderFragment : BaseFragment<FragmentActivitySyncCalenderBi
     private fun onWorkoutLogCalenderList (yearList: List<CalendarDateModel>, workoutLogHistory: ArrayList<WorkoutRecord>){
 
         if (workoutLogHistory.size > 0 && yearList.isNotEmpty()){
-            workoutLogHistory.forEach { mealLog ->
+            workoutLogHistory.forEach { workOutLog ->
                 for (item in yearList){
-                    if (item.fullDate == mealLog.date){
-                        if (mealLog.is_available_workout == true){
+                    if (item.fullDate == workOutLog.date){
+                        if (workOutLog.is_available_workout == true){
                             item.is_available = true
                         }
+                        item.surplus = workOutLog.difference
+                        item.sign = workOutLog.sign
                     }
                 }
             }
@@ -362,26 +368,36 @@ class ActivitySyncCalenderFragment : BaseFragment<FragmentActivitySyncCalenderBi
                         CalendarDateModel(
                             fullDate = dateStr,
                             surplus = 0.0,
-                            is_available = false
+                            is_available = false,
+                            sign = "0"
                         )
                     )
                 }
             }
             val weekSurplus = weekDays.sumOf { it.surplus }
-            val sign = if (weekSurplus >= 0.0) "positive" else "negative"
-            val isAvailable = if (weekSurplus > 0.0){
-                true
+            var sign = ""
+//            if (weekSurplus == 0.0) {
+//                sign =  "0"
+//            }else{
+//               sign = weekDays.
+//            }
+            if (userGoal.equals("weight_loss")){
+            }else if (userGoal.equals("weight_gain")){
+
             }else{
-                false
+
             }
+
+
             result.add(
                 CalendarSummaryModel(
-                    isAvailable = isAvailable,
+                    isAvailable = false,
                     weekNumber++,
                     weekStartDate = current.format(formatter),
                     totalWeekCaloriesBurned = weekSurplus,
                     weekDays = weekDays,
-                    sign = sign
+                    sign = sign,
+                    userGoal = userGoal
                 )
             )
             current = current.plusWeeks(1)
