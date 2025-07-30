@@ -32,6 +32,7 @@ import androidx.health.connect.client.records.WeightRecord
 import androidx.health.connect.client.request.ReadRecordsRequest
 import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
@@ -109,10 +110,21 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onStart() {
+        super.onStart()
+
+        dialog?.let {
+            val bottomSheet = it.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+            bottomSheet?.let { sheet ->
+                val behavior = BottomSheetBehavior.from(sheet)
+                sheet.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
+                behavior.state = BottomSheetBehavior.STATE_EXPANDED
+            }
+        }
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?): View {
         return inflater.inflate(R.layout.bottom_sheet_activity_sync, container, false)
     }
 
