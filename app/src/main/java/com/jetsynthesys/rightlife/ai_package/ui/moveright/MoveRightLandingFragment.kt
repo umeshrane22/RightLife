@@ -45,6 +45,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.card.MaterialCardView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.jetsynthesys.rightlife.R
@@ -61,6 +62,7 @@ import com.jetsynthesys.rightlife.ai_package.ui.sleepright.adapter.RecommendedAd
 import com.jetsynthesys.rightlife.ai_package.ui.steps.SetYourStepGoalFragment
 import com.jetsynthesys.rightlife.ai_package.utils.AppPreference
 import com.jetsynthesys.rightlife.databinding.FragmentLandingBinding
+import com.jetsynthesys.rightlife.ui.aireport.AIReportWebViewActivity
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -158,6 +160,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private var totalIntakeCaloriesSum: Int = 0
     private var loadingOverlay : FrameLayout? = null
     private var isRepeat : Boolean = false
+    private lateinit var rightLifeReportCard : FrameLayout
     private lateinit var recomendationRecyclerView: RecyclerView
     private lateinit var thinkRecomendedResponse : ThinkRecomendedResponse
     private lateinit var recomendationAdapter: RecommendedAdapterSleep
@@ -245,6 +248,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         yourVitals = view.findViewById(R.id.yourVitals)
         yourHeartRateZone = view.findViewById(R.id.yourHeartRateZone)
         viewWorkoutHistory = view.findViewById(R.id.viewWorkoutHistory)
+        rightLifeReportCard = view.findViewById(R.id.rightLifeReportCard)
         val displayMetrics = resources.displayMetrics
         val screenWidthDp = displayMetrics.widthPixels / displayMetrics.density
         val dottedLine = view.findViewById<View>(R.id.horizontal_dotted_green)
@@ -390,6 +394,21 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 }
             } else {
                 Toast.makeText(context, "Please install or update health connect from the Play Store.", Toast.LENGTH_LONG).show()
+            }
+        }
+
+        // Open AI Report WebView on click   // Also logic to hide this button if Report is not generated pending
+        rightLifeReportCard.setOnClickListener {
+            var dynamicReportId = "" // This Is User ID
+            dynamicReportId = SharedPreferenceManager.getInstance(requireActivity()).userId
+            if (dynamicReportId.isEmpty()) {
+                // Some error handling if the ID is not available
+            }else{
+                val intent = Intent(requireActivity(), AIReportWebViewActivity::class.java).apply {
+                    // Put the dynamic ID as an extra
+                    putExtra(AIReportWebViewActivity.EXTRA_REPORT_ID, dynamicReportId)
+                }
+                startActivity(intent)
             }
         }
     }
