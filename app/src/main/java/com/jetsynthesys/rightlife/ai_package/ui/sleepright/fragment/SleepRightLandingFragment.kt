@@ -80,6 +80,7 @@ import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.github.mikephil.charting.utils.MPPointF
+import com.google.android.material.card.MaterialCardView
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.jetsynthesys.rightlife.ai_package.model.BloodPressure
@@ -110,6 +111,7 @@ import com.jetsynthesys.rightlife.ai_package.model.response.SleepSoundResponse
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.adapter.RecommendedAdapterSleep
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.RestorativeSleepFragment.MultilineXAxisRenderer
 import com.jetsynthesys.rightlife.ai_package.ui.thinkright.fragment.SleepInfoDialogFragment
+import com.jetsynthesys.rightlife.ui.aireport.AIReportWebViewActivity
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -239,6 +241,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private var bottomSeatName = ""
     private var loadingOverlay : FrameLayout? = null
     private var mEditWakeTime = ""
+    private lateinit var rightLifeReportCard : FrameLayout
     private lateinit var recomendationRecyclerView: RecyclerView
     private lateinit var thinkRecomendedResponse : ThinkRecomendedResponse
     private lateinit var recomendationAdapter: RecommendedAdapterSleep
@@ -338,6 +341,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         tvStageDeepTime = view.findViewById(R.id.tv_stage_deep_time)
         tvStageAwakeTime = view.findViewById(R.id.tv_stage_awake_time)
         imgSleepInfo = view.findViewById(R.id.img_sleep_infos)
+        rightLifeReportCard = view.findViewById(R.id.rightLifeReportCard)
 
         fetchThinkRecomendedData()
 
@@ -487,6 +491,20 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             })
         }
       //  storeData()
+        // Open AI Report WebView on click   // Also logic to hide this button if Report is not generated pending
+        rightLifeReportCard.setOnClickListener {
+            var dynamicReportId = "" // This Is User ID
+            dynamicReportId = SharedPreferenceManager.getInstance(requireActivity()).userId
+            if (dynamicReportId.isEmpty()) {
+                // Some error handling if the ID is not available
+            }else{
+                val intent = Intent(requireActivity(), AIReportWebViewActivity::class.java).apply {
+                    // Put the dynamic ID as an extra
+                    putExtra(AIReportWebViewActivity.EXTRA_REPORT_ID, dynamicReportId)
+                }
+                startActivity(intent)
+            }
+        }
     }
 
     private suspend fun requestPermissionsAndReadAllData() {
@@ -1831,7 +1849,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     // progressDialog.dismiss()
                     thinkRecomendedResponse = response.body()!!
                     if (thinkRecomendedResponse.data?.contentList?.isNotEmpty() == true) {
-                        recomendationAdapter = RecommendedAdapterSleep(context!!, thinkRecomendedResponse.data?.contentList!!)
+                        recomendationAdapter = RecommendedAdapterSleep(requireContext(), thinkRecomendedResponse.data?.contentList!!)
                         recomendationRecyclerView.layoutManager = LinearLayoutManager(requireContext())
                         recomendationRecyclerView.adapter = recomendationAdapter
                     }

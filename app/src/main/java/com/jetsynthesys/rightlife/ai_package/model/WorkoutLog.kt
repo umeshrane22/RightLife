@@ -13,6 +13,7 @@ data class WorkoutSessionRecord(
     @SerializedName("intensity") val intensity: String,
     @SerializedName("sessions") val sessions: Int,
     @SerializedName("moduleName") val moduleName: String,
+    @SerializedName("icon") val moduleIcon: String,
     // Response fields (nullable to handle failures)
     @SerializedName("message") val message: String? = null,
     @SerializedName("calories_burned") val caloriesBurned: Double? = null,

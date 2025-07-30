@@ -47,6 +47,7 @@ import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.flexbox.FlexboxLayout
+import com.google.android.material.card.MaterialCardView
 import com.google.android.material.snackbar.Snackbar
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
@@ -79,6 +80,7 @@ import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
 import com.jetsynthesys.rightlife.databinding.FragmentThinkRightLandingBinding
 import com.jetsynthesys.rightlife.ui.affirmation.PractiseAffirmationPlaylistActivity
 import com.jetsynthesys.rightlife.ui.affirmation.TodaysAffirmationActivity
+import com.jetsynthesys.rightlife.ui.aireport.AIReportWebViewActivity
 import com.jetsynthesys.rightlife.ui.breathwork.BreathworkActivity
 import com.jetsynthesys.rightlife.ui.breathwork.BreathworkSessionActivity
 import com.jetsynthesys.rightlife.ui.breathwork.pojo.BreathingData
@@ -180,6 +182,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     private lateinit var tagFlexbox: FlexboxLayout
     private lateinit var recyclerViewTags : RecyclerView
     private var loadingOverlay : FrameLayout? = null
+    private lateinit var rightLifeReportCard : FrameLayout
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentThinkRightLandingBinding
         get() = FragmentThinkRightLandingBinding::inflate
@@ -232,6 +235,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         tagFlexbox = view.findViewById<FlexboxLayout>(R.id.emotionTags)
         toolsRecyclerView = view.findViewById(R.id.rec_journaling_tools)
         tvAuthor = view.findViewById(R.id.tv_quote_author)
+        rightLifeReportCard = view.findViewById(R.id.rightLifeReportCard)
         noDataMindFullnessMetric = view.findViewById(R.id.noDataMindFullnessMetric)
         instruction_your_mindfullness_review =
             view.findViewById(R.id.instruction_your_mindfullness_review)
@@ -406,6 +410,21 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         fetchToolGridData()
         fetchJournalAnswerData()
         fetchAffirmationsList()
+
+        // Open AI Report WebView on click   // Also logic to hide this button if Report is not generated pending
+        rightLifeReportCard.setOnClickListener {
+            var dynamicReportId = "" // This Is User ID
+            dynamicReportId = SharedPreferenceManager.getInstance(requireActivity()).userId
+            if (dynamicReportId.isEmpty()) {
+                // Some error handling if the ID is not available
+            }else{
+                val intent = Intent(requireActivity(), AIReportWebViewActivity::class.java).apply {
+                    // Put the dynamic ID as an extra
+                    putExtra(AIReportWebViewActivity.EXTRA_REPORT_ID, dynamicReportId)
+                }
+                startActivity(intent)
+            }
+        }
     }
 
     fun getEmojiFromString(emoji:String) : Int{

@@ -167,7 +167,8 @@ class AddWorkoutRoutineEditFragment : BaseFragment<FragmentAddWorkoutSearchBindi
                             message = lastWorkoutRecord?.message,
                             caloriesBurned = lastWorkoutRecord?.caloriesBurned,
                             activityFactor = lastWorkoutRecord?.activityFactor,
-                            moduleName = workout.title.toString()
+                            moduleName = workout.title.toString(),
+                            moduleIcon = workout.iconUrl
                         )
 
                         lastWorkoutRecord = newWorkoutRecord
@@ -535,7 +536,8 @@ class AddWorkoutRoutineEditFragment : BaseFragment<FragmentAddWorkoutSearchBindi
                                     message = caloriesResponse.message,
                                     caloriesBurned = caloriesResponse.caloriesBurned,
                                     activityFactor = caloriesResponse.activityFactor,
-                                    moduleName = it
+                                    moduleName = it,
+                                    moduleIcon = ""
                                 )
                             }
                             caloriesText.text = caloriesResponse.caloriesBurned.toInt().toString()
@@ -556,7 +558,8 @@ class AddWorkoutRoutineEditFragment : BaseFragment<FragmentAddWorkoutSearchBindi
                                     durationMin = request.durationMin,
                                     intensity = request.intensity,
                                     sessions = request.sessions,
-                                    moduleName = it.title
+                                    moduleName = it.title,
+                                    moduleIcon = it.iconUrl
                                 )
                             }
                             caloriesText.text = "N/A"
@@ -574,7 +577,8 @@ class AddWorkoutRoutineEditFragment : BaseFragment<FragmentAddWorkoutSearchBindi
                                 durationMin = request.durationMin,
                                 intensity = request.intensity,
                                 sessions = request.sessions,
-                                moduleName = it.title
+                                moduleName = it.title,
+                                moduleIcon = it.iconUrl
                             )
                         }
                         val errorBody = response.errorBody()?.string()
@@ -599,7 +603,8 @@ class AddWorkoutRoutineEditFragment : BaseFragment<FragmentAddWorkoutSearchBindi
                         durationMin = durationMinutes,
                         intensity = selectedIntensity,
                         sessions = 1,
-                        moduleName = it.title
+                        moduleName = it.title,
+                        moduleIcon = it.iconUrl
                     )
                 }
                 withContext(Dispatchers.Main) {

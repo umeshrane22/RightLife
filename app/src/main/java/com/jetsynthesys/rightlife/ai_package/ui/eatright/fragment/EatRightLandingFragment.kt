@@ -1,12 +1,16 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment
 
 import android.animation.ValueAnimator
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.LinearInterpolator
+import android.view.animation.RotateAnimation
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -23,6 +27,7 @@ import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SnapHelper
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.card.MaterialCardView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
@@ -54,6 +59,7 @@ import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
 import com.jetsynthesys.rightlife.apimodel.userdata.Userdata
 import com.jetsynthesys.rightlife.databinding.BottomsheetLogWeightSelectionBinding
 import com.jetsynthesys.rightlife.databinding.FragmentEatRightLandingBinding
+import com.jetsynthesys.rightlife.ui.aireport.AIReportWebViewActivity
 import com.jetsynthesys.rightlife.ui.utility.ConversionUtils
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -146,6 +152,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
     private lateinit var halfCurveProgressBar : HalfCurveProgressBar
     private var loadingOverlay : FrameLayout? = null
     private var waterIntakeValue : Float = 0f
+    private lateinit var rightLifeReportCard : FrameLayout
 
     private lateinit var userData: Userdata
     private lateinit var userDataResponse: UserProfileResponse
@@ -246,6 +253,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
         macroOnTrackTextLine = view.findViewById(R.id.macroOnTrackTextLine)
         macroTitle = view.findViewById(R.id.macroTitle)
         eatRightInfo = view.findViewById(R.id.eatRightInfo)
+        rightLifeReportCard = view.findViewById(R.id.rightLifeReportCard)
 
         loggedNextMealSuggestionRecyclerView = view.findViewById(R.id.loggedNextMealSuggestionRecyclerView)
         otherRecipeRecyclerView = view.findViewById(R.id.recyclerview_other_reciepe_item)
@@ -445,6 +453,21 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
                 replace(R.id.flFragment, mealSearchFragment, "Steps")
                 addToBackStack(null)
                 commit()
+            }
+        }
+
+        // Open AI Report WebView on click   // Also logic to hide this button if Report is not generated pending
+        rightLifeReportCard.setOnClickListener {
+            var dynamicReportId = "" // This Is User ID
+            dynamicReportId = SharedPreferenceManager.getInstance(requireActivity()).userId
+            if (dynamicReportId.isEmpty()) {
+                // Some error handling if the ID is not available
+            }else{
+                val intent = Intent(requireActivity(), AIReportWebViewActivity::class.java).apply {
+                    // Put the dynamic ID as an extra
+                    putExtra(AIReportWebViewActivity.EXTRA_REPORT_ID, dynamicReportId)
+                }
+                startActivity(intent)
             }
         }
     }
