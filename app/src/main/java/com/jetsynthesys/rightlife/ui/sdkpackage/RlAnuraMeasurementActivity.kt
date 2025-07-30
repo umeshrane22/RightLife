@@ -35,6 +35,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Window
 import android.view.WindowManager
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -1147,6 +1148,9 @@ class RlAnuraMeasurementActivity : AppCompatActivity(),
          */
         setupMeasurementView()
         setupMeasurementPipeline()
+        findViewById<ImageButton>(R.id.btn_back).setOnClickListener {
+            finish()
+        }
 //        setupCustomViews()
 
         /**
