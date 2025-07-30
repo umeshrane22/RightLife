@@ -843,7 +843,7 @@ class FacialScanReportDetailsActivity : BaseActivity() {
     private fun HandleContinueWatchUI(facialReportResponseNew: FacialScanReportDataWrapper?) {
         if (facialReportResponseNew?.recommendation?.isNotEmpty() == true) {
             val adapter =
-                HealthCamRecommendationAdapter(this, facialReportResponseNew.recommendation)
+                HealthCamRecommendationAdapter(this, facialReportResponseNew.recommendation!!)
             val horizontalLayoutManager =
                 LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
             binding.recyclerViewContinue.setLayoutManager(horizontalLayoutManager)
