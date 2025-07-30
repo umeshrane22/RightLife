@@ -210,6 +210,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
             val workoutRecord = WorkoutSessionRecord(
                 userId = activity.userId!!,
                 activityId = activity.activityId!!,
+                moduleIcon = activity.icon!!,
                 durationMin = durationValue,
                 intensity = activity.intensity!!,
                 sessions = 1,
@@ -230,6 +231,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
         return records.map { record ->
             RoutineWorkoutDisplayModel(
                 name = record.moduleName,
+                icon = record.moduleIcon,
                 duration = "${record.durationMin} min",
                 caloriesBurned = record.caloriesBurned?.toString() ?: "N/A",
                 intensity = record.intensity

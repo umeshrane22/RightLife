@@ -143,6 +143,7 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
             message = null,
             caloriesBurned = null, // Will be calculated in AddWorkoutSearchFragment
             activityFactor = null,
+            moduleIcon = workout.iconUrl,
             moduleName = workout.title.toString()
         )
 

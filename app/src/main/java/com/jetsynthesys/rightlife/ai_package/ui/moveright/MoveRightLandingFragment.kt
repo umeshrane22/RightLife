@@ -749,7 +749,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                             dismissLoader(requireView())
                         }
                     }
-                    Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
+                /*    Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
                     if (!isRepeat){
                         val availabilityStatus = HealthConnectClient.getSdkStatus(requireContext())
                         if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
@@ -758,9 +758,9 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                 requestPermissionsAndReadAllData()
                             }
                         } else {
-                            Toast.makeText(context, "Please install or update samsung from the Play Store.", Toast.LENGTH_LONG).show()
+                            Toast.makeText(requireContext(), "Please install or update samsung from the Play Store.", Toast.LENGTH_LONG).show()
                         }
-                    }
+                    }*/
                 }
             }
         }
@@ -1818,7 +1818,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                     // progressDialog.dismiss()
                     thinkRecomendedResponse = response.body()!!
                     if (thinkRecomendedResponse.data?.contentList?.isNotEmpty() == true) {
-                        recomendationAdapter = RecommendedAdapterSleep(context!!, thinkRecomendedResponse.data?.contentList!!)
+                        recomendationAdapter = RecommendedAdapterSleep(requireContext(), thinkRecomendedResponse.data?.contentList!!)
                         recomendationRecyclerView.layoutManager = LinearLayoutManager(requireContext())
                         recomendationRecyclerView.adapter = recomendationAdapter
                     }

@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.model.RoutineWorkoutDisplayModel
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.RemoveWorkoutBottomSheet
@@ -29,6 +30,15 @@ class RoutineWorkoutListAdapter(
 
         // Bind data to views
         holder.mealTitle.text = item.name
+        var imageUrl = ""
+        if (item.icon.startsWith("https")){
+            imageUrl = item.icon
+        }else{
+            imageUrl = "https://jetsynthesisqa-us-east-1.s3-accelerate.amazonaws.com/" + item.icon
+        }
+        Glide.with(context)
+            .load(imageUrl) // <-- your image URL string
+            .into(holder.workoutIcon)
         holder.servesCount.text = item.duration
         holder.calValue.text = item.caloriesBurned
         holder.subtractionValue.text = item.intensity
@@ -63,6 +73,7 @@ class RoutineWorkoutListAdapter(
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val mealTitle: TextView = itemView.findViewById(R.id.tv_meal_title)
+        val workoutIcon: ImageView = itemView.findViewById(R.id.main_heading_icon)
         val delete: ImageView = itemView.findViewById(R.id.image_delete)
         val edit: ImageView = itemView.findViewById(R.id.image_edit)
         val circlePlus: ImageView = itemView.findViewById(R.id.image_circle_plus)

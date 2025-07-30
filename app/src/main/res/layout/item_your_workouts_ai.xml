@@ -20,8 +20,8 @@
 
         <ImageView
             android:id="@+id/main_heading_icon"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             android:scaleType="fitCenter"
             android:layout_marginEnd="5dp"
             android:src="@drawable/workout_function_icon"
@@ -33,7 +33,7 @@
             android:id="@+id/tv_meal_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="18dp"
+            android:layout_marginStart="25dp"
             android:layout_marginEnd="10dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
