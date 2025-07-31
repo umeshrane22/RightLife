@@ -125,7 +125,13 @@ class HomeDashboardFragment : BaseFragment() {
         binding.rlViewPastReports.setOnClickListener {
             startActivity(Intent(requireContext(), PastReportActivity::class.java))
         }
-
+        binding.includeChecklist.imgQuestionmarkChecklist.setOnClickListener {
+            DialogUtils.showCheckListQuestionCommonDialog(requireContext(), "Why Checklist?")
+            /*startActivity(Intent(this@HomeDashboardActivity, SubscriptionPlanListActivity::class.java).apply {
+                //putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN")
+                //putExtra("SUBSCRIPTION_TYPE", "FACIAL_SCAN")
+            })*/
+        }
         binding.includeChecklist.rlChecklistWhyThisDialog.setOnClickListener {
             DialogUtils.showCheckListQuestionCommonDialog(requireContext())
         }

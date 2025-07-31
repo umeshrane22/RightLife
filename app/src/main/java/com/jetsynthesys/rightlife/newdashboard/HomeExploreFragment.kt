@@ -41,6 +41,7 @@ import com.jetsynthesys.rightlife.ui.contentdetailvideo.ContentDetailsActivity
 import com.jetsynthesys.rightlife.ui.contentdetailvideo.SeriesListActivity
 import com.jetsynthesys.rightlife.ui.healthcam.HealthCamActivity
 import com.jetsynthesys.rightlife.ui.mindaudit.MindAuditActivity
+import com.jetsynthesys.rightlife.ui.utility.NetworkUtils
 import com.zhpan.bannerview.constants.PageStyle
 import com.zhpan.indicator.enums.IndicatorStyle
 import retrofit2.Call
@@ -112,26 +113,40 @@ class HomeExploreFragment : BaseFragment() {
 
     private fun setClickListeners() {
         binding.relativeRledit3.setOnClickListener {
-            callRlEditDetailActivity(2)
+            if (NetworkUtils.isInternetAvailable(requireContext())) {
+                callRlEditDetailActivity(2)
+            } else showInternetError()
         }
         binding.relativeRledit2.setOnClickListener {
+            if (NetworkUtils.isInternetAvailable(requireContext())) {
             callRlEditDetailActivity(1)
+            } else showInternetError()
         }
         binding.relativeRledit1.setOnClickListener {
+            if (NetworkUtils.isInternetAvailable(requireContext())) {
             callRlEditDetailActivity(0)
+            } else showInternetError()
         }
 
         binding.relativeWellness1.setOnClickListener {
+            if (NetworkUtils.isInternetAvailable(requireContext())) {
             callWellnessDetailActivity(0)
+            } else showInternetError()
         }
         binding.relativeWellness2.setOnClickListener {
+            if (NetworkUtils.isInternetAvailable(requireContext())) {
             callWellnessDetailActivity(1)
+            } else showInternetError()
         }
         binding.relativeWellness3.setOnClickListener {
+            if (NetworkUtils.isInternetAvailable(requireContext())) {
             callWellnessDetailActivity(2)
+            } else showInternetError()
         }
         binding.relativeWellness4.setOnClickListener {
+            if (NetworkUtils.isInternetAvailable(requireContext())) {
             callWellnessDetailActivity(3)
+            } else showInternetError()
         }
 
         // set click listener
@@ -1025,5 +1040,7 @@ class HomeExploreFragment : BaseFragment() {
         startActivity(intent)
     }
 
-
+    private fun showInternetError() {
+        Toast.makeText(requireContext(), "No internet connection", Toast.LENGTH_SHORT).show()
+    }
 }
