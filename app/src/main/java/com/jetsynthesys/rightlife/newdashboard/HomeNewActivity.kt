@@ -44,6 +44,7 @@ import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalListActivity
 import com.jetsynthesys.rightlife.ui.profile_new.ProfileSettingsActivity
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils
+import com.jetsynthesys.rightlife.ui.utility.NetworkUtils
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
@@ -532,9 +533,13 @@ class HomeNewActivity : BaseActivity() {
 
         dialogBinding.btnExplorePlan.setOnClickListener {
             bottomSheetDialog.dismiss()
-            startActivity(Intent(this, SubscriptionPlanListActivity::class.java).apply {
-                putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN")
-            })
+            if (NetworkUtils.isInternetAvailable(this)) {
+                startActivity(Intent(this, SubscriptionPlanListActivity::class.java).apply {
+                    putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN")
+                })
+            }else {
+                showInternetError()
+            }
             //finish()
         }
 
@@ -543,5 +548,8 @@ class HomeNewActivity : BaseActivity() {
 
     fun showHeader(show: Boolean) {
         binding.llCountDown.visibility = if (show && isCountDownVisible) View.VISIBLE else View.GONE
+    }
+    private fun showInternetError() {
+        Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show()
     }
 }
