@@ -86,6 +86,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
     private var tooltipRunnable2: Runnable? = null
     private var isTooltipShown = false
     private var lastDayOfCurrentWeek : String = ""
+    private var selectedDate: String? = null
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentYourActivityBinding
         get() = FragmentYourActivityBinding::inflate
@@ -118,7 +119,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         super.onViewCreated(view, savedInstanceState)
 
         view.setBackgroundResource(R.drawable.gradient_color_background_workout)
-        val selectedDate = arguments?.getString("selected_date")
+        selectedDate = arguments?.getString("selected_date")
         mealLogDateListAdapter = view.findViewById(R.id.recyclerview_calender)
         myActivityRecyclerView = view.findViewById(R.id.recyclerview_my_meals_item)
         imageCalender = view.findViewById(R.id.image_calender)
@@ -219,7 +220,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         val formatFullDate = DateTimeFormatter.ofPattern("E, d MMM yyyy")
         workoutDateTv.text = currentDateTime.format(formatFullDate)
         if (selectedDate != null){
-            getWorkoutLogHistory(selectedDate)
+            getWorkoutLogHistory(selectedDate!!)
         }else{
             getWorkoutLogHistory(formattedDate)
         }
@@ -260,7 +261,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         }
        // fetchCalories(formattedDate)
         if (selectedDate != null){
-            fetchUserWorkouts(selectedDate)
+            fetchUserWorkouts(selectedDate!!)
         }else{
             fetchUserWorkouts(formattedDate)
         }
@@ -684,6 +685,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         val formattedDate = mealLogWeeklyDayModel.fullDate.format(seleteddate)
        // fetchCalories(formattedDate)
         fetchUserWorkouts(formattedDate)
+        selectedDate = formattedDate
     }
 
     private fun getWeekFrom(startDate: LocalDate): List<WorkoutWeeklyDayModel> {
