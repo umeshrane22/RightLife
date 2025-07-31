@@ -86,6 +86,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
     private var mealName : String = ""
     private var mealType : String = ""
     private var snapMealLog : String = ""
+    private var homeTab : String = ""
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentDishBinding
         get() = FragmentDishBinding::inflate
@@ -126,6 +127,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
         val mealQuantitys = arguments?.getString("mealQuantity").toString()
         mealType = arguments?.getString("mealType").toString()
         snapMealLog = arguments?.getString("snapMealLog").toString()
+        homeTab = arguments?.getString("homeTab").toString()
         if (mealQuantitys != "null"){
             if (mealQuantitys.toDouble() > 0.0){
                 mealQuantity = mealQuantitys.toDouble()
@@ -257,6 +259,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
                     args.putString("mealType", mealType)
                     args.putString("snapMealLog", snapMealLog)
                     args.putString("searchType", searchType)
+                    args.putString("homeTab", homeTab)
                     args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
                     args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
                     args.putString("ModuleName", arguments?.getString("ModuleName").toString())
@@ -299,6 +302,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
                 args.putString("mealType", mealType)
                 args.putString("snapMealLog", snapMealLog)
                 args.putString("searchType", searchType)
+                args.putString("homeTab", homeTab)
                 args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
                 args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
                 args.putString("ModuleName", arguments?.getString("ModuleName").toString())
@@ -464,6 +468,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
                         args.putString("mealName", mealName)
                         args.putString("mealType", mealType)
                         args.putString("snapMealLog", snapMealLog)
+                        args.putString("homeTab", homeTab)
                         args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
                         args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
                         args.putString("ModuleName", arguments?.getString("ModuleName").toString())
@@ -557,6 +562,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
                                         args.putString("mealName", mealName)
                                         args.putString("mealType", mealType)
                                         args.putString("snapMealLog", snapMealLog)
+                                        args.putString("homeTab", homeTab)
                                         args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
                                         args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
                                         args.putString("ModuleName", arguments?.getString("ModuleName").toString())

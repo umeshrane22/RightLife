@@ -524,6 +524,18 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                 calorie_layout_data_filled.visibility = View.GONE
                             } else {
                                 // Data state
+                                val color = when (it.data.calorieBalance.goal) {
+                                    "weight_loss" -> {
+                                        if (it.data.calorieBalance.calorieIntake < it.data.calorieBalance.calorieBurnTarget) R.color.color_eat_right else R.color.red
+                                    }
+                                    "weight_gain" -> {
+                                        if (it.data.calorieBalance.calorieIntake < it.data.calorieBalance.calorieBurnTarget) R.color.red else R.color.color_eat_right
+                                    }
+                                    else -> {
+                                        R.color.color_eat_right
+                                    }
+                                }
+                                calorieCountText.setTextColor(ContextCompat.getColor(requireContext(), color))
                                 calorie_no_data_filled_layout.visibility = View.GONE
                                 calorie_layout_data_filled.visibility = View.VISIBLE
                                 tvBurnValue.text = if (it.data.calorieBalance.calorieBurnTarget == null || it.data.calorieBalance.calorieBurnTarget == 0.0) "0" else it.data.calorieBalance.calorieBurnTarget.toInt().toString()
@@ -560,6 +572,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                                 weightLossZoneText.text = "Weight Gain Zone"
                                                 (parentWidth * 0.6).toInt() // 40% of parent width for Weight Gain Zone
                                             } else {
+                                                calorieCountText
                                                 weightLossZoneText.text = "Weight Loss Zone"
                                                 (parentWidth * 0.08).toInt() // 20% of parent width for Weight Loss Zone
                                             }

@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutList
 
 class WorkoutAdapter(private var context :Context, private var workoutList: List<WorkoutList>, private val onItemClick: (WorkoutList) -> Unit) :
@@ -21,7 +22,7 @@ class WorkoutAdapter(private var context :Context, private var workoutList: List
 
         fun bind(item: WorkoutList) {
             workoutTitle.text = item.title
-            val imageBaseUrl = "https://d1sacaybzizpm5.cloudfront.net/" + item.iconUrl
+            val imageBaseUrl = ApiClient.CDN_URL_QA + item.iconUrl
             Glide.with(context)
                 .load(imageBaseUrl)
                 .placeholder(R.drawable.athelete_search)

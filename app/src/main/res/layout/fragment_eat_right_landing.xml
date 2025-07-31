@@ -10,7 +10,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/header_layout"
         android:layout_width="match_parent"
-        android:layout_height="73dp"
+        android:layout_height="50dp"
         android:background="@color/meal_log_background"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,7 +21,7 @@
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:src="@drawable/left_arrow_reclangle"
-            android:layout_marginStart="22dp"
+            android:layout_marginStart="16dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
 
@@ -29,8 +29,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Today"
-            android:textSize="25dp"
-            android:textStyle="bold"
+            android:textSize="22sp"
+            android:fontFamily="@font/dmsans_bold"
             android:textColor="@color/meal_log_title"
             android:layout_marginBottom="3dp"
             app:layout_constraintStart_toStartOf="parent"

@@ -59,6 +59,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import com.jetsynthesys.rightlife.ai_package.model.ScanMealNutritionResponse
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.HomeTabMealFragment
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.MoveRightLandingFragment
 import com.jetsynthesys.rightlife.ai_package.utils.FileUtils
@@ -106,6 +107,8 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
     private lateinit var sharedPreferenceManager: SharedPreferenceManager
     private lateinit var backButton : ImageView
     private var loadingOverlay : FrameLayout? = null
+    private var homeTab : String = ""
+    private lateinit var mealType : String
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentSnapMealBinding
         get() = FragmentSnapMealBinding::inflate
@@ -124,8 +127,9 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
         mealDescriptionET = view.findViewById(R.id.mealDescriptionET)
         backButton = view.findViewById(R.id.backButton)
 
-        val isHomeTab = arguments?.getBoolean("isHomeTab", false)
+        homeTab = arguments?.getString("homeTab").toString()
         moduleName = arguments?.getString("ModuleName").toString()
+        mealType = arguments?.getString("mealType").toString()
         gallery = arguments?.getString("gallery").toString()
         if(gallery.equals("gallery")){
             isGalleryOpen = true
@@ -163,7 +167,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
             takePhotoInfoLayout.visibility = View.GONE
          //   enterMealDescriptionLayout.visibility = View.VISIBLE
             videoView.visibility = View.GONE
-            val cameraDialog = CameraDialogFragment("", moduleName,gallery)
+            val cameraDialog = CameraDialogFragment("", moduleName,gallery, homeTab, mealType)
             cameraDialog.imageSelectedListener = object : OnImageSelectedListener {
                 override fun onImageSelected(imageUri: Uri) {
                     val path = getRealPathFromURI(requireContext(), imageUri)
@@ -228,7 +232,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                         Toast.makeText(context, "Please capture food",Toast.LENGTH_SHORT).show()
                     }
                 }else{
-                    val cameraDialog = CameraDialogFragment("", moduleName,gallery)
+                    val cameraDialog = CameraDialogFragment("", moduleName, gallery, homeTab, mealType)
                     cameraDialog.imageSelectedListener = object : OnImageSelectedListener {
                         override fun onImageSelected(imageUri: Uri) {
                             val path = getRealPathFromURI(requireContext(), imageUri)
@@ -265,6 +269,17 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                 if (moduleName.equals("HomeDashboard")){
                     startActivity(Intent(context, HomeNewActivity::class.java))
                     requireActivity().finish()
+                }else if (homeTab.equals("homeTab")){
+                    val fragment = HomeTabMealFragment()
+                    val args = Bundle()
+                    args.putString("ModuleName", moduleName)
+                    args.putString("mealType", mealType)
+                    fragment.arguments = args
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.flFragment, fragment, "landing")
+                        addToBackStack("landing")
+                        commit()
+                    }
                 }else{
                     val fragment = HomeBottomTabFragment()
                     val args = Bundle()
@@ -283,6 +298,17 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
             if (moduleName.equals("HomeDashboard")){
                 startActivity(Intent(context, HomeNewActivity::class.java))
                 requireActivity().finish()
+            }else if (homeTab.equals("homeTab")){
+                val fragment = HomeTabMealFragment()
+                val args = Bundle()
+                args.putString("ModuleName", moduleName)
+                args.putString("mealType", mealType)
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "landing")
+                    addToBackStack("landing")
+                    commit()
+                }
             }else{
                 val fragment = HomeBottomTabFragment()
                 val args = Bundle()
@@ -505,6 +531,8 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                             requireActivity().supportFragmentManager.beginTransaction().apply {
                                 val snapMealFragment = MealScanResultFragment()
                                 val args = Bundle()
+                                args.putString("homeTab", homeTab)
+                                args.putString("mealType", mealType)
                                 args.putString("ModuleName", moduleName)
                                 args.putString("ImagePath", imagePath)
                                 args.putString("description", mealDescriptionET.text.toString())
@@ -595,7 +623,8 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
     }
 }
 
-class CameraDialogFragment(private val imagePath: String, val moduleName : String, val gallery:String) : DialogFragment() {
+class CameraDialogFragment(private val imagePath: String, val moduleName : String, val gallery:String, val homeTab : String,
+                           val mealType : String) : DialogFragment() {
 
     private lateinit var viewFinder: PreviewView
     private var imageCapture: ImageCapture? = null
@@ -603,7 +632,6 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
     private var camera: Camera? = null
     private var isTorchOn = false
     private var isGalleryOpen = false
-
     var imageSelectedListener: OnImageSelectedListener? = null
 
     // Activity Result Launcher for selecting an image from gallery
@@ -642,6 +670,17 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
 //                startActivity(Intent(context, HomeDashboardActivity::class.java))
 //                requireActivity().finish()
                 requireActivity().onBackPressedDispatcher.onBackPressed()
+            }else if (homeTab.equals("homeTab")){
+                val fragment = HomeTabMealFragment()
+                val args = Bundle()
+                args.putString("ModuleName", moduleName)
+                args.putString("mealType", mealType)
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "landing")
+                    addToBackStack("landing")
+                    commit()
+                }
             }else{
                 val fragment = HomeBottomTabFragment()
                 val args = Bundle()
@@ -768,8 +807,6 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
             }
         }, ContextCompat.getMainExecutor(requireContext()))
     }
-
-
 
     private fun takePhoto() {
         val imageCapture = imageCapture ?: return
