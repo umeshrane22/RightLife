@@ -76,7 +76,13 @@ class RecommendedAdapterSleep(val context: Context, private val items: ArrayList
         spannableBuilder.append(categorySpan)
 
         // Part 2: formattedDate and duration (12sp, dark grey, medium)
-        val duration = item.meta?.duration ?: ""
+        var duration = ""
+
+        if (item.contentType.equals("SERIES")){
+            duration = item.episodeCount.toString() + " ep"
+        }else{
+            duration = item.meta?.duration.toString()
+        }
         val dateDurationSpan = SpannableString("$formattedDate      |      $duration")
 
 // Set 12sp size for entire span

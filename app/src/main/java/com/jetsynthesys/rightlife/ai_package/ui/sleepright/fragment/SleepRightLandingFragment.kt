@@ -491,15 +491,19 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             })
         }
       //  storeData()
-        // Open AI Report WebView on click   // Also logic to hide this button if Report is not generated pending
+        if (!SharedPreferenceManager.getInstance(requireContext()).getAIReportGeneratedView()){
+            rightLifeReportCard.visibility = View.VISIBLE
+        } else {
+            rightLifeReportCard.visibility = View.GONE
+        }
+
         rightLifeReportCard.setOnClickListener {
-            var dynamicReportId = "" // This Is User ID
+            var dynamicReportId = ""
             dynamicReportId = SharedPreferenceManager.getInstance(requireActivity()).userId
             if (dynamicReportId.isEmpty()) {
                 // Some error handling if the ID is not available
             }else{
                 val intent = Intent(requireActivity(), AIReportWebViewActivity::class.java).apply {
-                    // Put the dynamic ID as an extra
                     putExtra(AIReportWebViewActivity.EXTRA_REPORT_ID, dynamicReportId)
                 }
                 startActivity(intent)

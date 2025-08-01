@@ -12,15 +12,18 @@
     android:layout_marginTop="5dp"
     android:orientation="horizontal"
     android:padding="12dp">
+
     <FrameLayout
         android:layout_width="82dp"
         android:layout_height="82dp">
+
         <androidx.cardview.widget.CardView
             android:layout_width="82dp"
             android:layout_height="82dp"
             app:cardCornerRadius="10dp"
             app:cardElevation="0dp"
             app:cardPreventCornerOverlap="true">
+
             <ImageView
                 android:id="@+id/thumbnailImage"
                 android:layout_width="match_parent"
@@ -70,12 +73,14 @@
                 android:textColor="@color/black"
                 android:fontFamily="@font/dmsans_regular"
                 android:textSize="12sp" />
+
                 <ImageView
                     android:id="@+id/image_recommended"
                     android:layout_width="18dp"
                     android:layout_height="18dp"
                     android:scaleType="centerCrop"
                     android:src="@drawable/think_tag" />
+
                 <TextView
                     android:id="@+id/topicTag2"
                     android:layout_width="wrap_content"
@@ -104,6 +109,7 @@
 
         </LinearLayout>
     </LinearLayout>
+
     <TextView
         android:id="@+id/authorText"
         android:layout_width="wrap_content"

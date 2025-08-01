@@ -44,6 +44,7 @@ public class SharedPreferenceConstants {
     public static final String EAT_RIGHT_MAX_CARBS = "EAT_RIGHT_MAX_CARBS";
     public static final String EAT_RIGHT_MAX_PROTEIN = "EAT_RIGHT_MAX_PROTEIN";
     public static final String EAT_RIGHT_MAX_FATS = "EAT_RIGHT_MAX_FATS";
+    public static final String AI_REPORT_GENERATED = "AI_REPORT_GENERATED";
 }
 
 
