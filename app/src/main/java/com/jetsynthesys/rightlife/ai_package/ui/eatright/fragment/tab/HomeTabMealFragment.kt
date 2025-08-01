@@ -1,8 +1,6 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab
 
 import android.Manifest
-import android.app.Activity
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.PorterDuff
 import android.net.Uri
@@ -10,7 +8,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -54,9 +51,6 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealLogItems
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SelectedMealLogList
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SnapDishLocalListModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SnapMealRequestLocalListModel
-import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
-import com.jetsynthesys.rightlife.ai_package.utils.FileUtils
-import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
@@ -94,6 +88,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
     private var loadingOverlay : FrameLayout? = null
     private var tabType : String = ""
     private var moduleName : String = ""
+    private var selectedMealDate : String = ""
     var imageSelectedListener: OnImageSelectedListener? = null
     private lateinit var imagePathsecond : Uri
 
@@ -110,7 +105,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
 
         imageScan = view.findViewById(R.id.image_calender)
         imageGallery = view.findViewById(R.id.image)
-        tabLayout = view.findViewById<TabLayout>(R.id.tabLayout)
+        tabLayout = view.findViewById(R.id.tabLayout)
         backIc = view.findViewById(R.id.backIc)
         searchLayout = view.findViewById(R.id.searchLayout)
         frequentlyAddDishBottomSheetLayout = view.findViewById(R.id.frequentlyAddDishBottomSheetLayout)
@@ -118,13 +113,14 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
         val btnAdd: LinearLayoutCompat = view.findViewById(R.id.layout_btnAdd)
         btnLogMeal = view.findViewById(R.id.layout_btnLogMeal)
         layoutTitle = view.findViewById(R.id.layout_title)
-        checkCircle = view.findViewById<ImageView>(R.id.check_circle_icon)
-        loggedSuccess = view.findViewById<TextView>(R.id.tv_logged_success)
+        checkCircle = view.findViewById(R.id.check_circle_icon)
+        loggedSuccess = view.findViewById(R.id.tv_logged_success)
 
         moduleName = arguments?.getString("ModuleName").toString()
         searchType = arguments?.getString("searchType").toString()
         mealType = arguments?.getString("mealType").toString()
         tabType = arguments?.getString("tabType").toString()
+        selectedMealDate = arguments?.getString("selectedMealDate").toString()
         val dishLocalListModels = if (Build.VERSION.SDK_INT >= 33) {
             arguments?.getParcelable("snapDishLocalListModel", SnapDishLocalListModel::class.java)
         } else {
@@ -247,6 +243,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
                     val fragment = YourMealLogsFragment()
                     val args = Bundle()
                     args.putString("ModuleName", moduleName)
+                    args.putString("selectedMealDate", selectedMealDate)
                     fragment.arguments = args
                     requireActivity().supportFragmentManager.beginTransaction().apply {
                         replace(R.id.flFragment, fragment, "landing")
@@ -261,6 +258,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
             val args = Bundle()
             fragment.arguments = args
             args.putString("ModuleName", moduleName)
+            args.putString("selectedMealDate", selectedMealDate)
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "landing")
                 addToBackStack("landing")
@@ -277,6 +275,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
             args.putString("ModuleName", moduleName)
             args.putString("searchType", "HomeTabMeal")
             args.putString("mealType", mealType)
+            args.putString("selectedMealDate", selectedMealDate)
             args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
             args.putParcelable("selectedMealLogList", mealLogRequests)
             args.putParcelable("selectedSnapMealLogList", snapMealLogRequests)
@@ -372,28 +371,6 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
         }
     }
 
-//    private fun openGallery() {
-//        if (allPermissionsGranted()) {
-//            requireActivity().supportFragmentManager.beginTransaction().apply {
-//                val mealSearchFragment = SnapMealFragment()
-//                val args = Bundle()
-//                args.putString("homeTab", "homeTab")
-//                args.putString("ModuleName", moduleName)
-//                args.putString("mealType", mealType)
-//                args.putString("gallery","gallery")
-//                mealSearchFragment.arguments = args
-//                replace(R.id.flFragment, mealSearchFragment, "Steps")
-//                addToBackStack(null)
-//                commit()
-//            }
-//        } else {
-//            ActivityCompat.requestPermissions(
-//                requireActivity(),
-//                REQUIRED_PERMISSIONS,
-//                REQUEST_CODE_PERMISSIONS
-//            )
-//        }
-//    }
     companion object {
         private const val TAG = "CameraFragment"
         private const val REQUEST_CODE_PERMISSIONS = 10
@@ -438,6 +415,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
                 val args = Bundle()
                 args.putString("ModuleName", moduleName)
                 args.putString("mealType", mealType)
+                args.putString("selectedMealDate", selectedMealDate)
                 fragment.arguments = args
                 replace(R.id.fragmentContainer, fragment, "homeTab")
                 commit()
@@ -482,11 +460,9 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
             }
         }
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-        val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdhNWZhZTkxOTc5OTI1MTFlNzFiMWM4Iiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiJBZGl0eWEiLCJsYXN0TmFtZSI6IlR5YWdpIiwiZGV2aWNlSWQiOiJCNkRCMTJBMy04Qjc3LTRDQzEtOEU1NC0yMTVGQ0U0RDY5QjQiLCJtYXhEZXZpY2VSZWFjaGVkIjpmYWxzZSwidHlwZSI6ImFjY2Vzcy10b2tlbiJ9LCJpYXQiOjE3MzkxNzE2NjgsImV4cCI6MTc1NDg5NjQ2OH0.koJ5V-vpGSY1Irg3sUurARHBa3fArZ5Ak66SkQzkrxM"
-        // val userId = "64763fe2fa0e40d9c0bc8264"
         val currentDateTime = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        val formattedDate = currentDateTime.format(formatter)
+        val formattedDate = selectedMealDate  //?: currentDateTime.format(formatter)
 
         val dishLogList : ArrayList<DishLog> = ArrayList()
         val mealNamesString = dishLists.map { it.name ?: "" }.joinToString(", ")
@@ -543,6 +519,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
                     val fragment = YourMealLogsFragment()
                     val args = Bundle()
                     args.putString("ModuleName", moduleName)
+                    args.putString("selectedMealDate", selectedMealDate)
                     fragment.arguments = args
                     requireActivity().supportFragmentManager.beginTransaction().apply {
                         replace(R.id.flFragment, fragment, "landing")

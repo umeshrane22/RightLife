@@ -26,6 +26,7 @@ class DeleteIngredientBottomSheet : BottomSheetDialogFragment() {
     private var recipeName : String = ""
     private var serving : Double = 0.0
     private var moduleName : String = ""
+    private var selectedMealDate : String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,6 +57,7 @@ class DeleteIngredientBottomSheet : BottomSheetDialogFragment() {
         val ingredientName = arguments?.getString("ingredientName").toString()
         recipeId = arguments?.getString("recipeId").toString()
         recipeName = arguments?.getString("recipeName").toString()
+        selectedMealDate = arguments?.getString("selectedMealDate").toString()
         serving = arguments?.getDouble("serving")?.toDouble() ?: 0.0
 
         val ingredientLocalListModels = if (Build.VERSION.SDK_INT >= 33) {
@@ -75,6 +77,7 @@ class DeleteIngredientBottomSheet : BottomSheetDialogFragment() {
                             val fragment = CreateRecipeFragment()
                             val args = Bundle()
                             args.putString("ModuleName", moduleName)
+                            args.putString("selectedMealDate", selectedMealDate)
                             args.putString("recipeId", recipeId)
                             args.putString("recipeName", recipeName)
                             args.putDouble("serving", serving)
