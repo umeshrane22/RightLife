@@ -1,6 +1,8 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab
 
 import android.Manifest
+import android.app.Activity
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.PorterDuff
 import android.net.Uri
@@ -52,7 +54,9 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealLogItems
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SelectedMealLogList
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SnapDishLocalListModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SnapMealRequestLocalListModel
-import com.jetsynthesys.rightlife.ai_package.utils.LoaderUtil
+import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
+import com.jetsynthesys.rightlife.ai_package.utils.FileUtils
+import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
@@ -91,6 +95,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
     private var tabType : String = ""
     private var moduleName : String = ""
     var imageSelectedListener: OnImageSelectedListener? = null
+    private lateinit var imagePathsecond : Uri
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentHomeTabMealBinding
         get() = FragmentHomeTabMealBinding::inflate
@@ -208,8 +213,9 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 val mealSearchFragment = SnapMealFragment()
                 val args = Bundle()
-                args.putBoolean("isHomeTab", true)
+                args.putString("homeTab", "homeTab")
                 args.putString("ModuleName", moduleName)
+                args.putString("mealType", mealType)
                 mealSearchFragment.arguments = args
                 replace(R.id.flFragment, mealSearchFragment, "Steps")
                 addToBackStack(null)
@@ -351,18 +357,11 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
             }
         }
     }
+
     private fun openGallery() {
         if (allPermissionsGranted()) {
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                val mealSearchFragment = SnapMealFragment()
-                val args = Bundle()
-                args.putBoolean("isHomeTab", true)
-                args.putString("ModuleName", moduleName)
-                args.putString("gallery","gallery")
-                mealSearchFragment.arguments = args
-                replace(R.id.flFragment, mealSearchFragment, "Steps")
-                addToBackStack(null)
-                commit()
+            Handler(Looper.getMainLooper()).post {
+                pickImageLauncher.launch("image/*")
             }
         } else {
             ActivityCompat.requestPermissions(
@@ -372,6 +371,29 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
             )
         }
     }
+
+//    private fun openGallery() {
+//        if (allPermissionsGranted()) {
+//            requireActivity().supportFragmentManager.beginTransaction().apply {
+//                val mealSearchFragment = SnapMealFragment()
+//                val args = Bundle()
+//                args.putString("homeTab", "homeTab")
+//                args.putString("ModuleName", moduleName)
+//                args.putString("mealType", mealType)
+//                args.putString("gallery","gallery")
+//                mealSearchFragment.arguments = args
+//                replace(R.id.flFragment, mealSearchFragment, "Steps")
+//                addToBackStack(null)
+//                commit()
+//            }
+//        } else {
+//            ActivityCompat.requestPermissions(
+//                requireActivity(),
+//                REQUIRED_PERMISSIONS,
+//                REQUEST_CODE_PERMISSIONS
+//            )
+//        }
+//    }
     companion object {
         private const val TAG = "CameraFragment"
         private const val REQUEST_CODE_PERMISSIONS = 10
@@ -383,7 +405,20 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
     private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let {
             imageSelectedListener?.onImageSelected(it)
-           // dismiss()
+            imagePathsecond = it
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                val mealSearchFragment = SnapMealFragment()
+                val args = Bundle()
+                args.putString("homeTab", "homeTab")
+                args.putString("ModuleName", moduleName)
+                args.putString("mealType", mealType)
+                args.putString("gallery","gallery")
+                args.putString("ImagePathsecound", imagePathsecond.toString())
+                mealSearchFragment.arguments = args
+                replace(R.id.flFragment, mealSearchFragment, "Steps")
+                addToBackStack(null)
+                commit()
+            }
             Toast.makeText(requireContext(), "Image loaded from gallery!", Toast.LENGTH_SHORT).show()
         } ?: Toast.makeText(requireContext(), "No image selected", Toast.LENGTH_SHORT).show()
     }
@@ -626,10 +661,44 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
             btnRemove.setColorFilter(ContextCompat.getColor(requireContext(), R.color.white), PorterDuff.Mode.SRC_IN)
             tvIngredient.text = ingredient
             btnRemove.setOnClickListener {
+                val index = ingredientsList.indexOfFirst { it.startsWith(ingredient) }
                 ingredientsList.remove(ingredient)
                 updateIngredientChips()
+                if (snapMealLogRequestList.isNotEmpty()) {
+                    val iterator = snapMealLogRequestList.iterator()
+                    while (iterator.hasNext()) {
+                        val snapDish = iterator.next()
+                        if (snapDish.meal_name.equals(ingredient, ignoreCase = true)) {
+                            iterator.remove()
+                            break // if only one item should be removed
+                        }
+                    }
+                }
+                if (dishLists.isNotEmpty()){
+                    val iterator = dishLists.iterator()
+                    while (iterator.hasNext()) {
+                        val dishItem = iterator.next()
+                        if (dishItem.name.equals(ingredient, ignoreCase = true)) {
+                            iterator.remove()
+                            break // if only one item should be removed
+                        }
+                    }
+                }
+                if (selectedMealLogList.isNotEmpty()){
+                    val iterator = selectedMealLogList.iterator()
+                    while (iterator.hasNext()) {
+                        val mealLog = iterator.next()
+                        if (mealLog.recipe_name.equals(ingredient, ignoreCase = true)) {
+                            iterator.remove()
+                            break // if only one item should be removed
+                        }
+                    }
+                }
             }
             flexboxLayout.addView(chipView)
+        }
+        if (ingredientsList.isEmpty()){
+            frequentlyAddDishBottomSheetLayout.visibility = View.GONE
         }
     }
 

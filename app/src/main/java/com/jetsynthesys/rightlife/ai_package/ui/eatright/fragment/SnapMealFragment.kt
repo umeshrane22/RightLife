@@ -77,20 +77,6 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
 
     private var moduleName : String = ""
 
-    private val REQUIRED_PERMISSIONS = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        arrayOf(
-            Manifest.permission.READ_MEDIA_IMAGES,
-            Manifest.permission.CAMERA
-        )
-    } else {
-        arrayOf(
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.CAMERA
-        )
-    }
-
-    private val PERMISSION_REQUEST_CODE = 100
     private lateinit var currentPhotoPath: String
     private lateinit var takePhotoInfoLayout : LinearLayoutCompat
     private lateinit var enterMealDescriptionLayout : LinearLayoutCompat
@@ -109,6 +95,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
     private var loadingOverlay : FrameLayout? = null
     private var homeTab : String = ""
     private lateinit var mealType : String
+    private  var currentPhotoPathsecound : Uri? = null
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentSnapMealBinding
         get() = FragmentSnapMealBinding::inflate
@@ -131,56 +118,38 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
         moduleName = arguments?.getString("ModuleName").toString()
         mealType = arguments?.getString("mealType").toString()
         gallery = arguments?.getString("gallery").toString()
-        if(gallery.equals("gallery")){
-            isGalleryOpen = true
+
+        val imagePathString = arguments?.getString("ImagePathsecound")
+        if (imagePathString != null){
+            currentPhotoPathsecound = imagePathString?.let { Uri.parse(it) }!!
+
+        }else{
+            currentPhotoPathsecound = null
         }
 
         skipTV.setOnClickListener {
-//            requireActivity().supportFragmentManager.beginTransaction().apply {
-//                val snapMealFragment = MealScanResultFragment()
-//                val args = Bundle()
-//                args.putString("ModuleName", arguments?.getString("ModuleName").toString())
-//                args.putString("ImagePath", imagePath)
-//                args.putParcelable("foodDataResponses", null)
-//                snapMealFragment.arguments = args
-//                replace(R.id.flFragment, snapMealFragment, "Steps")
-//                addToBackStack(null)
-//                commit()
-//            }
             if (imagePath != ""){
                 uploadFoodImagePath(imagePath, mealDescriptionET.text.toString())
             }else{
                 Toast.makeText(context, "Please capture food",Toast.LENGTH_SHORT).show()
             }
-//            takePhotoInfoLayout.visibility = View.VISIBLE
-//            enterMealDescriptionLayout.visibility = View.GONE
-//            skipTV.visibility = View.GONE
-//            videoView.visibility = View.VISIBLE
-//            imageFood.visibility = View.GONE
-//            isProceedResult = false
-//            proceedLayout.isEnabled = true
-//            proceedLayout.setBackgroundResource(R.drawable.green_meal_bg)
-//            videoPlay()
         }
 
-        if (sharedPreferenceManager.getFirstTimeUserForSnapMealVideo()) {
-            takePhotoInfoLayout.visibility = View.GONE
-         //   enterMealDescriptionLayout.visibility = View.VISIBLE
-            videoView.visibility = View.GONE
-            val cameraDialog = CameraDialogFragment("", moduleName,gallery, homeTab, mealType)
-            cameraDialog.imageSelectedListener = object : OnImageSelectedListener {
-                override fun onImageSelected(imageUri: Uri) {
-                    val path = getRealPathFromURI(requireContext(), imageUri)
-                    imagePathsecond = imageUri
+        if (gallery.equals("gallery")){
+            if (currentPhotoPathsecound != null){
+                try {
+                    val path = getRealPathFromURI(requireContext(), currentPhotoPathsecound!!)
                     if (path != null) {
-                        val scaledBitmap = decodeAndScaleBitmap(path, 1080, 1080) // Limit to screen size
+                        val scaledBitmap = decodeAndScaleBitmap(path, 1080, 1080)
                         if (scaledBitmap != null) {
-                            val rotatedBitmap = rotateImageIfRequired(requireContext(), scaledBitmap, imageUri)
                             imagePath = path
+                            imagePathsecond = currentPhotoPathsecound!!
+                            val rotatedBitmap = rotateImageIfRequired(requireContext(), scaledBitmap,
+                                currentPhotoPathsecound!!
+                            )
                             videoView.visibility = View.GONE
                             imageFood.visibility = View.VISIBLE
                             imageFood.setImageBitmap(rotatedBitmap)
-
                             takePhotoInfoLayout.visibility = View.GONE
                             enterMealDescriptionLayout.visibility = View.VISIBLE
                             skipTV.visibility = View.VISIBLE
@@ -192,15 +161,51 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                             Toast.makeText(requireContext(), "Failed to decode image", Toast.LENGTH_SHORT).show()
                         }
                     } else {
-                        Toast.makeText(requireContext(), "Unable to get image path", Toast.LENGTH_SHORT).show()
+                        Log.e("ImageCapture", "File does not exist at $currentPhotoPath")
                     }
+                } catch (e: Exception) {
+                    Log.e("ImageLoad", "Error loading image from file path: $currentPhotoPath", e)
                 }
             }
-            cameraDialog.show(parentFragmentManager, "CameraDialog")
-            // Request all permissions at once
+        }else{
+            if (sharedPreferenceManager.getFirstTimeUserForSnapMealVideo()) {
+                takePhotoInfoLayout.visibility = View.GONE
+                //   enterMealDescriptionLayout.visibility = View.VISIBLE
+                videoView.visibility = View.GONE
+                val cameraDialog = CameraDialogFragment("", moduleName, homeTab, mealType)
+                cameraDialog.imageSelectedListener = object : OnImageSelectedListener {
+                    override fun onImageSelected(imageUri: Uri) {
+                        val path = getRealPathFromURI(requireContext(), imageUri)
+                        imagePathsecond = imageUri
+                        if (path != null) {
+                            val scaledBitmap = decodeAndScaleBitmap(path, 1080, 1080) // Limit to screen size
+                            if (scaledBitmap != null) {
+                                val rotatedBitmap = rotateImageIfRequired(requireContext(), scaledBitmap, imageUri)
+                                imagePath = path
+                                videoView.visibility = View.GONE
+                                imageFood.visibility = View.VISIBLE
+                                imageFood.setImageBitmap(rotatedBitmap)
+
+                                takePhotoInfoLayout.visibility = View.GONE
+                                enterMealDescriptionLayout.visibility = View.VISIBLE
+                                skipTV.visibility = View.VISIBLE
+                                proceedLayout.isEnabled = false
+                                proceedLayout.setBackgroundResource(R.drawable.light_green_bg)
+                                isProceedResult = false
+                                mealDescriptionET.text.clear()
+                            } else {
+                                Toast.makeText(requireContext(), "Failed to decode image", Toast.LENGTH_SHORT).show()
+                            }
+                        } else {
+                            Toast.makeText(requireContext(), "Unable to get image path", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+                cameraDialog.show(parentFragmentManager, "CameraDialog")
+                // Request all permissions at once
 //            if (!hasAllPermissions()) {
 //                requestAllPermissions()
-          //  }else{
+                //  }else{
                 if (isProceedResult){
                     if (imagePath != ""){
                         uploadFoodImagePath(imagePath, mealDescriptionET.text.toString())
@@ -208,23 +213,21 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                         Toast.makeText(context, "Please capture food",Toast.LENGTH_SHORT).show()
                     }
                 }else{
-                  //  CameraDialogFragment().show(requireActivity().supportFragmentManager, "CameraDialog")
-                  //  openCameraForImage()
+                    //  CameraDialogFragment().show(requireActivity().supportFragmentManager, "CameraDialog")
+                    //  openCameraForImage()
                 }
-      //      }
-        } else {
-            takePhotoInfoLayout.visibility = View.VISIBLE
-            enterMealDescriptionLayout.visibility = View.GONE
-            videoView.visibility = View.VISIBLE
-            sharedPreferenceManager.setFirstTimeUserForSnapMealVideo(true)
+                //      }
+            } else {
+                takePhotoInfoLayout.visibility = View.VISIBLE
+                enterMealDescriptionLayout.visibility = View.GONE
+                videoView.visibility = View.VISIBLE
+                sharedPreferenceManager.setFirstTimeUserForSnapMealVideo(true)
+            }
         }
+
         videoPlay()
 
         proceedLayout.setOnClickListener {
-            // Request all permissions at once
-           /* if (!hasAllPermissions()) {
-                requestAllPermissions()
-            }else{*/
                 if (isProceedResult){
                     if (imagePath != ""){
                         uploadFoodImagePath(imagePath, mealDescriptionET.text.toString())
@@ -232,7 +235,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                         Toast.makeText(context, "Please capture food",Toast.LENGTH_SHORT).show()
                     }
                 }else{
-                    val cameraDialog = CameraDialogFragment("", moduleName, gallery, homeTab, mealType)
+                    val cameraDialog = CameraDialogFragment("", moduleName, homeTab, mealType)
                     cameraDialog.imageSelectedListener = object : OnImageSelectedListener {
                         override fun onImageSelected(imageUri: Uri) {
                             val path = getRealPathFromURI(requireContext(), imageUri)
@@ -623,7 +626,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
     }
 }
 
-class CameraDialogFragment(private val imagePath: String, val moduleName : String, val gallery:String, val homeTab : String,
+class CameraDialogFragment(private val imagePath: String, val moduleName : String, val homeTab : String,
                            val mealType : String) : DialogFragment() {
 
     private lateinit var viewFinder: PreviewView
@@ -716,15 +719,6 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
             view.findViewById<ImageView>(R.id.galleryButton)?.postDelayed({
                 view.findViewById<ImageView>(R.id.galleryButton)?.isEnabled = true
             }, 700) // 500 ms delay
-        }
-        if(gallery.equals("gallery")){
-            isGalleryOpen = true
-        }
-
-        if(isGalleryOpen){
-            Handler(Looper.getMainLooper()).post {
-                pickImageLauncher.launch("image/*")
-            }
         }
 
         cameraExecutor = Executors.newSingleThreadExecutor()
