@@ -516,5 +516,15 @@ public class SharedPreferenceManager {
     public String getSnapMealId() {
         return sharedPreferences.getString(SharedPreferenceConstants.SNAP_MEAL_ID, "");
     }
+
+    public Boolean getAIReportGeneratedView() {
+        return sharedPreferences.getBoolean(SharedPreferenceConstants.AI_REPORT_GENERATED, false);
+    }
+
+    public void setAIReportGeneratedView(boolean isReportGenerated) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(SharedPreferenceConstants.AI_REPORT_GENERATED, isReportGenerated);
+        editor.apply();
+    }
 }
 

@@ -494,7 +494,7 @@
                         android:id="@+id/tv_quote_desc"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="“I’ve missed more than 9,000 shots in my career. I’ve lost almost 300 games. Twenty-six times, I’ve been trusted to take the game-winning shot and missed. I’ve failed over and over and over again in my life. And that is why I succeed.”"
+                        android:text=""
                         android:textColor="@color/black"
                         android:fontFamily="@font/merriweather_bold"
                         android:textSize="16sp"
@@ -1064,13 +1064,13 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:layout_marginBottom="20dp"
-                    android:layout_marginTop="20dp">
+                    android:layout_marginTop="10dp">
 
                     <androidx.cardview.widget.CardView
                         android:id="@+id/add_tools_think_right"
                         android:layout_marginEnd="10dp"
                         android:layout_width="100dp"
-                        android:layout_marginTop="20dp"
+                        android:layout_marginTop="10dp"
                         app:cardCornerRadius="10dp"
                         android:visibility="visible"
                         android:layout_height="140dp"

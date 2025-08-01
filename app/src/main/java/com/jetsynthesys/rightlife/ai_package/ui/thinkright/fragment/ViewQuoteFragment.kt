@@ -36,6 +36,7 @@ import com.jetsynthesys.rightlife.databinding.FragmentViewQuoteBinding
 import com.google.android.material.snackbar.Snackbar
 import com.jetsynthesys.rightlife.ai_package.model.BaseResponse
 import com.jetsynthesys.rightlife.ai_package.model.request.MindfullRequest
+import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.ai_package.utils.AppPreference
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
@@ -140,15 +141,15 @@ class ViewQuoteFragment  : BaseFragment<FragmentViewQuoteBinding>() {
         call.enqueue(object : Callback<BaseResponse> {
             override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
                 if (response.isSuccessful) {
-                    navigateToFragment(ThinkRightReportFragment(), "ThinkRightLandingFragment")
+                    navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
                    // Toast.makeText(activity, "OK", Toast.LENGTH_SHORT).show()
                 } else {
-                    navigateToFragment(ThinkRightReportFragment(), "ThinkRightLandingFragment")
+                    navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
                   //  Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
                 }
             }
             override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
-                navigateToFragment(ThinkRightReportFragment(), "ThinkRightLandingFragment")
+                navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
               //  Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
             }
         })

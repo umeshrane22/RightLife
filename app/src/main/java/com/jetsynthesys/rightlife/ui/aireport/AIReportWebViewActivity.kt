@@ -9,6 +9,7 @@ import android.webkit.WebSettings
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.jetsynthesys.rightlife.databinding.ActivityAireportWebViewBinding
+import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 
 class AIReportWebViewActivity : AppCompatActivity() {
 
@@ -78,6 +79,8 @@ class AIReportWebViewActivity : AppCompatActivity() {
         }
 
         webView.loadUrl(fullUrl)
+        SharedPreferenceManager.getInstance(applicationContext).
+        setAIReportGeneratedView(true)
     }
 
     override fun onBackPressed() {

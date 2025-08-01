@@ -594,6 +594,8 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
                     if (item.fullDate.toString() == mealLog.date){
                         if (mealLog.isAvailable == true){
                            item.is_available = true
+                        }else{
+                            item.is_available = mealLog.isAvailable
                         }
                     }
                 }
@@ -614,7 +616,9 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
                 }
             }
 
-            mealLogWeeklyDayAdapter.addAll(weekLists, index, mealLogDateData, isClick)
+            requireActivity()?.runOnUiThread {
+                mealLogWeeklyDayAdapter.addAll(weekLists, index, mealLogDateData, isClick)
+            }
         }
     }
 
@@ -1749,7 +1753,6 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
     }
 
     override fun onLogDishDeleted(mealData: String) {
-        getMealsLogList(selectedDate)
         val currentDateTime = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val formattedDate = currentDateTime.format(formatter)
@@ -1757,6 +1760,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
         selectedWeeklyDayTv.text = currentDateTime.format(formatFullDate)
         selectedMealDate = formattedDate
         getMealsLogHistory(formattedDate)
+        getMealsLogList(selectedDate)
     }
 
     override fun onMealTypeSelected(mealType: String) {

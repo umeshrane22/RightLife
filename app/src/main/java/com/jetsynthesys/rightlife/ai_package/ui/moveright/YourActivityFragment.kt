@@ -97,7 +97,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
     }
 
     private val myActivityAdapter by lazy {
-        YourActivitiesAdapter(requireContext(), arrayListOf(), -1, null, false, ::onWorkoutItemClick,
+        YourActivitiesAdapter(requireContext(), arrayListOf(), -1, null, false,::onDateRecyclerRefresh, ::onWorkoutItemClick,
             onCirclePlusClick = { activityModel, position ->
                 val fragment = AddWorkoutSearchFragment()
                 val args = Bundle().apply {
@@ -293,6 +293,17 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
 
         val prefs = requireContext().getSharedPreferences("TooltipPrefs", Context.MODE_PRIVATE)
         isTooltipShown = prefs.getBoolean("hasShownTooltips", false)
+    }
+
+    private fun onDateRecyclerRefresh(){
+        val currentDateTime = LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val formattedDate = currentDateTime.format(formatter)
+        if (selectedDate!=null) {
+            getWorkoutLogHistory(selectedDate!!)
+        }else{
+            getWorkoutLogHistory(formattedDate)
+        }
     }
 
     override fun onResume() {
@@ -608,6 +619,8 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                         if (item.fullDate.toString() == workoutLog.date) {
                             if (workoutLog.is_available_workout == true) {
                                 item.is_available = true
+                            }else{
+                                item.is_available = workoutLog.is_available_workout
                             }
                         }
                     }

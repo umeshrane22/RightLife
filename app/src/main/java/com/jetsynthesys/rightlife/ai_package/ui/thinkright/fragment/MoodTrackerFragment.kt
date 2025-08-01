@@ -31,6 +31,7 @@ import com.jetsynthesys.rightlife.ai_package.model.MoodTrackerMonthData
 import com.jetsynthesys.rightlife.ai_package.model.MoodTrackerMonthlyResponse
 import com.jetsynthesys.rightlife.ai_package.model.MoodTrackerPercent
 import com.jetsynthesys.rightlife.ai_package.model.MoodTrackerWeeklyResponse
+import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
@@ -108,7 +109,7 @@ class MoodTrackerFragment(journalAnswer: String,emojis:Int, fromFragment: String
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                navigateToFragment(ThinkRightReportFragment(), "ThinkRightReportFragment")
+                navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
 
             }
         })
@@ -116,7 +117,7 @@ class MoodTrackerFragment(journalAnswer: String,emojis:Int, fromFragment: String
         val backBtn = view.findViewById<ImageView>(R.id.img_back)
 
         backBtn.setOnClickListener {
-            navigateToFragment(ThinkRightReportFragment(), "ThinkRightReportFragment")
+            navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
         }
 
         if (fromFragments == "JournalFragment"){
