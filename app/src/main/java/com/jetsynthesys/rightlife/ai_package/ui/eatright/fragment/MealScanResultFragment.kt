@@ -111,6 +111,7 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>(), Ra
     private var loadingOverlay : FrameLayout? = null
     private var mealType : String = ""
     private var snapMealLog : String = ""
+    private var homeTab : String = ""
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentMealScanResultsBinding
         get() = FragmentMealScanResultsBinding::inflate
@@ -160,6 +161,7 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>(), Ra
         val colorStateList = ColorStateList(states, colors)
         checkBox.buttonTintList = colorStateList
 
+        homeTab = arguments?.getString("homeTab").toString()
         moduleName = arguments?.getString("ModuleName").toString()
         mealId = arguments?.getString("mealId").toString()
         mealName = arguments?.getString("mealName").toString()
@@ -351,7 +353,18 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>(), Ra
                     addToBackStack("landing")
                     commit()
                 }
-            }else{
+            }else if (homeTab.equals("homeTab")){
+            val fragment = HomeTabMealFragment()
+            val args = Bundle()
+            args.putString("ModuleName", moduleName)
+            args.putString("mealType", mealType)
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "landing")
+                addToBackStack("landing")
+                commit()
+            }
+        } else{
                 startActivity(Intent(context, HomeNewActivity::class.java))
                 requireActivity().finish()
             }
@@ -379,7 +392,18 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>(), Ra
                         addToBackStack("landing")
                         commit()
                     }
-                }else{
+                }else if (homeTab.equals("homeTab")){
+                    val fragment = HomeTabMealFragment()
+                    val args = Bundle()
+                    args.putString("ModuleName", moduleName)
+                    args.putString("mealType", mealType)
+                    fragment.arguments = args
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.flFragment, fragment, "landing")
+                        addToBackStack("landing")
+                        commit()
+                    }
+                } else{
                     startActivity(Intent(context, HomeNewActivity::class.java))
                     requireActivity().finish()
                 }
@@ -404,6 +428,8 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>(), Ra
             args.putString("ModuleName", moduleName)
             args.putString("mealId", mealId)
             args.putString("mealName", mealName)
+            args.putString("mealType", mealType)
+            args.putString("homeTab", homeTab)
             args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
             args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
             fragment.arguments = args
@@ -703,6 +729,7 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>(), Ra
             args.putString("ModuleName", moduleName)
             args.putString("searchType", "MealScanResult")
             args.putString("mealType", mealType)
+            args.putString("homeTab", homeTab)
             args.putString("snapMealLog", snapMealLog)
             args.putString("mealQuantity", snapRecipeData.mealQuantity.toString())
             args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
@@ -724,6 +751,7 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>(), Ra
         args.putString("mealId", mealId)
         args.putString("mealName", mealName)
         args.putString("mealType", mealType)
+        args.putString("homeTab", homeTab)
         args.putString("snapMealLog", snapMealLog)
         args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
         args.putString("snapRecipeName", snapRecipeData.name)
@@ -967,6 +995,16 @@ class MealScanResultFragment: BaseFragment<FragmentMealScanResultsBinding>(), Ra
                         Toast.makeText(activity, mealData, Toast.LENGTH_SHORT).show()
                         val moduleName = arguments?.getString("ModuleName").toString()
                         if (moduleName.contentEquals("EatRight")){
+                            val fragment = HomeBottomTabFragment()
+                            val args = Bundle()
+                            args.putString("ModuleName", "EatRight")
+                            fragment.arguments = args
+                            requireActivity().supportFragmentManager.beginTransaction().apply {
+                                replace(R.id.flFragment, fragment, "landing")
+                                addToBackStack("landing")
+                                commit()
+                            }
+                        }else if (homeTab.equals("homeTab")){
                             val fragment = HomeBottomTabFragment()
                             val args = Bundle()
                             args.putString("ModuleName", "EatRight")

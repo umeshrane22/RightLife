@@ -599,6 +599,9 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                         val responseBody = response.body()
                         responseBody?.let {
                             val fragment = YourActivityFragment()
+                            val args = Bundle()
+                            args.putString("selected_date", mSelectedDate) // Put the string in the bundle
+                            fragment.arguments = args
                             requireActivity().supportFragmentManager.beginTransaction().apply {
                                 replace(R.id.flFragment, fragment, "YourActivityFragment")
                                 addToBackStack("YourActivityFragment")

@@ -51,6 +51,7 @@ class ViewMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBinding>()
     private var mealNames = emptyList<String>()
     private var mealSnapNames = emptyList<String>()
     private var mealNameList = ArrayList<String>()
+    private var selectedMealDate : String = ""
 
     private var mealDetailsLog : MealDetailsLog? = null
 
@@ -94,6 +95,7 @@ class ViewMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBinding>()
         dishesItemRecyclerview.adapter = mealLogsAdapter
 
         val moduleName = arguments?.getString("ModuleName").toString()
+        selectedMealDate = arguments?.getString("selectedMealDate").toString()
         val mealDetailsLogResponse = if (Build.VERSION.SDK_INT >= 33) {
             arguments?.getParcelable("mealDetailsLog", MealDetailsLog::class.java)
         } else {
@@ -132,6 +134,7 @@ class ViewMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBinding>()
                 val fragment = YourMealLogsFragment()
                 val args = Bundle()
                 args.putString("ModuleName", moduleName)
+                args.putString("selectedMealDate", selectedMealDate)
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
                     replace(R.id.flFragment, fragment, "mealLog")
@@ -144,6 +147,7 @@ class ViewMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBinding>()
             val fragment = YourMealLogsFragment()
             val args = Bundle()
             args.putString("ModuleName", moduleName)
+            args.putString("selectedMealDate", selectedMealDate)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "mealLog")

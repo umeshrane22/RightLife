@@ -73,6 +73,8 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
     private lateinit var mealType : String
     private var loadingOverlay : FrameLayout? = null
     private var moduleName : String = ""
+    private var homeTab : String = ""
+    private var selectedMealDate : String = ""
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentSearchDishBinding
         get() = FragmentSearchDishBinding::inflate
@@ -108,6 +110,8 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
         mealId = arguments?.getString("mealId").toString()
         mealName = arguments?.getString("mealName").toString()
         mealType = arguments?.getString("mealType").toString()
+        homeTab = arguments?.getString("homeTab").toString()
+        selectedMealDate = arguments?.getString("selectedMealDate").toString()
 
         val imagePathString = arguments?.getString("ImagePathsecound")
         if (imagePathString != null){
@@ -150,10 +154,12 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                         val fragment = MealScanResultFragment()
                         val args = Bundle()
                         args.putString("ModuleName", moduleName)
+                        args.putString("selectedMealDate", selectedMealDate)
                         args.putString("ModuleName", arguments?.getString("ModuleName").toString())
                         args.putString("mealId", mealId)
                         args.putString("mealName", mealName)
                         args.putString("mealType", mealType)
+                        args.putString("homeTab", homeTab)
                         args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
                         args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
                         fragment.arguments = args
@@ -166,6 +172,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                         val fragment = CreateMealFragment()
                         val args = Bundle()
                         args.putString("ModuleName", moduleName)
+                        args.putString("selectedMealDate", selectedMealDate)
                         args.putString("searchType", "createMeal")
                         args.putString("mealId", mealId)
                         args.putString("mealType", mealType)
@@ -186,10 +193,12 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                 val fragment = MealScanResultFragment()
                 val args = Bundle()
                 args.putString("ModuleName", moduleName)
+                args.putString("selectedMealDate", selectedMealDate)
                 args.putString("ModuleName", arguments?.getString("ModuleName").toString())
                 args.putString("mealId", mealId)
                 args.putString("mealName", mealName)
                 args.putString("mealType", mealType)
+                args.putString("homeTab", homeTab)
                 args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
                 args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
                 fragment.arguments = args
@@ -202,6 +211,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                 val fragment = CreateMealFragment()
                 val args = Bundle()
                 args.putString("ModuleName", moduleName)
+                args.putString("selectedMealDate", selectedMealDate)
                 args.putString("searchType", "createMeal")
                 args.putString("mealId", mealId)
                 args.putString("mealType", mealType)
@@ -280,10 +290,12 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                 val snapMealFragment = SnapDishFragment()
                 val args = Bundle()
                 args.putString("ModuleName", moduleName)
+                args.putString("selectedMealDate", selectedMealDate)
                 args.putString("ModuleName", arguments?.getString("ModuleName").toString())
                 args.putString("mealId", mealId)
                 args.putString("mealName", mealName)
                 args.putString("mealType", mealType)
+                args.putString("homeTab", homeTab)
                 args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
                 args.putString("searchType", "searchScanResult")
                 args.putParcelable("searchResultItem", recipesModel)
@@ -298,6 +310,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                 val snapMealFragment = DishFragment()
                 val args = Bundle()
                 args.putString("ModuleName", moduleName)
+                args.putString("selectedMealDate", selectedMealDate)
                 args.putString("searchType", searchType)
                 args.putString("mealId", mealId)
                 args.putString("mealName", mealName)
@@ -323,9 +336,11 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                 val snapMealFragment = SnapDishFragment()
                 val args = Bundle()
                 args.putString("ModuleName", moduleName)
+                args.putString("selectedMealDate", selectedMealDate)
                 args.putString("mealId", mealId)
                 args.putString("mealName", mealName)
                 args.putString("mealType", mealType)
+                args.putString("homeTab", homeTab)
                 args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
                 args.putString("searchType", "SearchDish")
                 args.putParcelable("searchResultItem", recipesModel)
@@ -341,6 +356,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                 val snapMealFragment = DishFragment()
                 val args = Bundle()
                 args.putString("ModuleName", moduleName)
+                args.putString("selectedMealDate", selectedMealDate)
                 args.putString("searchType", "SearchDish")
                 args.putString("mealId", mealId)
                 args.putString("mealName", mealName)

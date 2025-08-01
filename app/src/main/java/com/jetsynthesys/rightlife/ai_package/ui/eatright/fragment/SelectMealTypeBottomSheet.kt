@@ -61,39 +61,41 @@ class SelectMealTypeBottomSheet : BottomSheetDialogFragment() {
 
         val items = arrayOf("Breakfast", "Morning Snack", "Lunch", "Evening Snacks", "Dinner")
         val moduleName = arguments?.getString("ModuleName").toString()
+        val selectedMealDate = arguments?.getString("selectedMealDate").toString()
 
         layoutBreakfast.setOnClickListener {
             dismiss()
-            callTabMealFragment("breakfast", moduleName)
+            callTabMealFragment("breakfast", moduleName, selectedMealDate)
         }
 
         layoutMorningSnack.setOnClickListener {
             dismiss()
-            callTabMealFragment("morning_snack", moduleName)
+            callTabMealFragment("morning_snack", moduleName, selectedMealDate)
         }
 
         layoutLunch.setOnClickListener {
             dismiss()
-            callTabMealFragment("lunch", moduleName)
+            callTabMealFragment("lunch", moduleName, selectedMealDate)
         }
 
         layoutEveningSnacks.setOnClickListener {
             dismiss()
-            callTabMealFragment("evening_snack", moduleName)
+            callTabMealFragment("evening_snack", moduleName, selectedMealDate)
         }
 
         layoutDinner.setOnClickListener {
             dismiss()
-            callTabMealFragment("dinner", moduleName)
+            callTabMealFragment("dinner", moduleName, selectedMealDate)
         }
     }
 
-    private fun callTabMealFragment(mealType: String, moduleName : String) {
+    private fun callTabMealFragment(mealType: String, moduleName : String, selectedMealDate : String) {
         listener?.onMealTypeSelected("selected")
         val fragment = HomeTabMealFragment()
         val args = Bundle()
         args.putString("ModuleName", moduleName)
         args.putString("mealType", mealType)
+        args.putString("selectedMealDate", selectedMealDate)
         fragment.arguments = args
         requireActivity().supportFragmentManager.beginTransaction().apply {
             replace(R.id.flFragment, fragment, "mealLog")
