@@ -608,6 +608,8 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                         if (item.fullDate.toString() == workoutLog.date) {
                             if (workoutLog.is_available_workout == true) {
                                 item.is_available = true
+                            }else{
+                                item.is_available = workoutLog.is_available_workout
                             }
                         }
                     }

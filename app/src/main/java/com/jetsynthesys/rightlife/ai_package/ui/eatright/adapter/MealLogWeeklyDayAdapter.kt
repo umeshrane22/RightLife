@@ -86,7 +86,7 @@ class MealLogWeeklyDayAdapter(private val context: Context, private var dataList
             clickPos = pos
             mealLogListData = mealLogItem
             isClickView = isClick
+            notifyDataSetChanged()
         }
-        notifyDataSetChanged()
     }
 }
