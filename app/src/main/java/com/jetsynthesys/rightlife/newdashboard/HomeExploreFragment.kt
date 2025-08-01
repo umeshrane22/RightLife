@@ -11,8 +11,10 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.NonNull
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -48,6 +50,8 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.IOException
+import kotlin.math.abs
+
 
 class HomeExploreFragment : BaseFragment() {
     private var _binding: FragmentHomeExploreBinding? = null
@@ -743,6 +747,51 @@ class HomeExploreFragment : BaseFragment() {
             binding.viewPager.visibility = View.GONE
         }
         adapter!!.notifyDataSetChanged()
+
+
+        // Set up the initial position for circular effect
+        val initialPosition = Int.MAX_VALUE / 2
+        binding.viewPager.setCurrentItem(initialPosition - initialPosition % cardItems.size, false)
+
+
+        // Set offscreen page limit and page margin
+        binding.viewPager.setOffscreenPageLimit(5) // Load adjacent pages
+        binding.viewPager.setClipToPadding(false)
+        binding.viewPager.setClipChildren(false)
+        binding.viewPager.setPageTransformer(object : ViewPager2.PageTransformer {
+            private val MIN_SCALE = 0.85f
+            private val MIN_ALPHA = 0.5f
+
+            override fun transformPage(@NonNull page: View, position: Float) {
+                page.z = 0f
+                // Ensure center card is on top
+                if (position == 0f) {
+                    page.z = 1f // Bring center card to the top
+                } else {
+                    page.z = 0f // Push other cards behind
+                }
+                // Set alpha based on the card's position:
+                if (position <= -1 || position >= 1) {
+                    // Far off-screen cards (adjacent cards)
+                    page.alpha = 0.5f // Make adjacent cards 50% transparent
+                } else if (position == 0f) {
+                    // The center card (focused card)
+                    page.alpha = 1f // Make the center card fully opaque
+                } else {
+                    // Cards between center and adjacent
+                    page.alpha =
+                        (0.9f + (1 - abs(position.toDouble())) * 0.9f).toFloat() // Gradual transparency
+                }
+
+                val scaleFactor = (0.80f + (1 - abs(position.toDouble())) * 0.20f).toFloat()
+                page.scaleY = scaleFactor
+                page.scaleX = scaleFactor
+
+                // Adjust translation for left/right stacking
+                page.translationX = -position * page.width / 5.9f
+            }
+        })
+
     }
 
     private fun handleServicePaneResponse(responseObj: ServicePaneResponse) {

@@ -15,6 +15,7 @@ import com.jetsynthesys.rightlife.ui.questionnaire.pojo.MRQuestionSeven
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.ScheduleOption
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
+import com.jetsynthesys.rightlife.ui.utility.runWithCooldown
 
 class BreaksToStretchFragment : Fragment() {
 
@@ -62,9 +63,10 @@ class BreaksToStretchFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val adapter = ScheduleOptionAdapter(scheduleOptions, "MoveRight") { selectedOption ->
-            submit(selectedOption.title)
-        }
+        val adapter =
+            ScheduleOptionAdapter(scheduleOptions, "MoveRight", { selectedOption: ScheduleOption ->
+                submit(selectedOption.title)
+            }.runWithCooldown())
         binding.rvScheduleOptions.layoutManager = LinearLayoutManager(requireContext())
         binding.rvScheduleOptions.adapter = adapter
     }

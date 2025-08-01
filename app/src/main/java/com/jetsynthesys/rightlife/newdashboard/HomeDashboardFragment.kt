@@ -69,6 +69,7 @@ import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import kotlin.math.roundToLong
 
 class HomeDashboardFragment : BaseFragment() {
     private var _binding: FragmentHomeDashboardBinding? = null
@@ -693,19 +694,19 @@ class HomeDashboardFragment : BaseFragment() {
                         val (carbsValue, carbsTotal) = extractNumericValues(module.carbs.toString())
                         val (fatsValue, fatsTotal) = extractNumericValues(module.fats.toString())
 
-                        binding.tvSubtractionCalValue.text = proteinValue
-                        binding.tvSubtractionCalUnit.text = "/" + proteinTotal + " g"
-                        binding.carbsProgressBar.max = proteinTotal.toDouble().toInt()
-                        binding.carbsProgressBar.progress = proteinValue.toDouble().toInt()
+                        binding.tvProtienValue.text = ""+proteinValue.toDouble().roundToLong().toInt()
+                        binding.proteinUnitTv.text = "/" + proteinTotal + " g"
+                        binding.proteinProgressBar.max = proteinTotal.toDouble().toInt()
+                        binding.proteinProgressBar.progress = proteinValue.toDouble().toInt()
 
 
-                        binding.tvSubtractionCarbsValue.text = carbsValue
-                        binding.tvSubtractionCarbsUnit.text = "/" + carbsTotal + " g"
-                        binding.protienProgressBar.max = carbsTotal.toDouble().toInt()
-                        binding.protienProgressBar.progress = carbsValue.toDouble().toInt()
+                        binding.tvCarbsValue.text = ""+carbsValue.toDouble().roundToLong().toInt()
+                        binding.carbsUnitTv.text = "/" + carbsTotal + " g"
+                        binding.carbsProgressBar.max = carbsTotal.toDouble().toInt()
+                        binding.carbsProgressBar.progress = carbsValue.toDouble().toInt()
 
-                        binding.tvSubtractionFatsValue.text = fatsValue
-                        binding.tvSubtractionFatsUnit.text = "/" + fatsTotal + " g"
+                        binding.tvFatsValue.text = ""+fatsValue.toDouble().roundToLong().toInt()
+                        binding.fatsUnitTv.text = "/" + fatsTotal + " g"
                         binding.fatsProgressBar.max = fatsTotal.toDouble().toInt()
                         binding.fatsProgressBar.progress = fatsValue.toDouble().toInt()
 

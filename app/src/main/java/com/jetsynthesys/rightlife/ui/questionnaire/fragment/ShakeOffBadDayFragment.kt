@@ -11,6 +11,7 @@ import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireThinkRightActivi
 import com.jetsynthesys.rightlife.ui.questionnaire.adapter.ShakeOffBadDayAdapter
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.TRQuestionTwo
+import com.jetsynthesys.rightlife.ui.utility.runWithCooldown
 
 class ShakeOffBadDayFragment : Fragment() {
 
@@ -54,12 +55,9 @@ class ShakeOffBadDayFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val adapter = ShakeOffBadDayAdapter(shakeOffOptions) { shakeOffOption->
+        val adapter = ShakeOffBadDayAdapter(shakeOffOptions, { shakeOffOption: String ->
             submit(shakeOffOption)
-            /*Handler(Looper.getMainLooper()).postDelayed({
-                QuestionnaireThinkRightActivity.navigateToNextPage()
-            }, 500)*/
-        }
+        }.runWithCooldown())
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.adapter = adapter
     }
@@ -67,7 +65,8 @@ class ShakeOffBadDayFragment : Fragment() {
     private fun submit(answer: String) {
         val questionTwo = TRQuestionTwo()
         questionTwo.answer = answer
-        QuestionnaireThinkRightActivity.questionnaireAnswerRequest.thinkRight?.questionTwo = questionTwo
+        QuestionnaireThinkRightActivity.questionnaireAnswerRequest.thinkRight?.questionTwo =
+            questionTwo
         QuestionnaireThinkRightActivity.submitQuestionnaireAnswerRequest(
             QuestionnaireThinkRightActivity.questionnaireAnswerRequest
         )

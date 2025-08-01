@@ -16,6 +16,14 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.core.content.ContextCompat
+import com.android.billingclient.api.AcknowledgePurchaseParams
+import com.android.billingclient.api.BillingClient
+import com.android.billingclient.api.BillingClientStateListener
+import com.android.billingclient.api.BillingResult
+import com.android.billingclient.api.ConsumeParams
+import com.android.billingclient.api.PendingPurchasesParams
+import com.android.billingclient.api.Purchase
+import com.android.billingclient.api.QueryPurchasesParams
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.Firebase
@@ -34,6 +42,9 @@ import com.jetsynthesys.rightlife.databinding.BottomsheetTrialEndedBinding
 import com.jetsynthesys.rightlife.databinding.DialogForceUpdateBinding
 import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistManager
 import com.jetsynthesys.rightlife.subscriptions.SubscriptionPlanListActivity
+import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentSuccessRequest
+import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentSuccessResponse
+import com.jetsynthesys.rightlife.subscriptions.pojo.SdkDetail
 import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.NewSleepSounds.NewSleepSoundActivity
 import com.jetsynthesys.rightlife.ui.affirmation.TodaysAffirmationActivity
@@ -379,7 +390,11 @@ class HomeNewActivity : BaseActivity() {
                             isTrialExpired = true
                         }
                     }
-
+                    if (!ResponseObj.isReportGenerated){
+                        binding.rightLifeReportCard.visibility = View.VISIBLE
+                    } else {
+                        binding.rightLifeReportCard.visibility = View.GONE
+                    }
                 } else {
                     //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
@@ -551,5 +566,233 @@ class HomeNewActivity : BaseActivity() {
     }
     private fun showInternetError() {
         Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show()
+    }
+
+
+    private lateinit var billingClient: BillingClient
+
+
+
+    private fun initBillingAndRecover() {
+
+        billingClient = BillingClient.newBuilder(this)
+
+            .setListener { billingResult, purchases ->
+
+                // Optional: React to new purchases here if needed
+
+            }
+
+            .enablePendingPurchases(
+
+
+
+                PendingPurchasesParams.newBuilder()
+
+                    .enableOneTimeProducts()
+
+                    .build()
+
+            )
+
+            .build()
+
+
+
+        billingClient.startConnection(object : BillingClientStateListener {
+
+            override fun onBillingSetupFinished(billingResult: BillingResult) {
+
+                if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+
+                    // Query in-app purchases
+
+                    recoverInAppPurchases()
+
+                    // Query subscriptions
+
+                    recoverSubscriptions()
+
+                }
+
+            }
+
+
+
+            override fun onBillingServiceDisconnected() {
+
+                // Retry connection if needed
+
+            }
+
+        })
+
+    }
+
+
+
+    private fun recoverInAppPurchases() {
+
+        val params = QueryPurchasesParams.newBuilder()
+
+            .setProductType(BillingClient.ProductType.INAPP)
+
+            .build()
+
+
+
+        billingClient.queryPurchasesAsync(params) { billingResult, purchases ->
+
+            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+
+                for (purchase in purchases) {
+
+                    if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
+
+                        // Make sure it's not already consumed
+
+                        consumeIfNeeded(purchase)
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    }
+
+
+
+    private fun recoverSubscriptions() {
+
+        val params = QueryPurchasesParams.newBuilder()
+
+            .setProductType(BillingClient.ProductType.SUBS)
+
+            .build()
+
+
+
+        billingClient.queryPurchasesAsync(params) { billingResult, purchases ->
+
+            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+
+                for (purchase in purchases) {
+
+                    if (!purchase.isAcknowledged && purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
+
+                        acknowledgeSubscription(purchase)
+
+                    }
+
+                    // Optionally update UI/backend if already acknowledged
+
+                }
+
+            }
+
+        }
+
+    }
+
+
+
+    private fun consumeIfNeeded(purchase: Purchase) {
+
+        val consumeParams = ConsumeParams.newBuilder()
+
+            .setPurchaseToken(purchase.purchaseToken)
+
+            .build()
+
+
+
+        billingClient.consumeAsync(consumeParams) { result, _ ->
+
+            if (result.responseCode == BillingClient.BillingResponseCode.OK) {
+
+                // ✅ Successfully consumed, update local or server state
+                updateBackendForPurchase(purchase)
+            }
+
+        }
+
+    }
+
+
+
+    private fun acknowledgeSubscription(purchase: Purchase) {
+
+        val acknowledgeParams = AcknowledgePurchaseParams.newBuilder()
+
+            .setPurchaseToken(purchase.purchaseToken)
+
+            .build()
+
+
+
+        billingClient.acknowledgePurchase(acknowledgeParams) { result ->
+
+            if (result.responseCode == BillingClient.BillingResponseCode.OK) {
+
+                // ✅ Acknowledged successfully, update backend or UI
+                updateBackendForPurchase(purchase)
+            }
+
+        }
+
+    }
+
+
+    private fun updateBackendForPurchase(purchase: Purchase) {
+        // Update backend or UI for booster
+
+        val paymentSuccessRequest = PaymentSuccessRequest()
+        paymentSuccessRequest.planId = purchase.products.firstOrNull() ?: ""
+        paymentSuccessRequest.planName = purchase.skus.get(0).toString()
+        paymentSuccessRequest.paymentGateway = "googlePlay"
+        paymentSuccessRequest.orderId = purchase.orderId//may be getting from payment response
+        paymentSuccessRequest.environment = "payment"
+        paymentSuccessRequest.notifyType = "SDK"
+        paymentSuccessRequest.couponId = ""//may be getting from payment response
+        paymentSuccessRequest.obfuscatedExternalAccountId = ""//may be getting from payment response
+        paymentSuccessRequest.price = purchase.products.get(0).toString()
+
+        val sdkDetail = SdkDetail()
+        sdkDetail.price = ""
+        sdkDetail.orderId = purchase.orderId ?: ""
+        sdkDetail.title = ""
+        sdkDetail.environment = "payment"
+        sdkDetail.description = ""
+        sdkDetail.currencyCode = "INR"
+        sdkDetail.currencySymbol = "₹"
+
+        paymentSuccessRequest.sdkDetail = sdkDetail
+        saveSubscriptionSuccess(paymentSuccessRequest)
+    }
+
+    private fun saveSubscriptionSuccess(paymentSuccessRequest: PaymentSuccessRequest) {
+        val call = apiService.savePaymentSuccess(
+            sharedPreferenceManager.accessToken,
+            paymentSuccessRequest
+        )
+        call.enqueue(object : Callback<PaymentSuccessResponse> {
+            override fun onResponse(
+                call: Call<PaymentSuccessResponse>,
+                response: Response<PaymentSuccessResponse>
+            ) {
+                if (response.isSuccessful && response.body() != null) {
+                    //response.body()?.data?.id?.let { updatePaymentId(it) }
+                } else {
+                    //showToast(response.message())
+                }
+            }
+
+            override fun onFailure(call: Call<PaymentSuccessResponse>, t: Throwable) {
+                handleNoInternetView(t)
+            }
+        })
     }
 }

@@ -13,6 +13,7 @@ import com.jetsynthesys.rightlife.ui.questionnaire.adapter.ScheduleOptionAdapter
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.SRQuestionTwo
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.ScheduleOption
+import com.jetsynthesys.rightlife.ui.utility.runWithCooldown
 
 class SleepTimeFragment : Fragment() {
 
@@ -55,12 +56,10 @@ class SleepTimeFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val adapter = ScheduleOptionAdapter(scheduleOptions, "SleepRight") { selectedOption ->
-            /*Handler(Looper.getMainLooper()).postDelayed({
-                QuestionnaireThinkRightActivity.navigateToNextPage()
-            }, 500)*/
-            submit(selectedOption.title)
-        }
+        val adapter =
+            ScheduleOptionAdapter(scheduleOptions, "SleepRight", { selectedOption: ScheduleOption ->
+                submit(selectedOption.title)
+            }.runWithCooldown())
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.adapter = adapter
     }
@@ -68,7 +67,8 @@ class SleepTimeFragment : Fragment() {
     private fun submit(answer: String) {
         val questionTwo = SRQuestionTwo()
         questionTwo.answer = answer
-        QuestionnaireThinkRightActivity.questionnaireAnswerRequest.sleepRight?.questionTwo = questionTwo
+        QuestionnaireThinkRightActivity.questionnaireAnswerRequest.sleepRight?.questionTwo =
+            questionTwo
         QuestionnaireThinkRightActivity.submitQuestionnaireAnswerRequest(
             QuestionnaireThinkRightActivity.questionnaireAnswerRequest
         )

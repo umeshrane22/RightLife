@@ -13,6 +13,7 @@ import com.jetsynthesys.rightlife.ui.questionnaire.adapter.ScheduleOptionAdapter
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.ERQuestionSeven
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.ScheduleOption
+import com.jetsynthesys.rightlife.ui.utility.runWithCooldown
 
 class EatAffectMoodFragment : Fragment() {
 
@@ -55,12 +56,10 @@ class EatAffectMoodFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val adapter = ScheduleOptionAdapter(scheduleOptions) { selectedOption ->
-            /*Handler(Looper.getMainLooper()).postDelayed({
-                QuestionnaireEatRightActivity.navigateToNextPage()
-            }, 500)*/
-            submit(selectedOption.title)
-        }
+        val adapter =
+            ScheduleOptionAdapter(scheduleOptions, "EatRight", { selectedOption: ScheduleOption ->
+                submit(selectedOption.title)
+            }.runWithCooldown())
         binding.rvScheduleOptions.layoutManager = LinearLayoutManager(requireContext())
         binding.rvScheduleOptions.adapter = adapter
     }
@@ -68,7 +67,8 @@ class EatAffectMoodFragment : Fragment() {
     private fun submit(answer: String) {
         val questionSeven = ERQuestionSeven()
         questionSeven.answer = answer
-        QuestionnaireEatRightActivity.questionnaireAnswerRequest.eatRight?.questionSeven = questionSeven
+        QuestionnaireEatRightActivity.questionnaireAnswerRequest.eatRight?.questionSeven =
+            questionSeven
         QuestionnaireEatRightActivity.submitQuestionnaireAnswerRequest(
             QuestionnaireEatRightActivity.questionnaireAnswerRequest
         )

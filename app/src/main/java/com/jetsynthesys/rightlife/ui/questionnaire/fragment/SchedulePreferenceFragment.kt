@@ -33,6 +33,7 @@ import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.ScheduleOption
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
+import com.jetsynthesys.rightlife.ui.utility.runWithCooldown
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -83,13 +84,14 @@ class SchedulePreferenceFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val adapter = ScheduleOptionAdapter(scheduleOptions) { selectedOption ->
-            if (selectedOption.title == "Rarely" || selectedOption.title == "Never")
-                showReminderBottomSheet(selectedOption.title)
-            else {
-                submit(selectedOption.title)
-            }
-        }
+        val adapter =
+            ScheduleOptionAdapter(scheduleOptions, "EatRight", { selectedOption: ScheduleOption ->
+                if (selectedOption.title == "Rarely" || selectedOption.title == "Never")
+                    showReminderBottomSheet(selectedOption.title)
+                else {
+                    submit(selectedOption.title)
+                }
+            }.runWithCooldown())
         binding.rvScheduleOptions.layoutManager = LinearLayoutManager(requireContext())
         binding.rvScheduleOptions.adapter = adapter
     }
@@ -135,15 +137,15 @@ class SchedulePreferenceFragment : Fragment() {
 
         dialogBinding.llBreakFastTime.setOnClickListener {
             dialogBinding.llBreakFastTime.disableViewForSeconds()
-            showTimePickerDialog(dialogBinding.tvTimeBreakfast, 1,9)
+            showTimePickerDialog(dialogBinding.tvTimeBreakfast, 1, 9)
         }
         dialogBinding.llLunchTime.setOnClickListener {
             dialogBinding.llLunchTime.disableViewForSeconds()
-            showTimePickerDialog(dialogBinding.tvTimeLunch, 2,13)
+            showTimePickerDialog(dialogBinding.tvTimeLunch, 2, 13)
         }
         dialogBinding.llDinnerTime.setOnClickListener {
             dialogBinding.llDinnerTime.disableViewForSeconds()
-            showTimePickerDialog(dialogBinding.tvTimeDinner, 3,20)
+            showTimePickerDialog(dialogBinding.tvTimeDinner, 3, 20)
         }
 
         dialogBinding.btnSetNow.setOnClickListener {

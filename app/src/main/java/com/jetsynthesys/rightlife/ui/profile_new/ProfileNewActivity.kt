@@ -1,6 +1,7 @@
 package com.jetsynthesys.rightlife.ui.profile_new
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
@@ -18,8 +19,8 @@ import android.os.Looper
 import android.provider.OpenableColumns
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.animation.Animation
@@ -56,7 +57,6 @@ import com.jetsynthesys.rightlife.ui.profile_new.pojo.PreSignedUrlData
 import com.jetsynthesys.rightlife.ui.profile_new.pojo.PreSignedUrlResponse
 import com.jetsynthesys.rightlife.ui.profile_new.pojo.VerifyOtpRequest
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
-import com.jetsynthesys.rightlife.ui.utility.ConversionUtils
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import com.shawnlin.numberpicker.NumberPicker
 import okhttp3.ResponseBody
@@ -276,6 +276,7 @@ class ProfileNewActivity : BaseActivity() {
         )
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun showAgeSelectionBottomSheet() {
         // Create and configure BottomSheetDialog
         val bottomSheetDialog = BottomSheetDialog(this)
@@ -435,6 +436,27 @@ class ProfileNewActivity : BaseActivity() {
             }
         }
 
+        dialogBinding.numberPicker.setOnTouchListener { v, event ->
+            if (event.action == MotionEvent.ACTION_UP) {
+                val picker = v as NumberPicker
+
+                val y = event.y
+                val height = picker.height
+                val visibleItems = 5 // NumberPicker typically shows 3 visible rows
+                val rowHeight = height / visibleItems
+                val centerY = height / 2
+
+                val tolerance = rowHeight / 2
+
+                // Check if touch was within center row (selected value)
+                if (y > centerY - tolerance && y < centerY + tolerance) {
+                    bottomSheetDialog.dismiss()
+                    return@setOnTouchListener true
+                }
+            }
+            false
+        }
+
         dialogBinding.btnConfirm.setOnClickListener {
             bottomSheetDialog.dismiss()
             binding.tvAge.text = selectedAge
@@ -488,7 +510,7 @@ class ProfileNewActivity : BaseActivity() {
         }
         dialogBinding.rulerView.adapter = adapterWeight
 
-        if (selectedLabel == " kg"){
+        if (selectedLabel == " kg") {
             dialogBinding.kgOption.setBackgroundResource(R.drawable.bg_left_selected)
             dialogBinding.kgOption.setTextColor(Color.WHITE)
 
@@ -497,7 +519,7 @@ class ProfileNewActivity : BaseActivity() {
             setKgsValue()
 
             dialogBinding.selectedNumberText.text = selectedWeight
-        }else{
+        } else {
             dialogBinding.lbsOption.setBackgroundResource(R.drawable.bg_right_selected)
             dialogBinding.lbsOption.setTextColor(Color.WHITE)
 
@@ -635,14 +657,14 @@ class ProfileNewActivity : BaseActivity() {
                 " cms"
             else
                 " feet"
-            if (selectedLabel == " feet"){
+            if (selectedLabel == " feet") {
                 dialogBinding.feetOption.setBackgroundResource(R.drawable.bg_left_selected)
                 dialogBinding.feetOption.setTextColor(Color.WHITE)
 
                 dialogBinding.cmsOption.setBackgroundResource(R.drawable.bg_right_unselected)
                 dialogBinding.cmsOption.setTextColor(Color.BLACK)
                 setFtIn()
-            }else{
+            } else {
                 dialogBinding.cmsOption.setBackgroundResource(R.drawable.bg_right_selected)
                 dialogBinding.cmsOption.setTextColor(Color.WHITE)
 

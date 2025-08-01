@@ -91,9 +91,9 @@ public class MASuggestedAssessmentActivity extends BaseActivity {
             }
 
             if (assessment.getSleepAudit() != null) {
-                allAssessments.add(assessment.getSleepAudit());
+                //allAssessments.add(assessment.getSleepAudit());
             } else {
-                suggestedAssessmentString.add("Sleep Audit");
+                //suggestedAssessmentString.add("Sleep Audit");
             }
 
             if (assessment.getGad7() != null) {
