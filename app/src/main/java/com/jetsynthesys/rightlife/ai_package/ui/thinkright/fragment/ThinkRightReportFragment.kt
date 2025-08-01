@@ -1087,7 +1087,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         if (toolsData.moduleName.contentEquals("Breathwork")){
             startActivity(Intent(requireContext(), BreathworkActivity::class.java))
         }else if (toolsData.moduleName.contentEquals("Journalling")){
-            startActivity(Intent(requireContext(), JournalListActivity::class.java))
+            startActivity(Intent(requireContext(), JournalNewActivity::class.java))
         }else if (toolsData.moduleName.contentEquals("Affirmation")){
             startActivity(Intent(requireContext(), TodaysAffirmationActivity::class.java))
         }
@@ -1231,7 +1231,7 @@ class AssessmentPagerAdapter(
         val score = item.score.toFloatOrNull() ?: 0f
 
         // Range and labels
-        val thresholds = listOf(0, 4, 9, 14, 19, 27)
+        val thresholds = listOf(0, 4, 9, 14, 19, 100)
         val labels = listOf("Minimal", "Mild", "Moderate", "Severe", "Ext Severe")
         val colors = listOf(
             Color.parseColor("#2ECC71"), // Minimal - green
