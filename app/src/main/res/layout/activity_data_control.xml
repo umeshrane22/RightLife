@@ -3,65 +3,58 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:fillViewport="true">
+    android:orientation="vertical">
 
-<ScrollView
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_weight="1"
-    android:fillViewport="true">
-
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:gravity="center_horizontal"
-        android:orientation="vertical">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
 
-        <ImageView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:src="@mipmap/data_control" />
+            android:layout_margin="16dp"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal">
-
-            <TextView
-                android:id="@+id/tv_data_control"
+            <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:fontFamily="@font/dmsans_bold"
-                android:gravity="center_horizontal"
-                android:text="@string/your_data_control"
-                android:textColor="@color/txt_color_header"
-                android:textSize="@dimen/textsize_large24sp" />
+                android:src="@mipmap/data_control" />
 
-            <TextView
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/tv_data_control"
-                android:layout_alignStart="@id/tv_data_control"
-                android:layout_alignEnd="@id/tv_data_control"
-                android:layout_marginTop="20dp"
-                android:layout_marginHorizontal="10dp"
-                android:fontFamily="@font/dmsans_regular"
-                android:text="@string/data_control_desc"
-                android:textColor="@color/txt_color_header"
-                android:textSize="@dimen/textsize_large" />
-        </RelativeLayout>
+                android:gravity="center_horizontal">
 
+                <TextView
+                    android:id="@+id/tv_data_control"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/dmsans_bold"
+                    android:gravity="center_horizontal"
+                    android:text="@string/your_data_control"
+                    android:textColor="@color/txt_color_header"
+                    android:textSize="@dimen/textsize_large24sp" />
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tv_data_control"
+                    android:layout_alignStart="@id/tv_data_control"
+                    android:layout_alignEnd="@id/tv_data_control"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginHorizontal="10dp"
+                    android:fontFamily="@font/dmsans_regular"
+                    android:text="@string/data_control_desc1"
+                    android:textColor="@color/txt_color_header"
+                    android:textSize="@dimen/textsize_large" />
+            </RelativeLayout>
+        </LinearLayout>
 
-
-
-    </LinearLayout>
-
-</ScrollView>
+    </ScrollView>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -125,5 +118,5 @@
         android:gravity="center"
         android:layout_gravity="center"
         android:layout_margin="16dp"
-        android:backgroundTint="@color/rightlife"/>
+        android:backgroundTint="@color/rightlife" />
 </LinearLayout>

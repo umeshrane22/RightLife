@@ -191,6 +191,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
         super.onViewCreated(view, savedInstanceState)
         appPreference = AppPreference(requireContext())
         moduleName = arguments?.getString("ModuleName").toString()
+        selectedMealDate = arguments?.getString("selectedMealDate").toString()
 
         view.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.meal_log_background))
         mealLogWeeklyDayRecyclerView = view.findViewById(R.id.recyclerview_calender)
@@ -257,6 +258,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             selectMealTypeBottomSheet.isCancelable = true
             val args = Bundle()
             args.putString("ModuleName", moduleName)
+            args.putString("selectedMealDate", selectedMealDate)
             selectMealTypeBottomSheet.arguments = args
             parentFragment.let { selectMealTypeBottomSheet.show(childFragmentManager, "SelectMealTypeBottomSheet") }
         }else if (moduleName.contentEquals("EatRightLanding")){
@@ -264,6 +266,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             selectMealTypeBottomSheet.isCancelable = true
             val args = Bundle()
             args.putString("ModuleName", moduleName)
+            args.putString("selectedMealDate", selectedMealDate)
             selectMealTypeBottomSheet.arguments = args
             parentFragment.let { selectMealTypeBottomSheet.show(childFragmentManager, "SelectMealTypeBottomSheet") }
         }else if (moduleName.contentEquals("MoveRightLanding")) {
@@ -271,6 +274,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             selectMealTypeBottomSheet.isCancelable = true
             val args = Bundle()
             args.putString("ModuleName", moduleName)
+            args.putString("selectedMealDate", selectedMealDate)
             selectMealTypeBottomSheet.arguments = args
             parentFragment.let { selectMealTypeBottomSheet.show(childFragmentManager, "SelectMealTypeBottomSheet") }
         }
@@ -395,9 +399,9 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             if (current >= updated){
                 selectMealTypeBottomSheet = SelectMealTypeBottomSheet()
                 selectMealTypeBottomSheet.isCancelable = true
-                val bundle = Bundle()
-                bundle.putBoolean("test",false)
-                selectMealTypeBottomSheet.arguments = bundle
+                val args = Bundle()
+                args.putString("selectedMealDate", selectedMealDate)
+                selectMealTypeBottomSheet.arguments = args
                 parentFragment.let { selectMealTypeBottomSheet.show(childFragmentManager, "SelectMealTypeBottomSheet") }
             }else{
                 Toast.makeText(context, "Not allowed to log meals for future dates", Toast.LENGTH_SHORT).show()
@@ -418,6 +422,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             val fragment = HomeTabMealFragment()
             val args = Bundle()
             args.putString("mealType", "breakfast")
+            args.putString("selectedMealDate", selectedMealDate)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "mealLog")
@@ -430,6 +435,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             val fragment = HomeTabMealFragment()
             val args = Bundle()
             args.putString("mealType", "morning_snack")
+            args.putString("selectedMealDate", selectedMealDate)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "mealLog")
@@ -442,6 +448,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             val fragment = HomeTabMealFragment()
             val args = Bundle()
             args.putString("mealType", "lunch")
+            args.putString("selectedMealDate", selectedMealDate)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "mealLog")
@@ -454,6 +461,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             val fragment = HomeTabMealFragment()
             val args = Bundle()
             args.putString("mealType", "evening_snack")
+            args.putString("selectedMealDate", selectedMealDate)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "mealLog")
@@ -466,6 +474,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             val fragment = HomeTabMealFragment()
             val args = Bundle()
             args.putString("mealType", "dinner")
+            args.putString("selectedMealDate", selectedMealDate)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "mealLog")
@@ -499,6 +508,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
                 val fragment = ViewMealInsightsFragment()
                 val args = Bundle()
                 args.putString("ModuleName", moduleName)
+                args.putString("selectedMealDate", selectedMealDate)
                 args.putParcelable("mealDetailsLog", breakFastMealDetailsLog)
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -514,6 +524,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
                 val fragment = ViewMealInsightsFragment()
                 val args = Bundle()
                 args.putString("ModuleName", moduleName)
+                args.putString("selectedMealDate", selectedMealDate)
                 args.putParcelable("mealDetailsLog", morningSnackMealDetailsLog)
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -529,6 +540,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
                 val fragment = ViewMealInsightsFragment()
                 val args = Bundle()
                 args.putString("ModuleName", moduleName)
+                args.putString("selectedMealDate", selectedMealDate)
                 args.putParcelable("mealDetailsLog", lunchMealDetailsLog)
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -544,6 +556,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
                 val fragment = ViewMealInsightsFragment()
                 val args = Bundle()
                 args.putString("ModuleName", moduleName)
+                args.putString("selectedMealDate", selectedMealDate)
                 args.putParcelable("mealDetailsLog", eveningSnackMealDetailsLog)
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -559,6 +572,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
                 val fragment = ViewMealInsightsFragment()
                 val args = Bundle()
                 args.putString("ModuleName", moduleName)
+                args.putString("selectedMealDate", selectedMealDate)
                 args.putParcelable("mealDetailsLog", dinnerMealDetailsLog)
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -573,12 +587,15 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
     private fun onMealLogWeeklyDayList(weekList: List<MealLogWeeklyDayModel>, mealLogHistory: ArrayList<LoggedMealHistory>) {
         val today = LocalDate.now()
         val weekLists : ArrayList<MealLogWeeklyDayModel> = ArrayList()
+        weekLists.clear()
         if (mealLogHistory.size > 0 && weekList.isNotEmpty()){
             mealLogHistory.forEach { mealLog ->
                 for (item in weekList){
                     if (item.fullDate.toString() == mealLog.date){
                         if (mealLog.isAvailable == true){
                            item.is_available = true
+                        }else{
+                            item.is_available = mealLog.isAvailable
                         }
                     }
                 }
@@ -598,7 +615,10 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
                     break
                 }
             }
-            mealLogWeeklyDayAdapter.addAll(weekLists, index, mealLogDateData, isClick)
+
+            requireActivity()?.runOnUiThread {
+                mealLogWeeklyDayAdapter.addAll(weekLists, index, mealLogDateData, isClick)
+            }
         }
     }
 
@@ -1690,10 +1710,13 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
                         }
                     }
                     if (response.body() != null){
+                        mealLogHistory.clear()
                         mealLogsHistoryResponse = response.body()
-                        if (mealLogsHistoryResponse?.loggedMealList!!.size > 0){
-                            mealLogHistory.addAll(mealLogsHistoryResponse!!.loggedMealList!!)
-                            onMealLogWeeklyDayList(mealLogWeeklyDayList, mealLogHistory)
+                        requireActivity()?.runOnUiThread {
+                            if (mealLogsHistoryResponse?.loggedMealList!!.size > 0){
+                                mealLogHistory.addAll(mealLogsHistoryResponse!!.loggedMealList!!)
+                                onMealLogWeeklyDayList(mealLogWeeklyDayList, mealLogHistory)
+                            }
                         }
                     }
                 } else {
@@ -1730,6 +1753,13 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
     }
 
     override fun onLogDishDeleted(mealData: String) {
+        val currentDateTime = LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val formattedDate = currentDateTime.format(formatter)
+        val formatFullDate = DateTimeFormatter.ofPattern("E, d MMM yyyy")
+        selectedWeeklyDayTv.text = currentDateTime.format(formatFullDate)
+        selectedMealDate = formattedDate
+        getMealsLogHistory(formattedDate)
         getMealsLogList(selectedDate)
     }
 

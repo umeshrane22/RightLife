@@ -71,6 +71,7 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
     private var mealName : String = ""
     private lateinit var mealType : String
     private var moduleName : String = ""
+    private var selectedMealDate : String = ""
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentDishBinding
         get() = FragmentDishBinding::inflate
@@ -112,6 +113,7 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
         mealId = arguments?.getString("mealId").toString()
         mealType = arguments?.getString("mealType").toString()
         mealName = arguments?.getString("mealName").toString()
+        selectedMealDate = arguments?.getString("selectedMealDate").toString()
         val snapRecipeName = arguments?.getString("snapRecipeName").toString()
         val foodDetailsResponse = if (Build.VERSION.SDK_INT >= 33) {
             arguments?.getParcelable("searchResultItem", SearchResultItem::class.java)
@@ -200,6 +202,7 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
                     val fragment = CreateMealFragment()
                     val args = Bundle()
                     args.putString("ModuleName", moduleName)
+                    args.putString("selectedMealDate", selectedMealDate)
                     args.putString("mealId", mealId)
                     args.putString("mealName", mealName)
                     args.putString("mealType", mealType)
@@ -214,6 +217,7 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
                     val fragment = SearchDishFragment()
                     val args = Bundle()
                     args.putString("ModuleName", moduleName)
+                    args.putString("selectedMealDate", selectedMealDate)
                     args.putString("mealId", mealId)
                     args.putString("mealName", mealName)
                     args.putString("mealType", mealType)
@@ -233,6 +237,7 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
                 val fragment = CreateMealFragment()
                 val args = Bundle()
                 args.putString("ModuleName", moduleName)
+                args.putString("selectedMealDate", selectedMealDate)
                 args.putString("mealId", mealId)
                 args.putString("mealName", mealName)
                 args.putString("mealType", mealType)
@@ -247,6 +252,7 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
                 val fragment = SearchDishFragment()
                 val args = Bundle()
                 args.putString("ModuleName", moduleName)
+                args.putString("selectedMealDate", selectedMealDate)
                 args.putString("mealId", mealId)
                 args.putString("mealName", mealName)
                 args.putString("mealType", mealType)
@@ -406,6 +412,7 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
                         val fragment = CreateMealFragment()
                         val args = Bundle()
                         args.putString("ModuleName", moduleName)
+                        args.putString("selectedMealDate", selectedMealDate)
                         args.putString("mealId", mealId)
                         args.putString("mealName", mealName)
                         args.putString("mealType", mealType)
@@ -503,6 +510,7 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
                                         val fragment = CreateMealFragment()
                                         val args = Bundle()
                                         args.putString("ModuleName", moduleName)
+                                        args.putString("selectedMealDate", selectedMealDate)
                                         args.putString("mealId", mealId)
                                         args.putString("mealName", mealName)
                                         args.putString("mealType", mealType)

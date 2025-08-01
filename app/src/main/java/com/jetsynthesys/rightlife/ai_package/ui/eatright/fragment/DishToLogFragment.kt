@@ -73,6 +73,7 @@ class DishToLogFragment : BaseFragment<FragmentDishBinding>() {
     private lateinit var mealType : String
     private var snapMealRequestLocalListModel : SnapMealRequestLocalListModel? = null
     private var moduleName : String = ""
+    private var selectedMealDate : String = ""
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentDishBinding
         get() = FragmentDishBinding::inflate
@@ -112,6 +113,7 @@ class DishToLogFragment : BaseFragment<FragmentDishBinding>() {
         moduleName = arguments?.getString("ModuleName").toString()
         searchType = arguments?.getString("searchType").toString()
         mealType = arguments?.getString("mealType").toString()
+        selectedMealDate = arguments?.getString("selectedMealDate").toString()
         val snapRecipeName = arguments?.getString("snapRecipeName").toString()
         val searchResultItem = if (Build.VERSION.SDK_INT >= 33) {
             arguments?.getParcelable("searchResultItem", SearchResultItem::class.java)
@@ -209,6 +211,7 @@ class DishToLogFragment : BaseFragment<FragmentDishBinding>() {
                     val fragment = HomeBottomTabFragment()
                     val args = Bundle()
                     args.putString("ModuleName", moduleName)
+                    args.putString("selectedMealDate", selectedMealDate)
                     fragment.arguments = args
                     requireActivity().supportFragmentManager.beginTransaction().apply {
                         replace(R.id.flFragment, fragment, "landing")
@@ -219,6 +222,7 @@ class DishToLogFragment : BaseFragment<FragmentDishBinding>() {
                     val fragment = SearchDishToLogFragment()
                     val args = Bundle()
                     args.putString("ModuleName", moduleName)
+                    args.putString("selectedMealDate", selectedMealDate)
                     fragment.arguments = args
                     requireActivity().supportFragmentManager.beginTransaction().apply {
                         replace(R.id.flFragment, fragment, "landing")
@@ -234,6 +238,7 @@ class DishToLogFragment : BaseFragment<FragmentDishBinding>() {
                 val fragment = HomeBottomTabFragment()
                 val args = Bundle()
                 args.putString("ModuleName", moduleName)
+                args.putString("selectedMealDate", selectedMealDate)
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
                     replace(R.id.flFragment, fragment, "landing")
@@ -244,6 +249,7 @@ class DishToLogFragment : BaseFragment<FragmentDishBinding>() {
                 val fragment = SearchDishToLogFragment()
                 val args = Bundle()
                 args.putString("ModuleName", moduleName)
+                args.putString("selectedMealDate", selectedMealDate)
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
                     replace(R.id.flFragment, fragment, "landing")
@@ -314,6 +320,7 @@ class DishToLogFragment : BaseFragment<FragmentDishBinding>() {
                         args.putString("ModuleName", moduleName)
                         args.putString("searchType","DishToLog")
                         args.putString("mealType", mealType)
+                        args.putString("selectedMealDate", selectedMealDate)
                         args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
                         args.putParcelable("selectedMealLogList", mealLogRequests)
                         args.putParcelable("selectedSnapMealLogList", snapMealLogRequests)

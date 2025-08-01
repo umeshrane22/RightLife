@@ -59,6 +59,7 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
     private var serving : Double = 0.0
     private var loadingOverlay : FrameLayout? = null
     private var moduleName : String = ""
+    private var selectedMealDate : String = ""
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentSearchDishBinding
         get() = FragmentSearchDishBinding::inflate
@@ -89,6 +90,7 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
         moduleName = arguments?.getString("ModuleName").toString()
         searchType = arguments?.getString("searchType").toString()
         recipeId = arguments?.getString("recipeId").toString()
+        selectedMealDate = arguments?.getString("selectedMealDate").toString()
         serving = arguments?.getDouble("serving")?.toDouble() ?: 0.0
         ingredientName = arguments?.getString("ingredientName").toString()
         recipeName = arguments?.getString("recipeName").toString()
@@ -119,6 +121,7 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
                         val fragment = CreateRecipeFragment()
                         val args = Bundle()
                         args.putString("ModuleName", moduleName)
+                        args.putString("selectedMealDate", selectedMealDate)
                         args.putString("recipeId", recipeId)
                         args.putString("recipeName", recipeName)
                         args.putDouble("serving", serving)
@@ -138,6 +141,7 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
                 val fragment = CreateRecipeFragment()
                 val args = Bundle()
                 args.putString("ModuleName", moduleName)
+                args.putString("selectedMealDate", selectedMealDate)
                 args.putString("recipeId", recipeId)
                 args.putString("recipeName", recipeName)
                 args.putDouble("serving", serving)
@@ -278,6 +282,7 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
                             val snapMealFragment = IngredientDishFragment()
                             val args = Bundle()
                             args.putString("ModuleName", moduleName)
+                            args.putString("selectedMealDate", selectedMealDate)
                             args.putString("searchType", "searchIngredient")
                             args.putString("recipeId", recipeId)
                             args.putDouble("serving", serving)

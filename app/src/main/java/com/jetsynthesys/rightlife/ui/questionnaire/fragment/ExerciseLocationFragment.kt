@@ -8,12 +8,12 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.FragmentExcerciseLocationBinding
-import com.jetsynthesys.rightlife.databinding.FragmentFastfoodPreferenceBinding
 import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireEatRightActivity
 import com.jetsynthesys.rightlife.ui.questionnaire.adapter.ScheduleOptionAdapter
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.MRQuestionFour
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.ScheduleOption
+import com.jetsynthesys.rightlife.ui.utility.runWithCooldown
 
 class ExerciseLocationFragment : Fragment() {
 
@@ -57,12 +57,10 @@ class ExerciseLocationFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val adapter = ScheduleOptionAdapter(scheduleOptions, "MoveRight") { selectedOption ->
-            /*Handler(Looper.getMainLooper()).postDelayed({
-                QuestionnaireEatRightActivity.navigateToNextPage()
-            }, 500)*/
-            submit(selectedOption.title)
-        }
+        val adapter =
+            ScheduleOptionAdapter(scheduleOptions, "MoveRight", { selectedOption: ScheduleOption ->
+                submit(selectedOption.title)
+            }.runWithCooldown())
         binding.rvScheduleOptions.layoutManager = LinearLayoutManager(requireContext())
         binding.rvScheduleOptions.adapter = adapter
     }
@@ -70,7 +68,8 @@ class ExerciseLocationFragment : Fragment() {
     private fun submit(answer: String) {
         val questionFour = MRQuestionFour()
         questionFour.answer = answer
-        QuestionnaireEatRightActivity.questionnaireAnswerRequest.moveRight?.questionFour = questionFour
+        QuestionnaireEatRightActivity.questionnaireAnswerRequest.moveRight?.questionFour =
+            questionFour
         QuestionnaireEatRightActivity.submitQuestionnaireAnswerRequest(
             QuestionnaireEatRightActivity.questionnaireAnswerRequest
         )

@@ -13,6 +13,7 @@ import com.jetsynthesys.rightlife.ui.questionnaire.adapter.ScheduleOptionAdapter
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.ERQuestionSix
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.ScheduleOption
+import com.jetsynthesys.rightlife.ui.utility.runWithCooldown
 
 class FastfoodPreferenceFragment : Fragment() {
 
@@ -55,12 +56,10 @@ class FastfoodPreferenceFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val adapter = ScheduleOptionAdapter(scheduleOptions) { selectedOption ->
-            /*Handler(Looper.getMainLooper()).postDelayed({
-                QuestionnaireEatRightActivity.navigateToNextPage()
-            }, 500)*/
-            submit(selectedOption.title)
-        }
+        val adapter =
+            ScheduleOptionAdapter(scheduleOptions, "EatRight", { selectedOption: ScheduleOption ->
+                submit(selectedOption.title)
+            }.runWithCooldown())
         binding.rvScheduleOptions.layoutManager = LinearLayoutManager(requireContext())
         binding.rvScheduleOptions.adapter = adapter
     }

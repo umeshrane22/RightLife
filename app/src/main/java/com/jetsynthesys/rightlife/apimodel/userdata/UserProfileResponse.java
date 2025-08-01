@@ -48,6 +48,69 @@ public class UserProfileResponse {
     @Expose
     private String successMessage;
 
+
+    @SerializedName("isFacialReport")
+    @Expose
+    private Boolean isFacialReport;
+
+    @SerializedName("isSubscribed")
+    @Expose
+    private Boolean isSubscribed;
+
+    @SerializedName("subscription")
+    @Expose
+    private List<Subscription> subscription;
+
+    @SerializedName("booster")
+    @Expose
+    private List<Subscription> booster; // same model used
+
+    @SerializedName("isReportGenerated")
+    @Expose
+    private Boolean isReportGenerated;
+
+    public Boolean getIsFacialReport() {
+        return isFacialReport;
+    }
+
+    public void setIsFacialReport(Boolean isFacialReport) {
+        this.isFacialReport = isFacialReport;
+    }
+
+    public Boolean getIsSubscribed() {
+        return isSubscribed;
+    }
+
+    public void setIsSubscribed(Boolean isSubscribed) {
+        this.isSubscribed = isSubscribed;
+    }
+
+    public List<Subscription> getSubscription() {
+        return subscription;
+    }
+
+    public void setSubscription(List<Subscription> subscription) {
+        this.subscription = subscription;
+    }
+
+    public List<Subscription> getBooster() {
+        return booster;
+    }
+
+    public void setBooster(List<Subscription> booster) {
+        this.booster = booster;
+    }
+
+    public Boolean getIsReportGenerated() {
+        return isReportGenerated;
+    }
+
+    public void setIsReportGenerated(Boolean isReportGenerated) {
+        this.isReportGenerated = isReportGenerated;
+    }
+
+
+
     public Boolean getSuccess() {
         return success;
     }

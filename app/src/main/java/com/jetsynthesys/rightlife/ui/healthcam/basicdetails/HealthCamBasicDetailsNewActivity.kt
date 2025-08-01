@@ -1,11 +1,13 @@
 package com.jetsynthesys.rightlife.ui.healthcam.basicdetails
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
@@ -271,6 +273,7 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
     }
 
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun showAgeSelectionBottomSheet() {
         // Create and configure BottomSheetDialog
         val bottomSheetDialog = BottomSheetDialog(this)
@@ -427,6 +430,27 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
                 selectedAge = years[view.value - 1]
                 binding.edtAge.setText(selectedAge)
             }
+        }
+
+        dialogBinding.numberPicker.setOnTouchListener { v, event ->
+            if (event.action == MotionEvent.ACTION_UP) {
+                val picker = v as NumberPicker
+
+                val y = event.y
+                val height = picker.height
+                val visibleItems = 5 // NumberPicker typically shows 3 visible rows
+                val rowHeight = height / visibleItems
+                val centerY = height / 2
+
+                val tolerance = rowHeight / 2
+
+                // Check if touch was within center row (selected value)
+                if (y > centerY - tolerance && y < centerY + tolerance) {
+                    bottomSheetDialog.dismiss()
+                    return@setOnTouchListener true
+                }
+            }
+            false
         }
 
         dialogBinding.btnConfirm.setOnClickListener {

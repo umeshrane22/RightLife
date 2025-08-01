@@ -69,6 +69,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
     private var mealName : String = ""
     private var loadingOverlay : FrameLayout? = null
     private var moduleName : String = ""
+    private var selectedMealDate : String = ""
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentCreateMealBinding
         get() = FragmentCreateMealBinding::inflate
@@ -111,6 +112,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
         mealId = arguments?.getString("mealId").toString()
         mealType = arguments?.getString("mealType").toString()
         mealName = arguments?.getString("mealName").toString()
+        selectedMealDate = arguments?.getString("selectedMealDate").toString()
 
        val dishLocalListModels = if (Build.VERSION.SDK_INT >= 33) {
             arguments?.getParcelable("snapDishLocalListModel", SnapDishLocalListModel::class.java)
@@ -148,6 +150,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
                 val args = Bundle()
                 args.putString("ModuleName", moduleName)
                 args.putString("mealType", mealType)
+                args.putString("selectedMealDate", selectedMealDate)
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
                     replace(R.id.flFragment, fragment, "landing")
@@ -162,6 +165,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
             val args = Bundle()
             args.putString("ModuleName", moduleName)
             args.putString("mealType", mealType)
+            args.putString("selectedMealDate", selectedMealDate)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "landing")
@@ -255,6 +259,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
             val fragment = SearchDishFragment()
             val args = Bundle()
             args.putString("ModuleName", moduleName)
+            args.putString("selectedMealDate", selectedMealDate)
             args.putString("searchType", "createMeal")
             args.putString("mealId", mealId)
             args.putString("mealType", mealType)
@@ -314,6 +319,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
             val args = Bundle()
             args.putString("ModuleName", moduleName)
             args.putString("searchType", "createMeal")
+            args.putString("selectedMealDate", selectedMealDate)
             args.putString("mealId", mealId)
             args.putString("mealType", mealType)
             args.putString("mealName", addedNameTv.text.toString())
@@ -332,7 +338,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
         deleteDishBottomSheet.isCancelable = true
         val args = Bundle()
         args.putString("ModuleName", moduleName)
-        args.putBoolean("test",false)
+        args.putString("selectedMealDate", selectedMealDate)
         args.putString("mealId", mealId)
         args.putString("mealType", mealType)
         args.putString("mealName", addedNameTv.text.toString())
@@ -505,6 +511,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
                     args.putString("ModuleName", moduleName)
                     args.putString("mealType", mealType)
                     args.putString("tabType", "MyMeal")
+                    args.putString("selectedMealDate", selectedMealDate)
                     fragment.arguments = args
                     requireActivity().supportFragmentManager.beginTransaction().apply {
                         replace(R.id.flFragment, fragment, "landing")
@@ -572,6 +579,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
                     val args = Bundle()
                     args.putString("ModuleName", moduleName)
                     args.putString("tabType", "MyMeal")
+                    args.putString("selectedMealDate", selectedMealDate)
                     fragment.arguments = args
                     requireActivity().supportFragmentManager.beginTransaction().apply {
                         replace(R.id.flFragment, fragment, "landing")

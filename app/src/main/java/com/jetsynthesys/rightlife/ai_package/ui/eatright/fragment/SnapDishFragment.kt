@@ -87,6 +87,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
     private var mealType : String = ""
     private var snapMealLog : String = ""
     private var homeTab : String = ""
+    private var selectedMealDate : String = ""
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentDishBinding
         get() = FragmentDishBinding::inflate
@@ -127,6 +128,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
         val mealQuantitys = arguments?.getString("mealQuantity").toString()
         mealType = arguments?.getString("mealType").toString()
         snapMealLog = arguments?.getString("snapMealLog").toString()
+        selectedMealDate = arguments?.getString("selectedMealDate").toString()
         homeTab = arguments?.getString("homeTab").toString()
         if (mealQuantitys != "null"){
             if (mealQuantitys.toDouble() > 0.0){
@@ -243,6 +245,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
                     val fragment = SearchDishFragment()
                     val args = Bundle()
                     fragment.arguments = args
+                    args.putString("selectedMealDate", selectedMealDate)
                     args.putString("searchType", searchType)
                     args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
                     requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -286,6 +289,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
                 val fragment = SearchDishFragment()
                 val args = Bundle()
                 fragment.arguments = args
+                args.putString("selectedMealDate", selectedMealDate)
                 args.putString("searchType", searchType)
                 args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
                 requireActivity().supportFragmentManager.beginTransaction().apply {

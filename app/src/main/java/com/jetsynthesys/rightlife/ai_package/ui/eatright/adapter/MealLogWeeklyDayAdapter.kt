@@ -79,14 +79,14 @@ class MealLogWeeklyDayAdapter(private val context: Context, private var dataList
          val layoutMain : LinearLayoutCompat = itemView.findViewById(R.id.layout_main)
      }
 
-    fun addAll(item : ArrayList<MealLogWeeklyDayModel>?, pos: Int, mealLogItem : MealLogWeeklyDayModel?, isClick : Boolean) {
+    fun addAll(newList : ArrayList<MealLogWeeklyDayModel>?, pos: Int, mealLogItem : MealLogWeeklyDayModel?, isClick : Boolean) {
         dataLists.clear()
-        if (item != null) {
-            dataLists = item
+        if (newList != null) {
+            dataLists.addAll(newList)
             clickPos = pos
             mealLogListData = mealLogItem
             isClickView = isClick
+            notifyDataSetChanged()
         }
-        notifyDataSetChanged()
     }
 }
