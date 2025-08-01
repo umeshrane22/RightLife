@@ -20,7 +20,7 @@ import com.jetsynthesys.rightlife.ai_package.ui.moveright.DeleteWorkoutBottomShe
 class YourActivitiesAdapter(private val context: Context, private var dataLists: ArrayList<ActivityModel>,
     private var clickPos: Int,
     private var workoutData: ActivityModel?,
-    private var isClickView: Boolean,
+    private var isClickView: Boolean, private val onRefreshDateClick: () -> Unit,
     val onWorkoutItemClick: (ActivityModel, Int, Boolean) -> Unit,
     private val onCirclePlusClick: (ActivityModel, Int) -> Unit
 ) : RecyclerView.Adapter<YourActivitiesAdapter.ViewHolder>() {
@@ -66,6 +66,7 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
 
             bottomSheet.setOnDeleteSuccessListener {
                 dataLists.removeAt(position)
+                onRefreshDateClick()
                 notifyDataSetChanged()
             }
 

@@ -30,6 +30,7 @@ import com.jetsynthesys.rightlife.ai_package.model.BaseResponse
 import com.jetsynthesys.rightlife.ai_package.model.ThinkQuoteResponse
 import com.jetsynthesys.rightlife.ai_package.model.ToolsData
 import com.jetsynthesys.rightlife.ai_package.model.ToolsResponse
+import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.databinding.FragmentAllToolsListBinding
 import com.jetsynthesys.rightlife.ui.affirmation.TodaysAffirmationActivity
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
@@ -311,7 +312,7 @@ class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
         val backBtn = view.findViewById<ImageView>(R.id.img_back)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         backBtn.setOnClickListener {
-            navigateToFragment(ThinkRightReportFragment(), "ThinkRightReportFragment")
+            navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
         }
 
         val getVisit = SharedPreferenceManager.getInstance(requireContext()).userFirstVisit
@@ -323,7 +324,7 @@ class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                navigateToFragment(ThinkRightReportFragment(), "ThinkRightReportFragment")
+                navigateToFragment(HomeBottomTabFragment(), "HomeBottomTabFragment")
             }
         })
         fetchToolsList("All")
