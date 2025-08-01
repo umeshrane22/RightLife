@@ -1,6 +1,7 @@
 package com.jetsynthesys.rightlife.ai_package.ui.thinkright.adapter
 
 import android.content.Context
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -47,7 +48,13 @@ class ToolsAdapter( context: Context, private var dataLists: ArrayList<ToolGridD
        // dataLists?.getOrNull(position)?.image.let { holder.itemView.findViewById<ImageView>(R.id.iconImageView).setImageResource(it) }
         holder.itemView.findViewById<TextView>(R.id.titleTextView).setText(dataLists?.getOrNull(position)?.moduleName)
         holder.itemView.findViewById<TextView>(R.id.subtitleTextView).setText(dataLists?.getOrNull(position)?.subtitle)
-        colorList.getOrNull(position)?.let { holder.itemView.findViewById<TextView>(R.id.titleTextView).setTextColor(it) }
+        // colorList.getOrNull(position)?.let { holder.itemView.findViewById<TextView>(R.id.titleTextView).setTextColor(it) }
+
+        when (position % 3) {
+            0 -> holder.itemView.findViewById<TextView>(R.id.titleTextView).setTextColor(mContext.resources.getColor(R.color.color_blue))
+            1 -> holder.itemView.findViewById<TextView>(R.id.titleTextView).setTextColor(mContext.resources.getColor(R.color.ql_journaling_color))
+            2 -> holder.itemView.findViewById<TextView>(R.id.titleTextView).setTextColor(mContext.resources.getColor(R.color.ql_affirmation_color))
+        }
         if (position == 3){
             holder.itemView.findViewById<CardView>(R.id.mainLayout).visibility = View.GONE
         }else{
