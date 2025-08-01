@@ -13,6 +13,7 @@ import com.jetsynthesys.rightlife.ui.questionnaire.adapter.MealOptionAdapter
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.ERQuestionTwo
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.MealOption
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
+import com.jetsynthesys.rightlife.ui.utility.runWithCooldown
 
 class MealPreferenceFragment : Fragment() {
 
@@ -55,12 +56,9 @@ class MealPreferenceFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val adapter = MealOptionAdapter(mealOptions) { selectedOption ->
-            /*Handler(Looper.getMainLooper()).postDelayed({
-                QuestionnaireEatRightActivity.navigateToNextPage()
-            }, 500)*/
+        val adapter = MealOptionAdapter(mealOptions, { selectedOption: MealOption ->
             submit(selectedOption.title)
-        }
+        }.runWithCooldown())
         binding.rvMealOptions.layoutManager = LinearLayoutManager(requireContext())
         binding.rvMealOptions.adapter = adapter
     }

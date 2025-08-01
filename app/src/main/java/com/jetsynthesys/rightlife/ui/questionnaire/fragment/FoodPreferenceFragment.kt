@@ -15,6 +15,7 @@ import com.jetsynthesys.rightlife.ui.questionnaire.pojo.ERQuestionOne
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.FoodOption
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
+import com.jetsynthesys.rightlife.ui.utility.runWithCooldown
 
 class FoodPreferenceFragment : Fragment() {
 
@@ -61,12 +62,9 @@ class FoodPreferenceFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val adapter = FoodOptionAdapter(foodOptions) { selectedOption ->
-            /*Handler(Looper.getMainLooper()).postDelayed({
-                QuestionnaireEatRightActivity.navigateToNextPage()
-            }, 500)*/
+        val adapter = FoodOptionAdapter(foodOptions, { selectedOption: FoodOption ->
             submit(selectedOption.title)
-        }
+        }.runWithCooldown())
 
         binding.rvFoodOptions.layoutManager = GridLayoutManager(requireContext(), 2)
         binding.rvFoodOptions.adapter = adapter
@@ -80,7 +78,11 @@ class FoodPreferenceFragment : Fragment() {
             QuestionnaireEatRightActivity.questionnaireAnswerRequest
         )
 
-        CommonAPICall.updateChecklistStatus(requireContext(), "discover_eating", AppConstants.CHECKLIST_INPROGRESS)
+        CommonAPICall.updateChecklistStatus(
+            requireContext(),
+            "discover_eating",
+            AppConstants.CHECKLIST_INPROGRESS
+        )
     }
 
     override fun onDestroyView() {

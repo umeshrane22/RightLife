@@ -13,6 +13,7 @@ import com.jetsynthesys.rightlife.ui.questionnaire.adapter.SleepSelectionAdapter
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.SRQuestionFour
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.SleepOption
+import com.jetsynthesys.rightlife.ui.utility.runWithCooldown
 
 class SleepSelectionFragment : Fragment() {
 
@@ -59,12 +60,9 @@ class SleepSelectionFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = SleepSelectionAdapter(sleepOptions) { sleepOption ->
-            /*Handler(Looper.getMainLooper()).postDelayed({
-                QuestionnaireThinkRightActivity.navigateToNextPage()
-            }, 500)*/
+        adapter = SleepSelectionAdapter(sleepOptions, { sleepOption: SleepOption ->
             submit(sleepOption.title)
-        }
+        }.runWithCooldown())
 
         binding.recyclerView.layoutManager = GridLayoutManager(requireContext(), 2)
         binding.recyclerView.adapter = adapter
@@ -73,7 +71,8 @@ class SleepSelectionFragment : Fragment() {
     private fun submit(answer: String) {
         val questionFour = SRQuestionFour()
         questionFour.answer = answer
-        QuestionnaireThinkRightActivity.questionnaireAnswerRequest.sleepRight?.questionFour = questionFour
+        QuestionnaireThinkRightActivity.questionnaireAnswerRequest.sleepRight?.questionFour =
+            questionFour
         QuestionnaireThinkRightActivity.submitQuestionnaireAnswerRequest(
             QuestionnaireThinkRightActivity.questionnaireAnswerRequest
         )

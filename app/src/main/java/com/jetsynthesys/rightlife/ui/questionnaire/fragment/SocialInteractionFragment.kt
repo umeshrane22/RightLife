@@ -13,6 +13,7 @@ import com.jetsynthesys.rightlife.ui.questionnaire.adapter.SocialInteractionAdap
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.Question
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.SocialInteraction
 import com.jetsynthesys.rightlife.ui.questionnaire.pojo.TRQuestionSix
+import com.jetsynthesys.rightlife.ui.utility.runWithCooldown
 
 class SocialInteractionFragment : Fragment() {
 
@@ -50,18 +51,18 @@ class SocialInteractionFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentSocialInteractionsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val adapter = SocialInteractionAdapter(socialInteractionsList) { socialInteraction ->
-            /*Handler(Looper.getMainLooper()).postDelayed({
-                QuestionnaireThinkRightActivity.navigateToNextPage()
-            }, 500)*/
-            submit(socialInteraction.title)
-        }
+        val adapter = SocialInteractionAdapter(
+            socialInteractionsList,
+            { socialInteraction: SocialInteraction ->
+                submit(socialInteraction.title)
+            }.runWithCooldown()
+        )
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.adapter = adapter
     }
@@ -69,7 +70,8 @@ class SocialInteractionFragment : Fragment() {
     private fun submit(answer: String) {
         val questionSix = TRQuestionSix()
         questionSix.answer = answer
-        QuestionnaireThinkRightActivity.questionnaireAnswerRequest.thinkRight?.questionSix = questionSix
+        QuestionnaireThinkRightActivity.questionnaireAnswerRequest.thinkRight?.questionSix =
+            questionSix
         QuestionnaireThinkRightActivity.submitQuestionnaireAnswerRequest(
             QuestionnaireThinkRightActivity.questionnaireAnswerRequest
         )
