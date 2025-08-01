@@ -390,7 +390,11 @@ class HomeNewActivity : BaseActivity() {
                             isTrialExpired = true
                         }
                     }
-
+                    if (!ResponseObj.isReportGenerated){
+                        binding.rightLifeReportCard.visibility = View.VISIBLE
+                    } else {
+                        binding.rightLifeReportCard.visibility = View.GONE
+                    }
                 } else {
                     //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
