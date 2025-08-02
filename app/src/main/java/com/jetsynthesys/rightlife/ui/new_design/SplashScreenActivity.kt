@@ -14,6 +14,9 @@ import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity
 import com.jetsynthesys.rightlife.ui.new_design.pojo.LoggedInUser
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 
 class SplashScreenActivity : BaseActivity() {
 
@@ -44,6 +47,10 @@ class SplashScreenActivity : BaseActivity() {
         // Delay the transition to the next activity to allow the video to end properly
         Handler(Looper.getMainLooper()).postDelayed({
             if (authToken.isEmpty()) {
+                AnalyticsLogger.logEvent(AnalyticsEvent.SPLASH_SCREEN_OPEN, mapOf(
+                    AnalyticsParam.USER_TYPE to "userType",
+                    AnalyticsParam.TIMESTAMP to System.currentTimeMillis()
+                ))
                 val intent = Intent(this, DataControlActivity::class.java)
                 startActivity(intent)
                 finish()
@@ -61,6 +68,18 @@ class SplashScreenActivity : BaseActivity() {
                         loggedInUser = user
                     }
                 }
+
+                AnalyticsLogger.logEvent(AnalyticsEvent.SPLASH_SCREEN_OPEN, mapOf(
+                    AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                    AnalyticsParam.USER_TYPE to "",
+                    AnalyticsParam.GENDER to sharedPreferenceManager.userProfile.userdata.gender,
+                    AnalyticsParam.AGE to sharedPreferenceManager.userProfile.userdata.age,
+                    AnalyticsParam.GOAL to "",
+                    AnalyticsParam.SUB_GOAL to "",
+                    AnalyticsParam.USER_PLAN to "",
+                    AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                ))
+
                 if (loggedInUser?.isOnboardingComplete == true) {
                     val intent = Intent(this, HomeNewActivity::class.java)
                     startActivity(intent)
