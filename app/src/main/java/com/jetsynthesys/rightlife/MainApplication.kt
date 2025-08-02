@@ -6,11 +6,13 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import com.google.firebase.FirebaseApp
 import com.jetsynthesys.rightlife.ui.affirmation.ReminderReceiver
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.sondeservices.edge.init.SondeEdgeSdk
 
 class MainApplication : Application() {
     override fun onCreate() {
         super.onCreate()
+        AnalyticsLogger.init(this)
         if (FirebaseApp.getApps(this).isEmpty()) {
             FirebaseApp.initializeApp(this)
         }
