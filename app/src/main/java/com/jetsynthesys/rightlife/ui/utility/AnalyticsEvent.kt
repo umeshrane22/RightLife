@@ -33,6 +33,7 @@ object AnalyticsEvent {
     const val ARTICLE_OPENED = "article_opened"
     const val ARTICLE_FINISHED = "article_finished"
     const val VIDEO_OPENED = "video_opened"
+    const val VIDEO_WATCHED_PERCENT = "video_watched_percent"
     const val VIDEO_WATCHED_10_50 = "video_watched_10_50"
     const val VIDEO_WATCHED_50_90 = "video_watched_50_90"
     const val VIDEO_WATCHED_100 = "video_watched_100"
