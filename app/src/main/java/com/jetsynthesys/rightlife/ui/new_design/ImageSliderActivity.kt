@@ -8,12 +8,14 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
 import android.util.Log
+import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.viewpager2.widget.ViewPager2
+import com.bumptech.glide.Glide
 import com.google.android.gms.auth.GoogleAuthUtil
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -21,16 +23,22 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Scope
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import com.google.gson.Gson
+import com.google.gson.JsonElement
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.BuildConfig
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.RetrofitData.ApiClient
+import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
 import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity
+import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistManager
 import com.jetsynthesys.rightlife.ui.new_design.pojo.GoogleLoginTokenResponse
 import com.jetsynthesys.rightlife.ui.new_design.pojo.GoogleSignInRequest
 import com.jetsynthesys.rightlife.ui.new_design.pojo.LoggedInUser
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
+import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
@@ -314,20 +322,6 @@ class ImageSliderActivity : BaseActivity() {
                     SharedPreferenceManager.getInstance(this@ImageSliderActivity)
                         .saveAccessToken(apiResponse?.accessToken)
                     saveAccessToken(apiResponse?.accessToken!!)
-                    var productId = ""
-                    sharedPreferenceManager.userProfile.subscription.forEach { subscription ->
-                        if (subscription.status) {
-                            productId = subscription.productId
-                        }
-                    }
-                    AnalyticsLogger.logEvent(
-                        AnalyticsEvent.USER_LOGIN, mapOf(
-                            AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
-                            AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile.isSubscribed) "Paid User" else "free User",
-                            AnalyticsParam.USER_PLAN to productId,
-                            AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
-                        )
-                    )
                     Handler(Looper.getMainLooper()).postDelayed({
                         // Send username to next Activity
                         var loggedInUser: LoggedInUser? = null
@@ -399,5 +393,49 @@ class ImageSliderActivity : BaseActivity() {
         editor.putString(SharedPreferenceConstants.ACCESS_TOKEN, accessToken)
         editor.putBoolean(SharedPreferenceConstants.IS_LOGGED_IN, true)
         editor.apply()
+        getUserDetails()
+    }
+
+    private fun getUserDetails() {
+        // Make the API call
+        val call = apiService.getUserDetais(sharedPreferenceManager.accessToken)
+        call.enqueue(object : Callback<JsonElement?> {
+            override fun onResponse(call: Call<JsonElement?>, response: Response<JsonElement?>) {
+                if (response.isSuccessful && response.body() != null) {
+                    val gson = Gson()
+                    val jsonResponse = gson.toJson(response.body())
+
+                    val ResponseObj = gson.fromJson(
+                        jsonResponse, UserProfileResponse::class.java
+                    )
+                    sharedPreferenceManager.saveUserId(ResponseObj.userdata.id)
+                    sharedPreferenceManager
+                        .saveUserProfile(ResponseObj)
+
+                    sharedPreferenceManager
+                        .setAIReportGeneratedView(ResponseObj.isReportGenerated)
+                }
+
+                var productId = ""
+                sharedPreferenceManager.userProfile?.subscription?.forEach { subscription ->
+                    if (subscription.status) {
+                        productId = subscription.productId
+                    }
+                }
+                AnalyticsLogger.logEvent(
+                    AnalyticsEvent.USER_LOGIN, mapOf(
+                        AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                        AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile?.isSubscribed == true) "Paid User" else "free User",
+                        AnalyticsParam.USER_PLAN to productId,
+                        AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                    )
+                )
+
+            }
+
+            override fun onFailure(call: Call<JsonElement?>, t: Throwable) {
+                handleNoInternetView(t)
+            }
+        })
     }
 }

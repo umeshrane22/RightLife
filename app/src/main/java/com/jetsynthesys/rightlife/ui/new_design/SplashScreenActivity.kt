@@ -72,7 +72,7 @@ class SplashScreenActivity : BaseActivity() {
                 }
 
                 var productId = ""
-                sharedPreferenceManager.userProfile.subscription.forEach { subscription ->
+                sharedPreferenceManager.userProfile?.subscription?.forEach { subscription ->
                     if (subscription.status) {
                         productId = subscription.productId
                     }
@@ -81,9 +81,9 @@ class SplashScreenActivity : BaseActivity() {
                 AnalyticsLogger.logEvent(
                     AnalyticsEvent.SPLASH_SCREEN_OPEN, mapOf(
                         AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
-                        AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile.isSubscribed) "Paid User" else "free User",
-                        AnalyticsParam.GENDER to sharedPreferenceManager.userProfile.userdata.gender,
-                        AnalyticsParam.AGE to sharedPreferenceManager.userProfile.userdata.age,
+                        AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile?.isSubscribed == true) "Paid User" else "free User",
+                        AnalyticsParam.GENDER to sharedPreferenceManager.userProfile?.userdata?.gender!!,
+                        AnalyticsParam.AGE to sharedPreferenceManager.userProfile?.userdata?.age!!,
                         AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
                         AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule,
                         AnalyticsParam.USER_PLAN to productId,
