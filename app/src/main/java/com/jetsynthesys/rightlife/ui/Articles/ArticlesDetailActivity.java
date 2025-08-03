@@ -43,10 +43,15 @@ import com.jetsynthesys.rightlife.ui.CommonAPICall;
 import com.jetsynthesys.rightlife.ui.YouMayAlsoLikeAdapter;
 import com.jetsynthesys.rightlife.ui.therledit.EpisodeTrackRequest;
 import com.jetsynthesys.rightlife.ui.therledit.ViewAllActivity;
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent;
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger;
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam;
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils;
 import com.jetsynthesys.rightlife.ui.utility.Utils;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -161,6 +166,8 @@ public class ArticlesDetailActivity extends BaseActivity {
             intent1.putExtra("ContentId", contentId);
             startActivity(intent1);
         });
+        // Log the event article opened
+        logArticleOpenedEvent();
     }
 
     private int getCurrentCount() {
@@ -405,6 +412,8 @@ public class ArticlesDetailActivity extends BaseActivity {
             player.release(); // Release the player resources
             player = null; // Important: Set player to null to avoid memory leaks
         }
+        // Log the event article finished
+        logArticleFinishedEvent();
     }
 
 
@@ -534,4 +543,29 @@ public class ArticlesDetailActivity extends BaseActivity {
         binding.recyclerViewAlsolike.setLayoutManager(horizontalLayoutManager);
         binding.recyclerViewAlsolike.setAdapter(adapter);
     }
+
+
+    private void logArticleOpenedEvent() {
+        Map<String, Object> params = new HashMap<>();
+        params.put(AnalyticsParam.ARTICLE_ID, contentId != null ? contentId : "");
+        params.put(AnalyticsParam.USER_ID, sharedPreferenceManager.getUserId());
+        params.put(AnalyticsParam.USER_TYPE,
+                sharedPreferenceManager.getUserProfile().getIsSubscribed() ? "Paid User" : "Free User");
+        params.put(AnalyticsParam.TIMESTAMP, System.currentTimeMillis());
+
+        AnalyticsLogger.INSTANCE.logEvent(AnalyticsEvent.ARTICLE_OPENED, params);
+    }
+
+    private void logArticleFinishedEvent() {
+        Map<String, Object> params = new HashMap<>();
+        params.put(AnalyticsParam.ARTICLE_ID, contentId != null ? contentId : "");
+        params.put(AnalyticsParam.USER_ID, sharedPreferenceManager.getUserId());
+        params.put(AnalyticsParam.USER_TYPE,
+                sharedPreferenceManager.getUserProfile().getIsSubscribed() ? "Paid User" : "Free User");
+        params.put(AnalyticsParam.TIMESTAMP, System.currentTimeMillis());
+
+        AnalyticsLogger.INSTANCE.logEvent(AnalyticsEvent.ARTICLE_FINISHED, params);
+    }
+
+
 }

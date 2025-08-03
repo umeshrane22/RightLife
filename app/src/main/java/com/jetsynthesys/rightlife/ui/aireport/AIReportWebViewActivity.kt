@@ -8,12 +8,17 @@ import android.webkit.WebViewClient
 import android.webkit.WebSettings
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.databinding.ActivityAireportWebViewBinding
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 
-class AIReportWebViewActivity : AppCompatActivity() {
+class AIReportWebViewActivity : BaseActivity() {
 
     private lateinit var binding: ActivityAireportWebViewBinding
+    private var reportPageStartTime: Long = 0
 
     companion object {
         const val EXTRA_REPORT_ID = "extra_report_id"
@@ -88,6 +93,27 @@ class AIReportWebViewActivity : AppCompatActivity() {
             binding.webView.goBack()
         } else {
             super.onBackPressed()
+            logReportPageDuration()
+        }
+    }
+
+    private fun logReportPageDuration() {
+        val endTime = System.currentTimeMillis()
+        val totalDuration = endTime - reportPageStartTime
+
+        // Only log if user spent meaningful time (more than 1 second) and page was loaded
+        if (totalDuration > 1000 ) {
+            AnalyticsLogger.logEvent(
+                AnalyticsEvent.TOTAL_REPORT_PAGE_DURATION,
+                mapOf(
+                    AnalyticsParam.START_TIME to ""+reportPageStartTime,
+                    AnalyticsParam.END_TIME to ""+endTime,
+                    AnalyticsParam.TOTAL_DURATION to totalDuration,
+                    AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                    AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile.isSubscribed) "Paid User" else "Free User",
+                    AnalyticsParam.TIMESTAMP to ""+System.currentTimeMillis(),
+                    )
+            )
         }
     }
 }
