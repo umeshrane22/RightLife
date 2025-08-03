@@ -40,6 +40,8 @@ object AnalyticsEvent {
     const val VIDEO_REPEAT_WATCH = "video_repeat_watch"
 
     // Audio
+    const val AUDIO_OPENED = "audio_opened"
+    const val AUDIO_LISTENED_PERCENT = "audio_listened_percent"
     const val AUDIO_LISTENED_10_50 = "audio_listened_10_50"
     const val AUDIO_LISTENED_50_90 = "audio_listened_50_90"
     const val AUDIO_LISTENED_100 = "audio_listened_100"
