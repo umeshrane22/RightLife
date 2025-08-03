@@ -45,6 +45,9 @@ import com.jetsynthesys.rightlife.ui.therledit.ArtistsDetailsActivity
 import com.jetsynthesys.rightlife.ui.therledit.EpisodeTrackRequest
 import com.jetsynthesys.rightlife.ui.therledit.ViewAllActivity
 import com.jetsynthesys.rightlife.ui.therledit.ViewCountRequest
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import com.jetsynthesys.rightlife.ui.utility.svgloader.GlideApp
@@ -61,8 +64,11 @@ class ContentDetailsActivity : BaseActivity() {
     private lateinit var mediaPlayer: MediaPlayer
     private var isExpanded = false
     private lateinit var player: ExoPlayer
+    private var watchProgessDuration: String = "0"
     private lateinit var binding: ActivityContentDetailsBinding
     private var contentTypeForTrack: String = ""
+    private var contentId: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -400,8 +406,12 @@ class ContentDetailsActivity : BaseActivity() {
                     Player.STATE_BUFFERING -> Log.d("ExoPlayer", "State: BUFFERING")
                     Player.STATE_READY -> {
                         Log.d("ExoPlayer", "Player is ready to play")
+                        logContentOpenedEvent()
                     }
-                    Player.STATE_ENDED -> Log.d("ExoPlayer", "Playback ended")
+                    Player.STATE_ENDED -> {
+                        Log.d("ExoPlayer", "Playback ended")
+                        logContentWatchedEvent()
+                    }
                 }
             }
 
@@ -475,6 +485,7 @@ class ContentDetailsActivity : BaseActivity() {
             binding.playPauseButton.setImageResource(R.drawable.ic_sound_pause)
             // Update progress every second
             handler.post(updateProgress)
+            watchProgessDuration = "0"
         })
         // Play/Pause Button Listener
         binding.playPauseButton.setOnClickListener(View.OnClickListener { v: View? ->
@@ -493,6 +504,7 @@ class ContentDetailsActivity : BaseActivity() {
         mediaPlayer.setOnCompletionListener(OnCompletionListener { mp: MediaPlayer? ->
             Toast.makeText(this, "Playback finished", Toast.LENGTH_SHORT).show()
             handler.removeCallbacks(updateProgress)
+            watchProgessDuration = "100"
         })
 
         binding.seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
@@ -522,7 +534,7 @@ class ContentDetailsActivity : BaseActivity() {
                 val progressPercent = ((currentPosition / totalDuration.toFloat()) * 100).toInt()
                 binding.circularProgressBar.progress = progressPercent
 
-
+                watchProgessDuration = progressPercent.toString()
                 // Update time display
                 val timeFormatted = String.format(
                     "%02d:%02d",
@@ -686,5 +698,29 @@ class ContentDetailsActivity : BaseActivity() {
         }
         handler.removeCallbacks(updateProgress)
         Log.d("contentDetails", "onDestroyCalled")
+    }
+    // analytics logger
+
+    private fun logContentOpenedEvent() {
+        AnalyticsLogger.logEvent(
+            AnalyticsEvent.VIDEO_OPENED, mapOf(
+                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile?.isSubscribed == true) "Paid User" else "Free User",
+                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                AnalyticsParam.VIDEO_ID to (contentId?: "")
+            )
+        )
+    }
+
+    private fun logContentWatchedEvent() {
+        AnalyticsLogger.logEvent(
+            AnalyticsEvent.VIDEO_WATCHED_PERCENT, mapOf(
+                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile?.isSubscribed == true) "Paid User" else "Free User",
+                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                AnalyticsParam.VIDEO_ID to (contentId?: ""),
+                        AnalyticsParam.WATCH_DURATION_PERCENT to watchProgessDuration // Assuming 100% watched
+            )
+        )
     }
 }
