@@ -65,6 +65,7 @@ class ContentDetailsActivity : BaseActivity() {
     private var isExpanded = false
     private lateinit var player: ExoPlayer
     private var watchProgessDuration: String = "0"
+    private var watchProgessDurationAudio: String = "0"
     private lateinit var binding: ActivityContentDetailsBinding
     private var contentTypeForTrack: String = ""
     private var contentId: String? = null
@@ -485,7 +486,8 @@ class ContentDetailsActivity : BaseActivity() {
             binding.playPauseButton.setImageResource(R.drawable.ic_sound_pause)
             // Update progress every second
             handler.post(updateProgress)
-            watchProgessDuration = "0"
+            watchProgessDurationAudio = "0"
+            logContentOpenedEventAudio()
         })
         // Play/Pause Button Listener
         binding.playPauseButton.setOnClickListener(View.OnClickListener { v: View? ->
@@ -504,7 +506,8 @@ class ContentDetailsActivity : BaseActivity() {
         mediaPlayer.setOnCompletionListener(OnCompletionListener { mp: MediaPlayer? ->
             Toast.makeText(this, "Playback finished", Toast.LENGTH_SHORT).show()
             handler.removeCallbacks(updateProgress)
-            watchProgessDuration = "100"
+            watchProgessDurationAudio = "100"
+            logContentWatchedEventAudio()
         })
 
         binding.seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
@@ -534,7 +537,7 @@ class ContentDetailsActivity : BaseActivity() {
                 val progressPercent = ((currentPosition / totalDuration.toFloat()) * 100).toInt()
                 binding.circularProgressBar.progress = progressPercent
 
-                watchProgessDuration = progressPercent.toString()
+                watchProgessDurationAudio = progressPercent.toString()
                 // Update time display
                 val timeFormatted = String.format(
                     "%02d:%02d",
@@ -719,8 +722,39 @@ class ContentDetailsActivity : BaseActivity() {
                 AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile?.isSubscribed == true) "Paid User" else "Free User",
                 AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
                 AnalyticsParam.VIDEO_ID to (contentId?: ""),
-                        AnalyticsParam.WATCH_DURATION_PERCENT to watchProgessDuration // Assuming 100% watched
+                        AnalyticsParam.WATCH_DURATION_PERCENT to watchProgessDuration // % watched
             )
         )
     }
+    private fun logContentWatchedEventAudio() {
+        AnalyticsLogger.logEvent(
+            AnalyticsEvent.AUDIO_LISTENED_PERCENT, mapOf(
+                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile?.isSubscribed == true) "Paid User" else "Free User",
+                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                AnalyticsParam.VIDEO_ID to (contentId?: ""),
+                AnalyticsParam.WATCH_DURATION_PERCENT to watchProgessDurationAudio // % watched
+            )
+        )
+    }
+    private fun logContentOpenedEventAudio() {
+        AnalyticsLogger.logEvent(
+            AnalyticsEvent.AUDIO_OPENED, mapOf(
+                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile?.isSubscribed == true) "Paid User" else "Free User",
+                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                AnalyticsParam.VIDEO_ID to (contentId?: "")
+            )
+        )
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        if(contentTypeForTrack.equals("video", ignoreCase = true)){
+            logContentWatchedEvent()
+        }else{
+            logContentWatchedEventAudio()
+        }
+    }
+
 }
