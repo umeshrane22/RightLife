@@ -419,11 +419,9 @@ class HomeDashboardFragment : BaseFragment() {
             binding.llDashboardMainData.visibility = View.VISIBLE
             binding.includeChecklist.llLayoutChecklist.visibility = View.GONE
             AnalyticsLogger.logEvent(
+                requireContext(),
                 AnalyticsEvent.CHECKLIST_COMPLETE,
-                mapOf(
-                    AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
-                    AnalyticsParam.CHECKLIST_COMPLETE to true
-                )
+                mapOf(AnalyticsParam.CHECKLIST_COMPLETE to true)
             )
         } else {
             binding.llDashboardMainData.visibility = View.GONE

@@ -188,31 +188,19 @@ class OnboardingQuestionnaireActivity : BaseActivity() {
                             }
                         }
                         AnalyticsLogger.logEvent(
+                            this@OnboardingQuestionnaireActivity,
                             AnalyticsEvent.CHECKLIST_PROFILE_COMPLETE, mapOf(
-                                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
                                 AnalyticsParam.TIME_TO_COMPLETE to (System.currentTimeMillis() - startTime) / 1000,
-                                AnalyticsParam.GENDER to onboardingQuestionRequest.gender!!,
-                                AnalyticsParam.AGE to onboardingQuestionRequest.age!!,
                                 AnalyticsParam.WEIGHT to onboardingQuestionRequest.weight!!,
                                 AnalyticsParam.HEIGHT to onboardingQuestionRequest.height!!,
-                                AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
-                                AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule,
-                                AnalyticsParam.USER_PLAN to productId,
-                                AnalyticsParam.TIMESTAMP to System.currentTimeMillis()
                             )
                         )
                         AnalyticsLogger.logEvent(
+                            this@OnboardingQuestionnaireActivity,
                             AnalyticsEvent.ONBOARDING_COMPLETE, mapOf(
-                                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
                                 AnalyticsParam.TIME_TO_COMPLETE to (System.currentTimeMillis() - startTime) / 1000,
-                                AnalyticsParam.GENDER to onboardingQuestionRequest.gender!!,
-                                AnalyticsParam.AGE to onboardingQuestionRequest.age!!,
                                 AnalyticsParam.WEIGHT to onboardingQuestionRequest.weight!!,
                                 AnalyticsParam.HEIGHT to onboardingQuestionRequest.height!!,
-                                AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
-                                AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule,
-                                AnalyticsParam.USER_PLAN to productId,
-                                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
                                 AnalyticsParam.PROFILE_SKIPPED to profileSkipped,
                             )
                         )

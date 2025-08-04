@@ -18,18 +18,13 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
-import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 
-class RatingMealBottomSheet: BottomSheetDialogFragment() {
+class RatingMealBottomSheet : BottomSheetDialogFragment() {
 
     private var listener: RatingSnapMealListener? = null
-    private var isRating:Boolean = false
+    private var isRating: Boolean = false
     private var context: Context? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     interface RatingSnapMealListener {
         fun onSnapMealRating(rating: Double, isSave: Boolean)
@@ -67,18 +62,18 @@ class RatingMealBottomSheet: BottomSheetDialogFragment() {
         val layoutNotNow = view.findViewById<LinearLayoutCompat>(R.id.layoutNotNow)
         val ratingBar = view.findViewById<RatingBar>(R.id.ratingBar)
 
-        val isSave = arguments?.getBoolean("isSave")?: false
-      /*  if (isRating){
-            layoutCancel.visibility = View.VISIBLE
-            layoutCancel.setBackgroundResource(R.drawable.add_cart_button_background)
-            layoutCancel.isEnabled = true
-           // disabledLayoutCancel.visibility =View.GONE
-        }else{
-            layoutCancel.visibility = View.VISIBLE
-            layoutCancel.setBackgroundResource(R.drawable.add_card_background_disabled)
-            layoutCancel.isEnabled = false
-            //disabledLayoutCancel.visibility =View.VISIBLE
-        }*/
+        val isSave = arguments?.getBoolean("isSave") ?: false
+        /*  if (isRating){
+              layoutCancel.visibility = View.VISIBLE
+              layoutCancel.setBackgroundResource(R.drawable.add_cart_button_background)
+              layoutCancel.isEnabled = true
+             // disabledLayoutCancel.visibility =View.GONE
+          }else{
+              layoutCancel.visibility = View.VISIBLE
+              layoutCancel.setBackgroundResource(R.drawable.add_card_background_disabled)
+              layoutCancel.isEnabled = false
+              //disabledLayoutCancel.visibility =View.VISIBLE
+          }*/
         layoutSubmit.setBackgroundResource(R.drawable.add_card_background_disabled)
         layoutSubmit.isEnabled = false
 
@@ -95,7 +90,7 @@ class RatingMealBottomSheet: BottomSheetDialogFragment() {
 
         layoutSubmit.setOnClickListener {
             ratingLayout.visibility = View.GONE
-            successLayout.visibility= View.VISIBLE
+            successLayout.visibility = View.VISIBLE
             //dismiss()
             listener?.onSnapMealRating(1.0, isSave)
 
@@ -108,21 +103,16 @@ class RatingMealBottomSheet: BottomSheetDialogFragment() {
                 }
             }
 
-            AnalyticsLogger.logEvent(
-                AnalyticsEvent.MEAL_SCAN_RATING,
-                mapOf(
-                    AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
-                    AnalyticsParam.MEAL_SCAN_RATING to true,
-                    AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile.isSubscribed) "Paid User" else "free User",
-                    AnalyticsParam.USER_PLAN to productId,
-                    AnalyticsParam.TIMESTAMP to System.currentTimeMillis()
+            context?.let { it1 ->
+                AnalyticsLogger.logEvent(
+                    it1, AnalyticsEvent.MEAL_SCAN_RATING
                 )
-            )
+            }
         }
 
         layoutNotNow.setOnClickListener {
             dismiss()
-         //   Toast.makeText(view.context, "Dish Removed", Toast.LENGTH_SHORT).show()
+            //   Toast.makeText(view.context, "Dish Removed", Toast.LENGTH_SHORT).show()
             listener?.onSnapMealRating(1.0, isSave)
         }
     }
@@ -134,6 +124,7 @@ class RatingMealBottomSheet: BottomSheetDialogFragment() {
 
     companion object {
         const val TAG = "LoggedBottomSheet"
+
         @JvmStatic
         fun newInstance() = RatingMealBottomSheet().apply {
             arguments = Bundle().apply {

@@ -99,12 +99,9 @@ class BreathworkPracticeActivity : BaseActivity() {
     private fun startBreathingCycle() {
         if (currentSet <= totalSets) {
             AnalyticsLogger.logEvent(
+                this,
                 AnalyticsEvent.BREATHING_SESSION_STARTED, mapOf(
-                    AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
-                    AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile.isSubscribed) "Paid User" else "free User",
-                    AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
                     AnalyticsParam.BREATHING_TYPE_ID to breathingData?.id!!,
-                    AnalyticsParam.BREATHING_TYPE_NAME to "",
                     AnalyticsParam.BREATHING_SESSION_DURATION to breathingData?.duration!!
                 )
             )
@@ -115,12 +112,9 @@ class BreathworkPracticeActivity : BaseActivity() {
             CommonAPICall.postWellnessStreak(this, "breathing")
             showCompletedBottomSheet()
             AnalyticsLogger.logEvent(
+                this,
                 AnalyticsEvent.BREATHING_SESSION_COMPLETED, mapOf(
-                    AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
-                    AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile.isSubscribed) "Paid User" else "free User",
-                    AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
                     AnalyticsParam.BREATHING_TYPE_ID to breathingData?.id!!,
-                    AnalyticsParam.BREATHING_TYPE_NAME to "",
                     AnalyticsParam.BREATHING_SESSION_DURATION to System.currentTimeMillis() - startTime
                 )
             )

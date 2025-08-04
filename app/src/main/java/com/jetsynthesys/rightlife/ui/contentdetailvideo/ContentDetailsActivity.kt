@@ -22,10 +22,8 @@ import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.google.android.exoplayer2.util.Util
 import com.google.gson.Gson
@@ -371,19 +369,20 @@ class ContentDetailsActivity : BaseActivity() {
             .setEnableDecoderFallback(true)
 
         player = ExoPlayer.Builder(this, renderersFactory).build()
-        player?.setVideoScalingMode(C.VIDEO_SCALING_MODE_SCALE_TO_FIT)
+        player.videoScalingMode = C.VIDEO_SCALING_MODE_SCALE_TO_FIT
 
-        player?.playWhenReady = true
+        player.playWhenReady = true
         binding.exoPlayerView.player = player
 
-        val fullVideoUrl = ApiClient.VIDEO_CDN_URL + previewUrl // Re-integrating your original URL logic
+        val fullVideoUrl =
+            ApiClient.VIDEO_CDN_URL + previewUrl // Re-integrating your original URL logic
         val videoUri = Uri.parse(fullVideoUrl)
 
         Log.d("ExoPlayerInit", "Attempting to play URL: $videoUri")
 
         val dataSourceFactory = DefaultHttpDataSource.Factory()
-            // Set a User-Agent to improve compatibility and avoid 403 errors with some servers/CDNs
-            //.setUserAgent("ExoPlayer/2.x (Linux; Android) YourAppName/1.0") // Replace YourAppName and version
+        // Set a User-Agent to improve compatibility and avoid 403 errors with some servers/CDNs
+        //.setUserAgent("ExoPlayer/2.x (Linux; Android) YourAppName/1.0") // Replace YourAppName and version
 
         val mediaSource = if (videoUri.toString().endsWith(".m3u8", ignoreCase = true)) {
             HlsMediaSource.Factory(dataSourceFactory)
@@ -398,9 +397,9 @@ class ContentDetailsActivity : BaseActivity() {
             return // Exit the function if format is unsupported
         }
 
-        player?.setMediaSource(mediaSource)
+        player.setMediaSource(mediaSource)
 
-        player?.addListener(object : Player.Listener {
+        player.addListener(object : Player.Listener {
             override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
                 when (playbackState) {
                     Player.STATE_IDLE -> Log.d("ExoPlayer", "State: IDLE")
@@ -409,6 +408,7 @@ class ContentDetailsActivity : BaseActivity() {
                         Log.d("ExoPlayer", "Player is ready to play")
                         logContentOpenedEvent()
                     }
+
                     Player.STATE_ENDED -> {
                         Log.d("ExoPlayer", "Playback ended")
                         logContentWatchedEvent()
@@ -424,7 +424,7 @@ class ContentDetailsActivity : BaseActivity() {
             }
         })
 
-        player?.prepare()
+        player.prepare()
     }
 
 
@@ -469,7 +469,8 @@ class ContentDetailsActivity : BaseActivity() {
 
 
         //val previewUrl = "media/cms/content/series/64cb6d97aa443ed535ecc6ad/45ea4b0f7e3ce5390b39221f9c359c2b.mp3"
-        val url = ApiClient.VIDEO_CDN_URL + (moduleContentDetail?.data?.url?: "") //episodes.get(1).getPreviewUrl();//"https://www.example.com/your-audio-file.mp3";  // Replace with your URL
+        val url = ApiClient.VIDEO_CDN_URL + (moduleContentDetail?.data?.url
+            ?: "") //episodes.get(1).getPreviewUrl();//"https://www.example.com/your-audio-file.mp3";  // Replace with your URL
         Log.d("API Response", "Sleep aid URL: $url")
         mediaPlayer = MediaPlayer()
         try {
@@ -706,53 +707,47 @@ class ContentDetailsActivity : BaseActivity() {
 
     private fun logContentOpenedEvent() {
         AnalyticsLogger.logEvent(
+            this,
             AnalyticsEvent.VIDEO_OPENED, mapOf(
-                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
-                AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile?.isSubscribed == true) "Paid User" else "Free User",
-                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
-                AnalyticsParam.VIDEO_ID to (contentId?: "")
+                AnalyticsParam.VIDEO_ID to (contentId ?: "")
             )
         )
     }
 
     private fun logContentWatchedEvent() {
         AnalyticsLogger.logEvent(
+            this,
             AnalyticsEvent.VIDEO_WATCHED_PERCENT, mapOf(
-                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
-                AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile?.isSubscribed == true) "Paid User" else "Free User",
-                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
-                AnalyticsParam.VIDEO_ID to (contentId?: ""),
-                        AnalyticsParam.WATCH_DURATION_PERCENT to watchProgessDuration // % watched
+                AnalyticsParam.VIDEO_ID to (contentId ?: ""),
+                AnalyticsParam.WATCH_DURATION_PERCENT to watchProgessDuration // % watched
             )
         )
     }
+
     private fun logContentWatchedEventAudio() {
         AnalyticsLogger.logEvent(
+            this,
             AnalyticsEvent.AUDIO_LISTENED_PERCENT, mapOf(
-                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
-                AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile?.isSubscribed == true) "Paid User" else "Free User",
-                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
-                AnalyticsParam.VIDEO_ID to (contentId?: ""),
+                AnalyticsParam.VIDEO_ID to (contentId ?: ""),
                 AnalyticsParam.WATCH_DURATION_PERCENT to watchProgessDurationAudio // % watched
             )
         )
     }
+
     private fun logContentOpenedEventAudio() {
         AnalyticsLogger.logEvent(
+            this,
             AnalyticsEvent.AUDIO_OPENED, mapOf(
-                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
-                AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile?.isSubscribed == true) "Paid User" else "Free User",
-                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
-                AnalyticsParam.VIDEO_ID to (contentId?: "")
+                AnalyticsParam.VIDEO_ID to (contentId ?: "")
             )
         )
     }
 
     override fun onBackPressed() {
         super.onBackPressed()
-        if(contentTypeForTrack.equals("video", ignoreCase = true)){
+        if (contentTypeForTrack.equals("video", ignoreCase = true)) {
             logContentWatchedEvent()
-        }else{
+        } else {
             logContentWatchedEventAudio()
         }
     }

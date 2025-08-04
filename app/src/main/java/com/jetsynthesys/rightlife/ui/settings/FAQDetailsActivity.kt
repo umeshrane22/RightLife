@@ -37,13 +37,8 @@ class FAQDetailsActivity : BaseActivity() {
 
         binding.writeToUsButton.setOnClickListener {
             WriteToUsUtils.sendEmail(this)
-            AnalyticsLogger.logEvent(
-                AnalyticsEvent.USER_FEEDBACK_CLICK,
-                mapOf(
-                    AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
-                    AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile.isSubscribed) "Paid User" else "free User",
-                    AnalyticsParam.TIMESTAMP to System.currentTimeMillis()
-                )
+            AnalyticsLogger.logEvent(this,
+                AnalyticsEvent.USER_FEEDBACK_CLICK
             )
         }
     }

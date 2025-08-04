@@ -2,7 +2,6 @@ package com.jetsynthesys.rightlife.ui.mindaudit;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -23,7 +22,6 @@ import com.jetsynthesys.rightlife.ui.mindaudit.questions.Question;
 import com.jetsynthesys.rightlife.ui.mindaudit.questions.ScoringPattern;
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent;
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger;
-import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam;
 import com.jetsynthesys.rightlife.ui.utility.AppConstants;
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager;
 
@@ -99,7 +97,7 @@ public class MAAssessmentQuestionaireActivity extends BaseActivity {
         adapter = new MAAssessmentPagerAdapter(this);
         viewPager.setAdapter(adapter);
 
-logStartEvent();
+        logStartEvent();
     }
 
     private void getAssessmentScoreMethod() {
@@ -153,7 +151,7 @@ logStartEvent();
     private void navigateToPreviousPage() {
         if (viewPager.getCurrentItem() > 0) {
             viewPager.setCurrentItem(viewPager.getCurrentItem() - 1);
-        }else {
+        } else {
             finish();
         }
     }
@@ -260,7 +258,7 @@ logStartEvent();
                     try {
                         String jsonString = response.body().string();
                         Gson gson = new Gson();
-                        CommonAPICall.INSTANCE.postWellnessStreak(MAAssessmentQuestionaireActivity.this,"mind Audit","COMPLETE");
+                        CommonAPICall.INSTANCE.postWellnessStreak(MAAssessmentQuestionaireActivity.this, "mind Audit", "COMPLETE");
                         finish();
                         Intent intent = new Intent(MAAssessmentQuestionaireActivity.this, MindAuditResultActivity.class);
                         intent.putExtra("FROM", "MAAssessment");
@@ -316,17 +314,12 @@ logStartEvent();
     private void logStartEvent() {
         Map<String, Object> params = new HashMap<>();
         // Add the parameters to the map
-        params.put(AnalyticsParam.USER_ID, sharedPreferenceManager.getUserId());
-        params.put(AnalyticsParam.TIMESTAMP, System.currentTimeMillis());
 
-        AnalyticsLogger.INSTANCE.logEvent(AnalyticsEvent.MIND_AUDIT_STARTED, params);
+        AnalyticsLogger.INSTANCE.logEvent(this, AnalyticsEvent.MIND_AUDIT_STARTED, params);
     }
+
     private void logCompleteEvent() {
         Map<String, Object> params = new HashMap<>();
-        // Add the parameters to the map
-        params.put(AnalyticsParam.USER_ID, sharedPreferenceManager.getUserId());
-        params.put(AnalyticsParam.TIMESTAMP, System.currentTimeMillis());
-
-        AnalyticsLogger.INSTANCE.logEvent(AnalyticsEvent.MIND_AUDIT_COMPLETED, params);
+        AnalyticsLogger.INSTANCE.logEvent(this, AnalyticsEvent.MIND_AUDIT_COMPLETED, params);
     }
 }

@@ -133,13 +133,10 @@ class NewHealthCamReportActivity : BaseActivity() {
         }
 
         AnalyticsLogger.logEvent(
+            this,
             AnalyticsEvent.FACE_SCAN_COMPLETE,
             mapOf(
-                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
-                AnalyticsParam.FACE_SCAN_COMPLETE to true,
-                AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile.isSubscribed) "Paid User" else "free User",
-                AnalyticsParam.USER_PLAN to productId,
-                AnalyticsParam.TIMESTAMP to System.currentTimeMillis()
+                AnalyticsParam.FACE_SCAN_COMPLETE to true
             )
         )
 

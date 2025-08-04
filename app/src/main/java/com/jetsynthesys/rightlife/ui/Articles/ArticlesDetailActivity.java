@@ -146,7 +146,6 @@ public class ArticlesDetailActivity extends BaseActivity {
         });
 
 
-
         binding.imageShareArticle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -548,23 +547,14 @@ public class ArticlesDetailActivity extends BaseActivity {
     private void logArticleOpenedEvent() {
         Map<String, Object> params = new HashMap<>();
         params.put(AnalyticsParam.ARTICLE_ID, contentId != null ? contentId : "");
-        params.put(AnalyticsParam.USER_ID, sharedPreferenceManager.getUserId());
-        params.put(AnalyticsParam.USER_TYPE,
-                sharedPreferenceManager.getUserProfile().getIsSubscribed() ? "Paid User" : "Free User");
-        params.put(AnalyticsParam.TIMESTAMP, System.currentTimeMillis());
-
-        AnalyticsLogger.INSTANCE.logEvent(AnalyticsEvent.ARTICLE_OPENED, params);
+        AnalyticsLogger.INSTANCE.logEvent(this, AnalyticsEvent.ARTICLE_OPENED, params);
     }
 
     private void logArticleFinishedEvent() {
         Map<String, Object> params = new HashMap<>();
         params.put(AnalyticsParam.ARTICLE_ID, contentId != null ? contentId : "");
-        params.put(AnalyticsParam.USER_ID, sharedPreferenceManager.getUserId());
-        params.put(AnalyticsParam.USER_TYPE,
-                sharedPreferenceManager.getUserProfile().getIsSubscribed() ? "Paid User" : "Free User");
-        params.put(AnalyticsParam.TIMESTAMP, System.currentTimeMillis());
 
-        AnalyticsLogger.INSTANCE.logEvent(AnalyticsEvent.ARTICLE_FINISHED, params);
+        AnalyticsLogger.INSTANCE.logEvent(this, AnalyticsEvent.ARTICLE_FINISHED, params);
     }
 
 

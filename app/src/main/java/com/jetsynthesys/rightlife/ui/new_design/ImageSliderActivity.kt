@@ -8,14 +8,12 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
 import android.util.Log
-import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.viewpager2.widget.ViewPager2
-import com.bumptech.glide.Glide
 import com.google.android.gms.auth.GoogleAuthUtil
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -28,17 +26,13 @@ import com.google.gson.JsonElement
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.BuildConfig
 import com.jetsynthesys.rightlife.R
-import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
 import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity
-import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistManager
 import com.jetsynthesys.rightlife.ui.new_design.pojo.GoogleLoginTokenResponse
 import com.jetsynthesys.rightlife.ui.new_design.pojo.GoogleSignInRequest
 import com.jetsynthesys.rightlife.ui.new_design.pojo.LoggedInUser
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
-import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
-import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
@@ -416,21 +410,7 @@ class ImageSliderActivity : BaseActivity() {
                         .setAIReportGeneratedView(ResponseObj.isReportGenerated)
                 }
 
-                var productId = ""
-                sharedPreferenceManager.userProfile?.subscription?.forEach { subscription ->
-                    if (subscription.status) {
-                        productId = subscription.productId
-                    }
-                }
-                AnalyticsLogger.logEvent(
-                    AnalyticsEvent.USER_LOGIN, mapOf(
-                        AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
-                        AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile?.isSubscribed == true) "Paid User" else "free User",
-                        AnalyticsParam.USER_PLAN to productId,
-                        AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
-                    )
-                )
-
+                AnalyticsLogger.logEvent(this@ImageSliderActivity, AnalyticsEvent.USER_LOGIN)
             }
 
             override fun onFailure(call: Call<JsonElement?>, t: Throwable) {
