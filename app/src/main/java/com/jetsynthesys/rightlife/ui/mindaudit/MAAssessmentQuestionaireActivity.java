@@ -21,6 +21,9 @@ import com.jetsynthesys.rightlife.ui.CommonAPICall;
 import com.jetsynthesys.rightlife.ui.mindaudit.questions.MindAuditAssessmentQuestions;
 import com.jetsynthesys.rightlife.ui.mindaudit.questions.Question;
 import com.jetsynthesys.rightlife.ui.mindaudit.questions.ScoringPattern;
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent;
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger;
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam;
 import com.jetsynthesys.rightlife.ui.utility.AppConstants;
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager;
 
@@ -96,7 +99,7 @@ public class MAAssessmentQuestionaireActivity extends BaseActivity {
         adapter = new MAAssessmentPagerAdapter(this);
         viewPager.setAdapter(adapter);
 
-
+logStartEvent();
     }
 
     private void getAssessmentScoreMethod() {
@@ -264,7 +267,7 @@ public class MAAssessmentQuestionaireActivity extends BaseActivity {
                         intent.putExtra("Assessment", header); // pass your string or data
                         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                         startActivity(intent);
-
+                        logCompleteEvent();
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -308,5 +311,22 @@ public class MAAssessmentQuestionaireActivity extends BaseActivity {
                 handleNoInternetView(t);
             }
         });
+    }
+
+    private void logStartEvent() {
+        Map<String, Object> params = new HashMap<>();
+        // Add the parameters to the map
+        params.put(AnalyticsParam.USER_ID, sharedPreferenceManager.getUserId());
+        params.put(AnalyticsParam.TIMESTAMP, System.currentTimeMillis());
+
+        AnalyticsLogger.INSTANCE.logEvent(AnalyticsEvent.MIND_AUDIT_STARTED, params);
+    }
+    private void logCompleteEvent() {
+        Map<String, Object> params = new HashMap<>();
+        // Add the parameters to the map
+        params.put(AnalyticsParam.USER_ID, sharedPreferenceManager.getUserId());
+        params.put(AnalyticsParam.TIMESTAMP, System.currentTimeMillis());
+
+        AnalyticsLogger.INSTANCE.logEvent(AnalyticsEvent.MIND_AUDIT_COMPLETED, params);
     }
 }

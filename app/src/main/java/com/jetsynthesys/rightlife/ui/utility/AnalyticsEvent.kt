@@ -62,6 +62,8 @@ object AnalyticsEvent {
     const val SUBSCRIPTION_MONTHLY_PLAN_PURCHASE = "subscription_monthly_plan_purchase"
     const val SUBSCRIPTION_YEARLY_PLAN_PURCHASE = "subscription_yearly_plan_purchase"
 
+    const val FACE_SCAN_PURCHASE_COMPLETED = "face_scan_purchase_completed"
+    const val SUBSCRIPTION_PURCHASE_COMPLETED = "subscription_purchase_completed"
     // Journal & Affirmation
     const val JOURNAL_ENTRY_CREATED = "journal_entry_created"
     const val JOURNAL_ENTRY_USER = "journal_entry_user"
@@ -74,5 +76,9 @@ object AnalyticsEvent {
     const val BREATHING_SESSION_STARTED = "breathing_session_started"
     const val BREATHING_SESSION_COMPLETED = "breathing_session_completed"
     const val MIND_AUDIT_STARTED = "mind_audit_started"
+    const val MIND_AUDIT_COMPLETED = "mind_audit_completed"
     const val BREATHING_EXERCISE_STARTED = "breathing_exercise_started"
+
+    const val WEARABLE_SYNC_BUTTON_CLICKED = "wearable_sync_button_clicked"
+    const val WEARABLE_SYNC_BUTTON_SKIPED = "wearable_sync_button_skiped"
 }

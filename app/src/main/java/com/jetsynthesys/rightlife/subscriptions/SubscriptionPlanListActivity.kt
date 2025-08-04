@@ -34,6 +34,9 @@ import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentSuccessResponse
 import com.jetsynthesys.rightlife.subscriptions.pojo.PlanList
 import com.jetsynthesys.rightlife.subscriptions.pojo.SdkDetail
 import com.jetsynthesys.rightlife.subscriptions.pojo.SubscriptionPlansResponse
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -285,14 +288,26 @@ class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
                     if (result.productDetailsList?.isNotEmpty() == true) {
                         launchBillingFlow(result.productDetailsList!![0])
                     } else {
-                        Toast.makeText(this@SubscriptionPlanListActivity, "Product not found: $productId", Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            this@SubscriptionPlanListActivity,
+                            "Product not found: $productId",
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
                 } else {
-                    Toast.makeText(this@SubscriptionPlanListActivity, "Query failed: ${result.billingResult.debugMessage}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@SubscriptionPlanListActivity,
+                        "Query failed: ${result.billingResult.debugMessage}",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             } catch (e: Exception) {
                 Log.e("Billing", "Error querying product details", e)
-                Toast.makeText(this@SubscriptionPlanListActivity, "Error querying product: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this@SubscriptionPlanListActivity,
+                    "Error querying product: ${e.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
@@ -384,7 +399,11 @@ class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
                             }
                         } catch (e: Exception) {
                             Log.e("Billing", "Error consuming purchase", e)
-                            Toast.makeText(this@SubscriptionPlanListActivity, "Error consuming purchase: ${e.message}", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                this@SubscriptionPlanListActivity,
+                                "Error consuming purchase: ${e.message}",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
                 }
@@ -416,7 +435,11 @@ class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
                                 }
                             } catch (e: Exception) {
                                 Log.e("Billing", "Error acknowledging purchase", e)
-                                Toast.makeText(this@SubscriptionPlanListActivity, "Error acknowledging purchase: ${e.message}", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    this@SubscriptionPlanListActivity,
+                                    "Error acknowledging purchase: ${e.message}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         }
                     } else {
@@ -461,6 +484,29 @@ class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
 
         paymentSuccessRequest.sdkDetail = sdkDetail
         saveSubscriptionSuccess(paymentSuccessRequest)
+        logPurchaseEvent()
+    }
+
+    private fun logPurchaseEvent() {
+        if (receivedProductType == "BOOSTER") {
+            AnalyticsLogger.logEvent(
+                AnalyticsEvent.FACE_SCAN_PURCHASE_COMPLETED,
+                mapOf(
+                    AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                    AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                    AnalyticsParam.PRODUCT_ID to "${selectedPlan?.googlePlay}",
+                )
+            )
+        } else {
+            AnalyticsLogger.logEvent(
+                AnalyticsEvent.SUBSCRIPTION_PURCHASE_COMPLETED,
+                mapOf(
+                    AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                    AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                    AnalyticsParam.PRODUCT_ID to "${selectedPlan?.googlePlay}",
+                )
+            )
+        }
     }
 }
 
