@@ -668,12 +668,13 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
         }
 
         view.findViewById<ImageView>(R.id.closeButton)?.setOnClickListener {
-            dismiss()
+
             if (moduleName.equals("HomeDashboard")){
 //                startActivity(Intent(context, HomeDashboardActivity::class.java))
 //                requireActivity().finish()
                 requireActivity().onBackPressedDispatcher.onBackPressed()
             }else if (homeTab.equals("homeTab")){
+                dismiss()
                 val fragment = HomeTabMealFragment()
                 val args = Bundle()
                 args.putString("ModuleName", moduleName)
@@ -686,6 +687,7 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
                 }
             }else{
                 val fragment = HomeBottomTabFragment()
+                dismiss()
                 val args = Bundle()
                 args.putString("ModuleName", "EatRight")
                 fragment.arguments = args
