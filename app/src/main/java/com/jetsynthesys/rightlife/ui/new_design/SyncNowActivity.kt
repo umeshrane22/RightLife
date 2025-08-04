@@ -33,6 +33,9 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.new_design.pojo.LoggedInUser
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.launch
@@ -66,7 +69,7 @@ class SyncNowActivity : BaseActivity() {
 
         var header = intent.getStringExtra("WellnessFocus")
         val sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
-        if (header.isNullOrEmpty()){
+        if (header.isNullOrEmpty()) {
             header = sharedPreferenceManager.selectedWellnessFocus
         }
 
@@ -84,9 +87,11 @@ class SyncNowActivity : BaseActivity() {
                 installHealthConnect(this)
                 //  Toast.makeText(this, "Please install or update Health Connect from the Play Store.", Toast.LENGTH_LONG).show()
             }
+            logEventSyncClick()
         }
         btnSkipForNOw.setOnClickListener {
             startNextActivity()
+            logEventSkipClick()
         }
     }
 
@@ -104,7 +109,8 @@ class SyncNowActivity : BaseActivity() {
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            Toast.makeText(this, "Error checking permissions: ${e.message}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Error checking permissions: ${e.message}", Toast.LENGTH_SHORT)
+                .show()
         }
     }
 
@@ -113,20 +119,28 @@ class SyncNowActivity : BaseActivity() {
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
             var header = intent.getStringExtra("WellnessFocus")
             val sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
-            if (header.isNullOrEmpty()){
+            if (header.isNullOrEmpty()) {
                 header = sharedPreferenceManager.selectedWellnessFocus
             }
             if (permissions.values.all { it }) {
                 lifecycleScope.launch {
                     // fetchAllHealthData()
-                    CommonAPICall.updateChecklistStatus(this@SyncNowActivity, "sync_health_data", AppConstants.CHECKLIST_COMPLETED)
+                    CommonAPICall.updateChecklistStatus(
+                        this@SyncNowActivity,
+                        "sync_health_data",
+                        AppConstants.CHECKLIST_COMPLETED
+                    )
                 }
                 Toast.makeText(this, "Permissions Granted", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(this, "Permissions Granted", Toast.LENGTH_SHORT).show()
                 lifecycleScope.launch {
                     // fetchAllHealthData()
-                    CommonAPICall.updateChecklistStatus(this@SyncNowActivity, "sync_health_data", AppConstants.CHECKLIST_COMPLETED)
+                    CommonAPICall.updateChecklistStatus(
+                        this@SyncNowActivity,
+                        "sync_health_data",
+                        AppConstants.CHECKLIST_COMPLETED
+                    )
                 }
             }
             startNextActivity()
@@ -140,7 +154,7 @@ class SyncNowActivity : BaseActivity() {
         context.startActivity(intent)
     }
 
-    private fun startNextActivity(){
+    private fun startNextActivity() {
         val loggedInUsers = sharedPreferenceManager.loggedUserList
 
         var loggedInUser: LoggedInUser? = null
@@ -154,7 +168,7 @@ class SyncNowActivity : BaseActivity() {
             }
         }
 
-        if (loggedInUser != null){
+        if (loggedInUser != null) {
             loggedInUsers.add(loggedInUser)
             sharedPreferenceManager.setLoggedInUsers(loggedInUsers)
         }
@@ -163,5 +177,25 @@ class SyncNowActivity : BaseActivity() {
         sharedPreferenceManager.syncNow = true
         startActivity(Intent(this, FreeTrialServiceActivity::class.java))
         finish()
+    }
+
+    private fun logEventSyncClick() {
+        AnalyticsLogger.logEvent(
+            AnalyticsEvent.WEARABLE_SYNC_BUTTON_CLICKED,
+            mapOf(
+                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                AnalyticsParam.TIMESTAMP to System.currentTimeMillis()
+            )
+        )
+    }
+
+    private fun logEventSkipClick() {
+        AnalyticsLogger.logEvent(
+            AnalyticsEvent.WEARABLE_SYNC_BUTTON_SKIPED,
+            mapOf(
+                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                AnalyticsParam.TIMESTAMP to System.currentTimeMillis()
+            )
+        )
     }
 }
