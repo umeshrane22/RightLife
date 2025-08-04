@@ -3,9 +3,13 @@ package com.jetsynthesys.rightlife.ui.jounal.new_journal
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
@@ -177,12 +181,35 @@ class Journal4QuestionsActivity : BaseActivity() {
 
         if (isFromEdit) {
             dialogBinding.btnAdd.text = "Update"
+            dialogBinding.tvHeader.text = "Edit Tag"
             dialogBinding.edtTag.setText(chip.text.toString())
+            val charLeft = dialogBinding.edtTag.text.length
+            "$charLeft/30 Characters".also { dialogBinding.textLeft.text = it }
         }
 
         dialogBinding.btnCancel.setOnClickListener {
             bottomSheetDialog.dismiss()
         }
+
+        dialogBinding.imgClose.setOnClickListener {
+            bottomSheetDialog.dismiss()
+        }
+
+        dialogBinding.edtTag.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, count: Int) {
+                val c = dialogBinding.edtTag.text.length
+                "$c/30 characters".also { dialogBinding.textLeft.text = it }
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+
+            }
+
+        })
 
         dialogBinding.btnAdd.setOnClickListener {
             if (dialogBinding.edtTag.text.isNullOrEmpty()) {
