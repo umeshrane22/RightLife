@@ -41,7 +41,7 @@ class AIReportWebViewActivity : BaseActivity() {
             return
         }
 
-        val fullUrl = "$BASE_URL$reportId"
+        val fullUrl = "$BASE_URL$reportId?isReportView=True"
         val webView = binding.webView
         val webSettings = webView.settings
 

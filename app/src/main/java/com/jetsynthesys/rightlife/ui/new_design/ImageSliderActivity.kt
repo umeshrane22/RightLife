@@ -413,7 +413,7 @@ class ImageSliderActivity : BaseActivity() {
                         .saveUserProfile(ResponseObj)
 
                     sharedPreferenceManager
-                        .setAIReportGeneratedView(ResponseObj.isReportGenerated)
+                        .setAIReportGeneratedView(ResponseObj.isReportView)
                 }
 
                 var productId = ""

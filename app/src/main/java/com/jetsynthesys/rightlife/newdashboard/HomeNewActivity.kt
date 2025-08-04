@@ -365,7 +365,7 @@ class HomeNewActivity : BaseActivity() {
                         .saveUserProfile(ResponseObj)
 
                     SharedPreferenceManager.getInstance(applicationContext).
-                    setAIReportGeneratedView(ResponseObj.isReportGenerated)
+                    setAIReportGeneratedView(ResponseObj.isReportView)
 
                     if (ResponseObj.userdata.profilePicture != null) {
                         Glide.with(this@HomeNewActivity)
