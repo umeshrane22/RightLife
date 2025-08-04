@@ -69,6 +69,19 @@ public class UserProfileResponse {
     @Expose
     private Boolean isReportGenerated;
 
+    public Boolean getReportView() {
+        return isReportView;
+    }
+
+    public void setReportView(Boolean reportView) {
+        isReportView = reportView;
+    }
+
+    @SerializedName("isReportView")
+    @Expose
+    private Boolean isReportView;
+
+
     public Boolean getIsFacialReport() {
         return isFacialReport;
     }

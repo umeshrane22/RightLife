@@ -165,14 +165,25 @@ class HomeDashboardFragment : BaseFragment() {
             })
         }
         binding.includeChecklist.rlChecklistFacescan.setOnClickListener {
-            if (DashboardChecklistManager.facialScanStatus) {
-                startActivity(
-                    Intent(
-                        requireContext(), NewHealthCamReportActivity::class.java
+            val activity = requireActivity() as HomeNewActivity
+            /*val isHealthCamFree = activity.isHealthCamFree*/
+
+            var isHealthCamFree = sharedPreferenceManager?.userProfile?.homeServices
+                ?.find { it.title == "HealthCam" }
+                ?.isFree ?: false
+
+            if (isHealthCamFree) {
+                if (DashboardChecklistManager.facialScanStatus) {
+                    startActivity(
+                        Intent(
+                            requireContext(), NewHealthCamReportActivity::class.java
+                        )
                     )
-                )
+                } else {
+                    startActivity(Intent(requireContext(), HealthCamActivity::class.java))
+                }
             } else {
-                startActivity(Intent(requireContext(), HealthCamActivity::class.java))
+                activity.showSwitchAccountDialog(requireContext(), "", "")
             }
         }
 
@@ -301,8 +312,8 @@ class HomeDashboardFragment : BaseFragment() {
 
         binding.tvDateDashboard.text = todayDate
 
-        binding.trialExpiredLayout.trialExpiredLayout.visibility =
-            if ((requireActivity() as? HomeNewActivity)?.isTrialExpired == true) View.VISIBLE else View.GONE
+        /*binding.trialExpiredLayout.trialExpiredLayout.visibility =
+            if ((requireActivity() as? HomeNewActivity)?.isTrialExpired == true) View.VISIBLE else View.GONE*/
 
     }
 
@@ -653,10 +664,12 @@ class HomeDashboardFragment : BaseFragment() {
                         )
                         setIfNotNullOrBlank(
                             binding.tvModuleValueSleepright,
-                            DateTimeUtils.formatSleepDurationforidealSleep(
-                                module.totalSleepDurationMinutes ?: 0.0
+                            module.sleepPerformanceDetail?.actualSleepData?.actualSleepDurationHours?.let {
+                                DateTimeUtils.formatSleepDuration(it)
+                            } ?: "0 hr"
                             )
-                        )
+
+
                         setIfNotNullOrBlank(
                             binding.tvModuleValueThinkright, module.mindfulTime?.toString()
                         )
@@ -682,9 +695,10 @@ class HomeDashboardFragment : BaseFragment() {
                         )
                         setIfNotNullOrBlank(
                             binding.tvModuleValueSleepright,
-                            DateTimeUtils.formatSleepDurationforidealSleep(
-                                module.totalSleepDurationMinutes ?: 0.0
-                            )
+                            module.sleepPerformanceDetail?.actualSleepData?.actualSleepDurationHours?.let {
+                                DateTimeUtils.formatSleepDuration(it)
+                            } ?: "0 hr"
+
                         )
                         setIfNotNullOrBlank(
                             binding.tvModuleValueThinkright, module.mindfulTime?.toString()
@@ -746,9 +760,9 @@ class HomeDashboardFragment : BaseFragment() {
                         )
                         setIfNotNullOrBlank(
                             binding.tvModuleValueSleepright,
-                            DateTimeUtils.formatSleepDurationforidealSleep(
-                                module.totalSleepDurationMinutes ?: 0.0
-                            )
+                            module.sleepPerformanceDetail?.actualSleepData?.actualSleepDurationHours?.let {
+                                DateTimeUtils.formatSleepDuration(it)
+                            } ?: "0 hr"
                         )
                         setIfNotNullOrBlank(
                             binding.tvModuleValueThinkright, module.mindfulTime?.toString()
@@ -772,9 +786,9 @@ class HomeDashboardFragment : BaseFragment() {
                         )
                         setIfNotNullOrBlank(
                             binding.tvModuleValueSleepright,
-                            DateTimeUtils.formatSleepDurationforidealSleep(
-                                module.totalSleepDurationMinutes ?: 0.0
-                            )
+                            module.sleepPerformanceDetail?.actualSleepData?.actualSleepDurationHours?.let {
+                                DateTimeUtils.formatSleepDuration(it)
+                            } ?: "0 hr"
                         )
                         setIfNotNullOrBlank(
                             binding.tvModuleValueThinkright, module.mindfulTime?.toString()
