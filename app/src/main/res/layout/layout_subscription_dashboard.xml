@@ -5,10 +5,10 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="16dp"
-    android:layout_margin="2dp"
     android:background="@drawable/roundedcornershape"
     android:backgroundTint="#FFF1F0"
     android:elevation="4dp"
+    android:layout_marginHorizontal="@dimen/margin_card_16dp"
     android:visibility="gone">
 
     <!-- Top Row: Icon and Title -->

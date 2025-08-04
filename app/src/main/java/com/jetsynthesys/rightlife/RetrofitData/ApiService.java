@@ -1252,6 +1252,13 @@ public interface ApiService {
             @Query("source") String source,
             @Query("process") boolean process
     );
+
+    @GET("user/device")
+    Call<ResponseBody> getDeviceInfo(
+            @Query("deviceId") String deviceId,
+            @Query("email") String emailId
+    );
+
 }
 
 
