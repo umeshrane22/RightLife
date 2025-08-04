@@ -9,6 +9,7 @@ import android.webkit.WebSettings
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.jetsynthesys.rightlife.BaseActivity
+import com.jetsynthesys.rightlife.BuildConfig
 import com.jetsynthesys.rightlife.databinding.ActivityAireportWebViewBinding
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
@@ -22,7 +23,7 @@ class AIReportWebViewActivity : BaseActivity() {
 
     companion object {
         const val EXTRA_REPORT_ID = "extra_report_id"
-        const val BASE_URL = "https://ai-qa.rightlife.com/pdf/view-report/"
+        const val BASE_URL = BuildConfig.BASE_URL_AI + "pdf/view-report/"//"https://ai-qa.rightlife.com/pdf/view-report/"
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -40,7 +41,7 @@ class AIReportWebViewActivity : BaseActivity() {
             return
         }
 
-        val fullUrl = "$BASE_URL$reportId"
+        val fullUrl = "$BASE_URL$reportId?isReportView=True"
         val webView = binding.webView
         val webSettings = webView.settings
 

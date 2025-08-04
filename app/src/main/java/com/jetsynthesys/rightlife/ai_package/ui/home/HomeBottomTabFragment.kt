@@ -76,6 +76,7 @@ HomeBottomTabFragment : BaseFragment<HomeBottomTabFragmentAiBinding>() {
             }
         })
 
+
         if (moduleName.contentEquals("MoveRight")){
             switchFragment(MoveRightLandingFragment(), tabMove, "Move", bottomSeatName)
         }else if (moduleName.contentEquals("EatRight")){
