@@ -9,7 +9,6 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
-import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
@@ -484,11 +483,11 @@ class Journal4QuestionsActivity : BaseActivity() {
                     }
 
                     if (tagsList1.size == visibleCount)
-                        binding.moreButton1.visibility = View.GONE
+                        binding.moreButton1.visibility = GONE
                     if (tagsList2.size == visibleCount)
-                        binding.moreButton2.visibility = View.GONE
+                        binding.moreButton2.visibility = GONE
                     if (tagsList3.size == visibleCount)
-                        binding.moreButton3.visibility = View.GONE
+                        binding.moreButton3.visibility = GONE
 
                     val itemsToShow1 = tagsList1.take(visibleCount)
                     for (label in itemsToShow1) {
@@ -663,11 +662,9 @@ class Journal4QuestionsActivity : BaseActivity() {
                         response.message(),
                         Toast.LENGTH_SHORT
                     ).show()
-                    AnalyticsLogger.logEvent(AnalyticsEvent.JOURNAL_ENTRY_CREATED,
+                    AnalyticsLogger.logEvent(
+                        this@Journal4QuestionsActivity, AnalyticsEvent.JOURNAL_ENTRY_CREATED,
                         mapOf(
-                            AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
-                            AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile.isSubscribed) "Paid User" else "free User",
-                            AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
                             AnalyticsParam.JOURNAL_TYPE to journalItem?.title!!,
                             AnalyticsParam.JOURNAL_ID to journalEntry?.id!!
                         )

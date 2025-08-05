@@ -29,13 +29,12 @@ import androidx.health.connect.client.records.StepsRecord
 import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
 import androidx.health.connect.client.records.WeightRecord
 import androidx.lifecycle.lifecycleScope
-import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.BaseActivity
+import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.new_design.pojo.LoggedInUser
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
-import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.launch
@@ -180,22 +179,10 @@ class SyncNowActivity : BaseActivity() {
     }
 
     private fun logEventSyncClick() {
-        AnalyticsLogger.logEvent(
-            AnalyticsEvent.WEARABLE_SYNC_BUTTON_CLICKED,
-            mapOf(
-                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
-                AnalyticsParam.TIMESTAMP to System.currentTimeMillis()
-            )
-        )
+        AnalyticsLogger.logEvent(this, AnalyticsEvent.WEARABLE_SYNC_BUTTON_CLICKED)
     }
 
     private fun logEventSkipClick() {
-        AnalyticsLogger.logEvent(
-            AnalyticsEvent.WEARABLE_SYNC_BUTTON_SKIPED,
-            mapOf(
-                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
-                AnalyticsParam.TIMESTAMP to System.currentTimeMillis()
-            )
-        )
+        AnalyticsLogger.logEvent(this, AnalyticsEvent.WEARABLE_SYNC_BUTTON_SKIPED)
     }
 }

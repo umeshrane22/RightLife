@@ -23,7 +23,6 @@ import com.jetsynthesys.rightlife.ui.settings.adapter.SettingsAdapter
 import com.jetsynthesys.rightlife.ui.settings.pojo.SettingItem
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
-import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
@@ -203,13 +202,8 @@ class SettingsNewActivity : BaseActivity() {
 
     private fun clearUserDataAndFinish() {
         AnalyticsLogger.logEvent(
-            AnalyticsEvent.USER_SIGN_OUT,
-            mapOf(
-                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
-                AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile.isSubscribed) "Paid User" else "free User",
-                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
-                AnalyticsParam.USER_SIGN_OUT to true
-            )
+            this,
+            AnalyticsEvent.USER_SIGN_OUT
         )
         val sharedPreferences =
             getSharedPreferences(SharedPreferenceConstants.ACCESS_TOKEN, MODE_PRIVATE)

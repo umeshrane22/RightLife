@@ -643,10 +643,9 @@ class PractiseAffirmationPlaylistActivity : BaseActivity() {
         Utils.showLoader(this)
 
         AnalyticsLogger.logEvent(
+            this,
             AnalyticsEvent.AFFIRMATION_PLAYLIST_PRACTISE,
             mapOf(
-                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
-                AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile.isSubscribed) "Paid User" else "free User",
                 AnalyticsParam.TIME_TO_COMPLETE to binding.tvTimer.text.toString(),
                 AnalyticsParam.AFFIRMATION_PLAYLIST_ID to sharedPreferenceManager.userId,
             )

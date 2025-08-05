@@ -5,9 +5,7 @@ import android.os.Bundle
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import android.webkit.WebSettings
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.BuildConfig
 import com.jetsynthesys.rightlife.databinding.ActivityAireportWebViewBinding
@@ -55,7 +53,11 @@ class AIReportWebViewActivity : BaseActivity() {
         webSettings.allowContentAccess = true
 
         webView.webViewClient = object : WebViewClient() {
-            override fun onPageStarted(view: WebView?, url: String?, favicon: android.graphics.Bitmap?) {
+            override fun onPageStarted(
+                view: WebView?,
+                url: String?,
+                favicon: android.graphics.Bitmap?
+            ) {
                 super.onPageStarted(view, url, favicon)
                 binding.progressBar.visibility = android.view.View.VISIBLE
             }
@@ -65,7 +67,10 @@ class AIReportWebViewActivity : BaseActivity() {
                 binding.progressBar.visibility = android.view.View.GONE
             }
 
-            override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+            override fun shouldOverrideUrlLoading(
+                view: WebView?,
+                request: WebResourceRequest?
+            ): Boolean {
                 view?.loadUrl(request?.url.toString())
                 return true
             }
@@ -80,13 +85,16 @@ class AIReportWebViewActivity : BaseActivity() {
             ) {
                 super.onReceivedError(view, errorCode, description, failingUrl)
                 binding.progressBar.visibility = android.view.View.GONE
-                Toast.makeText(this@AIReportWebViewActivity, "Error loading page: $description", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    this@AIReportWebViewActivity,
+                    "Error loading page: $description",
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
 
         webView.loadUrl(fullUrl)
-        SharedPreferenceManager.getInstance(applicationContext).
-        setAIReportGeneratedView(true)
+        SharedPreferenceManager.getInstance(applicationContext).setAIReportGeneratedView(true)
     }
 
     override fun onBackPressed() {
@@ -103,17 +111,15 @@ class AIReportWebViewActivity : BaseActivity() {
         val totalDuration = endTime - reportPageStartTime
 
         // Only log if user spent meaningful time (more than 1 second) and page was loaded
-        if (totalDuration > 1000 ) {
+        if (totalDuration > 1000) {
             AnalyticsLogger.logEvent(
+                this,
                 AnalyticsEvent.TOTAL_REPORT_PAGE_DURATION,
                 mapOf(
-                    AnalyticsParam.START_TIME to ""+reportPageStartTime,
-                    AnalyticsParam.END_TIME to ""+endTime,
+                    AnalyticsParam.START_TIME to "" + reportPageStartTime,
+                    AnalyticsParam.END_TIME to "" + endTime,
                     AnalyticsParam.TOTAL_DURATION to totalDuration,
-                    AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
-                    AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile.isSubscribed) "Paid User" else "Free User",
-                    AnalyticsParam.TIMESTAMP to ""+System.currentTimeMillis(),
-                    )
+                )
             )
         }
     }

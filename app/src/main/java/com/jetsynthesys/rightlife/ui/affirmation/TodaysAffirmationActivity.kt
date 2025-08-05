@@ -141,11 +141,9 @@ class TodaysAffirmationActivity : BaseActivity() {
                 }
             } else {
                 AnalyticsLogger.logEvent(
+                    this,
                     AnalyticsEvent.AFFIRMATION_ADDED,
                     mapOf(
-                        AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
-                        AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile.isSubscribed) "Paid User" else "free User",
-                        AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
                         AnalyticsParam.AFFIRMATION_ID to affirmationList[binding.cardViewPager.currentItem].id!!,
                         AnalyticsParam.AFFIRMATION_TYPE to affirmationList[binding.cardViewPager.currentItem].categoryName!!
                     )
@@ -663,11 +661,9 @@ class TodaysAffirmationActivity : BaseActivity() {
                 if (response.isSuccessful && response.body() != null) {
 
                     AnalyticsLogger.logEvent(
+                        this@TodaysAffirmationActivity,
                         AnalyticsEvent.AFFIRMATION_PLAYLIST_CREATED,
                         mapOf(
-                            AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
-                            AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile.isSubscribed) "Paid User" else "free User",
-                            AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
                             AnalyticsParam.AFFIRMATION_PLAYLIST_ID to sharedPreferenceManager.userId,
                         )
                     )

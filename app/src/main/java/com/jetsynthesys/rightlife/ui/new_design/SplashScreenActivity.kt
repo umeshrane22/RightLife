@@ -49,7 +49,6 @@ class SplashScreenActivity : BaseActivity() {
             if (authToken.isEmpty()) {
                 AnalyticsLogger.logEvent(
                     AnalyticsEvent.SPLASH_SCREEN_OPEN, mapOf(
-                        AnalyticsParam.USER_TYPE to "guest",
                         AnalyticsParam.TIMESTAMP to System.currentTimeMillis()
                     )
                 )
@@ -71,25 +70,7 @@ class SplashScreenActivity : BaseActivity() {
                     }
                 }
 
-                var productId = ""
-                sharedPreferenceManager.userProfile?.subscription?.forEach { subscription ->
-                    if (subscription.status) {
-                        productId = subscription.productId
-                    }
-                }
-
-                AnalyticsLogger.logEvent(
-                    AnalyticsEvent.SPLASH_SCREEN_OPEN, mapOf(
-                        AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
-                        AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile?.isSubscribed == true) "Paid User" else "free User",
-                        AnalyticsParam.GENDER to sharedPreferenceManager.userProfile?.userdata?.gender!!,
-                        AnalyticsParam.AGE to sharedPreferenceManager.userProfile?.userdata?.age!!,
-                        AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
-                        AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule,
-                        AnalyticsParam.USER_PLAN to productId,
-                        AnalyticsParam.TIMESTAMP to System.currentTimeMillis()
-                    )
-                )
+                AnalyticsLogger.logEvent(this, AnalyticsEvent.SPLASH_SCREEN_OPEN)
 
                 if (loggedInUser?.isOnboardingComplete == true) {
                     val intent = Intent(this, HomeNewActivity::class.java)

@@ -21,8 +21,8 @@ import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.QueryProductDetailsParams
-import com.android.billingclient.api.consumePurchase
 import com.android.billingclient.api.acknowledgePurchase
+import com.android.billingclient.api.consumePurchase
 import com.android.billingclient.api.queryProductDetails
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.databinding.ActivitySubscriptionPlanListBinding
@@ -37,10 +37,10 @@ import com.jetsynthesys.rightlife.subscriptions.pojo.SubscriptionPlansResponse
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import kotlinx.coroutines.launch
 
 
 class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
@@ -490,21 +490,15 @@ class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
     private fun logPurchaseEvent() {
         if (receivedProductType == "BOOSTER") {
             AnalyticsLogger.logEvent(
+                this,
                 AnalyticsEvent.FACE_SCAN_PURCHASE_COMPLETED,
-                mapOf(
-                    AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
-                    AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
-                    AnalyticsParam.PRODUCT_ID to "${selectedPlan?.googlePlay}",
-                )
+                mapOf(AnalyticsParam.PRODUCT_ID to "${selectedPlan?.googlePlay}")
             )
         } else {
             AnalyticsLogger.logEvent(
+                this,
                 AnalyticsEvent.SUBSCRIPTION_PURCHASE_COMPLETED,
-                mapOf(
-                    AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
-                    AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
-                    AnalyticsParam.PRODUCT_ID to "${selectedPlan?.googlePlay}",
-                )
+                mapOf(AnalyticsParam.PRODUCT_ID to "${selectedPlan?.googlePlay}")
             )
         }
     }
