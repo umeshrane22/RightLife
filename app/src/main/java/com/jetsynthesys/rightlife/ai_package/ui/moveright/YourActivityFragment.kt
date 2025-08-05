@@ -176,7 +176,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         val formatFullDate = DateTimeFormatter.ofPattern("E, d MMM yyyy")
         workoutDateTv.text = currentDateTime.format(formatFullDate)
 
-        if (selectedDate == null){
+        if (selectedDate == null || selectedDate.equals("")){
             selectedDate = formattedDate
         }
         getWorkoutLogHistory(formattedDate)
