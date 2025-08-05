@@ -424,6 +424,7 @@ class ImageSliderActivity : BaseActivity() {
                         .setAIReportGeneratedView(ResponseObj.reportView)
                 }
 
+                AnalyticsLogger.logEvent(this@ImageSliderActivity, AnalyticsEvent.USER_LOGIN)
                 var productId = ""
                 sharedPreferenceManager.userProfile?.subscription?.forEach { subscription ->
                     if (subscription.status) {
@@ -439,7 +440,6 @@ class ImageSliderActivity : BaseActivity() {
                         AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
                     )
                 )
-
             }
 
             override fun onFailure(call: Call<JsonElement?>, t: Throwable) {

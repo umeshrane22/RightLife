@@ -1175,17 +1175,11 @@ class ProfileNewActivity : BaseActivity() {
                 }
             }
             AnalyticsLogger.logEvent(
+                this,
                 AnalyticsEvent.CHECKLIST_PROFILE_COMPLETE, mapOf(
-                    AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
                     AnalyticsParam.TIME_TO_COMPLETE to "",
-                    AnalyticsParam.GENDER to userData.gender,
-                    AnalyticsParam.AGE to userData.age,
                     AnalyticsParam.WEIGHT to userData.weight,
-                    AnalyticsParam.HEIGHT to userData.height,
-                    AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
-                    AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule,
-                    AnalyticsParam.USER_PLAN to productId,
-                    AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                    AnalyticsParam.HEIGHT to userData.height
                 )
             )
         }

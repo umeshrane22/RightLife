@@ -3,10 +3,7 @@ package com.jetsynthesys.rightlife.ui.profile_new
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import com.jetsynthesys.rightlife.BaseActivity
-import com.jetsynthesys.rightlife.RetrofitData.ApiClient
-import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.databinding.ActivityDeleteAccountEmailDataBinding
 import com.jetsynthesys.rightlife.ui.CommonResponse
 import com.jetsynthesys.rightlife.ui.new_design.ImageSliderActivity
@@ -57,33 +54,32 @@ class DeleteAccountEmailDataActivity : BaseActivity() {
             "message" to message
         )
 
-        apiService.deleteAccount(sharedPreferenceManager.accessToken, body).enqueue(object : Callback<CommonResponse> {
-            override fun onResponse(
-                call: Call<CommonResponse>,
-                response: Response<CommonResponse>
-            ) {
-                if (response.isSuccessful) {
-                    response.body()?.successMessage?.let { showToast(it) }
-                    clearUserDataAndFinish()
-                }else{
-                    showToast(response.message())
+        apiService.deleteAccount(sharedPreferenceManager.accessToken, body)
+            .enqueue(object : Callback<CommonResponse> {
+                override fun onResponse(
+                    call: Call<CommonResponse>,
+                    response: Response<CommonResponse>
+                ) {
+                    if (response.isSuccessful) {
+                        response.body()?.successMessage?.let { showToast(it) }
+                        clearUserDataAndFinish()
+                    } else {
+                        showToast(response.message())
+                    }
                 }
-            }
 
-            override fun onFailure(call: Call<CommonResponse>, t: Throwable) {
-                handleNoInternetView(t)
-            }
+                override fun onFailure(call: Call<CommonResponse>, t: Throwable) {
+                    handleNoInternetView(t)
+                }
 
-        })
+            })
     }
 
     private fun clearUserDataAndFinish() {
         AnalyticsLogger.logEvent(
+            this,
             AnalyticsEvent.ACCOUNT_DELETED,
             mapOf(
-                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
-                AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile.isSubscribed) "Paid User" else "free User",
-                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
                 AnalyticsParam.ACCOUNT_DELETED to true
             )
         )

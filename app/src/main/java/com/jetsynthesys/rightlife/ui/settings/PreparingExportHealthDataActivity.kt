@@ -29,11 +29,9 @@ class PreparingExportHealthDataActivity : BaseActivity() {
         }
 
         AnalyticsLogger.logEvent(
+            this,
             AnalyticsEvent.DATA_EXPORT_REQUESTED,
             mapOf(
-                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
-                AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile.isSubscribed) "Paid User" else "free User",
-                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
                 AnalyticsParam.DATA_EXPORT_REQUESTED to true
             )
         )
