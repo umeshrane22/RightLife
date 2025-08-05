@@ -29,11 +29,6 @@
         android:textColor="@color/text_color_app"
         android:textSize="@dimen/textsize_large24sp" />
 
-    <include
-        android:id="@id/trialExpiredLayout"
-        layout="@layout/layout_subscription_dashboard" />
-
-
     <include layout="@layout/layout_checklist"
         android:id="@+id/include_checklist"
         android:layout_height="wrap_content"

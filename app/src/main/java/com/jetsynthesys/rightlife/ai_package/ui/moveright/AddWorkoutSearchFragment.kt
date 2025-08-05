@@ -196,11 +196,11 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                 }
             } else if (routine.equals("routine")) {
                 // Update only the last entry in workoutListRoutine
-               // if (durationMinutes > 0) {
+                if (durationMinutes > 0) {
                     updateLastEntryCalories(durationMinutes, normalizeIntensity(selectedIntensity))
-             //   } else {
-             //       Toast.makeText(requireContext(), "Please select a duration", Toast.LENGTH_SHORT).show()
-             //   }
+                } else {
+                    Toast.makeText(requireContext(), "Please select a duration", Toast.LENGTH_SHORT).show()
+                }
             }else if(edit_routine.equals("edit_routine")){
                 workoutModel?.activityId?.let { activityId ->
                     val normalizedIntensity = normalizeIntensity(selectedIntensity)
@@ -211,7 +211,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                 }
             } else {
                 workout?.let { workout ->
-                  //  if (durationMinutes > 0) {
+                    if (durationMinutes > 0) {
                         val normalizedIntensity = normalizeIntensity(selectedIntensity)
                         val newWorkoutRecord = WorkoutSessionRecord(
                             userId =  SharedPreferenceManager.getInstance(requireActivity()).userId,
@@ -237,9 +237,9 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                             }
                         }
                         createWorkout(lastWorkoutRecord)
-                //    } else {
-                //        Toast.makeText(requireContext(), "Please select a duration", Toast.LENGTH_SHORT).show()
-                //    }
+                    } else {
+                        Toast.makeText(requireContext(), "Please select a duration", Toast.LENGTH_SHORT).show()
+                    }
                 } ?: run {
                     Toast.makeText(requireContext(), "Please select a workout", Toast.LENGTH_SHORT).show()
                 }
@@ -358,7 +358,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
             val minutes = minutePicker.value
             selectedTime = "$hours hr ${minutes.toString().padStart(2, '0')} min"
             val durationMinutes = hours * 60 + minutes
-          //  if (durationMinutes > 0) {
+            if (durationMinutes > 0) {
                 val activityId = if (edit == "edit") activityModel?.activityId else if (edit_routine.equals("edit_routine")) workoutModel?.activityId else workout?._id
                 if (activityId != null) {
                     val normalizedIntensity = normalizeIntensity(selectedIntensity)
@@ -367,9 +367,9 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                 } else {
                     Toast.makeText(requireContext(), "Activity ID is missing", Toast.LENGTH_SHORT).show()
                 }
-          //  } else {
-          //      addLog.isEnabled = false
-         //   }
+            } else {
+                addLog.isEnabled = false
+           }
             refreshPickers()
         }
 
@@ -391,7 +391,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
             val hours = hourPicker.value
             val minutes = minutePicker.value
             val durationMinutes = hours * 60 + minutes
-          //  if (durationMinutes > 0) {
+            if (durationMinutes > 0) {
                 val activityId = if (edit == "edit") activityModel?.activityId else if (edit_routine.equals("edit_routine")) workoutModel?.activityId else workout?._id
                 if (activityId != null) {
                     //caloriesText.text = "Calculating..."
@@ -401,10 +401,10 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                     Toast.makeText(requireContext(), "Activity ID is missing", Toast.LENGTH_SHORT).show()
                     addLog.isEnabled = false
                 }
-       //     } else {
-        //        Toast.makeText(requireContext(), "Please select a duration", Toast.LENGTH_SHORT).show()
-       //         addLog.isEnabled = false
-      //      }
+            } else {
+                Toast.makeText(requireContext(), "Please select a duration", Toast.LENGTH_SHORT).show()
+                addLog.isEnabled = false
+            }
         }
 
         if (workout != null){

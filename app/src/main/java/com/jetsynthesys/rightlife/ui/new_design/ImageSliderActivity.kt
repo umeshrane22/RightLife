@@ -1,13 +1,17 @@
 package com.jetsynthesys.rightlife.ui.new_design
 
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
 import android.util.Log
+import android.view.LayoutInflater
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -27,12 +31,15 @@ import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.BuildConfig
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
+import com.jetsynthesys.rightlife.databinding.DialogSwitchAccountBinding
 import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity
+import com.jetsynthesys.rightlife.ui.DialogUtils
 import com.jetsynthesys.rightlife.ui.new_design.pojo.GoogleLoginTokenResponse
 import com.jetsynthesys.rightlife.ui.new_design.pojo.GoogleSignInRequest
 import com.jetsynthesys.rightlife.ui.new_design.pojo.LoggedInUser
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceConstants
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
@@ -42,6 +49,8 @@ import com.zhpan.indicator.enums.IndicatorStyle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.ResponseBody
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -58,6 +67,8 @@ class ImageSliderActivity : BaseActivity() {
     private val timeDurationForImageSlider = 2000L
     private lateinit var displayName: String
     private lateinit var mEmail: String
+    private var isNewUser = false
+    private var accessTokenGoogle = ""
 
     // List of images (replace with your own images)
     private val images = listOf(
@@ -188,6 +199,8 @@ class ImageSliderActivity : BaseActivity() {
             val signInIntent = googleSignInClient.signInIntent
             startActivityForResult(signInIntent, RC_SIGN_IN)
         }
+
+
     }
 
     override fun onResume() {
@@ -231,7 +244,7 @@ class ImageSliderActivity : BaseActivity() {
                     CoroutineScope(Dispatchers.IO).launch {
                         try {
                             // Retrieve the access token
-                            val accessTokenGoogle =
+                             accessTokenGoogle =
                                 GoogleAuthUtil.getToken(this@ImageSliderActivity, email!!, scope)
                             Log.d("AccessToken", "Access Token: $accessTokenGoogle")
 
@@ -245,7 +258,8 @@ class ImageSliderActivity : BaseActivity() {
                                 mEmail = account.email.toString()
                                 val authcode = account.serverAuthCode
                             }
-                            fetchApiData(accessTokenGoogle)
+
+                            fetchDeviceInfo(Utils.getDeviceId(this@ImageSliderActivity),mEmail,accessTokenGoogle)
                         } catch (e: Exception) {
                             Log.e("GoogleAuthUtil", "Error retrieving access token", e)
                         }
@@ -324,10 +338,10 @@ class ImageSliderActivity : BaseActivity() {
                                 loggedInUser = user
                             }
                         }
+                        isNewUser = apiResponse.isNewUser ?: false
                         if (apiResponse.isNewUser == false || loggedInUser?.isOnboardingComplete == true) {
 
-                            val loggedInUser =
-                                LoggedInUser(email = mEmail, isOnboardingComplete = true)
+                            val loggedInUser = LoggedInUser(email = mEmail, isOnboardingComplete = true)
                             sharedPreferenceManager.setLoggedInUsers(arrayListOf(loggedInUser))
                             startActivity(
                                 Intent(
@@ -407,15 +421,156 @@ class ImageSliderActivity : BaseActivity() {
                         .saveUserProfile(ResponseObj)
 
                     sharedPreferenceManager
-                        .setAIReportGeneratedView(ResponseObj.isReportGenerated)
+                        .setAIReportGeneratedView(ResponseObj.reportView)
                 }
 
                 AnalyticsLogger.logEvent(this@ImageSliderActivity, AnalyticsEvent.USER_LOGIN)
+                var productId = ""
+                sharedPreferenceManager.userProfile?.subscription?.forEach { subscription ->
+                    if (subscription.status) {
+                        productId = subscription.productId
+                    }
+                }
+                AnalyticsLogger.logEvent(
+                    AnalyticsEvent.USER_LOGIN, mapOf(
+                        AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                        AnalyticsParam.USER_TYPE to if (isNewUser) "New User" else "Returning User",
+                        AnalyticsParam.USER_TYPE to if (sharedPreferenceManager.userProfile?.isSubscribed == true) "Paid User" else "free User",
+                        AnalyticsParam.USER_PLAN to productId,
+                        AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                    )
+                )
             }
 
             override fun onFailure(call: Call<JsonElement?>, t: Throwable) {
                 handleNoInternetView(t)
             }
         })
+    }
+
+    // API to check device id
+
+    private fun fetchDeviceInfo(deviceId: String, emailId: String, accessTokenGoogle: String) {
+        val call = apiService.getDeviceInfo(deviceId, emailId)
+
+        call.enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(
+                call: Call<ResponseBody>,
+                response: Response<ResponseBody>
+            ) {
+                if (response.isSuccessful && response.body() != null) {
+                    val responseString = response.body()?.string()
+
+                    try {
+                        val jsonObject = JSONObject(responseString)
+
+                        val statusCode = jsonObject.optInt("statusCode")
+                        val displayMessage = jsonObject.optString("displayMessage")
+
+                        if (statusCode == 200) {
+                            fetchApiData(accessTokenGoogle)
+                        } else if (statusCode == 500) {
+                            handleApiError(jsonObject)
+                        }
+
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        Toast.makeText(
+                            this@ImageSliderActivity,
+                            "Parsing Error",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+
+                } else {
+                    // Handle HTTP Errors (like 500 Internal Server Error)
+                    val responseCode = response.code()
+
+                    if (responseCode == 500) {
+                        Toast.makeText(
+                            this@ImageSliderActivity,
+                            "Server Error: 500 - Internal Server Error",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        showSwitchAccountDialog(this@ImageSliderActivity,"","")
+                    } else {
+                        // Try to parse errorBody if present
+                        val errorBodyString = response.errorBody()?.string()
+                        if (!errorBodyString.isNullOrEmpty()) {
+                            try {
+                                val jsonObject = JSONObject(errorBodyString)
+                                handleApiError(jsonObject)
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                                Toast.makeText(
+                                    this@ImageSliderActivity,
+                                    "Error Code: $responseCode",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        } else {
+                            Toast.makeText(
+                                this@ImageSliderActivity,
+                                "Error Code: $responseCode - No Error Body",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                handleNoInternetView(t)
+            }
+        })
+    }
+
+
+
+    private fun handleApiError(jsonObject: JSONObject) {
+        val statusCode = jsonObject.optInt("statusCode")
+        val displayMessage = jsonObject.optString("displayMessage")
+        val errorCode = jsonObject.optString("errorCode")
+        val errorMessage = jsonObject.optString("errorMessage")
+
+        Log.e("API_ERROR", "StatusCode: $statusCode, ErrorCode: $errorCode, Message: $errorMessage")
+
+        when (errorCode) {
+            "DEVICE_ALREADY_EXISTS" -> {
+                Toast.makeText(this@ImageSliderActivity, "Device already registered!", Toast.LENGTH_SHORT).show()
+                // You can navigate or perform a specific action here if needed
+                showSwitchAccountDialog(this,"","")
+            }
+            else -> {
+                Toast.makeText(this@ImageSliderActivity, displayMessage, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    fun showSwitchAccountDialog(context: Context, header: String, htmlText: String) {
+        val dialog = Dialog(context)
+        val binding = DialogSwitchAccountBinding.inflate(LayoutInflater.from(context))
+        dialog.setContentView(binding.root)
+        dialog.setCancelable(true)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        val window = dialog.window
+        // Set the dim amount
+        val layoutParams = window!!.attributes
+        layoutParams.dimAmount = 0.7f // Adjust the dim amount (0.0 - 1.0)
+        window.attributes = layoutParams
+
+        /*binding.tvTitle.text = header
+        binding.tvDescription.text = Html.fromHtml(htmlText, Html.FROM_HTML_MODE_LEGACY)*/
+
+        // Handle close button click
+        binding.btnOk.setOnClickListener {
+            dialog.dismiss()
+            fetchApiData(accessTokenGoogle)
+        }
+        binding.btnSwitchAccount.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 }

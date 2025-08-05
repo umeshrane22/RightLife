@@ -2,11 +2,16 @@ package com.jetsynthesys.rightlife.newdashboard
 
 import android.app.ComponentCaller
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
+import android.graphics.Color
 import android.graphics.Typeface
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
@@ -40,6 +45,7 @@ import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
 import com.jetsynthesys.rightlife.databinding.ActivityHomeNewBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetTrialEndedBinding
 import com.jetsynthesys.rightlife.databinding.DialogForceUpdateBinding
+import com.jetsynthesys.rightlife.databinding.DialogSwitchAccountBinding
 import com.jetsynthesys.rightlife.newdashboard.model.DashboardChecklistManager
 import com.jetsynthesys.rightlife.subscriptions.SubscriptionPlanListActivity
 import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentSuccessRequest
@@ -67,6 +73,7 @@ class HomeNewActivity : BaseActivity() {
     private var isAdd = true
     var isTrialExpired = false
     private var isCountDownVisible = false
+    var isHealthCamFree = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -328,6 +335,18 @@ class HomeNewActivity : BaseActivity() {
                 startActivity(intent)
             }
         }
+
+        // Handling Subscribe to RightLife
+        binding.trialExpiredLayout.btnSubscription.setOnClickListener {
+
+            startActivity(
+                Intent(
+                    this,
+                    SubscriptionPlanListActivity::class.java
+                ).apply {
+                    putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN")
+                })
+        }
     }
 
     override fun onResume() {
@@ -365,7 +384,7 @@ class HomeNewActivity : BaseActivity() {
                         .saveUserProfile(ResponseObj)
 
                     SharedPreferenceManager.getInstance(applicationContext).
-                    setAIReportGeneratedView(ResponseObj.isReportGenerated)
+                    setAIReportGeneratedView(ResponseObj.reportView)
 
                     if (ResponseObj.userdata.profilePicture != null) {
                         Glide.with(this@HomeNewActivity)
@@ -381,25 +400,43 @@ class HomeNewActivity : BaseActivity() {
                     if (countDown < 7) {
                         binding.tvCountDown.text = "${countDown + 1}/7"
                         binding.llCountDown.visibility = View.VISIBLE
-                        //binding.trialExpiredLayout.trialExpiredLayout.visibility = View.GONE
+                        binding.trialExpiredLayout.trialExpiredLayout.visibility = View.GONE
                         isTrialExpired = false
                         isCountDownVisible = true
                     } else {
                         binding.llCountDown.visibility = View.GONE
                         isCountDownVisible = false
                         if (!DashboardChecklistManager.paymentStatus) {
-                            //binding.trialExpiredLayout.trialExpiredLayout.visibility = View.VISIBLE
+                            binding.trialExpiredLayout.trialExpiredLayout.visibility = View.VISIBLE
                             isTrialExpired = true
                         }
                     }
-                    if (!ResponseObj.isReportGenerated){
+                    if (!ResponseObj.reportView){
                         binding.rightLifeReportCard.visibility = View.VISIBLE
                     } else {
                         binding.rightLifeReportCard.visibility = View.GONE
                     }
+                    /*if (ResponseObj.isFacialReport != null && ResponseObj.isFacialReport) {
+                        showSwitchAccountDialog(this@HomeNewActivity,"","")
+                    } else {
+
+                    }*/
+
+                    // Find HealthCam service and check if it's free
+                    var isHealthCamFree = ResponseObj?.homeServices
+                        ?.find { it.title == "HealthCam" }
+                        ?.isFree ?: false
+                    Log.d("isHealthCamFree", isHealthCamFree.toString())
                 } else {
                     //  Toast.makeText(HomeActivity.this, "Server Error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
+
+                if (!DashboardChecklistManager.paymentStatus) {
+                    binding.trialExpiredLayout.trialExpiredLayout.visibility = View.VISIBLE
+                    isTrialExpired = true
+                }
+
+
             }
 
             override fun onFailure(call: Call<JsonElement?>, t: Throwable) {
@@ -796,5 +833,33 @@ class HomeNewActivity : BaseActivity() {
                 handleNoInternetView(t)
             }
         })
+    }
+
+
+    fun showSwitchAccountDialog(context: Context, header: String, htmlText: String) {
+        val dialog = Dialog(context)
+        val binding = DialogSwitchAccountBinding.inflate(LayoutInflater.from(context))
+        dialog.setContentView(binding.root)
+        dialog.setCancelable(true)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        val window = dialog.window
+        // Set the dim amount
+        val layoutParams = window!!.attributes
+        layoutParams.dimAmount = 0.7f // Adjust the dim amount (0.0 - 1.0)
+        window.attributes = layoutParams
+        binding.btnSwitchAccount.setText("Cancel")
+        binding.btnSwitchAccount.visibility = View.GONE
+        binding.tvTitle.text = "Free Service Already Used on This Device"
+        binding.tvDescription.text = "Looks like this device has already claimed a free service under another account. To continue, log out and switch to a new device."
+
+        // Handle close button click
+        binding.btnOk.setOnClickListener {
+            dialog.dismiss()
+        }
+        binding.btnSwitchAccount.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 }

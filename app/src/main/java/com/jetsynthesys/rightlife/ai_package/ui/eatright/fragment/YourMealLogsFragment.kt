@@ -20,6 +20,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -130,6 +131,11 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
     private lateinit var maxCarbUnit : TextView
     private lateinit var maxProteinUnit : TextView
     private lateinit var maxFatsUnit : TextView
+    private lateinit var progressBarLayout : ConstraintLayout
+    private lateinit var layoutWeightLoss : LinearLayoutCompat
+    private lateinit var imageViewBelowOverlay : ImageView
+    private lateinit var kcalStart : TextView
+    private lateinit var kcalEnd : TextView
     private var selectedMealDate : String = ""
     private var moduleName : String = ""
 
@@ -252,6 +258,11 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
         maxCarbUnit = view.findViewById(R.id.maxCarbUnit)
         maxProteinUnit = view.findViewById(R.id.maxProteinUnit)
         maxFatsUnit = view.findViewById(R.id.maxFatsUnit)
+        progressBarLayout = view.findViewById(R.id.progressBarLayout)
+        imageViewBelowOverlay = view.findViewById(R.id.imageViewBelowOverlay)
+        layoutWeightLoss = view.findViewById(R.id.layoutWeightLoss)
+        kcalStart = view.findViewById(R.id.kcalStart)
+        kcalEnd = view.findViewById(R.id.kcalEnd)
 
         if (moduleName.contentEquals("HomeDashboard")){
             selectMealTypeBottomSheet = SelectMealTypeBottomSheet()
@@ -326,14 +337,21 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
 
         mealLogWeeklyDayList = getWeekFrom(currentWeekStart)
         lastDayOfCurrentWeek = mealLogWeeklyDayList.get(mealLogWeeklyDayList.size - 1).fullDate.toString()
+
         onMealLogWeeklyDayList(mealLogWeeklyDayList, mealLogHistory)
        prevWeekBtn.setOnClickListener {
             currentWeekStart = currentWeekStart.minusWeeks(1)
            mealLogWeeklyDayList = getWeekFrom(currentWeekStart)
            lastDayOfCurrentWeek = mealLogWeeklyDayList.get(mealLogWeeklyDayList.size - 1).fullDate.toString()
-           onMealLogWeeklyDayList(mealLogWeeklyDayList, mealLogHistory)
+
+           selectedWeeklyDayTv.text = currentWeekStart.format(formatFullDate)
+           selectedMealDate = currentWeekStart.toString()
+
            getMealsLogHistory(currentWeekStart.toString())
+
+           onMealLogWeeklyDayList(mealLogWeeklyDayList, mealLogHistory)
         }
+
        nextWeekBtn.setOnClickListener {
            val current = LocalDate.parse(formattedDate, formatter)
            val updated = LocalDate.parse(lastDayOfCurrentWeek, formatter)
@@ -350,13 +368,15 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
                currentWeekStart = currentWeekStart.plusWeeks(1)
                mealLogWeeklyDayList = getWeekFrom(currentWeekStart)
                lastDayOfCurrentWeek = mealLogWeeklyDayList.get(mealLogWeeklyDayList.size - 1).fullDate.toString()
+               selectedWeeklyDayTv.text = currentWeekStart.format(formatFullDate)
+               selectedMealDate = currentWeekStart.toString()
                onMealLogWeeklyDayList(mealLogWeeklyDayList, mealLogHistory)
                getMealsLogHistory(currentWeekStart.toString())
            }else{
                Toast.makeText(context, "Not selected future date", Toast.LENGTH_SHORT).show()
            }
         }
-        getMealsLogList(formattedDate)
+        //getMealsLogList(formattedDate)
 
         //Set Tooltip
         val isShow = SharedPreferenceManager.getInstance(requireActivity()).isMealCalenderTooltipShowed("MealCalenderTooltip")
@@ -586,6 +606,8 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
 
     private fun onMealLogWeeklyDayList(weekList: List<MealLogWeeklyDayModel>, mealLogHistory: ArrayList<LoggedMealHistory>) {
         val today = LocalDate.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val localDate = LocalDate.parse(selectedMealDate, formatter)
         val weekLists : ArrayList<MealLogWeeklyDayModel> = ArrayList()
         weekLists.clear()
         if (mealLogHistory.size > 0 && weekList.isNotEmpty()){
@@ -608,7 +630,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             var isClick = false
             var index = -1
             for (currentDay in weekLists){
-                if (currentDay.fullDate == today){
+                if (currentDay.fullDate == localDate){
                     mealLogDateData = currentDay
                     isClick = true
                      index = weekLists.indexOfFirst { it.fullDate == currentDay.fullDate }
@@ -619,6 +641,8 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             requireActivity()?.runOnUiThread {
                 mealLogWeeklyDayAdapter.addAll(weekLists, index, mealLogDateData, isClick)
             }
+
+            getMealsLogList(selectedMealDate)
         }
     }
 
@@ -647,10 +671,10 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             carbsValue.text = dailyRecipe?.carbs?.let { round(it)?.toInt().toString() }
             proteinsValue.text = dailyRecipe?.protein?.let { round(it)?.toInt().toString() }
             fatsValue.text = dailyRecipe?.fats?.let { round(it)?.toInt().toString() }
-            maxCalUnit.text = " / " + maxCalorie.toString()
-            maxCarbUnit.text = " / " + maxCarbs.toString()
-            maxProteinUnit.text = " / " + maxProtein.toString()
-            maxFatsUnit.text = " / " + maxFats.toString()
+            maxCalUnit.text = " / " + maxCalorie.toString() + " kCal"
+            maxCarbUnit.text = " / " + maxCarbs.toString() + " g"
+            maxProteinUnit.text = " / " + maxProtein.toString() + " g"
+            maxFatsUnit.text = " / " + maxFats.toString() + " g"
 
             caloriesProgressBar.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
                 override fun onGlobalLayout() {
@@ -659,15 +683,24 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
                     val overlayPosition = 0.7f * progressBarWidth
                     val progress = dailyRecipe?.calories?.toInt()
                     caloriesProgressBar.progress = progress!!
-                    val max = caloriesProgressBar.max
+                    val progressPercentage = caloriesProgressBar.max
                     caloriesProgressBar.max = maxCalorie
-                    val circlePosition = (progress!!.toFloat() / max) * progressBarWidth
+                    val circlePosition = (progress!!.toFloat() / progressPercentage) * progressBarWidth
 //                val circleRadius = circleIndicator.width / 2f
 //                circleIndicator.x = circlePosition - circleRadius
 //                circleIndicator.y = progressBar.y + (progressBar.height - circleIndicator.height) / 2f
                     val overlayRadius = transparentOverlay.width / 2f
                     transparentOverlay.x = overlayPosition - overlayRadius
                     transparentOverlay.y = caloriesProgressBar.y + (caloriesProgressBar.height - transparentOverlay.height) / 2f
+
+                    val overlayImage = layoutWeightLoss.width / 2f
+                    layoutWeightLoss.x = overlayPosition - 40
+
+                    val kcalsStart = kcalStart.width / 2f
+                    kcalStart.x = overlayPosition - 90
+
+                    val kcalsEnd = kcalEnd.width / 2f
+                    kcalEnd.x = overlayPosition + 40
                 }
             })
             // Set progress programmatically
