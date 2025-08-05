@@ -560,7 +560,7 @@ class DishFragment : BaseFragment<FragmentDishBinding>() {
             }
             if (!isEdit){
                 if (snapRecipeData.mealQuantity != null ){
-                    quantityEdit.setText(snapRecipeData.mealQuantity.toInt().toString())
+                    quantityEdit.setText(snapRecipeData.mealQuantity.toString())
                 }
             }
             var imageUrl : String? = ""

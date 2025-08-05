@@ -95,6 +95,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
     private var loadingOverlay : FrameLayout? = null
     private var homeTab : String = ""
     private lateinit var mealType : String
+    private var selectedMealDate : String = ""
     private  var currentPhotoPathsecound : Uri? = null
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentSnapMealBinding
@@ -118,6 +119,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
         moduleName = arguments?.getString("ModuleName").toString()
         mealType = arguments?.getString("mealType").toString()
         gallery = arguments?.getString("gallery").toString()
+        selectedMealDate = arguments?.getString("selectedMealDate").toString()
 
         val imagePathString = arguments?.getString("ImagePathsecound")
         if (imagePathString != null){
@@ -172,7 +174,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                 takePhotoInfoLayout.visibility = View.GONE
                 //   enterMealDescriptionLayout.visibility = View.VISIBLE
                 videoView.visibility = View.GONE
-                val cameraDialog = CameraDialogFragment("", moduleName, homeTab, mealType)
+                val cameraDialog = CameraDialogFragment("", moduleName, homeTab, mealType, selectedMealDate)
                 cameraDialog.imageSelectedListener = object : OnImageSelectedListener {
                     override fun onImageSelected(imageUri: Uri) {
                         val path = getRealPathFromURI(requireContext(), imageUri)
@@ -235,7 +237,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                         Toast.makeText(context, "Please capture food",Toast.LENGTH_SHORT).show()
                     }
                 }else{
-                    val cameraDialog = CameraDialogFragment("", moduleName, homeTab, mealType)
+                    val cameraDialog = CameraDialogFragment("", moduleName, homeTab, mealType, selectedMealDate)
                     cameraDialog.imageSelectedListener = object : OnImageSelectedListener {
                         override fun onImageSelected(imageUri: Uri) {
                             val path = getRealPathFromURI(requireContext(), imageUri)
@@ -275,6 +277,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                 }else if (homeTab.equals("homeTab")){
                     val fragment = HomeTabMealFragment()
                     val args = Bundle()
+                    args.putString("selectedMealDate", selectedMealDate)
                     args.putString("ModuleName", moduleName)
                     args.putString("mealType", mealType)
                     fragment.arguments = args
@@ -304,6 +307,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
             }else if (homeTab.equals("homeTab")){
                 val fragment = HomeTabMealFragment()
                 val args = Bundle()
+                args.putString("selectedMealDate", selectedMealDate)
                 args.putString("ModuleName", moduleName)
                 args.putString("mealType", mealType)
                 fragment.arguments = args
@@ -535,6 +539,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
                                 val snapMealFragment = MealScanResultFragment()
                                 val args = Bundle()
                                 args.putString("homeTab", homeTab)
+                                args.putString("selectedMealDate", selectedMealDate)
                                 args.putString("mealType", mealType)
                                 args.putString("ModuleName", moduleName)
                                 args.putString("ImagePath", imagePath)
@@ -627,7 +632,7 @@ class SnapMealFragment : BaseFragment<FragmentSnapMealBinding>() {
 }
 
 class CameraDialogFragment(private val imagePath: String, val moduleName : String, val homeTab : String,
-                           val mealType : String) : DialogFragment() {
+                           val mealType : String, val selectedMealDate : String) : DialogFragment() {
 
     private lateinit var viewFinder: PreviewView
     private var imageCapture: ImageCapture? = null
@@ -677,6 +682,7 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
                 dismiss()
                 val fragment = HomeTabMealFragment()
                 val args = Bundle()
+                args.putString("selectedMealDate", selectedMealDate)
                 args.putString("ModuleName", moduleName)
                 args.putString("mealType", mealType)
                 fragment.arguments = args

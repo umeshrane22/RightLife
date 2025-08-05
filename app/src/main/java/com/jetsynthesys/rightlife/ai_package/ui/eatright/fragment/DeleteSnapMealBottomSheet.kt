@@ -24,6 +24,7 @@ class DeleteSnapMealBottomSheet : BottomSheetDialogFragment() {
     private var mealType : String = ""
     private var snapMealLog : String = ""
     private var homeTab : String = ""
+    private var selectedMealDate : String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,6 +54,7 @@ class DeleteSnapMealBottomSheet : BottomSheetDialogFragment() {
         mealType = arguments?.getString("mealType").toString()
         snapMealLog = arguments?.getString("snapMealLog").toString()
         homeTab = arguments?.getString("homeTab").toString()
+        selectedMealDate = arguments?.getString("selectedMealDate").toString()
         val imagePathString = arguments?.getString("ImagePathsecound")
         if (imagePathString != null){
             currentPhotoPathsecound = imagePathString?.let { Uri.parse(it) }!!
@@ -82,6 +84,7 @@ class DeleteSnapMealBottomSheet : BottomSheetDialogFragment() {
                             args.putString("mealType", mealType)
                             args.putString("snapMealLog", snapMealLog)
                             args.putString("homeTab", homeTab)
+                            args.putString("selectedMealDate", selectedMealDate)
                             args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
                             args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
                             fragment.arguments = args

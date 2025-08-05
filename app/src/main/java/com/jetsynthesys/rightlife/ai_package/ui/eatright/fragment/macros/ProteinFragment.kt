@@ -241,6 +241,9 @@ class ProteinFragment : BaseFragment<FragmentProteinBinding>() {
     }
 
     private fun navigateToFragment(fragment: androidx.fragment.app.Fragment, tag: String) {
+        val args = Bundle()
+        args.putString("ModuleName", "EatRight")
+        fragment.arguments = args
         requireActivity().supportFragmentManager.beginTransaction().apply {
             replace(R.id.flFragment, fragment, tag)
             addToBackStack(null)

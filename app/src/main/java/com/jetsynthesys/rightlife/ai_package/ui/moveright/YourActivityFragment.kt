@@ -103,6 +103,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                 val args = Bundle().apply {
                     putParcelable("ACTIVITY_MODEL", activityModel)
                     putString("edit", "edit")
+                    putString("selected_date", selectedDate) // Put the string in the bundle
                 }
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -135,51 +136,6 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         layoutNoDataCard = view.findViewById(R.id.layoutNoDataCard)
         layoutWorkoutData = view.findViewById(R.id.layoutWorkoutData)
         createWorkout = view.findViewById(R.id.tvCreateWorkout)
-
-        layout_btn_addWorkout.setOnClickListener {
-            val fragment = SearchWorkoutFragment()
-            val args = Bundle()
-            args.putString("selected_date", workoutDateTv.text.toString()) // Put the string in the bundle
-            fragment.arguments = args
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                replace(R.id.flFragment, fragment, "searchWorkoutFragment")
-                addToBackStack("searchWorkoutFragment")
-                commit()
-            }
-        }
-
-        layoutAddWorkout.setOnClickListener {
-            val selectedDate = workoutDateTv.text
-            val formatter = DateTimeFormatter.ofPattern("EEE, d MMM yyyy", Locale.ENGLISH)
-            val date = LocalDate.parse(selectedDate, formatter)
-            val currentDate = LocalDate.now()
-            if (date <= currentDate) {
-                val fragment = SearchWorkoutFragment()
-                val args = Bundle()
-                args.putString("selected_date", workoutDateTv.text.toString()) // Put the string in the bundle
-                fragment.arguments = args
-                requireActivity().supportFragmentManager.beginTransaction().apply {
-                    replace(R.id.flFragment, fragment, "searchWorkoutFragment")
-                    addToBackStack("searchWorkoutFragment")
-                    commit()
-                }
-            }else{
-                Toast.makeText(requireContext(), "Workout cannot be logged on future date", Toast.LENGTH_SHORT).show()
-            }
-        }
-
-        yourActivityBackButton.setOnClickListener {
-            val fragment = HomeBottomTabFragment()
-            val args = Bundle().apply {
-                putString("ModuleName", "MoveRight")
-            }
-            fragment.arguments = args
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
-                addToBackStack(null)
-                commit()
-            }
-        }
 
         myActivityRecyclerView.layoutManager = LinearLayoutManager(context)
         myActivityRecyclerView.adapter = myActivityAdapter
@@ -219,16 +175,14 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         val formattedDate = currentDateTime.format(formatter)
         val formatFullDate = DateTimeFormatter.ofPattern("E, d MMM yyyy")
         workoutDateTv.text = currentDateTime.format(formatFullDate)
-        if (selectedDate != null){
-            getWorkoutLogHistory(selectedDate!!)
-        }else{
-            getWorkoutLogHistory(formattedDate)
+
+        if (selectedDate == null){
+            selectedDate = formattedDate
         }
-
-
+        getWorkoutLogHistory(formattedDate)
         workoutWeeklyDayList = getWeekFrom(currentWeekStart)
         lastDayOfCurrentWeek = workoutWeeklyDayList.get(workoutWeeklyDayList.size - 1).fullDate.toString()
-        onWorkoutLogWeeklyDayList(workoutWeeklyDayList, workoutLogHistory,selectedDate)
+        onWorkoutLogWeeklyDayList(workoutWeeklyDayList, workoutLogHistory)
         val current = LocalDate.parse(formattedDate, formatter)
         val updated = LocalDate.parse(lastDayOfCurrentWeek, formatter)
         if (current > updated){
@@ -240,8 +194,9 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
             currentWeekStart = currentWeekStart.minusWeeks(1)
             workoutWeeklyDayList = getWeekFrom(currentWeekStart)
             lastDayOfCurrentWeek = workoutWeeklyDayList.get(workoutWeeklyDayList.size - 1).fullDate.toString()
-            onWorkoutLogWeeklyDayList(workoutWeeklyDayList, workoutLogHistory, null)
+            selectedDate = currentWeekStart.toString()
             getWorkoutLogHistory(currentWeekStart.toString())
+            onWorkoutLogWeeklyDayList(workoutWeeklyDayList, workoutLogHistory)
             nextWeekBtn.setImageResource(R.drawable.forward_activity)
         }
         nextWeekBtn.setOnClickListener {
@@ -251,19 +206,58 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                 currentWeekStart = currentWeekStart.plusWeeks(1)
                 workoutWeeklyDayList = getWeekFrom(currentWeekStart)
                 lastDayOfCurrentWeek = workoutWeeklyDayList.get(workoutWeeklyDayList.size - 1).fullDate.toString()
-                onWorkoutLogWeeklyDayList(workoutWeeklyDayList, workoutLogHistory, null)
+                selectedDate = currentWeekStart.toString()
                 getWorkoutLogHistory(currentWeekStart.toString())
+                onWorkoutLogWeeklyDayList(workoutWeeklyDayList, workoutLogHistory)
                 nextWeekBtn.setImageResource(R.drawable.forward_activity)
             }else{
                 Toast.makeText(context, "Not selected future date", Toast.LENGTH_SHORT).show()
                 nextWeekBtn.setImageResource(R.drawable.right_arrow_grey)
             }
         }
-       // fetchCalories(formattedDate)
-        if (selectedDate != null){
-            fetchUserWorkouts(selectedDate!!)
-        }else{
-            fetchUserWorkouts(formattedDate)
+
+        layout_btn_addWorkout.setOnClickListener {
+            val fragment = SearchWorkoutFragment()
+            val args = Bundle()
+            args.putString("selected_date", selectedDate)
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "searchWorkoutFragment")
+                addToBackStack("searchWorkoutFragment")
+                commit()
+            }
+        }
+
+        layoutAddWorkout.setOnClickListener {
+            val formatter = DateTimeFormatter.ofPattern("EEE, d MMM yyyy", Locale.ENGLISH)
+            val date = LocalDate.parse(selectedDate, formatter)
+            val currentDate = LocalDate.now()
+            if (date <= currentDate) {
+                val fragment = SearchWorkoutFragment()
+                val args = Bundle()
+                args.putString("selected_date", selectedDate) // Put the string in the bundle
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "searchWorkoutFragment")
+                    addToBackStack("searchWorkoutFragment")
+                    commit()
+                }
+            }else{
+                Toast.makeText(requireContext(), "Workout cannot be logged on future date", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        yourActivityBackButton.setOnClickListener {
+            val fragment = HomeBottomTabFragment()
+            val args = Bundle().apply {
+                putString("ModuleName", "MoveRight")
+            }
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                addToBackStack(null)
+                commit()
+            }
         }
 
         imageCalender.setOnClickListener {
@@ -296,14 +290,14 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
     }
 
     private fun onDateRecyclerRefresh(){
-        val currentDateTime = LocalDateTime.now()
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        val formattedDate = currentDateTime.format(formatter)
-        if (selectedDate!=null) {
-            getWorkoutLogHistory(selectedDate!!)
-        }else{
-            getWorkoutLogHistory(formattedDate)
-        }
+//        val currentDateTime = LocalDateTime.now()
+//        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+//        val formattedDate = currentDateTime.format(formatter)
+//        if (selectedDate!=null) {
+//            getWorkoutLogHistory(selectedDate!!)
+//        }else{
+//            getWorkoutLogHistory(formattedDate)
+//        }
     }
 
     override fun onResume() {
@@ -578,12 +572,9 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                     if (response.body() != null) {
                         workoutHistoryResponse = response.body()
                         if (workoutHistoryResponse?.data?.record_details!!.size > 0) {
+                            workoutLogHistory.clear()
                             workoutLogHistory.addAll(workoutHistoryResponse!!.data.record_details)
-                            onWorkoutLogWeeklyDayList(
-                                workoutWeeklyDayList,
-                                workoutLogHistory,
-                                formattedDate
-                            )
+                            onWorkoutLogWeeklyDayList(workoutWeeklyDayList, workoutLogHistory)
                         }
                     }
                 } else {
@@ -609,8 +600,8 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         })
     }
 
-    private fun onWorkoutLogWeeklyDayList(weekList: List<WorkoutWeeklyDayModel>, workoutLogHistory: ArrayList<WorkoutRecord>, selectedDate: String?) {
-        if (selectedDate != null) {
+    private fun onWorkoutLogWeeklyDayList(weekList: List<WorkoutWeeklyDayModel>, workoutLogHistory: ArrayList<WorkoutRecord>) {
+
             val today = LocalDate.parse(selectedDate)
             val weekLists: ArrayList<WorkoutWeeklyDayModel> = ArrayList()
             if (workoutLogHistory.size > 0 && weekList.isNotEmpty()) {
@@ -640,48 +631,11 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                         break
                     }
                 }
-                yourActivitiesWeeklyListAdapter.addAll(
-                    weekLists,
-                    index,
-                    workoutLogDateData,
-                    isClick
-                )
-            }
-        }else{
-            val today = LocalDate.now()
-            val weekLists: ArrayList<WorkoutWeeklyDayModel> = ArrayList()
-            if (workoutLogHistory.size > 0 && weekList.isNotEmpty()) {
-                workoutLogHistory.forEach { workoutLog ->
-                    for (item in weekList) {
-                        if (item.fullDate.toString() == workoutLog.date) {
-                            if (workoutLog.is_available_workout == true) {
-                                item.is_available = true
-                            }
-                        }
-                    }
-                }
+                yourActivitiesWeeklyListAdapter.addAll(weekLists, index, workoutLogDateData, isClick)
             }
 
-            if (weekList.isNotEmpty()) {
-                weekLists.addAll(weekList as Collection<WorkoutWeeklyDayModel>)
-                var workoutLogDateData: WorkoutWeeklyDayModel? = null
-                var isClick = false
-                var index = -1
-                for (currentDay in weekLists) {
-                    if (currentDay.fullDate == today) {
-                        workoutLogDateData = currentDay
-                        isClick = true
-                        index = weekLists.indexOfFirst { it.fullDate == currentDay.fullDate }
-                        break
-                    }
-                }
-                yourActivitiesWeeklyListAdapter.addAll(
-                    weekLists,
-                    index,
-                    workoutLogDateData,
-                    isClick
-                )
-            }
+        if (selectedDate != null){
+            fetchUserWorkouts(selectedDate!!)
         }
     }
 

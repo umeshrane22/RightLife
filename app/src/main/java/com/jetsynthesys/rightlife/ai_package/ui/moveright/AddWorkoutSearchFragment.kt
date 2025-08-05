@@ -868,6 +868,10 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
     }
 
     private fun navigateToFragment(fragment: androidx.fragment.app.Fragment, tag: String) {
+        val args = Bundle().apply {
+           putString("selected_date", mSelectedDate)
+        }
+        fragment.arguments = args
         requireActivity().supportFragmentManager.beginTransaction().apply {
             replace(R.id.flFragment, fragment, tag)
             addToBackStack(null)

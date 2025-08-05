@@ -49,7 +49,7 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
         val tabLayout = view.findViewById<TabLayout>(R.id.tabLayout)
 
         if (selectedDate != null){
-            mSelectedDate = convertDate(selectedDate)
+            mSelectedDate = selectedDate
         }
         searchWorkoutBackButton = view.findViewById(R.id.search_workout_back_button)
 
@@ -132,17 +132,6 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
                 navigateToYourActivityFragment()
             }
         })
-    }
-
-    private fun convertDate(date: String): String{
-        val originalFormatter = DateTimeFormatter.ofPattern("E, d MMM yyyy")
-        val targetFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-
-        val dateStr = date
-        val dateFormat = LocalDate.parse(dateStr, originalFormatter)
-
-        val formattedDate = dateFormat.format(targetFormatter)
-        return formattedDate
     }
 
     private fun replaceFragment(fragment: Fragment) {

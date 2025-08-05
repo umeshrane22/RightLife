@@ -447,9 +447,9 @@ class IngredientDishFragment : BaseFragment<FragmentDishBinding>() {
         if (!isEdit){
             if (snapRecipeData.quantity != null ){
                 if (snapRecipeData.quantity > 0.0){
-                    quantityEdit.setText(snapRecipeData.quantity?.toInt().toString())
+                    quantityEdit.setText(snapRecipeData.quantity?.toString())
                 }else{
-                    quantityEdit.setText("1")
+                    quantityEdit.setText("1.0")
                 }
             }
         }
