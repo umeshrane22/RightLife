@@ -260,11 +260,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
             }
         }
        // fetchCalories(formattedDate)
-        if (selectedDate != null){
-            fetchUserWorkouts(selectedDate!!)
-        }else{
-            fetchUserWorkouts(formattedDate)
-        }
+
 
         imageCalender.setOnClickListener {
             val fragment = ActivitySyncCalenderFragment()
@@ -610,7 +606,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
     }
 
     private fun onWorkoutLogWeeklyDayList(weekList: List<WorkoutWeeklyDayModel>, workoutLogHistory: ArrayList<WorkoutRecord>, selectedDate: String?) {
-        if (selectedDate != null) {
+        if (!selectedDate.isNullOrEmpty()) {
             val today = LocalDate.parse(selectedDate)
             val weekLists: ArrayList<WorkoutWeeklyDayModel> = ArrayList()
             if (workoutLogHistory.size > 0 && weekList.isNotEmpty()) {

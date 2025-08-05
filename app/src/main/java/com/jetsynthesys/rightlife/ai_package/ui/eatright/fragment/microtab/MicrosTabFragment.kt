@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
@@ -27,10 +28,6 @@ class MicrosTabFragment : BaseFragment<FragmentMicosTabBinding>() {
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentMicosTabBinding
         get() = FragmentMicosTabBinding::inflate
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -81,17 +78,19 @@ class MicrosTabFragment : BaseFragment<FragmentMicosTabBinding>() {
             override fun onTabReselected(tab: TabLayout.Tab?) {}
         })
 
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            val fragment = HomeBottomTabFragment()
-            val args = Bundle()
-            args.putString("ModuleName", "EatRight")
-            fragment.arguments = args
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                replace(R.id.flFragment, fragment, "landing")
-                addToBackStack("landing")
-                commit()
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                val fragment = HomeBottomTabFragment()
+                val args = Bundle()
+                args.putString("ModuleName", "EatRight")
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "landing")
+                    addToBackStack("landing")
+                    commit()
+                }
             }
-        }
+        })
 
         backIc.setOnClickListener {
             navigateToHome()

@@ -395,7 +395,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
                 args.putString("ModuleName", "EatRight")
                 mealSearchFragment.arguments = args
                 replace(R.id.flFragment, mealSearchFragment, "Steps")
-                addToBackStack(null)
+                addToBackStack("landing")
                 commit()
             }
         }
