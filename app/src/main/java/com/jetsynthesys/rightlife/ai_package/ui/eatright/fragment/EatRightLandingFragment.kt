@@ -457,7 +457,11 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
         }
 
         if (!sharedPreferenceManager.getAIReportGeneratedView()){
-           rightLifeReportCard.visibility = View.VISIBLE
+            if (SharedPreferenceManager.getInstance(requireContext()).userProfile?.isReportGenerated == true) {
+                rightLifeReportCard.visibility = View.VISIBLE
+            }else{
+                rightLifeReportCard.visibility = View.GONE
+            }
         } else {
             rightLifeReportCard.visibility = View.GONE
         }

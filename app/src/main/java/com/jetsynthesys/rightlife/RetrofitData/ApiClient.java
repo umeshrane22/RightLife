@@ -38,7 +38,6 @@ public class ApiClient {
 
         // Add the logging interceptor to OkHttpClient
         OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(new LoggingInterceptor())
                 .addInterceptor(new NetworkConnectionInterceptor(context))
                 .connectTimeout(1, TimeUnit.MINUTES)
                 .readTimeout(30, TimeUnit.SECONDS)

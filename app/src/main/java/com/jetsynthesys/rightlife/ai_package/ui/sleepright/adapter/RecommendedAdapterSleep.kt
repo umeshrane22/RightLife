@@ -17,6 +17,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.jetsynthesys.rightlife.BuildConfig
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.model.ContentList
 import com.jetsynthesys.rightlife.ai_package.ui.thinkright.adapter.RecommendationAdapter
@@ -162,7 +163,7 @@ class RecommendedAdapterSleep(val context: Context, private val items: ArrayList
             }
         }
         Glide.with(context)
-            .load( "https://d1sacaybzizpm5.cloudfront.net/"+item.thumbnail?.url)
+            .load( BuildConfig.CDN_URL+item.thumbnail?.url)
             .placeholder(R.drawable.ic_galory)
             .into(holder.image)
         Glide.with(context)

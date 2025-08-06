@@ -492,7 +492,11 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         }
       //  storeData()
         if (!SharedPreferenceManager.getInstance(requireContext()).getAIReportGeneratedView()){
-            rightLifeReportCard.visibility = View.VISIBLE
+            if (SharedPreferenceManager.getInstance(requireContext()).userProfile?.isReportGenerated == true) {
+                rightLifeReportCard.visibility = View.VISIBLE
+            }else{
+                rightLifeReportCard.visibility = View.GONE
+            }
         } else {
             rightLifeReportCard.visibility = View.GONE
         }
