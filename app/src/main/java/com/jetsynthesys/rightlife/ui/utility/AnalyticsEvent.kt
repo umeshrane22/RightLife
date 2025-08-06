@@ -64,6 +64,7 @@ object AnalyticsEvent {
 
     const val FACE_SCAN_PURCHASE_COMPLETED = "face_scan_purchase_completed"
     const val SUBSCRIPTION_PURCHASE_COMPLETED = "subscription_purchase_completed"
+
     // Journal & Affirmation
     const val JOURNAL_ENTRY_CREATED = "journal_entry_created"
     const val JOURNAL_ENTRY_USER = "journal_entry_user"
@@ -81,4 +82,98 @@ object AnalyticsEvent {
 
     const val WEARABLE_SYNC_BUTTON_CLICKED = "wearable_sync_button_clicked"
     const val WEARABLE_SYNC_BUTTON_SKIPED = "wearable_sync_button_skiped"
+
+    const val DATA_CONTROL_SCREEN_VISIT = "data_control_screen_visit"
+    const val LOGIN_SCREEN_VISIT = "login_screen_visit"
+    const val CONTINUE_WITH_GOOGLE_CLICK = "continue_with_google_click"
+    const val CREATE_USER_SCREEN_VISIT = "create_user_screen_visit"
+
+    const val GOAL_SELECTION_VISIT = "goal_selection_visit"
+    const val GOAL_SELECTION = "goal_selection"
+    const val SUB_GOAL_SELECTION_VISIT = "sub_goal_selection_visit"
+    const val SUB_GOAL_SELECTION = "sub_goal_selection"
+
+    const val UNLOCK_POWER_VISIT = "unlock_power_visit"
+    const val THREE_TIER_SCREEN_VISIT = "three_tier_screen_visit"
+    const val INTEREST_SELECTION_VISIT = "interest_selection_visit"
+    const val SAVE_INTEREST = "save_interest"
+
+    const val ALLOW_PERSONALISATION_VISIT = "allow_personalisation_visit"
+    const val ALLOW_PERSONALISATION_CLICK = "allow_personalisation_click"
+    const val ALLOW_PERSONALISATION_SKIP_CLICK = "allow_personalisation_skip_click"
+
+    const val GENDER_SELECTION_VISIT = "gender_selection_visit"
+    const val GENDER_SELECTION = "gender_selection"
+    const val GENDER_SELECTION_SKIP_CLICK = "gender_selection_skip_click"
+
+    const val AGE_SELECTION_VISIT = "age_selection_visit"
+    const val AGE_SELECTION = "age_selection"
+    const val AGE_SELECTION_SKIP = "age_selection_skip"
+
+    const val HEIGHT_SELECTION_VISIT = "height_selection_visit"
+    const val HEIGHT_SELECTION = "height_selection"
+    const val HEIGHT_SELECTION_SKIP = "height_selection_skip"
+
+    const val WEIGHT_SELECTION_VISIT = "weight_selection_visit"
+    const val WEIGHT_SELECTION = "weight_selection"
+    const val WEIGHT_SELECTION_SKIP = "weight_selection_skip"
+
+    const val BODY_FAT_SELECTION_VISIT = "body_fat_selection_visit"
+    const val BODY_FAT_SELECTION = "body_fat_selection"
+    const val BODY_FAT_SELECTION_SKIP = "body_fat_selection_skip"
+
+    const val STRESS_MANAGEMENT_VISIT = "stress_management_visit"
+    const val STRESS_MANAGEMENT_SELECTION = "stress_management_selection"
+    const val STRESS_MANAGEMENT_SKIP = "stress_management_skip"
+
+    const val ACHIEVE_HEALTH_GOALS_VISIT = "acheive_health_goals_visit"
+    const val ACHIEVE_HEALTH_GOALS_SELECTION = "acheive_health_goals_selection"
+    const val ACHIEVE_HEALTH_GOALS_SKIP = "acheive_health_goals_skip"
+
+    const val ENABLE_NOTIFICATION_CLOSE = "enable_nofication_close"
+    const val ENABLE_NOTIFICATION_CLICK = "enable_nofication_click"
+
+    const val SYNC_NOW_VISIT = "sync_now_visit"
+    const val SYNC_NOW_CLICK = "sync_now_click"
+    const val SKIP_FOR_NOW_CLICK = "skip_for_now_click"
+
+    const val BEGIN_FREE_TRIAL_VISIT = "begin_free_trial_visit"
+    const val BEGIN_FREE_TRIAL_CLICK = "begin_free_trial_click"
+    const val CRAFTING_PERSONALISE_VISIT = "crafting_personalise_visit"
+    const val AWESOME_SCREEN_VISIT = "awesome_screen_visit"
+
+    const val HOME_DASHBOARD_VISIT = "home_dashboard_visit"
+
+    const val CHECKLIST_STATUS = "checklist_status"
+    const val PROFILE_STATUS = "profile_status"
+    const val SNAP_MEAL_STATUS = "snap_meal_status"
+    const val ER_MR_ASSESSMENT_STATUS = "ER_MR_assessment_status"
+    const val TR_SR_ASSESSMENT_STATUS = "TR_SR_assessment_status"
+    const val SYNC_DATA_STATUS = "sync_data_status"
+    const val FACIAL_SCAN_STATUS = "facial_scan_status"
+
+    const val WHY_CHECKLIST_CLICK = "why_checklist_click"
+    const val FINISH_TO_UNLOCK_CLICK = "finish_to_unlock_click"
+    const val SUBSCRIBE_RIGHT_LIFE_CLICK = "subscribe_rightlife_click"
+
+    const val LYA_FOOD_LOG_CLICK = "lya_food_log_click"
+    const val LYA_ACTIVITY_LOG_CLICK = "lya_activity_log_click"
+    const val LYA_SLEEP_LOG_CLICK = "lya_sleep_log_click"
+    const val LYA_WEIGHT_LOG_CLICK = "lya_weight_log_click"
+    const val LYA_WATER_LOG_CLICK = "lya_water_log_click"
+
+    const val EOS_FACE_SCAN_CLICK = "eos_face_scan_click"
+    const val EOS_SNAP_MEAL_CLICK = "eos_snap_meal_click"
+    const val EOS_SLEEP_SOUNDS = "eos_sleep_sounds"
+    const val EOS_AFFIRMATION_CLICK = "eos_affirmation_click"
+    const val EOS_JOURNALING_CLICK = "eos_journaling_click"
+    const val EOS_BREATH_WORK_CLICK = "eos_breathwork_click"
+
+    const val MOVE_RIGHT_CLICK = "move_right_click"
+    const val EAT_RIGHT_CLICK = "eat_right_click"
+    const val SLEEP_RIGHT_CLICK = "sleep_right_click"
+    const val THINK_RIGHT_CLICK = "think_right_click"
+
+    const val ALL_HEALTH_DATA_CLICK = "all_health_data_click"
+    const val DISCOVER_CLICK = "discover_click"
 }

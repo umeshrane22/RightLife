@@ -18,6 +18,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ui.new_design.pojo.HealthGoal
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 
@@ -59,6 +62,17 @@ class HealthGoalFragment : Fragment() {
         if (!(activity as OnboardingQuestionnaireActivity).forProfileChecklist) {
             (activity as OnboardingQuestionnaireActivity).tvSkip.visibility = VISIBLE
         }
+
+        val sharedPreferenceManager = SharedPreferenceManager.getInstance(requireContext())
+        AnalyticsLogger.logEvent(
+            AnalyticsEvent.ACHIEVE_HEALTH_GOALS_VISIT,
+            mapOf(
+                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
+                AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule
+            )
+        )
 
         healthGoalList.add(HealthGoal("0-10 minutes"))
         healthGoalList.add(HealthGoal("10-20 minutes"))
@@ -104,6 +118,22 @@ class HealthGoalFragment : Fragment() {
             onboardingQuestionRequest.dailyGoalAchieveTime = selectedHealthGoal
             SharedPreferenceManager.getInstance(requireContext())
                 .saveOnboardingQuestionAnswer(onboardingQuestionRequest)
+
+            AnalyticsLogger.logEvent(
+                AnalyticsEvent.ACHIEVE_HEALTH_GOALS_SELECTION,
+                mapOf(
+                    AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                    AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                    AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
+                    AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule,
+                    AnalyticsParam.GENDER to onboardingQuestionRequest.gender!!,
+                    AnalyticsParam.AGE to onboardingQuestionRequest.age!!,
+                    AnalyticsParam.HEIGHT to onboardingQuestionRequest.height!!,
+                    AnalyticsParam.WEIGHT to onboardingQuestionRequest.weight!!,
+                    AnalyticsParam.BODY_FAT to onboardingQuestionRequest.bodyFat!!,
+                    AnalyticsParam.STRESS_MANAGEMENT to selectedHealthGoal
+                )
+            )
 
             (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
         }

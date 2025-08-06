@@ -16,6 +16,9 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.FragmentBodyFatSelectionBinding
 import com.jetsynthesys.rightlife.ui.new_design.pojo.BodyFat
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.DecimalDigitsInputFilter
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
@@ -61,6 +64,17 @@ class BodyFatSelectionFragment : Fragment() {
         if (!(activity as OnboardingQuestionnaireActivity).forProfileChecklist) {
             (activity as OnboardingQuestionnaireActivity).tvSkip.visibility = VISIBLE
         }
+
+        val sharedPreferenceManager = SharedPreferenceManager.getInstance(requireContext())
+        AnalyticsLogger.logEvent(
+            AnalyticsEvent.BODY_FAT_SELECTION_VISIT,
+            mapOf(
+                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
+                AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule
+            )
+        )
 
         binding.edtBodyFat.filters = arrayOf(DecimalDigitsInputFilter())
 
@@ -129,6 +143,21 @@ class BodyFatSelectionFragment : Fragment() {
                 onboardingQuestionRequest.bodyFat = binding.edtBodyFat.text.toString()
                 SharedPreferenceManager.getInstance(requireContext())
                     .saveOnboardingQuestionAnswer(onboardingQuestionRequest)
+
+                AnalyticsLogger.logEvent(
+                    AnalyticsEvent.BODY_FAT_SELECTION,
+                    mapOf(
+                        AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                        AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                        AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
+                        AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule,
+                        AnalyticsParam.GENDER to onboardingQuestionRequest.gender!!,
+                        AnalyticsParam.AGE to onboardingQuestionRequest.age!!,
+                        AnalyticsParam.HEIGHT to onboardingQuestionRequest.height!!,
+                        AnalyticsParam.WEIGHT to onboardingQuestionRequest.weight!!,
+                        AnalyticsParam.BODY_FAT to binding.tvSelectedBodyFat.text
+                    )
+                )
 
                 (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
             } else

@@ -14,6 +14,9 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import com.shawnlin.numberpicker.NumberPicker
@@ -163,6 +166,17 @@ class AgeSelectionFragment : Fragment() {
             (activity as OnboardingQuestionnaireActivity).tvSkip.visibility = VISIBLE
         }
 
+        val sharedPreferenceManager = SharedPreferenceManager.getInstance(requireContext())
+        AnalyticsLogger.logEvent(
+            AnalyticsEvent.AGE_SELECTION_VISIT,
+            mapOf(
+                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
+                AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule
+            )
+        )
+
         val btnContinue = view.findViewById<Button>(R.id.btn_continue)
         btnContinue.setOnClickListener {
             btnContinue.disableViewForSeconds()
@@ -176,6 +190,18 @@ class AgeSelectionFragment : Fragment() {
             cardViewSelection.visibility = GONE
             llSelectedAge.visibility = VISIBLE
             tvSelectedAge.text = selectedAge
+
+            AnalyticsLogger.logEvent(
+                AnalyticsEvent.AGE_SELECTION,
+                mapOf(
+                    AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                    AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                    AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
+                    AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule,
+                    AnalyticsParam.GENDER to onboardingQuestionRequest.gender!!,
+                    AnalyticsParam.AGE to selectedAge
+                )
+            )
 
             (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
         }

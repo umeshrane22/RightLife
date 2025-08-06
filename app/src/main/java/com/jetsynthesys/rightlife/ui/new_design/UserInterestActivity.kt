@@ -25,6 +25,9 @@ import com.jetsynthesys.rightlife.ui.new_design.pojo.SaveUserInterestResponse
 import com.jetsynthesys.rightlife.ui.new_design.pojo.UserInterestData
 import com.jetsynthesys.rightlife.ui.new_design.pojo.UserInterestResponse
 import com.jetsynthesys.rightlife.ui.profile_new.ProfileSettingsActivity
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import retrofit2.Call
 import retrofit2.Callback
@@ -55,6 +58,16 @@ class UserInterestActivity : BaseActivity() {
         if (header.isNullOrEmpty()) {
             header = sharedPreferenceManager.selectedWellnessFocus
         }
+
+        AnalyticsLogger.logEvent(
+            AnalyticsEvent.INTEREST_SELECTION_VISIT,
+            mapOf(
+                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
+                AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule
+            )
+        )
 
         colorStateListSelected = ContextCompat.getColorStateList(this, R.color.menuselected)!!
         colorStateListNonSelected = ContextCompat.getColorStateList(this, R.color.rightlife)!!
@@ -263,6 +276,17 @@ class UserInterestActivity : BaseActivity() {
                         sharedPreferenceManager.interest = true
                         startActivity(intent)
                     }
+                    val selectedInterestString = selectedInterests.joinToString(",") { it.topic.toString() }
+                    AnalyticsLogger.logEvent(
+                        AnalyticsEvent.SAVE_INTEREST,
+                        mapOf(
+                            AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                            AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                            AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
+                            AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule,
+                            AnalyticsParam.SAVED_INTEREST to selectedInterestString
+                        )
+                    )
 
                 } else {
                     Toast.makeText(
