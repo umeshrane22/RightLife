@@ -191,7 +191,7 @@ class HomeDashboardFragment : BaseFragment() {
         }
 
         binding.cardThinkrightMain.setOnClickListener {
-            AnalyticsLogger.logEvent(requireContext(),AnalyticsEvent.THINK_RIGHT_CLICK)
+            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.THINK_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "ThinkRight")
@@ -200,7 +200,7 @@ class HomeDashboardFragment : BaseFragment() {
             }
         }
         binding.cardEatrightMain.setOnClickListener {
-            AnalyticsLogger.logEvent(requireContext(),AnalyticsEvent.EAT_RIGHT_CLICK)
+            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.EAT_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "EatRight")
@@ -210,7 +210,7 @@ class HomeDashboardFragment : BaseFragment() {
         }
 
         binding.cardMoverightMain.setOnClickListener {
-            AnalyticsLogger.logEvent(requireContext(),AnalyticsEvent.MOVE_RIGHT_CLICK)
+            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.MOVE_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "MoveRight")
@@ -219,7 +219,7 @@ class HomeDashboardFragment : BaseFragment() {
             }
         }
         binding.cardSleeprightMain.setOnClickListener {
-            AnalyticsLogger.logEvent(requireContext(),AnalyticsEvent.SLEEP_RIGHT_CLICK)
+            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.SLEEP_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "SleepRight")
@@ -228,7 +228,7 @@ class HomeDashboardFragment : BaseFragment() {
             }
         }
         binding.cardSleepMainIdeal.setOnClickListener {
-            AnalyticsLogger.logEvent(requireContext(),AnalyticsEvent.SLEEP_RIGHT_CLICK)
+            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.SLEEP_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "SleepRight")
@@ -237,7 +237,7 @@ class HomeDashboardFragment : BaseFragment() {
             }
         }
         binding.cardSleepMainLog.setOnClickListener {
-            AnalyticsLogger.logEvent(requireContext(),AnalyticsEvent.SLEEP_RIGHT_CLICK)
+            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.SLEEP_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "SleepRight")
@@ -249,7 +249,7 @@ class HomeDashboardFragment : BaseFragment() {
 
         // for no data card
         binding.cardThinkrightMainNodata.setOnClickListener {
-            AnalyticsLogger.logEvent(requireContext(),AnalyticsEvent.THINK_RIGHT_CLICK)
+            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.THINK_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "ThinkRight")
@@ -258,7 +258,7 @@ class HomeDashboardFragment : BaseFragment() {
             }
         }
         binding.cardEatrightMainNodata.setOnClickListener {
-            AnalyticsLogger.logEvent(requireContext(),AnalyticsEvent.EAT_RIGHT_CLICK)
+            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.EAT_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "EatRight")
@@ -269,7 +269,7 @@ class HomeDashboardFragment : BaseFragment() {
 
         binding.cardMoverightMainNodata.setOnClickListener {
             if (checkTrailEndedAndShowDialog()) {
-                AnalyticsLogger.logEvent(requireContext(),AnalyticsEvent.MOVE_RIGHT_CLICK)
+                AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.MOVE_RIGHT_CLICK)
                 startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "MoveRight")
                     putExtra("BottomSeatName", "Not")
@@ -277,7 +277,7 @@ class HomeDashboardFragment : BaseFragment() {
             }
         }
         binding.cardSleeprightMainNodata.setOnClickListener {
-            AnalyticsLogger.logEvent(requireContext(),AnalyticsEvent.SLEEP_RIGHT_CLICK)
+            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.SLEEP_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "SleepRight")
@@ -287,7 +287,7 @@ class HomeDashboardFragment : BaseFragment() {
         }
 
         binding.cardEatright.setOnClickListener {
-            AnalyticsLogger.logEvent(requireContext(),AnalyticsEvent.EAT_RIGHT_CLICK)
+            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.EAT_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "EatRight")
@@ -296,7 +296,7 @@ class HomeDashboardFragment : BaseFragment() {
             }
         }
         binding.cardSleepright.setOnClickListener {
-            AnalyticsLogger.logEvent(requireContext(),AnalyticsEvent.SLEEP_RIGHT_CLICK)
+            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.SLEEP_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "SleepRight")
@@ -305,7 +305,7 @@ class HomeDashboardFragment : BaseFragment() {
             }
         }
         binding.cardThinkright.setOnClickListener {
-            AnalyticsLogger.logEvent(requireContext(),AnalyticsEvent.THINK_RIGHT_CLICK)
+            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.THINK_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "ThinkRight")
@@ -315,7 +315,7 @@ class HomeDashboardFragment : BaseFragment() {
         }
         binding.cardMoveright.setOnClickListener {
             if (checkTrailEndedAndShowDialog()) {
-                AnalyticsLogger.logEvent(requireContext(),AnalyticsEvent.MOVE_RIGHT_CLICK)
+                AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.MOVE_RIGHT_CLICK)
                 startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "MoveRight")
                     putExtra("BottomSeatName", "Not")
@@ -649,24 +649,36 @@ class HomeDashboardFragment : BaseFragment() {
                     // MOVE_RIGHT logic here
                     binding.cardMoverightMainNodata.visibility = View.VISIBLE
                     binding.cardMoveright.visibility = View.GONE
+                    binding.cardEatright.visibility = View.VISIBLE
+                    binding.cardThinkright.visibility = View.VISIBLE
+                    binding.cardSleepright.visibility = View.VISIBLE
                 }
 
                 "THINK_RIGHT" -> {
                     // THINK_RIGHT logic here
                     binding.cardThinkrightMainNodata.visibility = View.VISIBLE
                     binding.cardThinkright.visibility = View.GONE
+                    binding.cardMoveright.visibility = View.VISIBLE
+                    binding.cardEatright.visibility = View.VISIBLE
+                    binding.cardSleepright.visibility = View.VISIBLE
                 }
 
                 "EAT_RIGHT" -> {
                     // EAT_RIGHT logic here
                     binding.cardEatrightMainNodata.visibility = View.VISIBLE
                     binding.cardEatright.visibility = View.GONE
+                    binding.cardThinkright.visibility = View.VISIBLE
+                    binding.cardMoveright.visibility = View.VISIBLE
+                    binding.cardSleepright.visibility = View.VISIBLE
                 }
 
                 "SLEEP_RIGHT" -> {
                     // SLEEP_RIGHT logic here
                     binding.cardSleeprightMainNodata.visibility = View.VISIBLE
                     binding.cardSleepright.visibility = View.GONE
+                    binding.cardEatright.visibility = View.VISIBLE
+                    binding.cardThinkright.visibility = View.VISIBLE
+                    binding.cardMoveright.visibility = View.VISIBLE
                 }
 
                 else -> {
@@ -691,6 +703,9 @@ class HomeDashboardFragment : BaseFragment() {
                         if (isSelected == true) {
                             binding.cardMoverightMain.visibility = View.VISIBLE
                             binding.cardMoveright.visibility = View.GONE
+                            binding.cardEatright.visibility = View.VISIBLE
+                            binding.cardThinkright.visibility = View.VISIBLE
+                            binding.cardSleepright.visibility = View.VISIBLE
                         }
                         //set data on card once response works
                         binding.tvCaloryValue.text = module.calorieBalance.toString()
@@ -724,6 +739,9 @@ class HomeDashboardFragment : BaseFragment() {
                         if (isSelected == true) {
                             binding.cardThinkrightMain.visibility = View.VISIBLE
                             binding.cardThinkright.visibility = View.GONE
+                            binding.cardMoveright.visibility = View.VISIBLE
+                            binding.cardEatright.visibility = View.VISIBLE
+                            binding.cardSleepright.visibility = View.VISIBLE
                         }
                         binding.tvMinutesTextValue.text = module.mindfulnessMinutes
                         binding.tvDaysTextValue.text = module.wellnessDays
@@ -751,6 +769,9 @@ class HomeDashboardFragment : BaseFragment() {
                         if (isSelected == true) {
                             binding.cardEatrightMain.visibility = View.VISIBLE
                             binding.cardEatright.visibility = View.GONE
+                            binding.cardThinkright.visibility = View.VISIBLE
+                            binding.cardMoveright.visibility = View.VISIBLE
+                            binding.cardSleepright.visibility = View.VISIBLE
                         }
 
                         val (proteinValue, proteinTotal) = extractNumericValues(module.protein.toString())
@@ -815,6 +836,9 @@ class HomeDashboardFragment : BaseFragment() {
                         if (isSelected == true) {
                             binding.cardSleeprightMain.visibility = View.VISIBLE
                             binding.cardSleepright.visibility = View.GONE
+                            binding.cardEatright.visibility = View.VISIBLE
+                            binding.cardThinkright.visibility = View.VISIBLE
+                            binding.cardMoveright.visibility = View.VISIBLE
                             checkTimeAndSetVisibility(module)
                         }
 

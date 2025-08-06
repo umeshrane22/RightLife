@@ -9,12 +9,16 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.google.gson.Gson
+import com.google.gson.JsonElement
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
+import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
 import com.jetsynthesys.rightlife.databinding.ActivityProfileSettingsBinding
 import com.jetsynthesys.rightlife.ui.new_design.UserInterestActivity
 import com.jetsynthesys.rightlife.ui.new_design.WellnessFocusActivity
+import com.jetsynthesys.rightlife.ui.scan_history.PastReportActivity
 import com.jetsynthesys.rightlife.ui.settings.PurchasePlansActivity
 import com.jetsynthesys.rightlife.ui.settings.SettingsNewActivity
 import com.jetsynthesys.rightlife.ui.settings.SubscriptionHistoryActivity
@@ -22,6 +26,9 @@ import com.jetsynthesys.rightlife.ui.settings.SupportActivity
 import com.jetsynthesys.rightlife.ui.settings.adapter.SettingsAdapter
 import com.jetsynthesys.rightlife.ui.settings.pojo.SettingItem
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class ProfileSettingsActivity : BaseActivity() {
 
@@ -41,7 +48,7 @@ class ProfileSettingsActivity : BaseActivity() {
         sharedPreferenceManager = SharedPreferenceManager.getInstance(this)
 
         setUserData()
-        setupUserRecyclerView()
+        getUserDetails()
         setupPersonalizationRecyclerView()
 
         binding.llProfile.setOnClickListener {
@@ -56,11 +63,19 @@ class ProfileSettingsActivity : BaseActivity() {
         }
     }
 
-    private fun setupUserRecyclerView() {
-        val items = listOf(
-            SettingItem("Subscription History"),
-            SettingItem("Purchase Plans")
-        )
+    private fun setupUserRecyclerView(isShowViewPastReports: Boolean) {
+        val items = if (isShowViewPastReports) {
+            listOf(
+                SettingItem("Subscription History"),
+                SettingItem("Purchase Plans"),
+                SettingItem("View Past Reports")
+            )
+        } else {
+            listOf(
+                SettingItem("Subscription History"),
+                SettingItem("Purchase Plans")
+            )
+        }
 
         val userAdapter = SettingsAdapter(items) { item ->
             when (item.title) {
@@ -69,6 +84,9 @@ class ProfileSettingsActivity : BaseActivity() {
 
                 "Purchase Plans" ->
                     startActivity(Intent(this, PurchasePlansActivity::class.java))
+
+                "View Past Reports" ->
+                    startActivity(Intent(this, PastReportActivity::class.java))
             }
         }
 
@@ -136,5 +154,31 @@ class ProfileSettingsActivity : BaseActivity() {
 
     private fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun getUserDetails() {
+        // Make the API call
+        val call = apiService.getUserDetais(sharedPreferenceManager.accessToken)
+        call.enqueue(object : Callback<JsonElement?> {
+            override fun onResponse(call: Call<JsonElement?>, response: Response<JsonElement?>) {
+                if (response.isSuccessful && response.body() != null) {
+                    val gson = Gson()
+                    val jsonResponse = gson.toJson(response.body())
+
+                    val profileResponse = gson.fromJson(
+                        jsonResponse, UserProfileResponse::class.java
+                    )
+                    sharedPreferenceManager.saveUserId(profileResponse.userdata.id)
+                    sharedPreferenceManager.saveUserProfile(profileResponse)
+
+                    sharedPreferenceManager.setAIReportGeneratedView(profileResponse.reportView)
+                    setupUserRecyclerView(profileResponse.isReportGenerated)
+                }
+            }
+
+            override fun onFailure(call: Call<JsonElement?>, t: Throwable) {
+                handleNoInternetView(t)
+            }
+        })
     }
 }
