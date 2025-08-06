@@ -8,13 +8,15 @@ import android.webkit.WebViewClient
 import android.widget.Toast
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.BuildConfig
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.RatingMealBottomSheet
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.RatingReportFeedbackBottomSheet
 import com.jetsynthesys.rightlife.databinding.ActivityAireportWebViewBinding
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 
-class AIReportWebViewActivity : BaseActivity() {
+class AIReportWebViewActivity : BaseActivity(), RatingReportFeedbackBottomSheet.RatingReportFeedbackListener {
 
     private lateinit var binding: ActivityAireportWebViewBinding
     private var reportPageStartTime: Long = 0
@@ -30,7 +32,9 @@ class AIReportWebViewActivity : BaseActivity() {
         binding = ActivityAireportWebViewBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.backButton.setOnClickListener { onBackPressed() }
+        binding.backButton.setOnClickListener {
+            ratingReportFeedbackDialog(true)
+        }
 
         val reportId = intent.getStringExtra(EXTRA_REPORT_ID)
         if (reportId.isNullOrEmpty()) {
@@ -122,5 +126,19 @@ class AIReportWebViewActivity : BaseActivity() {
                 )
             )
         }
+    }
+
+    private fun ratingReportFeedbackDialog(isSave: Boolean) {
+        val bottomSheet = RatingReportFeedbackBottomSheet().apply {
+            isCancelable = true
+            arguments = Bundle().apply {
+                putBoolean("isSave", isSave)
+            }
+        }
+        bottomSheet.show(supportFragmentManager, "RatingReportFeedbackBottomSheet")
+    }
+
+    override fun onReportFeedbackRating(rating: Double, isSave: Boolean) {
+        onBackPressed()
     }
 }

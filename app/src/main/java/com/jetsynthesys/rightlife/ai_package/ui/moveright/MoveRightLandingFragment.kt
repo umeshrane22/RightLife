@@ -12,6 +12,8 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
@@ -33,6 +35,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
+import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.PermissionController
@@ -44,6 +47,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.card.MaterialCardView
 import com.google.gson.Gson
@@ -160,6 +164,8 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private var totalIntakeCaloriesSum: Int = 0
     private var loadingOverlay : FrameLayout? = null
     private var isRepeat : Boolean = false
+    private lateinit var swipeRefreshLayout : SwipeRefreshLayout
+    private lateinit var nestedScrollView : NestedScrollView
     private lateinit var rightLifeReportCard : FrameLayout
     private lateinit var recomendationRecyclerView: RecyclerView
     private lateinit var thinkRecomendedResponse : ThinkRecomendedResponse
@@ -252,6 +258,20 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         val displayMetrics = resources.displayMetrics
         val screenWidthDp = displayMetrics.widthPixels / displayMetrics.density
         val dottedLine = view.findViewById<View>(R.id.horizontal_dotted_green)
+
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout)
+        nestedScrollView = view.findViewById(R.id.nestedScrollView)
+
+        swipeRefreshLayout.setOnRefreshListener {
+            // Call your API or refresh function
+            fetchDataFromApi()
+        }
+
+// Optional: Scroll to top to enable swipe-to-refresh again (when loading more at bottom)
+        nestedScrollView.setOnScrollChangeListener { _, _, scrollY, _, _ ->
+            swipeRefreshLayout.isEnabled = scrollY == 0
+        }
+
 
         val layoutParams = dottedLine.layoutParams as ConstraintLayout.LayoutParams
         layoutParams.width = if (screenWidthDp < 600) {
@@ -2038,4 +2058,25 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         loadingOverlay = view.findViewById(R.id.loading_overlay)
         loadingOverlay?.visibility = View.GONE
     }
+
+    private fun fetchDataFromApi() {
+        swipeRefreshLayout.isRefreshing = true
+
+        // Simulate API call
+        Handler(Looper.getMainLooper()).postDelayed({
+            // Update UI after API response
+            swipeRefreshLayout.isRefreshing = false
+            Toast.makeText(requireContext(), "Data refreshed", Toast.LENGTH_SHORT).show()
+                val availabilityStatus = HealthConnectClient.getSdkStatus(requireContext())
+                if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
+                    healthConnectClient = HealthConnectClient.getOrCreate(requireContext())
+                    lifecycleScope.launch {
+                        requestPermissionsAndReadAllData()
+                    }
+                } else {
+                    Toast.makeText(context, "Please install or update health connect from the Play Store.", Toast.LENGTH_LONG).show()
+                }
+        }, 2000)
+    }
+
 }

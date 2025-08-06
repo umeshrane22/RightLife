@@ -1015,6 +1015,8 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
                         val weightUnit = parts.getOrElse(1) { "kg" }
                         weightIntake.text = response.body()?.weight.toString()
                         weightIntakeUnit.text = weightUnit
+                        val convertedDate = convertDate(response.body()?.date.toString())
+                        weightLastLogDateTv.text = convertedDate
                         Log.d("LogWaterAPI", "Success: $responseBody")
                         // You can do something with responseBody here
                     } else {
