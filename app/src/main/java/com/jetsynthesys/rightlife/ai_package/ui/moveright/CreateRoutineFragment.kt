@@ -29,7 +29,10 @@ import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.ActivityModel
 import com.jetsynthesys.rightlife.ai_package.model.CreateRoutineRequest
 import com.jetsynthesys.rightlife.ai_package.model.RoutineWorkoutDisplayModel
+import com.jetsynthesys.rightlife.ai_package.model.WorkoutRoutineItem
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutSessionRecord
+import com.jetsynthesys.rightlife.ai_package.model.request.UpdateRoutineRequest
+import com.jetsynthesys.rightlife.ai_package.model.request.Workout
 import com.jetsynthesys.rightlife.ai_package.ui.adapter.RoutineWorkoutListAdapter
 import com.jetsynthesys.rightlife.databinding.FragmentCreateRoutineBinding
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
@@ -37,9 +40,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
     private lateinit var editText: EditText
@@ -53,6 +53,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
     private lateinit var addNameLayout: ConstraintLayout
     private lateinit var createListRoutineLayout: ConstraintLayout
     private var workoutList = ArrayList<WorkoutSessionRecord>()
+    private  var workoutLists : WorkoutRoutineItem? = null
     private var routine: String = ""
     private var routineName: String = ""
 
@@ -78,6 +79,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
 
         // Fetch activityList from YourActivityFragment
         val activityList = arguments?.getParcelableArrayList<ActivityModel>("ACTIVITY_LIST") ?: ArrayList()
+        workoutLists = arguments?.getParcelable<WorkoutRoutineItem>("WORKOUT_MODEL")
         Log.d("CreateRoutineFragment", "Received ${activityList.size} activities from YourActivityFragment")
 
         // Map ActivityModel to WorkoutSessionRecord and append to workoutList
@@ -122,6 +124,16 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
             createListRoutineLayout.visibility = View.GONE
         }
 
+        if (workoutLists != null){
+            addNameLayout.visibility = View.GONE
+            createListRoutineLayout.visibility = View.VISIBLE
+            textViewRoutine.text = workoutLists?.routineName
+            // Map workoutList to RoutineWorkoutDisplayModel and update the adapter
+            val routineWorkoutModels = mapWorkoutSessionRecordsToRoutine(workoutLists)
+            routineWorkoutListAdapter.setData(routineWorkoutModels)
+            createRoutineRecyclerView.visibility = View.VISIBLE
+        }
+
         addBtnLog.setOnClickListener {
             val fragment = SearchWorkoutFragment()
             val args = Bundle().apply {
@@ -141,7 +153,9 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
             if (textViewRoutine.text.isNotEmpty()) {
                 if (workoutList.isNotEmpty()) {
                     createRoutine(textViewRoutine.text.toString())
-                } else {
+                } else if(workoutLists != null){
+                    createRoutines(textViewRoutine.text.toString())
+                }else {
                     Toast.makeText(requireContext(), "No workouts added to the routine", Toast.LENGTH_SHORT).show()
                 }
             } else {
@@ -239,6 +253,18 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
         }.toCollection(ArrayList())
     }
 
+    private fun mapWorkoutSessionRecordsToRoutine(records: WorkoutRoutineItem?): ArrayList<RoutineWorkoutDisplayModel> {
+        return records?.workoutList?.map { record ->
+            RoutineWorkoutDisplayModel(
+                name = record.activityName,
+                icon = record.icon,
+                duration = "${record.durationMin} min",
+                caloriesBurned = record.caloriesBurned?.toString() ?: "N/A",
+                intensity = record.intensity
+            )
+        }!!.toCollection(ArrayList())
+    }
+
     // New function to handle item removal from workoutList
     private fun onWorkoutItemRemove(position: Int) {
         if (position >= 0 && position < workoutList.size) {
@@ -265,6 +291,66 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
             replace(R.id.flFragment, fragment, tag)
             addToBackStack(null)
             commit()
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    private fun createRoutines(name: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
+
+                // Map workoutList to CreateRoutineRequest.Workout
+                val workoutRequests = workoutLists?.workoutList?.map { record ->
+                    Workout(
+                        activityId = record.activityId,
+                        duration = record.durationMin.toInt(),
+                        intensity = record.intensity,
+                        calories_burned = record.caloriesBurned
+                    )
+                }
+
+                val request = UpdateRoutineRequest(
+                    user_id = userid,
+                    routine_id = workoutLists?.routineId!!,
+                    workouts = workoutRequests!!
+                )
+
+            //    val request = UpdateRoutineRequest(user_id = userId, routine_id = routineId, workouts = workouts)
+
+                val response = ApiClient.apiServiceFastApi.updateRoutine(request)
+
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful) {
+                        val responseBody = response.body()
+                        Toast.makeText(
+                            requireContext(),
+                            responseBody?.message ?: "Routine created successfully",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        val fragment = SearchWorkoutFragment()
+                        val bundle = Bundle().apply {
+                            putInt("selectedTab", 1) // My Routine tab
+                        }
+                        fragment.arguments = bundle
+                        navigateToFragment(fragment, "SearchWorkoutFragment")
+                    } else {
+                        Toast.makeText(
+                            requireContext(),
+                            "Error creating routine: ${response.code()} - ${response.message()}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        requireContext(),
+                        "Exception: ${e.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
         }
     }
 

@@ -14,12 +14,15 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.annotations.SerializedName
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.AddWorkoutResponse
+import com.jetsynthesys.rightlife.ai_package.model.PlanExerciseWorkout
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutRoutineItem
 import com.jetsynthesys.rightlife.ai_package.model.request.AddWorkoutLogRequest
+import com.jetsynthesys.rightlife.ai_package.model.response.PlanExercise
 import com.jetsynthesys.rightlife.ai_package.ui.thinkright.adapter.MyRoutineMainListAdapter
 import com.jetsynthesys.rightlife.databinding.FragmentMyRoutineBinding
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
@@ -46,7 +49,7 @@ class MyRoutineFragment(mSelectedDate: String) : BaseFragment<FragmentMyRoutineB
         MyRoutineMainListAdapter(
             requireContext(), arrayListOf(), -1, null, false,
             onCirclePlusClick = { workoutRoutineModel, position ->
-                val fragment = AddWorkoutSearchFragment()
+                val fragment = CreateRoutineFragment()
                 val args = Bundle().apply {
                     putParcelable("WORKOUT_MODEL", workoutRoutineModel)
                     putString("edit_routine","edit_routine")
@@ -155,6 +158,7 @@ class MyRoutineFragment(mSelectedDate: String) : BaseFragment<FragmentMyRoutineB
                                 duration = "$totalDurationMin min",
                                 caloriesBurned = String.format("%.1f", totalCaloriesBurned),
                                 intensity = firstIntensity,
+                                workoutList = getWorkoutList(plan.workouts),
                                 activityId = firstActivityId, // Using first workout's activityId
                                 userId = userId
                             )
@@ -200,6 +204,22 @@ class MyRoutineFragment(mSelectedDate: String) : BaseFragment<FragmentMyRoutineB
                 }
             }
         }
+    }
+    private fun getWorkoutList(workouts: List<PlanExercise>):List<PlanExerciseWorkout>{
+        val modelBList = mutableListOf<PlanExerciseWorkout>()
+
+        for (item in workouts) {
+            val newItem = PlanExerciseWorkout(
+                activityId = item.activityId,
+                activityName = item.activityName,
+                intensity = item.intensity,
+                durationMin = item.durationMin,
+                icon = item.icon,
+                caloriesBurned = item.caloriesBurned
+            )
+            modelBList.add(newItem)
+        }
+        return modelBList
     }
 
     private fun onWorkoutItemClick(workout: WorkoutRoutineItem, position: Int, isRefresh: Boolean) {
