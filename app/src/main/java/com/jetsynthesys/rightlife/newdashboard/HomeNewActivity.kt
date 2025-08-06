@@ -366,7 +366,7 @@ class HomeNewActivity : BaseActivity() {
 
 
     // get user details
-    private fun getUserDetails() {
+    fun getUserDetails() {
         // Make the API call
         val call = apiService.getUserDetais(sharedPreferenceManager.accessToken)
         call.enqueue(object : Callback<JsonElement?> {
@@ -411,11 +411,19 @@ class HomeNewActivity : BaseActivity() {
                             isTrialExpired = true
                         }
                     }
-                    if (!ResponseObj.reportView){
+
+                    if (ResponseObj.isReportGenerated && !ResponseObj.reportView) {
                         binding.rightLifeReportCard.visibility = View.VISIBLE
                     } else {
                         binding.rightLifeReportCard.visibility = View.GONE
                     }
+
+
+                    /*if (!ResponseObj.reportView){
+                        binding.rightLifeReportCard.visibility = View.VISIBLE
+                    } else {
+                        binding.rightLifeReportCard.visibility = View.GONE
+                    }*/
                     /*if (ResponseObj.isFacialReport != null && ResponseObj.isFacialReport) {
                         showSwitchAccountDialog(this@HomeNewActivity,"","")
                     } else {

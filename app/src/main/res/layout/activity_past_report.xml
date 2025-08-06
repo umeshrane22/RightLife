@@ -54,6 +54,8 @@
             android:src="@drawable/next_arrow_settings" />
     </LinearLayout>
 
+
+
     <!-- RecyclerView for Past Reports -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
