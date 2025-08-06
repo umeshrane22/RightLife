@@ -257,7 +257,16 @@ class CholesterolFragment : BaseFragment<FragmentCholesterolBinding>() {
             }
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            navigateToFragment(HomeBottomTabFragment(), "landingFragment")
+            //navigateToFragment(HomeBottomTabFragment(), "landingFragment")
+            val fragment = HomeBottomTabFragment()
+            val args = Bundle()
+            args.putString("ModuleName", "EatRight")
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "landing")
+                addToBackStack("landing")
+                commit()
+            }
         }
     }
 

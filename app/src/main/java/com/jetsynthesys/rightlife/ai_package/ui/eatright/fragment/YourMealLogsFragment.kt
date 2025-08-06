@@ -332,7 +332,9 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
         val formattedDate = currentDateTime.format(formatter)
         val formatFullDate = DateTimeFormatter.ofPattern("E, d MMM yyyy")
         selectedWeeklyDayTv.text = currentDateTime.format(formatFullDate)
-        selectedMealDate = formattedDate
+        if (selectedMealDate.equals("null") || selectedMealDate.equals("")){
+            selectedMealDate = formattedDate
+        }
         getMealsLogHistory(formattedDate)
 
         mealLogWeeklyDayList = getWeekFrom(currentWeekStart)
@@ -350,6 +352,8 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
            getMealsLogHistory(currentWeekStart.toString())
 
            onMealLogWeeklyDayList(mealLogWeeklyDayList, mealLogHistory)
+
+           nextWeekBtn.setImageResource(R.drawable.ic_right_arrow_circle)
         }
 
        nextWeekBtn.setOnClickListener {
@@ -372,7 +376,10 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
                selectedMealDate = currentWeekStart.toString()
                onMealLogWeeklyDayList(mealLogWeeklyDayList, mealLogHistory)
                getMealsLogHistory(currentWeekStart.toString())
+
+               nextWeekBtn.setImageResource(R.drawable.ic_right_arrow_circle)
            }else{
+               nextWeekBtn.setImageResource(R.drawable.right_arrow_grey)
                Toast.makeText(context, "Not selected future date", Toast.LENGTH_SHORT).show()
            }
         }

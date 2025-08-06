@@ -112,10 +112,11 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
     private var mealName: String = ""
     private var moduleName: String = ""
     private var quantity = 1
-    private var loadingOverlay: FrameLayout? = null
-    private var mealType: String = ""
-    private var snapMealLog: String = ""
-    private var homeTab: String = ""
+    private var loadingOverlay : FrameLayout? = null
+    private var mealType : String = ""
+    private var snapMealLog : String = ""
+    private var homeTab : String = ""
+    private var selectedMealDate : String = ""
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentMealScanResultsBinding
         get() = FragmentMealScanResultsBinding::inflate
@@ -184,6 +185,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
         mealName = arguments?.getString("mealName").toString()
         mealType = arguments?.getString("mealType").toString()
         snapMealLog = arguments?.getString("snapMealLog").toString()
+        selectedMealDate = arguments?.getString("selectedMealDate").toString()
 
         val dishLocalListModels = if (Build.VERSION.SDK_INT >= 33) {
             arguments?.getParcelable("snapDishLocalListModel", SnapDishLocalListModel::class.java)
@@ -216,8 +218,8 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
             if (isChecked) {
                 if (mealId != "null" && mealId != null) {
                     updateSnapMealsSave((snapRecipesList))
-                } else {
-                    ratingMealLogDialog(true)
+                }else{
+                    createSnapMealLog(snapRecipesList, true)
                 }
             }
         }
@@ -373,6 +375,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
             } else if (snapMealLog.equals("snapMealLog")) {
                 val fragment = YourMealLogsFragment()
                 val args = Bundle()
+                args.putString("selectedMealDate", selectedMealDate)
                 args.putString("ModuleName", moduleName)
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -380,18 +383,19 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
                     addToBackStack("landing")
                     commit()
                 }
-            } else if (homeTab.equals("homeTab")) {
-                val fragment = HomeTabMealFragment()
-                val args = Bundle()
-                args.putString("ModuleName", moduleName)
-                args.putString("mealType", mealType)
-                fragment.arguments = args
-                requireActivity().supportFragmentManager.beginTransaction().apply {
-                    replace(R.id.flFragment, fragment, "landing")
-                    addToBackStack("landing")
-                    commit()
-                }
-            } else {
+            }else if (homeTab.equals("homeTab")){
+            val fragment = HomeTabMealFragment()
+            val args = Bundle()
+                args.putString("selectedMealDate", selectedMealDate)
+            args.putString("ModuleName", moduleName)
+            args.putString("mealType", mealType)
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "landing")
+                addToBackStack("landing")
+                commit()
+            }
+        } else{
                 startActivity(Intent(context, HomeNewActivity::class.java))
                 requireActivity().finish()
             }
@@ -400,42 +404,43 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
         requireActivity().onBackPressedDispatcher.addCallback(
             viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    if (moduleName.contentEquals("EatRight")) {
-                        requireActivity().supportFragmentManager.beginTransaction().apply {
-                            val snapMealFragment = HomeBottomTabFragment()
-                            val args = Bundle()
-                            args.putString("ModuleName", moduleName)
-                            snapMealFragment.arguments = args
-                            replace(R.id.flFragment, snapMealFragment, "Steps")
-                            addToBackStack(null)
-                            commit()
-                        }
-                    } else if (snapMealLog.equals("snapMealLog")) {
-                        val fragment = YourMealLogsFragment()
-                        val args = Bundle()
-                        args.putString("ModuleName", moduleName)
-                        fragment.arguments = args
-                        requireActivity().supportFragmentManager.beginTransaction().apply {
-                            replace(R.id.flFragment, fragment, "landing")
-                            addToBackStack("landing")
-                            commit()
-                        }
-                    } else if (homeTab.equals("homeTab")) {
-                        val fragment = HomeTabMealFragment()
-                        val args = Bundle()
-                        args.putString("ModuleName", moduleName)
-                        args.putString("mealType", mealType)
-                        fragment.arguments = args
-                        requireActivity().supportFragmentManager.beginTransaction().apply {
-                            replace(R.id.flFragment, fragment, "landing")
-                            addToBackStack("landing")
-                            commit()
-                        }
-                    } else {
-                        startActivity(Intent(context, HomeNewActivity::class.java))
-                        requireActivity().finish()
-                    }
+                override fun handleOnBackPressed() { if (moduleName.contentEquals("EatRight")) {
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    val snapMealFragment = HomeBottomTabFragment()
+                    val args = Bundle()
+                    args.putString("ModuleName", moduleName)
+                    snapMealFragment.arguments = args
+                    replace(R.id.flFragment, snapMealFragment, "Steps")
+                    addToBackStack(null)
+                    commit()
+                }
+            } else if (snapMealLog.equals("snapMealLog")) {
+                val fragment = YourMealLogsFragment()
+                val args = Bundle()
+                args.putString("selectedMealDate", selectedMealDate)
+                args.putString("ModuleName", moduleName)
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "landing")
+                    addToBackStack("landing")
+                    commit()
+                }
+            }else if (homeTab.equals("homeTab")){
+            val fragment = HomeTabMealFragment()
+            val args = Bundle()
+                args.putString("selectedMealDate", selectedMealDate)
+            args.putString("ModuleName", moduleName)
+            args.putString("mealType", mealType)
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "landing")
+                addToBackStack("landing")
+                commit()
+            }
+        } else{
+                startActivity(Intent(context, HomeNewActivity::class.java))
+                requireActivity().finish()
+            }  
                 }
             })
 
@@ -459,6 +464,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
             args.putString("mealName", mealName)
             args.putString("mealType", mealType)
             args.putString("homeTab", homeTab)
+            args.putString("selectedMealDate", selectedMealDate)
             args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
             args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
             fragment.arguments = args
@@ -773,6 +779,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
             args.putString("searchType", "MealScanResult")
             args.putString("mealType", mealType)
             args.putString("homeTab", homeTab)
+            args.putString("selectedMealDate", selectedMealDate)
             args.putString("snapMealLog", snapMealLog)
             args.putString("mealQuantity", snapRecipeData.mealQuantity.toString())
             args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
@@ -799,6 +806,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
         args.putString("mealName", mealName)
         args.putString("mealType", mealType)
         args.putString("homeTab", homeTab)
+        args.putString("selectedMealDate", selectedMealDate)
         args.putString("snapMealLog", snapMealLog)
         args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
         args.putString("snapRecipeName", snapRecipeData.name)
@@ -1076,10 +1084,11 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
                                 addToBackStack("landing")
                                 commit()
                             }
-                        } else if (homeTab.equals("homeTab")) {
-                            val fragment = HomeBottomTabFragment()
+                        }else if (homeTab.equals("homeTab")){
+                            val fragment = YourMealLogsFragment()
                             val args = Bundle()
-                            args.putString("ModuleName", "EatRight")
+                            args.putString("selectedMealDate", selectedMealDate)
+                            args.putString("ModuleName", moduleName)
                             fragment.arguments = args
                             requireActivity().supportFragmentManager.beginTransaction().apply {
                                 replace(R.id.flFragment, fragment, "landing")

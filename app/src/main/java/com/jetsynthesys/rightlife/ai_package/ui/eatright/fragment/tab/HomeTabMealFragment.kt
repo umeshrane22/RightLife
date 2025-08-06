@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import java.time.LocalDate
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -57,6 +58,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.time.Instant
 import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
 class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
@@ -209,6 +211,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 val mealSearchFragment = SnapMealFragment()
                 val args = Bundle()
+                args.putString("selectedMealDate", selectedMealDate)
                 args.putString("homeTab", "homeTab")
                 args.putString("ModuleName", moduleName)
                 args.putString("mealType", mealType)
@@ -389,6 +392,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
                 args.putString("homeTab", "homeTab")
                 args.putString("ModuleName", moduleName)
                 args.putString("mealType", mealType)
+                args.putString("selectedMealDate", selectedMealDate)
                 args.putString("gallery","gallery")
                 args.putString("ImagePathsecound", imagePathsecond.toString())
                 mealSearchFragment.arguments = args
@@ -799,6 +803,12 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
             }
         }
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+        val inputDateStr = selectedMealDate
+        val localDate = LocalDate.parse(inputDateStr)
+        val localDateTime = localDate.atStartOfDay()
+        val utcZonedDateTime = localDateTime.atZone(ZoneOffset.UTC)
+        val utcInstant = utcZonedDateTime.toInstant()
+        val utcDateString = utcInstant.toString()  // "2025-08-04T00:00:00Z"
         val currentDateUtc: String = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
         val currentDateTime = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -815,7 +825,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
                 meal_name = snapRecipeList.meal_name,
                 is_save = false,
                 is_snapped = true,
-                date = currentDateUtc,
+                date = utcDateString,
                 dish = snapDishList
             )
             val gson = Gson()
@@ -847,6 +857,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
                             val fragment = YourMealLogsFragment()
                             val args = Bundle()
                             args.putString("ModuleName", moduleName)
+                            args.putString("selectedMealDate", selectedMealDate)
                             fragment.arguments = args
                             requireActivity().supportFragmentManager.beginTransaction().apply {
                                 replace(R.id.flFragment, fragment, "landing")
