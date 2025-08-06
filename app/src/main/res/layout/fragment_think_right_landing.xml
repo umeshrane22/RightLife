@@ -1880,7 +1880,9 @@
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
-                            android:padding="16dp">
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:paddingTop="16dp">
 
                             <TextView
                                 android:id="@+id/tv_mind_audit"
@@ -1999,8 +2001,8 @@
                                     android:layout_height="wrap_content"
                                     android:clipToPadding="false"
                                     android:clipChildren="false"
-                                    android:paddingStart="20dp"
-                                    android:paddingEnd="20dp"
+                                    android:paddingStart="15dp"
+                                    android:paddingEnd="15dp"
                                     android:overScrollMode="never" />
                                 <LinearLayout
                                     android:id="@+id/customDotsContainer"

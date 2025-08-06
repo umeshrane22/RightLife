@@ -1212,6 +1212,7 @@ class AssessmentPagerAdapter(
         val title = itemView.findViewById<TextView>(R.id.tvAssessmentTitle)
         val scoreText = itemView.findViewById<TextView>(R.id.tvScore)
         val scaleLayout = itemView.findViewById<LinearLayout>(R.id.scoreScaleLayout)
+        val pointer = itemView.findViewById<FrameLayout>(R.id.lyt_score)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -1301,6 +1302,32 @@ class AssessmentPagerAdapter(
 
             holder.scaleLayout.addView(column)
 
+        }
+
+        holder.scaleLayout.post {
+            val totalWidth = holder.scaleLayout.width
+            val segmentCount = labels.size
+            val segmentWidth = totalWidth / segmentCount
+
+            // Find the correct index based on score
+            var index = 0
+            for (i in 0 until thresholds.size - 1) {
+                if (score >= thresholds[i] && score < thresholds[i + 1]) {
+                    index = i
+                    break
+                }
+            }
+
+            // Calculate position inside the segment (optional: finer placement)
+            val scoreInSegment = score - thresholds[index]
+            val segmentRange = thresholds[index + 1] - thresholds[index]
+            val fractionInSegment = scoreInSegment / segmentRange
+
+            // Final X position (can be center or start of segment)
+            val pointerX = (index + fractionInSegment) * segmentWidth
+
+            // Set X translation (center the pointer if needed)
+            holder.pointer.translationX = pointerX - holder.pointer.width / 2
         }
 
     }

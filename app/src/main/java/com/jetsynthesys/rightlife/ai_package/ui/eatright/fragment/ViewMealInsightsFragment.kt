@@ -117,6 +117,10 @@ class ViewMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBinding>()
                 if (breakfastRecipes.isNotEmpty()){
                     mealCombinedList.addAll(breakfastRecipes!!.map { MergedLogsMealItem.RegularRecipeList(it) })
                     mealNames = breakfastRecipes.map { it.receipe.recipe_name }
+
+                    val imageUrl = breakfastRecipes.get(0).receipe.photo_url
+
+                    setDishData(imageUrl)
                 }
             }
             val breakfastSnapMeals = mealDetailsLog!!.snap_meals
@@ -143,6 +147,7 @@ class ViewMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBinding>()
                 }
             }
         })
+
         backButton.setOnClickListener {
             val fragment = YourMealLogsFragment()
             val args = Bundle()
@@ -181,9 +186,9 @@ class ViewMealInsightsFragment : BaseFragment<FragmentViewMealInsightsBinding>()
         }
     }
 
-    private fun setDishData(snapRecipeData: SearchResultItem) {
+    private fun setDishData(snapRecipeData: String) {
 
-        val imageUrl = getDriveImageUrl(snapRecipeData.photo_url)
+        val imageUrl = getDriveImageUrl(snapRecipeData)
         Glide.with(this)
             .load(imageUrl)
             .placeholder(R.drawable.ic_view_meal_place)
