@@ -229,7 +229,8 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         }
 
         layoutAddWorkout.setOnClickListener {
-            val formatter = DateTimeFormatter.ofPattern("EEE, d MMM yyyy", Locale.ENGLISH)
+           // val formatter = DateTimeFormatter.ofPattern("EEE, d MMM yyyy", Locale.ENGLISH)
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
             val date = LocalDate.parse(selectedDate, formatter)
             val currentDate = LocalDate.now()
             if (date <= currentDate) {
