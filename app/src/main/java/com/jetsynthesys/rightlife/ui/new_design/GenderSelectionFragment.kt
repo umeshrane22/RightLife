@@ -17,6 +17,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 
@@ -58,6 +61,17 @@ class GenderSelectionFragment : Fragment() {
         tvDescription = view.findViewById(R.id.tv_description)
 
         handler = Handler(Looper.getMainLooper())
+
+        val sharedPreferenceManager = SharedPreferenceManager.getInstance(requireContext())
+        AnalyticsLogger.logEvent(
+            AnalyticsEvent.GENDER_SELECTION_VISIT,
+            mapOf(
+                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
+                AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule
+            )
+        )
 
         val bgDrawable = AppCompatResources.getDrawable(requireContext(), R.drawable.bg_gray_border)
 
@@ -150,6 +164,17 @@ class GenderSelectionFragment : Fragment() {
         SharedPreferenceManager.getInstance(requireContext())
             .saveOnboardingQuestionAnswer(onboardingQuestionRequest)
         (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
+        val sharedPreferenceManager = SharedPreferenceManager.getInstance(requireContext())
+        AnalyticsLogger.logEvent(
+            AnalyticsEvent.GENDER_SELECTION,
+            mapOf(
+                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
+                AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule,
+                AnalyticsParam.GENDER to selectedGender
+            )
+        )
     }
 
     override fun onPause() {

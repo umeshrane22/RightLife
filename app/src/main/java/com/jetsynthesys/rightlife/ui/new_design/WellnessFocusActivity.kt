@@ -12,6 +12,9 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.ui.new_design.pojo.ModuleService
 import com.jetsynthesys.rightlife.ui.new_design.pojo.OnBoardingModuleResponse
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import retrofit2.Call
@@ -40,6 +43,15 @@ class WellnessFocusActivity : BaseActivity() {
 
         isFrom = intent.getStringExtra("FROM").toString()
 
+
+        AnalyticsLogger.logEvent(
+            AnalyticsEvent.GOAL_SELECTION_VISIT,
+            mapOf(
+                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                AnalyticsParam.TIMESTAMP to System.currentTimeMillis()
+            )
+        )
+
         setAdapter(-1)
         recyclerView.setLayoutManager(LinearLayoutManager(this))
         recyclerView.adapter = adapter
@@ -54,6 +66,15 @@ class WellnessFocusActivity : BaseActivity() {
             }
             SharedPreferenceManager.getInstance(this).selectedWellnessFocus =
                 selectedService?.moduleName
+
+            AnalyticsLogger.logEvent(
+                AnalyticsEvent.GOAL_SELECTION,
+                mapOf(
+                    AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                    AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                    AnalyticsParam.GOAL to sharedPreferenceManager.selectedWellnessFocus
+                )
+            )
             startActivity(intent)
         }
     }

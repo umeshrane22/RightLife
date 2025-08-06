@@ -65,6 +65,28 @@ class OnboardingQuestionnaireActivity : BaseActivity() {
         tv_fragment_count = findViewById(R.id.tv_fragment_count)
         tvSkip = findViewById(R.id.tv_skip)
         tvSkip.setOnClickListener {
+            val eventName =
+                when (viewPager.currentItem) {
+                    0 -> AnalyticsEvent.GENDER_SELECTION_SKIP_CLICK
+                    1 -> AnalyticsEvent.AGE_SELECTION_SKIP
+                    2 -> AnalyticsEvent.HEIGHT_SELECTION_SKIP
+                    3 -> AnalyticsEvent.WEIGHT_SELECTION_SKIP
+                    4 -> AnalyticsEvent.BODY_FAT_SELECTION_SKIP
+                    5 -> AnalyticsEvent.STRESS_MANAGEMENT_SKIP
+                    6 -> AnalyticsEvent.ACHIEVE_HEALTH_GOALS_SKIP
+                    else -> {
+                        ""
+                    }
+                }
+            AnalyticsLogger.logEvent(
+                eventName,
+                mapOf(
+                    AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                    AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                    AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
+                    AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule
+                )
+            )
             if (viewPager.currentItem == 0) {
                 adapter.removeItem("BodyFatSelection")
             }

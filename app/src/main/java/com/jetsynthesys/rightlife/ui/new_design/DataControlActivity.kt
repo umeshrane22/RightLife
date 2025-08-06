@@ -13,10 +13,13 @@ import android.widget.Button
 import android.widget.CheckBox
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.BaseActivity
+import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ui.drawermenu.PrivacyPolicyActivity
 import com.jetsynthesys.rightlife.ui.drawermenu.TermsAndConditionsActivity
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 
 class DataControlActivity : BaseActivity() {
     private val agreeString =
@@ -36,8 +39,13 @@ class DataControlActivity : BaseActivity() {
         val chkPrivacyPolicy: CheckBox = findViewById(R.id.ck_privacy_policy)
         val chkTermsAndConditions: CheckBox = findViewById(R.id.ck_terms_conditions)
 
-         tvPrivacyPolicy = findViewById(R.id.tv_privacy_policy)
-         tvTermsAndConditions = findViewById(R.id.tv_terms_condition)
+        AnalyticsLogger.logEvent(
+            AnalyticsEvent.DATA_CONTROL_SCREEN_VISIT,
+            mapOf(AnalyticsParam.TIMESTAMP to System.currentTimeMillis())
+        )
+
+        tvPrivacyPolicy = findViewById(R.id.tv_privacy_policy)
+        tvTermsAndConditions = findViewById(R.id.tv_terms_condition)
 
         val btnContinue = findViewById<Button>(R.id.btn_continue)
 
@@ -50,7 +58,7 @@ class DataControlActivity : BaseActivity() {
         val colorStateListDisabled = ContextCompat.getColorStateList(this, R.color.rightlife)
 
 
-        tvPrivacyPolicy.setOnClickListener{
+        tvPrivacyPolicy.setOnClickListener {
             //startActivity(Intent(this, PrivacyPolicyActivity::class.java))
 
         }
@@ -75,7 +83,7 @@ class DataControlActivity : BaseActivity() {
         }
 
         // -------- second checkbox text
-       TncClickMethod()
+        TncClickMethod()
         // First checkbox text
         IagreeClickMethod()
     }
@@ -114,6 +122,7 @@ class DataControlActivity : BaseActivity() {
                             )
                             startActivity(intent)
                         }
+
                         "https://example.com/terms" -> {
                             // Handle Terms and Conditions click
                             //Toast.makeText(this@DataControlActivity,"Terms Policy",Toast.LENGTH_SHORT).show()
@@ -171,9 +180,10 @@ class DataControlActivity : BaseActivity() {
                             )
                             startActivity(intent)
                         }
+
                         "https://example.com/terms" -> {
                             // Handle Terms and Conditions click
-                           // Toast.makeText(this@DataControlActivity,"Terms Policy",Toast.LENGTH_SHORT).show()
+                            // Toast.makeText(this@DataControlActivity,"Terms Policy",Toast.LENGTH_SHORT).show()
                             val intent = Intent(
                                 this@DataControlActivity,
                                 TermsAndConditionsActivity::class.java

@@ -10,6 +10,9 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.BaseActivity
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 
 class OnboardingFinalActivity : BaseActivity() {
 
@@ -37,6 +40,16 @@ class OnboardingFinalActivity : BaseActivity() {
         llOnboardingFinal2 = findViewById(R.id.ll_final_onboarding2)
         llOnboardingFinal3 = findViewById(R.id.ll_final_onboarding3)
         llOnboardingFinal4 = findViewById(R.id.ll_final_onboarding4)
+
+        AnalyticsLogger.logEvent(
+            AnalyticsEvent.CRAFTING_PERSONALISE_VISIT,
+            mapOf(
+                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
+                AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule,
+            )
+        )
 
         val handler = Handler(Looper.getMainLooper())
         handler.postDelayed({

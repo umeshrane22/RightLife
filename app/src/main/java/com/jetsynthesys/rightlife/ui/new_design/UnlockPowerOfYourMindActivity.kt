@@ -16,6 +16,9 @@ import com.jetsynthesys.rightlife.ui.new_design.pojo.ModuleTopic
 import com.jetsynthesys.rightlife.ui.new_design.pojo.OnboardingModuleResultDataList
 import com.jetsynthesys.rightlife.ui.new_design.pojo.OnboardingModuleResultRequest
 import com.jetsynthesys.rightlife.ui.new_design.pojo.OnboardingModuleResultResponse
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import retrofit2.Call
@@ -42,6 +45,16 @@ class UnlockPowerOfYourMindActivity : BaseActivity() {
             @Suppress("DEPRECATION")
             selectedWellnessFocus.addAll(intent.getSerializableExtra("SelectedTopic") as ArrayList<ModuleTopic>)
         }
+
+        AnalyticsLogger.logEvent(
+            AnalyticsEvent.UNLOCK_POWER_VISIT,
+            mapOf(
+                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
+                AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule
+            )
+        )
 
         val tvHeader = findViewById<TextView>(R.id.tv_header)
         tvUnlockPower = findViewById(R.id.tv_unlock_power)

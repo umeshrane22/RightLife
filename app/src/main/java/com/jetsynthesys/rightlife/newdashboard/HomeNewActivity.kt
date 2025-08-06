@@ -60,6 +60,8 @@ import com.jetsynthesys.rightlife.ui.healthcam.HealthCamActivity
 import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalListActivity
 import com.jetsynthesys.rightlife.ui.profile_new.ProfileSettingsActivity
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils
 import com.jetsynthesys.rightlife.ui.utility.NetworkUtils
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
@@ -203,6 +205,7 @@ class HomeNewActivity : BaseActivity() {
 
         with(binding) {
             includedhomebottomsheet.llJournal.setOnClickListener {
+                AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_JOURNALING_CLICK)
                 if (checkTrailEndedAndShowDialog()) {
                     startActivity(
                         Intent(
@@ -212,6 +215,7 @@ class HomeNewActivity : BaseActivity() {
                 }
             }
             includedhomebottomsheet.llAffirmations.setOnClickListener {
+                AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_AFFIRMATION_CLICK)
                 if (checkTrailEndedAndShowDialog()) {
                     startActivity(
                         Intent(
@@ -221,6 +225,7 @@ class HomeNewActivity : BaseActivity() {
                 }
             }
             includedhomebottomsheet.llSleepsounds.setOnClickListener {
+                AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_SLEEP_SOUNDS)
                 if (checkTrailEndedAndShowDialog()) {
                     startActivity(
                         Intent(
@@ -230,6 +235,7 @@ class HomeNewActivity : BaseActivity() {
                 }
             }
             includedhomebottomsheet.llBreathwork.setOnClickListener {
+                AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_BREATH_WORK_CLICK)
                 if (checkTrailEndedAndShowDialog()) {
                     startActivity(
                         Intent(
@@ -239,6 +245,7 @@ class HomeNewActivity : BaseActivity() {
                 }
             }
             includedhomebottomsheet.llHealthCamQl.setOnClickListener {
+                AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_FACE_SCAN_CLICK)
                 if (DashboardChecklistManager.facialScanStatus) {
                     startActivity(
                         Intent(
@@ -250,7 +257,7 @@ class HomeNewActivity : BaseActivity() {
                 }
             }
             includedhomebottomsheet.llMealplan.setOnClickListener {
-
+                AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_SNAP_MEAL_CLICK)
                 startActivity(Intent(this@HomeNewActivity, MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "EatRight")
                     putExtra("BottomSeatName", "SnapMealTypeEat")
@@ -266,6 +273,7 @@ class HomeNewActivity : BaseActivity() {
         }
 
         binding.includedhomebottomsheet.llFoodLog.setOnClickListener {
+            AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.LYA_FOOD_LOG_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(Intent(
                     this@HomeNewActivity, MainAIActivity::class.java
@@ -276,6 +284,7 @@ class HomeNewActivity : BaseActivity() {
             }
         }
         binding.includedhomebottomsheet.llActivityLog.setOnClickListener {
+            AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.LYA_ACTIVITY_LOG_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(Intent(
                     this@HomeNewActivity, MainAIActivity::class.java
@@ -291,6 +300,7 @@ class HomeNewActivity : BaseActivity() {
             }
         }
         binding.includedhomebottomsheet.llSleepLog.setOnClickListener {
+            AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.LYA_SLEEP_LOG_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(Intent(
                     this@HomeNewActivity, MainAIActivity::class.java
@@ -301,6 +311,7 @@ class HomeNewActivity : BaseActivity() {
             }
         }
         binding.includedhomebottomsheet.llWeightLog.setOnClickListener {
+            AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.LYA_WEIGHT_LOG_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(Intent(
                     this@HomeNewActivity, MainAIActivity::class.java
@@ -311,6 +322,7 @@ class HomeNewActivity : BaseActivity() {
             }
         }
         binding.includedhomebottomsheet.llWaterLog.setOnClickListener {
+            AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.LYA_WATER_LOG_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(Intent(
                     this@HomeNewActivity, MainAIActivity::class.java

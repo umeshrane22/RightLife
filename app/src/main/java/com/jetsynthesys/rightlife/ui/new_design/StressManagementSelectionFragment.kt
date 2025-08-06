@@ -19,6 +19,9 @@ import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.ui.new_design.pojo.OnBoardingModuleResponse
 import com.jetsynthesys.rightlife.ui.new_design.pojo.StressManagement
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
@@ -69,6 +72,17 @@ class StressManagementSelectionFragment : Fragment() {
             (activity as OnboardingQuestionnaireActivity).tvSkip.visibility = VISIBLE
         }
 
+        val sharedPreferenceManager = SharedPreferenceManager.getInstance(requireContext())
+        AnalyticsLogger.logEvent(
+            AnalyticsEvent.STRESS_MANAGEMENT_VISIT,
+            mapOf(
+                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
+                AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule
+            )
+        )
+
         val btnContinue = view.findViewById<Button>(R.id.btn_continue)
 
         header = arguments?.getString("HEADER").toString()
@@ -109,6 +123,23 @@ class StressManagementSelectionFragment : Fragment() {
                 selectedStressManagement.header
             SharedPreferenceManager.getInstance(requireContext())
                 .saveOnboardingQuestionAnswer(onboardingQuestionRequest)
+
+            AnalyticsLogger.logEvent(
+                AnalyticsEvent.STRESS_MANAGEMENT_SELECTION,
+                mapOf(
+                    AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                    AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                    AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
+                    AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule,
+                    AnalyticsParam.GENDER to onboardingQuestionRequest.gender!!,
+                    AnalyticsParam.AGE to onboardingQuestionRequest.age!!,
+                    AnalyticsParam.HEIGHT to onboardingQuestionRequest.height!!,
+                    AnalyticsParam.WEIGHT to onboardingQuestionRequest.weight!!,
+                    AnalyticsParam.BODY_FAT to onboardingQuestionRequest.bodyFat!!,
+                    AnalyticsParam.STRESS_MANAGEMENT to selectedStressManagement.header
+                )
+            )
+
             (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
         }
 

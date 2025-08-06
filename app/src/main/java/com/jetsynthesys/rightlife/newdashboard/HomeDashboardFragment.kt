@@ -100,6 +100,7 @@ class HomeDashboardFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentHomeDashboardBinding.inflate(inflater, container, false)
+        AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.HOME_DASHBOARD_VISIT)
         return binding.root
     }
 
@@ -131,12 +132,14 @@ class HomeDashboardFragment : BaseFragment() {
         }
         binding.includeChecklist.imgQuestionmarkChecklist.setOnClickListener {
             DialogUtils.showCheckListQuestionCommonDialog(requireContext(), "Why Checklist?")
+            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.WHY_CHECKLIST_CLICK)
             /*startActivity(Intent(this@HomeDashboardActivity, SubscriptionPlanListActivity::class.java).apply {
                 //putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN")
                 //putExtra("SUBSCRIPTION_TYPE", "FACIAL_SCAN")
             })*/
         }
         binding.includeChecklist.rlChecklistWhyThisDialog.setOnClickListener {
+            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.FINISH_TO_UNLOCK_CLICK)
             DialogUtils.showCheckListQuestionCommonDialog(requireContext())
         }
 
@@ -168,7 +171,7 @@ class HomeDashboardFragment : BaseFragment() {
             val activity = requireActivity() as HomeNewActivity
             /*val isHealthCamFree = activity.isHealthCamFree*/
 
-            var isHealthCamFree = sharedPreferenceManager?.userProfile?.homeServices
+            var isHealthCamFree = sharedPreferenceManager.userProfile?.homeServices
                 ?.find { it.title == "HealthCam" }
                 ?.isFree ?: false
 
@@ -188,6 +191,7 @@ class HomeDashboardFragment : BaseFragment() {
         }
 
         binding.cardThinkrightMain.setOnClickListener {
+            AnalyticsLogger.logEvent(requireContext(),AnalyticsEvent.THINK_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "ThinkRight")
@@ -196,6 +200,7 @@ class HomeDashboardFragment : BaseFragment() {
             }
         }
         binding.cardEatrightMain.setOnClickListener {
+            AnalyticsLogger.logEvent(requireContext(),AnalyticsEvent.EAT_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "EatRight")
@@ -205,6 +210,7 @@ class HomeDashboardFragment : BaseFragment() {
         }
 
         binding.cardMoverightMain.setOnClickListener {
+            AnalyticsLogger.logEvent(requireContext(),AnalyticsEvent.MOVE_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "MoveRight")
@@ -213,6 +219,7 @@ class HomeDashboardFragment : BaseFragment() {
             }
         }
         binding.cardSleeprightMain.setOnClickListener {
+            AnalyticsLogger.logEvent(requireContext(),AnalyticsEvent.SLEEP_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "SleepRight")
@@ -221,6 +228,7 @@ class HomeDashboardFragment : BaseFragment() {
             }
         }
         binding.cardSleepMainIdeal.setOnClickListener {
+            AnalyticsLogger.logEvent(requireContext(),AnalyticsEvent.SLEEP_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "SleepRight")
@@ -229,6 +237,7 @@ class HomeDashboardFragment : BaseFragment() {
             }
         }
         binding.cardSleepMainLog.setOnClickListener {
+            AnalyticsLogger.logEvent(requireContext(),AnalyticsEvent.SLEEP_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "SleepRight")
@@ -240,6 +249,7 @@ class HomeDashboardFragment : BaseFragment() {
 
         // for no data card
         binding.cardThinkrightMainNodata.setOnClickListener {
+            AnalyticsLogger.logEvent(requireContext(),AnalyticsEvent.THINK_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "ThinkRight")
@@ -248,6 +258,7 @@ class HomeDashboardFragment : BaseFragment() {
             }
         }
         binding.cardEatrightMainNodata.setOnClickListener {
+            AnalyticsLogger.logEvent(requireContext(),AnalyticsEvent.EAT_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "EatRight")
@@ -258,6 +269,7 @@ class HomeDashboardFragment : BaseFragment() {
 
         binding.cardMoverightMainNodata.setOnClickListener {
             if (checkTrailEndedAndShowDialog()) {
+                AnalyticsLogger.logEvent(requireContext(),AnalyticsEvent.MOVE_RIGHT_CLICK)
                 startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "MoveRight")
                     putExtra("BottomSeatName", "Not")
@@ -265,6 +277,7 @@ class HomeDashboardFragment : BaseFragment() {
             }
         }
         binding.cardSleeprightMainNodata.setOnClickListener {
+            AnalyticsLogger.logEvent(requireContext(),AnalyticsEvent.SLEEP_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "SleepRight")
@@ -274,6 +287,7 @@ class HomeDashboardFragment : BaseFragment() {
         }
 
         binding.cardEatright.setOnClickListener {
+            AnalyticsLogger.logEvent(requireContext(),AnalyticsEvent.EAT_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "EatRight")
@@ -282,6 +296,7 @@ class HomeDashboardFragment : BaseFragment() {
             }
         }
         binding.cardSleepright.setOnClickListener {
+            AnalyticsLogger.logEvent(requireContext(),AnalyticsEvent.SLEEP_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "SleepRight")
@@ -290,6 +305,7 @@ class HomeDashboardFragment : BaseFragment() {
             }
         }
         binding.cardThinkright.setOnClickListener {
+            AnalyticsLogger.logEvent(requireContext(),AnalyticsEvent.THINK_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "ThinkRight")
@@ -299,6 +315,7 @@ class HomeDashboardFragment : BaseFragment() {
         }
         binding.cardMoveright.setOnClickListener {
             if (checkTrailEndedAndShowDialog()) {
+                AnalyticsLogger.logEvent(requireContext(),AnalyticsEvent.MOVE_RIGHT_CLICK)
                 startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "MoveRight")
                     putExtra("BottomSeatName", "Not")
@@ -392,6 +409,10 @@ class HomeDashboardFragment : BaseFragment() {
             binding.includeChecklist.imgCheck,
             binding.includeChecklist.rlChecklistProfile
         )
+        AnalyticsLogger.logEvent(
+            requireContext(), AnalyticsEvent.PROFILE_STATUS,
+            mapOf(AnalyticsParam.PROFILE_STATUS to checklistResponse.data.profile)
+        )
         //snap Meal
         setStatusOfChecklist(
             checklistResponse.data.meal_snap,
@@ -399,11 +420,19 @@ class HomeDashboardFragment : BaseFragment() {
             binding.includeChecklist.rlChecklistSnapmeal,
             false
         )
+        AnalyticsLogger.logEvent(
+            requireContext(), AnalyticsEvent.SNAP_MEAL_STATUS,
+            mapOf(AnalyticsEvent.SNAP_MEAL_STATUS to checklistResponse.data.meal_snap)
+        )
         //sync health
         setStatusOfChecklist(
             checklistResponse.data.sync_health_data,
             binding.includeChecklist.imgCheckSynchealth,
             binding.includeChecklist.rlChecklistSynchealth
+        )
+        AnalyticsLogger.logEvent(
+            requireContext(), AnalyticsEvent.SYNC_DATA_STATUS,
+            mapOf(AnalyticsEvent.SYNC_DATA_STATUS to checklistResponse.data.meal_snap)
         )
         // face Scan
         setStatusOfChecklist(
@@ -412,17 +441,29 @@ class HomeDashboardFragment : BaseFragment() {
             binding.includeChecklist.rlChecklistFacescan,
             false
         )
+        AnalyticsLogger.logEvent(
+            requireContext(), AnalyticsEvent.FACIAL_SCAN_STATUS,
+            mapOf(AnalyticsEvent.FACIAL_SCAN_STATUS to checklistResponse.data.vital_facial_scan)
+        )
         // sleep right question
         setStatusOfChecklist(
             checklistResponse.data.unlock_sleep,
             binding.includeChecklist.imgCheckSleepright,
             binding.includeChecklist.rlChecklistSleepright
         )
+        AnalyticsLogger.logEvent(
+            requireContext(), AnalyticsEvent.TR_SR_ASSESSMENT_STATUS,
+            mapOf(AnalyticsEvent.TR_SR_ASSESSMENT_STATUS to checklistResponse.data.meal_snap)
+        )
         // Eat right question
         setStatusOfChecklist(
             checklistResponse.data.discover_eating,
             binding.includeChecklist.imgCheckEatright,
             binding.includeChecklist.rlChecklistEatright
+        )
+        AnalyticsLogger.logEvent(
+            requireContext(), AnalyticsEvent.ER_MR_ASSESSMENT_STATUS,
+            mapOf(AnalyticsEvent.ER_MR_ASSESSMENT_STATUS to checklistResponse.data.meal_snap)
         )
         binding.includeChecklist.tvChecklistNumber.text = "$checkListCount of 6 tasks completed"
         // Chceklist completion logic
@@ -665,7 +706,7 @@ class HomeDashboardFragment : BaseFragment() {
                             module.sleepPerformanceDetail?.actualSleepData?.actualSleepDurationHours?.let {
                                 DateTimeUtils.formatSleepDuration(it)
                             } ?: "0 hr"
-                            )
+                        )
 
 
                         setIfNotNullOrBlank(
@@ -1187,6 +1228,7 @@ class HomeDashboardFragment : BaseFragment() {
             false // Return false if condition is true and dialog is shown
         } else {
             if (!DashboardChecklistManager.checklistStatus) {
+                AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.FINISH_TO_UNLOCK_CLICK)
                 DialogUtils.showCheckListQuestionCommonDialog(requireContext())
                 false
             } else {
@@ -1206,9 +1248,6 @@ class HomeDashboardFragment : BaseFragment() {
 
         bottomSheetDialog.setContentView(bottomSheetView)
 
-
-        bottomSheetDialog.setContentView(bottomSheetView)
-
         // Set up the animation
         val bottomSheetLayout = bottomSheetView.findViewById<LinearLayout>(R.id.design_bottom_sheet)
         if (bottomSheetLayout != null) {
@@ -1223,6 +1262,7 @@ class HomeDashboardFragment : BaseFragment() {
 
         dialogBinding.btnExplorePlan.setOnClickListener {
             bottomSheetDialog.dismiss()
+            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.SUBSCRIBE_RIGHT_LIFE_CLICK)
             startActivity(Intent(requireContext(), SubscriptionPlanListActivity::class.java).apply {
                 putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN")
             })

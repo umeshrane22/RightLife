@@ -15,6 +15,9 @@ import com.jetsynthesys.rightlife.ui.new_design.pojo.ModuleTopic
 import com.jetsynthesys.rightlife.ui.new_design.pojo.OnBoardingDataModuleResponse
 import com.jetsynthesys.rightlife.ui.new_design.pojo.OnboardingModuleRequest
 import com.jetsynthesys.rightlife.ui.profile_new.ProfileSettingsActivity
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import okhttp3.ResponseBody
@@ -45,6 +48,14 @@ class WellnessFocusListActivity : BaseActivity() {
         val rvWellnessFocusList = findViewById<RecyclerView>(R.id.rv_wellness_focus_list)
         val btnContinue = findViewById<Button>(R.id.btn_continue)
         val imgHeader = findViewById<ImageView>(R.id.img_header)
+
+        AnalyticsLogger.logEvent(
+            AnalyticsEvent.SUB_GOAL_SELECTION_VISIT,
+            mapOf(
+                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                AnalyticsParam.TIMESTAMP to System.currentTimeMillis()
+            )
+        )
 
         // Initialize the TextViews in onCreate
         tv_ur_journey = findViewById(R.id.tv_ur_journey)
@@ -124,6 +135,16 @@ class WellnessFocusListActivity : BaseActivity() {
                 startActivity(intent)
             }
         }
+
+        AnalyticsLogger.logEvent(
+            AnalyticsEvent.SUB_GOAL_SELECTION,
+            mapOf(
+                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
+                AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule
+            )
+        )
     }
 
     private fun getOnboardingDataModule(moduleName: String?) {

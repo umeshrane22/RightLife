@@ -20,6 +20,9 @@ import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SnapHelper
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.ConversionUtils
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
@@ -83,6 +86,17 @@ class WeightSelectionFragment : Fragment() {
         if (!(activity as OnboardingQuestionnaireActivity).forProfileChecklist) {
             (activity as OnboardingQuestionnaireActivity).tvSkip.visibility = VISIBLE
         }
+
+        val sharedPreferenceManager = SharedPreferenceManager.getInstance(requireContext())
+        AnalyticsLogger.logEvent(
+            AnalyticsEvent.WEIGHT_SELECTION_VISIT,
+            mapOf(
+                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
+                AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule,
+            )
+        )
 
         kgOption = view.findViewById(R.id.kgOption)
         lbsOption = view.findViewById(R.id.lbsOption)
@@ -177,6 +191,20 @@ class WeightSelectionFragment : Fragment() {
             cardViewSelection.visibility = GONE
             llSelectedWeight.visibility = VISIBLE
             tvSelectedWeight.text = selectedWeight
+
+            AnalyticsLogger.logEvent(
+                AnalyticsEvent.WEIGHT_SELECTION,
+                mapOf(
+                    AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                    AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                    AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
+                    AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule,
+                    AnalyticsParam.GENDER to onboardingQuestionRequest.gender!!,
+                    AnalyticsParam.AGE to onboardingQuestionRequest.age!!,
+                    AnalyticsParam.HEIGHT to onboardingQuestionRequest.height!!,
+                    AnalyticsParam.WEIGHT to selectedWeight
+                )
+            )
 
             /*Handler(Looper.getMainLooper()).postDelayed({
                 OnboardingQuestionnaireActivity.navigateToNextPage()
