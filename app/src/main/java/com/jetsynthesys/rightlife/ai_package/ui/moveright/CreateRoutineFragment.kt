@@ -29,6 +29,7 @@ import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.ActivityModel
 import com.jetsynthesys.rightlife.ai_package.model.CreateRoutineRequest
 import com.jetsynthesys.rightlife.ai_package.model.RoutineWorkoutDisplayModel
+import com.jetsynthesys.rightlife.ai_package.model.WorkoutRoutineItem
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutSessionRecord
 import com.jetsynthesys.rightlife.ai_package.ui.adapter.RoutineWorkoutListAdapter
 import com.jetsynthesys.rightlife.databinding.FragmentCreateRoutineBinding
@@ -78,6 +79,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
 
         // Fetch activityList from YourActivityFragment
         val activityList = arguments?.getParcelableArrayList<ActivityModel>("ACTIVITY_LIST") ?: ArrayList()
+        val workoutLists = arguments?.getParcelable<WorkoutRoutineItem>("WORKOUT_MODEL")
         Log.d("CreateRoutineFragment", "Received ${activityList.size} activities from YourActivityFragment")
 
         // Map ActivityModel to WorkoutSessionRecord and append to workoutList
@@ -99,6 +101,15 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
             addNameLayout.visibility = View.VISIBLE
             createListRoutineLayout.visibility = View.GONE
             editText.setText(textViewRoutine.text.toString())
+        }
+        if (workoutLists != null){
+            addNameLayout.visibility = View.GONE
+            createListRoutineLayout.visibility = View.VISIBLE
+            textViewRoutine.text = workoutLists.routineName
+            // Map workoutList to RoutineWorkoutDisplayModel and update the adapter
+          //  val routineWorkoutModels = mapWorkoutSessionRecordsToRoutineWorkoutModels(workoutList)
+        //    routineWorkoutListAdapter.setData(routineWorkoutModels)
+            createRoutineRecyclerView.visibility = View.VISIBLE
         }
 
         // Show/hide layouts based on routine mode
