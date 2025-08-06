@@ -214,6 +214,7 @@ class MyRoutineFragment(mSelectedDate: String) : BaseFragment<FragmentMyRoutineB
                 activityName = item.activityName,
                 intensity = item.intensity,
                 durationMin = item.durationMin,
+                icon = item.icon,
                 caloriesBurned = item.caloriesBurned
             )
             modelBList.add(newItem)

@@ -19,5 +19,5 @@ data class WorkoutRoutineItem(
     val isSelected: Boolean = false ):Parcelable
 
 @Parcelize
-data class PlanExerciseWorkout( val activityId: String,  val activityName: String,  val intensity: String,  val durationMin: Double, val caloriesBurned: Double ):
+data class PlanExerciseWorkout( val activityId: String,  val activityName: String, @SerializedName("icon") val icon: String, val intensity: String,  val durationMin: Double, val caloriesBurned: Double ):
     Parcelable
