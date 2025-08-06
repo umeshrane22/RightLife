@@ -434,6 +434,9 @@ class HomeDashboardFragment : BaseFragment() {
                 AnalyticsEvent.CHECKLIST_COMPLETE,
                 mapOf(AnalyticsParam.CHECKLIST_COMPLETE to true)
             )
+
+            val activity = requireActivity() as HomeNewActivity
+            activity.getUserDetails()
         } else {
             binding.llDashboardMainData.visibility = View.GONE
             binding.includeChecklist.llLayoutChecklist.visibility = View.VISIBLE
@@ -635,6 +638,10 @@ class HomeDashboardFragment : BaseFragment() {
 
         } else {
             binding.llNodataMain.visibility = View.GONE
+            binding.cardThinkright.visibility = View.VISIBLE
+            binding.cardMoveright.visibility = View.VISIBLE
+            binding.cardEatright.visibility = View.VISIBLE
+            binding.cardSleepright.visibility = View.VISIBLE
 
 
             //for (module in aiDashboardResponseMain?.data?.updatedModules!!) {
