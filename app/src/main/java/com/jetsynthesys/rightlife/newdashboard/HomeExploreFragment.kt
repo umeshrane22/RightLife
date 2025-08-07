@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.annotation.NonNull
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
@@ -92,6 +93,17 @@ class HomeExploreFragment : BaseFragment() {
                 sliderHandler?.removeCallbacks(sliderRunnable!!)
                 sliderHandler?.postDelayed(this, 5000) // Change slide every 3 seconds
             }
+        }
+
+        val swipeRefreshLayout = activity?.findViewById<SwipeRefreshLayout>(R.id.swipeRefreshLayout)
+
+        swipeRefreshLayout?.setOnRefreshListener {
+            // Call your refresh logic
+            sliderHandler?.postDelayed(sliderRunnable!!, 3000)
+            getPromotionList()
+            getRightLifeEdit()
+            getWellnessPlaylist()
+            swipeRefreshLayout.isRefreshing = false // Stop the spinner
         }
 
         callAPIS()
