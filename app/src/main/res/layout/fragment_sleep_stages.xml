@@ -221,7 +221,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="2"
-                                android:text=" Rem"
+                                android:text=" REM"
                                 android:fontFamily="@font/dmsans_regular"
                                 android:textSize="12sp"
                                 android:layout_marginEnd="12dp" />
@@ -491,7 +491,7 @@
                     android:id="@+id/cardio_text_heading"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Rem"
+                    android:text="REM"
                     android:textSize="16sp"
                     android:textColor="@color/black"
                     android:fontFamily="@font/dmsans_bold"
