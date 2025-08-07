@@ -1,8 +1,13 @@
 package com.jetsynthesys.rightlife.ai_package.ui.moveright
 
+import android.content.Context
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.DashPathEffect
+import android.graphics.Paint
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.util.AttributeSet
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -48,6 +53,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.lang.Math.max
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -55,6 +61,7 @@ import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Locale
+import kotlin.math.min
 
 class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
 
@@ -65,6 +72,7 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
     private lateinit var radioGroup: RadioGroup
     private lateinit var backwardImage: ImageView
     private lateinit var forwardImage: ImageView
+    private lateinit var dottedLineView : DottedLineView
     private var selectedWeekDate: String = ""
     private var selectedMonthDate: String = ""
     private var selectedHalfYearlyDate: String = ""
@@ -94,6 +102,7 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
 
         // Initialize views
         barChart = view.findViewById(R.id.heartRateChart)
+        dottedLineView = view.findViewById(R.id.dottedLineView)
         radioGroup = view.findViewById(R.id.tabGroup)
         backwardImage = view.findViewById(R.id.backwardImage)
         forwardImage = view.findViewById(R.id.forwardImage)
@@ -407,18 +416,45 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
         barChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
             override fun onValueSelected(e: Entry?, h: Highlight?) {
                 selectHeartRateLayout.visibility = View.VISIBLE
-                if (e != null) {
+                dottedLineView.visibility = View.VISIBLE
+
+                if (e != null && h != null) {
                     val x = e.x.toInt()
                     val y = e.y
-                    Log.d("ChartClick", "Clicked X: $x, Y: $y")
-                    selectedItemDate.text = labelsDate.get(x)
+
+                    selectedItemDate.text = labelsDate.getOrNull(x) ?: "N/A"
                     selectedCalorieTv.text = y.toInt().toString()
+
+                    // Move CardView
+                    val barX = h.xPx
+                    val chartWidth = barChart.width.toFloat()
+                    val cardWidth = selectHeartRateLayout.width.toFloat()
+                    val targetX = barX - (cardWidth / 2f)
+                    val clampedX = max(0f, min(targetX, chartWidth - cardWidth))
+                    selectHeartRateLayout.x = clampedX
+
+                    // Wait for layout to be drawn before getting positions
+                    selectHeartRateLayout.post {
+                        val cardX = clampedX + cardWidth / 2f
+                        val cardY = selectHeartRateLayout.y + selectHeartRateLayout.height
+
+                        val barY = h.yPx
+
+                        // Set coordinates in dotted line view
+                        dottedLineView.setLineCoordinates(
+                            cardX,
+                            cardX,
+                            barX,
+                            barY
+                        )
+                    }
                 }
             }
 
             override fun onNothingSelected() {
                 Log.d("ChartClick", "Nothing selected")
                 selectHeartRateLayout.visibility = View.INVISIBLE
+                dottedLineView.visibility = View.GONE
             }
         })
 
@@ -1013,5 +1049,36 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
 
     private fun updateAverageStats() {
         // Placeholder for future use
+    }
+}
+
+class DottedLineView @JvmOverloads constructor(
+    context: Context, attrs: AttributeSet? = null
+) : View(context, attrs) {
+
+    private val paint = Paint().apply {
+        color = android.graphics.Color.GRAY
+        strokeWidth = 4f
+        style = Paint.Style.STROKE
+        pathEffect = DashPathEffect(floatArrayOf(10f, 10f), 0f) // Dotted effect
+        isAntiAlias = true
+    }
+
+    var startX = 0f
+    var startY = 0f
+    var endX = 0f
+    var endY = 0f
+
+    fun setLineCoordinates(sx: Float, sy: Float, ex: Float, ey: Float) {
+        startX = sx
+        startY = sy
+        endX = ex
+        endY = ey
+        invalidate() // Trigger a redraw
+    }
+
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
+        canvas.drawLine(startX, startY, endX, endY, paint)
     }
 }
