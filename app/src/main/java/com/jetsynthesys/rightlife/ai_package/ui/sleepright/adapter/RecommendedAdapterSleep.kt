@@ -69,7 +69,7 @@ class RecommendedAdapterSleep(val context: Context, private val items: ArrayList
         val formattedDate = isoDate?.let { convertIsoToCustomDate(it) }
         val categoryName = item.categoryName ?: ""
 
-        val categorySpan = SpannableString("$categoryName      |      ")
+        val categorySpan = SpannableString("$categoryName              |          ")
         categorySpan.setSpan(StyleSpan(Typeface.NORMAL), 0, categoryName.length, 0)
         categorySpan.setSpan(RelativeSizeSpan(14f / 14f), 0, categoryName.length, 0) // 14sp relative to default
         categorySpan.setSpan(ForegroundColorSpan(ContextCompat.getColor(holder.author.context, android.R.color.black)), 0, categoryName.length, 0)
@@ -83,7 +83,22 @@ class RecommendedAdapterSleep(val context: Context, private val items: ArrayList
         }else{
             duration = item.meta?.duration.toString()
         }
-        val dateDurationSpan = SpannableString("$formattedDate      |      $duration")
+        when (item.contentType) {
+            "SERIES" -> {
+                duration=  "${item.episodeCount ?: 0} ep"
+            }
+
+            "TEXT" -> {
+               duration = "${item.readingTime ?: ""} min read"
+            }
+
+            else -> {
+
+                duration = item.meta?.duration?.let { formattedDuration(it) }.toString()
+            }
+        }
+
+        val dateDurationSpan = SpannableString("$formattedDate              |          $duration")
 
 // Set 12sp size for entire span
         dateDurationSpan.setSpan(RelativeSizeSpan(12f / 14f), 0, dateDurationSpan.length, 0)
@@ -189,6 +204,12 @@ class RecommendedAdapterSleep(val context: Context, private val items: ArrayList
         }else{
             holder.viewLine.visibility = View.VISIBLE
         }
+    }
+    fun formattedDuration(duration:Int): String {
+        val totalSeconds = duration ?: 0
+        val minutes = totalSeconds / 60
+        val seconds = totalSeconds % 60
+        return String.format("%02d:%02d", minutes, seconds)
     }
     fun convertIsoToCustomDate(isoDateString: String): String {
         // Parse ISO 8601 string to LocalDateTime (assuming UTC/Z)

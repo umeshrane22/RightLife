@@ -569,20 +569,33 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
         // Log the data being sent
         Log.d("AddWorkoutSearchFragment", "Sending workoutList to CreateRoutineFragment: $workoutListRoutine")
 
+        if (workoutListRoutine.isNullOrEmpty()) {
+            Log.e("AddWorkoutSearchFragment", "workoutListRoutine is null or empty!")
+            Toast.makeText(requireContext(), "No workouts selected", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         // Send updated workoutListRoutine to AllWorkoutFragment
         setFragmentResult("workoutListUpdate", Bundle().apply {
             putParcelableArrayList("workoutList", workoutListRoutine)
+            Log.d("AddWorkoutSearchFragment", "Set fragment result with workoutList size: ${workoutListRoutine?.size}")
         })
 
-        // Navigate to CreateRoutineFragment and pass the updated ArrayList
-        val createRoutineFragment = CreateRoutineFragment()
+        // Create bundle with all necessary data
         val args = Bundle().apply {
             putParcelableArrayList("workoutList", workoutListRoutine)
             putString("routine", routine)
             putString("routineName", routineName)
+            putString("selected_date", mSelectedDate) // Add selected date here
+            Log.d("AddWorkoutSearchFragment", "Bundle args: workoutList size=${workoutListRoutine?.size}, routine=$routine, routineName=$routineName, selectedDate=$mSelectedDate")
         }
-        createRoutineFragment.arguments = args
-        navigateToFragment(createRoutineFragment, "CreateRoutineFragment")
+
+        // Navigate to CreateRoutineFragment and pass the bundle
+        val createRoutineFragment = CreateRoutineFragment().apply {
+            arguments = args
+        }
+
+        navigateToFragment(createRoutineFragment, "CreateRoutineFragment", args)
     }
 
     private fun getCurrentDate(): String {
@@ -862,7 +875,22 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
         }
     }
 
-    private fun navigateToFragment(fragment: androidx.fragment.app.Fragment, tag: String) {
+    private fun navigateToFragment(fragment: androidx.fragment.app.Fragment, tag: String, existingArgs: Bundle? = null) {
+        // Use existing arguments if provided, otherwise create new bundle
+        val args = existingArgs ?: Bundle().apply {
+            putString("selected_date", mSelectedDate)
+        }
+
+        // Set arguments to fragment
+        fragment.arguments = args
+
+        requireActivity().supportFragmentManager.beginTransaction().apply {
+            replace(R.id.flFragment, fragment, tag)
+            addToBackStack(null)
+            commit()
+        }
+    }
+    private fun navigateToFragmentCreate(fragment: androidx.fragment.app.Fragment, tag: String) {
         val args = Bundle().apply {
            putString("selected_date", mSelectedDate)
         }

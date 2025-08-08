@@ -47,6 +47,8 @@ data class ContentList (
     var tags          : ArrayList<String>        = arrayListOf(),
     @SerializedName("episodeCount"  )
     var episodeCount  : Int?      ,
+    @SerializedName("readingTime"  )
+    var readingTime  : String?      ,
     @SerializedName("isPromoted"    )
     var isPromoted    : Boolean?  ,
     @SerializedName("youtubeUrl"    )
