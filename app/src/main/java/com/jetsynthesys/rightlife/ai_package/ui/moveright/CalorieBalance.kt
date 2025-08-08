@@ -545,7 +545,7 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
 //                        selectedDate = firstDateOfMonth
                         selectedMonthDate = selectedDate
                     } else {
-                       // val firstDateOfMonth = getFirstDateOfMonth(selectedMonthDate, 1)
+                        // val firstDateOfMonth = getFirstDateOfMonth(selectedMonthDate, 1)
                         selectedDate = selectedMonthDate
                     }
                     setSelectedDateMonth(selectedMonthDate, "Month")
@@ -556,7 +556,7 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
 //                        selectedDate = firstDateOfMonth
                         selectedHalfYearlyDate = selectedDate
                     } else {
-                      //  val firstDateOfMonth = getFirstDateOfMonth(selectedHalfYearlyDate, 1)
+                        //  val firstDateOfMonth = getFirstDateOfMonth(selectedHalfYearlyDate, 1)
                         selectedDate = selectedHalfYearlyDate
                     }
                     setSelectedDateMonth(selectedHalfYearlyDate, "Year")
@@ -686,30 +686,30 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
         val labels = generateWeeklyLabelsFor30Days(dateList[0])
         weeklyLabels.addAll(labelsWithEmpty)
         labelsDate.addAll(labels)
-       /* for (i in 0 until 30) {
-            weeklyLabels.add(
-                when (i) {
-                    2 -> "1-7"
-                    9 -> "8-14"
-                    15 -> "15-21"
-                    22 -> "22-28"
-                    29 -> "29-31"
-                    else -> ""
-                }
-            )
-            val dateLabel = (convertMonth(dateString) + "," + year)
-            if (i < 7) {
-                labelsDate.add("1-7 $dateLabel")
-            } else if (i < 14) {
-                labelsDate.add("8-14 $dateLabel")
-            } else if (i < 21) {
-                labelsDate.add("15-21 $dateLabel")
-            } else if (i < 28) {
-                labelsDate.add("22-28 $dateLabel")
-            } else {
-                labelsDate.add("29-31 $dateLabel")
-            }
-        }*/
+        /* for (i in 0 until 30) {
+             weeklyLabels.add(
+                 when (i) {
+                     2 -> "1-7"
+                     9 -> "8-14"
+                     15 -> "15-21"
+                     22 -> "22-28"
+                     29 -> "29-31"
+                     else -> ""
+                 }
+             )
+             val dateLabel = (convertMonth(dateString) + "," + year)
+             if (i < 7) {
+                 labelsDate.add("1-7 $dateLabel")
+             } else if (i < 14) {
+                 labelsDate.add("8-14 $dateLabel")
+             } else if (i < 21) {
+                 labelsDate.add("15-21 $dateLabel")
+             } else if (i < 28) {
+                 labelsDate.add("22-28 $dateLabel")
+             } else {
+                 labelsDate.add("29-31 $dateLabel")
+             }
+         }*/
 
         // Aggregate calories by day
         calorieAnalysisResponse.data.calorie_data.forEach { calorie ->
