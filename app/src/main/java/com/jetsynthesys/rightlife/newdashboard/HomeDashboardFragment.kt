@@ -39,6 +39,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.jetsynthesys.rightlife.BaseFragment
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.ai_package.model.SleepStagesData
 import com.jetsynthesys.rightlife.ai_package.ui.MainAIActivity
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.SleepSegmentModel
 import com.jetsynthesys.rightlife.databinding.BottomsheetTrialEndedBinding
@@ -65,12 +66,17 @@ import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils
+import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils.formatDuration
 import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
+import java.time.Duration
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Locale
 import kotlin.math.roundToLong
@@ -78,6 +84,12 @@ import kotlin.math.roundToLong
 class HomeDashboardFragment : BaseFragment() {
     private var _binding: FragmentHomeDashboardBinding? = null
     private val binding get() = _binding!!
+
+    private val remData: ArrayList<Float> = arrayListOf()
+    private val awakeData: ArrayList<Float> = arrayListOf()
+    private val coreData: ArrayList<Float> = arrayListOf()
+    private val deepData: ArrayList<Float> = arrayListOf()
+    private val formatters = DateTimeFormatter.ISO_DATE_TIME
 
     private lateinit var healthConnectClient: HealthConnectClient
     private var checklistComplete = true
@@ -187,7 +199,9 @@ class HomeDashboardFragment : BaseFragment() {
                 ?.find { it.title == "HealthCam" }
                 ?.isFree ?: false
 
-            if (isHealthCamFree) {
+            val isFacialScanService = sharedPreferenceManager.userProfile.facialScanService ?: false
+
+            if (isFacialScanService) {
                 if (DashboardChecklistManager.facialScanStatus) {
                     startActivity(
                         Intent(
@@ -739,7 +753,7 @@ class HomeDashboardFragment : BaseFragment() {
                             binding.tvModuleValueSleepright,
                             module.sleepPerformanceDetail?.actualSleepData?.actualSleepDurationHours?.let {
                                 DateTimeUtils.formatSleepDuration(it)
-                            } ?: "0 hr"
+                            } ?: "0 hr 0 min"
                         )
 
 
@@ -773,7 +787,7 @@ class HomeDashboardFragment : BaseFragment() {
                             binding.tvModuleValueSleepright,
                             module.sleepPerformanceDetail?.actualSleepData?.actualSleepDurationHours?.let {
                                 DateTimeUtils.formatSleepDuration(it)
-                            } ?: "0 hr"
+                            } ?: "0 hr 0 min"
 
                         )
                         setIfNotNullOrBlank(
@@ -841,7 +855,7 @@ class HomeDashboardFragment : BaseFragment() {
                             binding.tvModuleValueSleepright,
                             module.sleepPerformanceDetail?.actualSleepData?.actualSleepDurationHours?.let {
                                 DateTimeUtils.formatSleepDuration(it)
-                            } ?: "0 hr"
+                            } ?: "0 hr 0 min"
                         )
                         setIfNotNullOrBlank(
                             binding.tvModuleValueThinkright, module.mindfulTime?.toString()
@@ -870,7 +884,7 @@ class HomeDashboardFragment : BaseFragment() {
                             binding.tvModuleValueSleepright,
                             module.sleepPerformanceDetail?.actualSleepData?.actualSleepDurationHours?.let {
                                 DateTimeUtils.formatSleepDuration(it)
-                            } ?: "0 hr"
+                            } ?: "0 hr 0 min"
                         )
                         setIfNotNullOrBlank(
                             binding.tvModuleValueThinkright, module.mindfulTime?.toString()
@@ -1150,12 +1164,13 @@ class HomeDashboardFragment : BaseFragment() {
                     binding.cardSleepMainLog.visibility = View.GONE
                     // Update UI elements here
                     binding.cardSleeprightMain.visibility = View.VISIBLE
-                    binding.tvRem.text = module.rem.toString()
-                    binding.tvCore.text = module.core.toString()
-                    binding.tvDeep.text = module.deep.toString()
-                    binding.tvAwake.text = module.awake.toString()
-                    binding.tvSleepTime.text = module.sleepTime.toString()
-                    binding.tvWakeupTime.text = module.wakeUpTime.toString()
+                    binding.tvRem.text = DateTimeUtils.formatSleepDurationforidealSleep(module.rem ?: 0.0)//module.rem.toString()
+                    binding.tvCore.text = DateTimeUtils.formatSleepDurationforidealSleep(module.core ?: 0.0)//module.core.toString()
+                    binding.tvDeep.text = DateTimeUtils.formatSleepDurationforidealSleep(module.deep ?: 0.0)//module.deep.toString()
+                    binding.tvAwake.text =DateTimeUtils.formatSleepDurationforidealSleep(module.awake ?: 0.0)
+                        //module.awake.toString()
+                    binding.tvSleepTime.text = convertTo12HourZoneFormat(module.sleepTime.toString())
+                    binding.tvWakeupTime.text = convertTo12HourZoneFormat(module.wakeUpTime.toString())
 
                     val sleepData = listOf(
                         SleepSegmentModel(
@@ -1184,7 +1199,20 @@ class HomeDashboardFragment : BaseFragment() {
                     )
 
                     //binding.sleepStagesView.setSleepData(sleepData)
-                    newSleepStagesHandling(module.sleepStages ?: emptyList())
+                   // newSleepStagesHandling(module.sleepStages ?: emptyList())
+// Set Sleep Stages Data
+                    val sleepStageData: ArrayList<SleepStage> = arrayListOf()
+                    if (module?.sleepStages != null) {
+                        for (i in 0 until module?.sleepStages?.size!!) {
+                            module?.sleepStages?.getOrNull(i)?.let {
+                                sleepStageData.add(it)
+                            }
+                        }
+                        setSleepRightStageData(sleepStageData)
+
+                    }
+
+                    //setSleepRightStageData(module.sleepStages ?: emptyList())
                 }
             } catch (e: Exception) {
                 // Handle JSON parsing errors (e.g., malformed JSON)
@@ -1197,6 +1225,99 @@ class HomeDashboardFragment : BaseFragment() {
                 e.printStackTrace() // Log the error for debugging
             }
 
+        }
+    }
+
+
+    private fun setSleepRightStageData(sleepStageResponse: ArrayList<SleepStage>) {
+        if (sleepStageResponse.size > 0) {
+
+            remData.clear()
+            awakeData.clear()
+            coreData.clear()
+            deepData.clear()
+
+            var totalRemDuration = 0f
+            var totalAwakeDuration = 0f
+            var totalCoreDuration = 0f
+            var totalDeepDuration = 0f
+
+            for (i in 0 until sleepStageResponse.size) {
+                val startDateTime =
+                    LocalDateTime.parse(sleepStageResponse[i].startDatetime, formatters)
+                val endDateTime = LocalDateTime.parse(sleepStageResponse[i].endDatetime, formatters)
+                val duration = Duration.between(startDateTime, endDateTime).toMinutes()
+                    .toFloat() / 60f // Convert to hours
+
+                when (sleepStageResponse[i].stage) {
+                    "REM Sleep" -> {
+                        remData.add(duration)
+                        totalRemDuration += duration
+                    }
+
+                    "Deep Sleep" -> {
+                        deepData.add(duration)
+                        totalDeepDuration += duration
+                    }
+
+                    "Light Sleep" -> {
+                        coreData.add(duration)
+                        totalCoreDuration += duration
+                    }
+
+                    "Awake" -> {
+                        awakeData.add(duration)
+                        totalAwakeDuration += duration
+                    }
+                }
+            }
+            binding.tvCore.text = formatDuration(totalCoreDuration)
+            binding.tvAwake.text = formatDuration(totalAwakeDuration)
+            binding.tvDeep.text = formatDuration(totalDeepDuration)
+            binding.tvRem.text = formatDuration(totalRemDuration)
+
+            setStageGraph(sleepStageResponse)
+        }
+    }
+
+
+    private fun setStageGraph(sleepStageResponse: ArrayList<SleepStage>) {
+        val sleepData: ArrayList<SleepSegmentModel> = arrayListOf()
+        var currentPosition = 0f
+        val totalDuration = sleepStageResponse.sumOf {
+            Duration.between(
+                LocalDateTime.parse(it.startDatetime, formatters),
+                LocalDateTime.parse(it.endDatetime, formatters)
+            ).toMinutes().toDouble()
+        }.toFloat()
+
+        sleepStageResponse.forEach { stage ->
+            val startDateTime = LocalDateTime.parse(stage.startDatetime, formatters)
+            val endDateTime = LocalDateTime.parse(stage.endDatetime, formatters)
+            val duration = Duration.between(startDateTime, endDateTime).toMinutes().toFloat()
+            val start = currentPosition / totalDuration
+            val end = (currentPosition + duration) / totalDuration
+            val color = when (stage.stage) {
+                "REM Sleep" -> resources.getColor(R.color.light_blue_bar) // Light blue
+                "Deep Sleep" -> resources.getColor(R.color.purple_bar) // Dark blue
+                "Light Sleep" -> resources.getColor(R.color.blue_bar) // Medium blue
+                "Awake" -> resources.getColor(R.color.red_orange_bar) // Red
+                else -> Color.GRAY
+            }
+            sleepData.add(SleepSegmentModel(start, end, color, 110f))
+            currentPosition += duration
+        }
+
+        binding.sleepStagesView.setSleepData(sleepData)
+    }
+
+    private fun formatDuration(durationHours: Float): String {
+        val hours = durationHours.toInt()
+        val minutes = ((durationHours - hours) * 60).toInt()
+        return if (hours > 0) {
+            "$hours hr $minutes mins"
+        } else {
+            "$minutes mins"
         }
     }
 
@@ -1326,5 +1447,26 @@ class HomeDashboardFragment : BaseFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    fun convertTo12HourZoneFormat(input: String): String {
+        lateinit var inputFormatter : DateTimeFormatter
+        if (input.length > 21) {
+            inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
+        }else{
+            inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+        }
+        val outputFormatter = DateTimeFormatter.ofPattern("hh:mm a") // 12-hour format with AM/PM
+
+        // Parse as LocalDateTime (no time zone info)
+        val utcDateTime = LocalDateTime.parse(input, inputFormatter)
+
+        // Convert to UTC ZonedDateTime
+        val utcZoned = utcDateTime.atZone(ZoneId.of("UTC"))
+
+        // Convert to system local time zone
+        val localZoned = utcZoned.withZoneSameInstant(ZoneId.systemDefault())
+
+        return outputFormatter.format(localZoned)
     }
 }

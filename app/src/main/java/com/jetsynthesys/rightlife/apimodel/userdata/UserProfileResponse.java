@@ -69,6 +69,42 @@ public class UserProfileResponse {
     @Expose
     private Boolean isReportGenerated;
 
+    public Boolean getFacialScanService() {
+        return isFacialScanService;
+    }
+
+    public void setFacialScanService(Boolean facialScanService) {
+        isFacialScanService = facialScanService;
+    }
+
+    public Boolean getReportGenerated() {
+        return isReportGenerated;
+    }
+
+    public void setReportGenerated(Boolean reportGenerated) {
+        isReportGenerated = reportGenerated;
+    }
+
+    public Boolean getSubscribed() {
+        return isSubscribed;
+    }
+
+    public void setSubscribed(Boolean subscribed) {
+        isSubscribed = subscribed;
+    }
+
+    public Boolean getFacialReport() {
+        return isFacialReport;
+    }
+
+    public void setFacialReport(Boolean facialReport) {
+        isFacialReport = facialReport;
+    }
+
+    @SerializedName("isFacialScanService")
+    @Expose
+    private Boolean isFacialScanService;
+
     public Boolean getReportView() {
         return isReportView;
     }

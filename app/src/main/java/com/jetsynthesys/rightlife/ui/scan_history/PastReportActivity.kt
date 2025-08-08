@@ -53,11 +53,11 @@ class PastReportActivity : BaseActivity() {
 
 
         var isReportGenerated = sharedPreferenceManager.userProfile?.isReportGenerated
-        if (isReportGenerated == true) {
+    /*    if (isReportGenerated == true) {
             binding.llAiReport.visibility = android.view.View.VISIBLE
         } else {
             binding.llAiReport.visibility = android.view.View.GONE
-        }
+        }*/
     }
 
     private fun fetchPastReports() {
@@ -91,6 +91,22 @@ class PastReportActivity : BaseActivity() {
                                             putExtra("REPORT_ID", reportItem._id)
                                             putExtra("Assessment", reportItem.assessment)
                                         })
+
+                                "AI_REPORT" ->
+                                {
+                                    val dynamicReportId = SharedPreferenceManager.getInstance(applicationContext).userId ?: ""
+
+                                    if (dynamicReportId.isNotEmpty()) {
+                                        startActivity(
+                                            Intent(this@PastReportActivity, AIReportWebViewActivity::class.java)
+                                                .putExtra(AIReportWebViewActivity.EXTRA_REPORT_ID, dynamicReportId)
+                                        )
+                                    } else {
+                                        // Error handling if ID is empty
+                                    }
+
+                                }
+
 
                                 else -> {
                                     //to do open Snap Meal Result

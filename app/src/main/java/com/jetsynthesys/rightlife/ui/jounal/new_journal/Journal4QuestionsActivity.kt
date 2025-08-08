@@ -662,13 +662,33 @@ class Journal4QuestionsActivity : BaseActivity() {
                         response.message(),
                         Toast.LENGTH_SHORT
                     ).show()
-                    AnalyticsLogger.logEvent(
+                   /* AnalyticsLogger.logEvent(
                         this@Journal4QuestionsActivity, AnalyticsEvent.JOURNAL_ENTRY_CREATED,
                         mapOf(
                             AnalyticsParam.JOURNAL_TYPE to journalItem?.title!!,
                             AnalyticsParam.JOURNAL_ID to journalItem?.id!!
                         )
-                    )
+                    )*/
+                    val journalType = journalItem?.title
+                    val journalId = journalEntry?.id
+
+                    if (journalType != null && journalId != null) {
+                        AnalyticsLogger.logEvent(
+                            this@Journal4QuestionsActivity, AnalyticsEvent.JOURNAL_ENTRY_CREATED,
+                            mapOf(
+                                AnalyticsParam.JOURNAL_TYPE to journalType,
+                                AnalyticsParam.JOURNAL_ID to journalId
+                            )
+                        )
+                    }else {
+                        AnalyticsLogger.logEvent(
+                            this@Journal4QuestionsActivity, AnalyticsEvent.JOURNAL_ENTRY_CREATED,
+                            mapOf(
+                                AnalyticsParam.JOURNAL_TYPE to "",
+                                AnalyticsParam.JOURNAL_ID to ""
+                            )
+                        )
+                    }
 
                     closeActivity()
                 } else {
