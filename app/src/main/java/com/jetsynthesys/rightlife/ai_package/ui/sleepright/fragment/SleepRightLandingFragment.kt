@@ -1231,10 +1231,19 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     }
 
     private fun convertDecimalHoursToHrMinFormat(hoursDecimal: Double): String {
-        val totalMinutes = (hoursDecimal * 60).toInt()
-        val hours = totalMinutes / 60
-        val minutes = totalMinutes % 60
-        return String.format("%02dhr %02dmins", hours, minutes)
+        var result = "0"
+        if (hoursDecimal == 0.0){
+            val totalMinutes = (hoursDecimal * 60).toInt()
+            val hours = totalMinutes / 60
+            val minutes = totalMinutes % 60
+            result = "0 mins"
+        }else {
+            val totalMinutes = (hoursDecimal * 60).toInt()
+            val hours = totalMinutes / 60
+            val minutes = totalMinutes % 60
+            result = String.format("%02dhr %02dmins", hours, minutes)
+        }
+        return result
     }
 
     fun convertDecimalMinutesToHrMinFormat(decimalMinutes: Double): String {
@@ -1903,14 +1912,18 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
 
     private fun setSleepPerformanceData(sleepPerformanceDetail: SleepPerformanceDetail) {
         if (sleepPerformanceDetail.sleepPerformanceData?.sleepPerformance != null) {
-            if (sleepPerformanceDetail.sleepPerformanceData?.sleepPerformance!! > 0.0) {
+          //  if (sleepPerformanceDetail.sleepPerformanceData?.sleepPerformance!! > 0.0) {
                 restroNoDataCardView.visibility = View.GONE
                 restroDataCardView.visibility = View.GONE
                 performNoDataCardView.visibility = View.GONE
                 performCardView.visibility = View.VISIBLE
                 tvPerformStartTime.text = convertTo12HourZoneFormat(sleepPerformanceDetail.actualSleepData?.sleepStartTime!!)
                 tvPerformWakeTime.text = convertTo12HourZoneFormat(sleepPerformanceDetail.actualSleepData?.sleepEndTime!!)
+            if (sleepPerformanceDetail.sleepPerformanceData?.sleepPerformance == 0.0){
+                tvPerformSleepPercent.text = "0"
+            }else{
                 tvPerformSleepPercent.text = sleepPerformanceDetail.sleepPerformanceData?.sleepPerformance?.toString()
+            }
                 tvPerformSleepDuration.text = convertDecimalHoursToHrMinFormat(sleepPerformanceDetail.actualSleepData?.actualSleepDurationHours!!)
                 tvPerformIdealDuration.text = convertDecimalHoursToHrMinFormat(sleepPerformanceDetail.idealSleepDuration!!)
                 if (sleepPerformanceDetail.sleepPerformanceData?.actionStep != null && sleepPerformanceDetail.sleepPerformanceData?.message != null) {
@@ -1923,7 +1936,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     tvPerformMessage.text = ""
                 //    imgPerformAction.setImageResource(0)
                 }
-            } else {
+            /*} else {
                 performNoDataCardView.visibility = View.VISIBLE
                 performCardView.visibility = View.GONE
                 restroNoDataCardView.visibility = View.GONE
@@ -1939,7 +1952,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     )
                     dialog.show(parentFragmentManager, "LogYourNapDialogFragment")
                 }
-            }
+            }*/
         }else{
             performNoDataCardView.visibility = View.VISIBLE
             performCardView.visibility = View.GONE

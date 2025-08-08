@@ -146,30 +146,47 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
         }
 
         view.findViewById<View>(R.id.btnSaveLog).setOnClickListener {
-            val sleepTime = tvStartTime.text.toString()
-            val inputFmt  = DateTimeFormatter.ofPattern("hh:mm a")
-            val outputFmt = DateTimeFormatter.ofPattern("HH:mm:ss")
-            val time24h = LocalTime.parse(sleepTime, inputFmt).format(outputFmt)
-           // val formatStartDate = "$selectedDate"+"T"+"$time24h"
-            val deviceZone  = ZoneId.systemDefault()          // phone / emulator zone
-          //  val ldt         = LocalDateTime.parse(formatStartDate)      // parses without zone
-            val instantStart     = selectedSleepDateTime.atZone(deviceZone).toInstant().toString()
-            val wakeTime =  tvEndTime.text.toString()
-            val inputFmt1  = DateTimeFormatter.ofPattern("hh:mm a")
-            val outputFmt1 = DateTimeFormatter.ofPattern("HH:mm:ss")
-            val time24h1 = LocalTime.parse(wakeTime, inputFmt1).format(outputFmt1)
-         //   val formatWakeDate = "${SleepRightLandingFragment.dialogWakeDate}"+"T"+"$time24h1"
-        //    val ldt1         = LocalDateTime.parse(formatWakeDate)      // parses without zone
-            val instantEnd     = selectedWakeDateTime.atZone(deviceZone).toInstant().toString()
-            val utcOdt   = OffsetDateTime.parse(instantStart)    // parse as an OffsetDateTime (UTC)
-            val systemZone1: ZoneId = ZoneId.systemDefault()       // or ZoneId.systemDefault()
-            val istOdt   = utcOdt.atZoneSameInstant(systemZone1)   // same instant, new zone
-            val startSleepTime  = istOdt.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
-            val utcOdt1   = OffsetDateTime.parse(instantEnd)    // parse as an OffsetDateTime (UTC)
-            val systemZone: ZoneId = ZoneId.systemDefault()     // or ZoneId.systemDefault()
-            val istOdt1   = utcOdt1.atZoneSameInstant(systemZone)   // same instant, new zone
-            val endSleepTime  = istOdt1.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
-            logNap(startSleepTime,endSleepTime)
+            val duration = tvDuration.text.toString()
+            var negativeSign = false
+            val regex = Regex("-?\\d+")
+            val matches = regex.findAll(duration)
+            for (match in matches) {
+                val number = match.value.toInt()
+                if (number <= 0) {
+                    negativeSign = true
+                } else {
+                    negativeSign = false
+                }
+            }
+            if (negativeSign){
+                Toast.makeText(context, "Sleep duration cannot be negative", Toast.LENGTH_SHORT).show()
+            }else{
+                val sleepTime = tvStartTime.text.toString()
+                val inputFmt  = DateTimeFormatter.ofPattern("hh:mm a")
+                val outputFmt = DateTimeFormatter.ofPattern("HH:mm:ss")
+                val time24h = LocalTime.parse(sleepTime, inputFmt).format(outputFmt)
+                // val formatStartDate = "$selectedDate"+"T"+"$time24h"
+                val deviceZone  = ZoneId.systemDefault()          // phone / emulator zone
+                //  val ldt         = LocalDateTime.parse(formatStartDate)      // parses without zone
+                val instantStart     = selectedSleepDateTime.atZone(deviceZone).toInstant().toString()
+                val wakeTime =  tvEndTime.text.toString()
+                val inputFmt1  = DateTimeFormatter.ofPattern("hh:mm a")
+                val outputFmt1 = DateTimeFormatter.ofPattern("HH:mm:ss")
+                val time24h1 = LocalTime.parse(wakeTime, inputFmt1).format(outputFmt1)
+                //   val formatWakeDate = "${SleepRightLandingFragment.dialogWakeDate}"+"T"+"$time24h1"
+                //    val ldt1         = LocalDateTime.parse(formatWakeDate)      // parses without zone
+                val instantEnd     = selectedWakeDateTime.atZone(deviceZone).toInstant().toString()
+                val utcOdt   = OffsetDateTime.parse(instantStart)    // parse as an OffsetDateTime (UTC)
+                val systemZone1: ZoneId = ZoneId.systemDefault()       // or ZoneId.systemDefault()
+                val istOdt   = utcOdt.atZoneSameInstant(systemZone1)   // same instant, new zone
+                val startSleepTime  = istOdt.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+                val utcOdt1   = OffsetDateTime.parse(instantEnd)    // parse as an OffsetDateTime (UTC)
+                val systemZone: ZoneId = ZoneId.systemDefault()     // or ZoneId.systemDefault()
+                val istOdt1   = utcOdt1.atZoneSameInstant(systemZone)   // same instant, new zone
+                val endSleepTime  = istOdt1.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+                logNap(startSleepTime,endSleepTime)
+            }
+
         }
         view.findViewById<View>(R.id.btnClose).setOnClickListener {
             dismiss()
