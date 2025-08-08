@@ -614,11 +614,10 @@ class MindAuditResultActivity : BaseActivity() {
         }
 
         for (assessment in assessments.savedAssessment) {
-            if (assessment.isCompleted && !suggestedAssessments.contains(assessment.assessmentType)) suggestedAssessments.add(
-                assessment.assessmentType
-            )
-            else
+            if (assessment.isCompleted && !suggestedAssessments.contains(assessment.assessmentType)) {
+                suggestedAssessments.add(assessment.assessmentType)
                 allAssessments.remove(assessment.assessmentType)
+            }
         }
 
         for (assessment in suggestedAssessments) {

@@ -36,7 +36,18 @@
         android:orientation="horizontal"
         android:id="@+id/ll_ai_report"
         android:layout_marginHorizontal="@dimen/margin_card_16dp"
+        android:paddingHorizontal="@dimen/margin_card_16dp"
+        android:layout_gravity="center_vertical"
+        android:gravity="center_vertical"
+        android:visibility="gone"
         android:layout_height="50dp">
+
+        <ImageView
+            android:id="@+id/imgIcon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ai_report_icon"
+            android:layout_marginEnd="12dp" />
         <TextView
             android:layout_width="match_parent"
             android:text="RightLife AI Report"
@@ -53,6 +64,8 @@
             android:layout_gravity="center_vertical"
             android:src="@drawable/next_arrow_settings" />
     </LinearLayout>
+
+
 
     <!-- RecyclerView for Past Reports -->
     <androidx.recyclerview.widget.RecyclerView

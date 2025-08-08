@@ -13,6 +13,9 @@ import androidx.core.content.ContextCompat
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.ui.CommonAPICall
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 
 class EnableNotificationActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,10 +26,28 @@ class EnableNotificationActivity : BaseActivity() {
         findViewById<ImageView>(R.id.imageClose).setOnClickListener {
             sharedPreferenceManager.enableNotification = true
             startActivity(Intent(this, SyncNowActivity::class.java))
+            AnalyticsLogger.logEvent(
+                AnalyticsEvent.ENABLE_NOTIFICATION_CLOSE,
+                mapOf(
+                    AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                    AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                    AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
+                    AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule,
+                )
+            )
         }
 
         btnEnableNotification.setOnClickListener {
             checkPermission()
+            AnalyticsLogger.logEvent(
+                AnalyticsEvent.ENABLE_NOTIFICATION_CLICK,
+                mapOf(
+                    AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                    AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                    AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
+                    AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule,
+                )
+            )
         }
     }
 

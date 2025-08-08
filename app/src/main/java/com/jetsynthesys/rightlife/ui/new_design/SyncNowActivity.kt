@@ -35,6 +35,7 @@ import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.new_design.pojo.LoggedInUser
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.launch
@@ -75,7 +76,26 @@ class SyncNowActivity : BaseActivity() {
         val btnSyncNow = findViewById<LinearLayout>(R.id.btn_sync_now)
         val btnSkipForNOw = findViewById<Button>(R.id.btn_skip_for_now)
 
+        AnalyticsLogger.logEvent(
+            AnalyticsEvent.SYNC_NOW_VISIT,
+            mapOf(
+                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
+                AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule,
+            )
+        )
+
         btnSyncNow.setOnClickListener {
+            AnalyticsLogger.logEvent(
+                AnalyticsEvent.SYNC_NOW_CLICK,
+                mapOf(
+                    AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                    AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                    AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
+                    AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule,
+                )
+            )
             val availabilityStatus = HealthConnectClient.getSdkStatus(this)
             if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
                 healthConnectClient = HealthConnectClient.getOrCreate(this)

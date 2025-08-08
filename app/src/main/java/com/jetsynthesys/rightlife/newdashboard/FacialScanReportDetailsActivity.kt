@@ -268,6 +268,7 @@ class FacialScanReportDetailsActivity : BaseActivity() {
                 response: Response<FacialScanReportResponse>
             ) {
                 if (response.isSuccessful && response.body() != null) {
+                    clearGraph(binding)
                     val responseBody = response.body()
                     graphData =
                         responseBody?.data?.result!! // ✅ now getting `result` object from `data`
@@ -815,6 +816,14 @@ class FacialScanReportDetailsActivity : BaseActivity() {
             invalidate()
         }
     }
+
+    fun clearGraph(binding: ActivityFacialScanReportDetailsBinding) {
+        val lineChart = binding.heartRateChart
+        lineChart.data = null
+        lineChart.xAxis.valueFormatter = IndexAxisValueFormatter(emptyList())
+        lineChart.invalidate()
+    }
+
 
     fun formatIsoDateToReadable(input: String): String {
         val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH)

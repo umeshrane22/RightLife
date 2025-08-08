@@ -16,6 +16,9 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.apimodel.userdata.Userdata
 import com.jetsynthesys.rightlife.ui.CommonAPICall
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.Utils
@@ -34,6 +37,10 @@ class CreateUsernameActivity : BaseActivity() {
         var username = intent.getStringExtra("USERNAME_KEY")
         var email = intent.getStringExtra("EMAIL")
 
+        AnalyticsLogger.logEvent(
+            AnalyticsEvent.CREATE_USER_SCREEN_VISIT,
+            mapOf(AnalyticsParam.TIMESTAMP to System.currentTimeMillis())
+        )
 
         val edtUsername = findViewById<EditText>(R.id.edt_username)
         val sharedPreferenceManager = SharedPreferenceManager.getInstance(this)

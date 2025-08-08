@@ -103,6 +103,11 @@ class ImageSliderActivity : BaseActivity() {
 
         viewPager.adapter = ImageSliderAdapter(this, images, headers, descriptions)
 
+        AnalyticsLogger.logEvent(
+            AnalyticsEvent.LOGIN_SCREEN_VISIT,
+            mapOf(AnalyticsParam.TIMESTAMP to System.currentTimeMillis())
+        )
+
         // Set up the TabLayoutMediator to sync dots with the images
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             // You can set custom content for tabs if needed, but we are using default dots
@@ -195,6 +200,11 @@ class ImageSliderActivity : BaseActivity() {
         btnGoogle.setOnClickListener {
 //            startActivity(Intent(this, CreateUsernameActivity::class.java))
 //            finish()
+
+            AnalyticsLogger.logEvent(
+                AnalyticsEvent.CONTINUE_WITH_GOOGLE_CLICK,
+                mapOf(AnalyticsParam.TIMESTAMP to System.currentTimeMillis())
+            )
 
             val signInIntent = googleSignInClient.signInIntent
             startActivityForResult(signInIntent, RC_SIGN_IN)

@@ -34,10 +34,12 @@ import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
 import androidx.health.connect.client.records.WeightRecord
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.jetsynthesys.rightlife.BaseFragment
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.ai_package.model.SleepStagesData
 import com.jetsynthesys.rightlife.ai_package.ui.MainAIActivity
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.SleepSegmentModel
 import com.jetsynthesys.rightlife.databinding.BottomsheetTrialEndedBinding
@@ -64,12 +66,17 @@ import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils
+import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils.formatDuration
 import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
+import java.time.Duration
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Locale
 import kotlin.math.roundToLong
@@ -77,6 +84,12 @@ import kotlin.math.roundToLong
 class HomeDashboardFragment : BaseFragment() {
     private var _binding: FragmentHomeDashboardBinding? = null
     private val binding get() = _binding!!
+
+    private val remData: ArrayList<Float> = arrayListOf()
+    private val awakeData: ArrayList<Float> = arrayListOf()
+    private val coreData: ArrayList<Float> = arrayListOf()
+    private val deepData: ArrayList<Float> = arrayListOf()
+    private val formatters = DateTimeFormatter.ISO_DATE_TIME
 
     private lateinit var healthConnectClient: HealthConnectClient
     private var checklistComplete = true
@@ -100,6 +113,7 @@ class HomeDashboardFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentHomeDashboardBinding.inflate(inflater, container, false)
+        AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.HOME_DASHBOARD_VISIT)
         return binding.root
     }
 
@@ -119,6 +133,17 @@ class HomeDashboardFragment : BaseFragment() {
         fetchDashboardData()
         getAiDashboard()
 
+        val swipeRefreshLayout = activity?.findViewById<SwipeRefreshLayout>(R.id.swipeRefreshLayout)
+
+        swipeRefreshLayout?.setOnRefreshListener {
+            // Call your refresh logic
+            fetchDashboardData()
+            getDashboardChecklist()
+            getDashboardChecklistStatus()
+            getAiDashboard()
+            swipeRefreshLayout.isRefreshing = false // Stop the spinner
+        }
+
         binding.includeChecklist.rlChecklistEatright.setOnClickListener {
             startActivity(Intent(requireContext(), QuestionnaireEatRightActivity::class.java))
         }
@@ -131,12 +156,14 @@ class HomeDashboardFragment : BaseFragment() {
         }
         binding.includeChecklist.imgQuestionmarkChecklist.setOnClickListener {
             DialogUtils.showCheckListQuestionCommonDialog(requireContext(), "Why Checklist?")
+            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.WHY_CHECKLIST_CLICK)
             /*startActivity(Intent(this@HomeDashboardActivity, SubscriptionPlanListActivity::class.java).apply {
                 //putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN")
                 //putExtra("SUBSCRIPTION_TYPE", "FACIAL_SCAN")
             })*/
         }
         binding.includeChecklist.rlChecklistWhyThisDialog.setOnClickListener {
+            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.FINISH_TO_UNLOCK_CLICK)
             DialogUtils.showCheckListQuestionCommonDialog(requireContext())
         }
 
@@ -168,11 +195,13 @@ class HomeDashboardFragment : BaseFragment() {
             val activity = requireActivity() as HomeNewActivity
             /*val isHealthCamFree = activity.isHealthCamFree*/
 
-            var isHealthCamFree = sharedPreferenceManager?.userProfile?.homeServices
+            var isHealthCamFree = sharedPreferenceManager.userProfile?.homeServices
                 ?.find { it.title == "HealthCam" }
                 ?.isFree ?: false
 
-            if (isHealthCamFree) {
+            val isFacialScanService = sharedPreferenceManager.userProfile.facialScanService ?: false
+
+            if (isFacialScanService) {
                 if (DashboardChecklistManager.facialScanStatus) {
                     startActivity(
                         Intent(
@@ -188,6 +217,7 @@ class HomeDashboardFragment : BaseFragment() {
         }
 
         binding.cardThinkrightMain.setOnClickListener {
+            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.THINK_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "ThinkRight")
@@ -196,6 +226,7 @@ class HomeDashboardFragment : BaseFragment() {
             }
         }
         binding.cardEatrightMain.setOnClickListener {
+            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.EAT_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "EatRight")
@@ -205,6 +236,7 @@ class HomeDashboardFragment : BaseFragment() {
         }
 
         binding.cardMoverightMain.setOnClickListener {
+            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.MOVE_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "MoveRight")
@@ -213,6 +245,7 @@ class HomeDashboardFragment : BaseFragment() {
             }
         }
         binding.cardSleeprightMain.setOnClickListener {
+            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.SLEEP_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "SleepRight")
@@ -221,6 +254,7 @@ class HomeDashboardFragment : BaseFragment() {
             }
         }
         binding.cardSleepMainIdeal.setOnClickListener {
+            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.SLEEP_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "SleepRight")
@@ -229,6 +263,7 @@ class HomeDashboardFragment : BaseFragment() {
             }
         }
         binding.cardSleepMainLog.setOnClickListener {
+            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.SLEEP_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "SleepRight")
@@ -240,6 +275,7 @@ class HomeDashboardFragment : BaseFragment() {
 
         // for no data card
         binding.cardThinkrightMainNodata.setOnClickListener {
+            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.THINK_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "ThinkRight")
@@ -248,6 +284,7 @@ class HomeDashboardFragment : BaseFragment() {
             }
         }
         binding.cardEatrightMainNodata.setOnClickListener {
+            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.EAT_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "EatRight")
@@ -258,6 +295,7 @@ class HomeDashboardFragment : BaseFragment() {
 
         binding.cardMoverightMainNodata.setOnClickListener {
             if (checkTrailEndedAndShowDialog()) {
+                AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.MOVE_RIGHT_CLICK)
                 startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "MoveRight")
                     putExtra("BottomSeatName", "Not")
@@ -265,6 +303,7 @@ class HomeDashboardFragment : BaseFragment() {
             }
         }
         binding.cardSleeprightMainNodata.setOnClickListener {
+            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.SLEEP_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "SleepRight")
@@ -274,6 +313,7 @@ class HomeDashboardFragment : BaseFragment() {
         }
 
         binding.cardEatright.setOnClickListener {
+            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.EAT_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "EatRight")
@@ -282,6 +322,7 @@ class HomeDashboardFragment : BaseFragment() {
             }
         }
         binding.cardSleepright.setOnClickListener {
+            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.SLEEP_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "SleepRight")
@@ -290,6 +331,7 @@ class HomeDashboardFragment : BaseFragment() {
             }
         }
         binding.cardThinkright.setOnClickListener {
+            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.THINK_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
                 startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "ThinkRight")
@@ -299,6 +341,7 @@ class HomeDashboardFragment : BaseFragment() {
         }
         binding.cardMoveright.setOnClickListener {
             if (checkTrailEndedAndShowDialog()) {
+                AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.MOVE_RIGHT_CLICK)
                 startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
                     putExtra("ModuleName", "MoveRight")
                     putExtra("BottomSeatName", "Not")
@@ -392,6 +435,10 @@ class HomeDashboardFragment : BaseFragment() {
             binding.includeChecklist.imgCheck,
             binding.includeChecklist.rlChecklistProfile
         )
+        AnalyticsLogger.logEvent(
+            requireContext(), AnalyticsEvent.PROFILE_STATUS,
+            mapOf(AnalyticsParam.PROFILE_STATUS to checklistResponse.data.profile)
+        )
         //snap Meal
         setStatusOfChecklist(
             checklistResponse.data.meal_snap,
@@ -399,11 +446,19 @@ class HomeDashboardFragment : BaseFragment() {
             binding.includeChecklist.rlChecklistSnapmeal,
             false
         )
+        AnalyticsLogger.logEvent(
+            requireContext(), AnalyticsEvent.SNAP_MEAL_STATUS,
+            mapOf(AnalyticsEvent.SNAP_MEAL_STATUS to checklistResponse.data.meal_snap)
+        )
         //sync health
         setStatusOfChecklist(
             checklistResponse.data.sync_health_data,
             binding.includeChecklist.imgCheckSynchealth,
             binding.includeChecklist.rlChecklistSynchealth
+        )
+        AnalyticsLogger.logEvent(
+            requireContext(), AnalyticsEvent.SYNC_DATA_STATUS,
+            mapOf(AnalyticsEvent.SYNC_DATA_STATUS to checklistResponse.data.meal_snap)
         )
         // face Scan
         setStatusOfChecklist(
@@ -412,17 +467,29 @@ class HomeDashboardFragment : BaseFragment() {
             binding.includeChecklist.rlChecklistFacescan,
             false
         )
+        AnalyticsLogger.logEvent(
+            requireContext(), AnalyticsEvent.FACIAL_SCAN_STATUS,
+            mapOf(AnalyticsEvent.FACIAL_SCAN_STATUS to checklistResponse.data.vital_facial_scan)
+        )
         // sleep right question
         setStatusOfChecklist(
             checklistResponse.data.unlock_sleep,
             binding.includeChecklist.imgCheckSleepright,
             binding.includeChecklist.rlChecklistSleepright
         )
+        AnalyticsLogger.logEvent(
+            requireContext(), AnalyticsEvent.TR_SR_ASSESSMENT_STATUS,
+            mapOf(AnalyticsEvent.TR_SR_ASSESSMENT_STATUS to checklistResponse.data.meal_snap)
+        )
         // Eat right question
         setStatusOfChecklist(
             checklistResponse.data.discover_eating,
             binding.includeChecklist.imgCheckEatright,
             binding.includeChecklist.rlChecklistEatright
+        )
+        AnalyticsLogger.logEvent(
+            requireContext(), AnalyticsEvent.ER_MR_ASSESSMENT_STATUS,
+            mapOf(AnalyticsEvent.ER_MR_ASSESSMENT_STATUS to checklistResponse.data.meal_snap)
         )
         binding.includeChecklist.tvChecklistNumber.text = "$checkListCount of 6 tasks completed"
         // Chceklist completion logic
@@ -434,6 +501,9 @@ class HomeDashboardFragment : BaseFragment() {
                 AnalyticsEvent.CHECKLIST_COMPLETE,
                 mapOf(AnalyticsParam.CHECKLIST_COMPLETE to true)
             )
+
+            val activity = requireActivity() as HomeNewActivity
+            activity.getUserDetails()
         } else {
             binding.llDashboardMainData.visibility = View.GONE
             binding.includeChecklist.llLayoutChecklist.visibility = View.VISIBLE
@@ -608,24 +678,36 @@ class HomeDashboardFragment : BaseFragment() {
                     // MOVE_RIGHT logic here
                     binding.cardMoverightMainNodata.visibility = View.VISIBLE
                     binding.cardMoveright.visibility = View.GONE
+                    binding.cardEatright.visibility = View.VISIBLE
+                    binding.cardThinkright.visibility = View.VISIBLE
+                    binding.cardSleepright.visibility = View.VISIBLE
                 }
 
                 "THINK_RIGHT" -> {
                     // THINK_RIGHT logic here
                     binding.cardThinkrightMainNodata.visibility = View.VISIBLE
                     binding.cardThinkright.visibility = View.GONE
+                    binding.cardMoveright.visibility = View.VISIBLE
+                    binding.cardEatright.visibility = View.VISIBLE
+                    binding.cardSleepright.visibility = View.VISIBLE
                 }
 
                 "EAT_RIGHT" -> {
                     // EAT_RIGHT logic here
                     binding.cardEatrightMainNodata.visibility = View.VISIBLE
                     binding.cardEatright.visibility = View.GONE
+                    binding.cardThinkright.visibility = View.VISIBLE
+                    binding.cardMoveright.visibility = View.VISIBLE
+                    binding.cardSleepright.visibility = View.VISIBLE
                 }
 
                 "SLEEP_RIGHT" -> {
                     // SLEEP_RIGHT logic here
                     binding.cardSleeprightMainNodata.visibility = View.VISIBLE
                     binding.cardSleepright.visibility = View.GONE
+                    binding.cardEatright.visibility = View.VISIBLE
+                    binding.cardThinkright.visibility = View.VISIBLE
+                    binding.cardMoveright.visibility = View.VISIBLE
                 }
 
                 else -> {
@@ -635,6 +717,10 @@ class HomeDashboardFragment : BaseFragment() {
 
         } else {
             binding.llNodataMain.visibility = View.GONE
+            binding.cardThinkright.visibility = View.VISIBLE
+            binding.cardMoveright.visibility = View.VISIBLE
+            binding.cardEatright.visibility = View.VISIBLE
+            binding.cardSleepright.visibility = View.VISIBLE
 
 
             //for (module in aiDashboardResponseMain?.data?.updatedModules!!) {
@@ -650,6 +736,9 @@ class HomeDashboardFragment : BaseFragment() {
                         if (isSelected == true) {
                             binding.cardMoverightMain.visibility = View.VISIBLE
                             binding.cardMoveright.visibility = View.GONE
+                            binding.cardEatright.visibility = View.VISIBLE
+                            binding.cardThinkright.visibility = View.VISIBLE
+                            binding.cardSleepright.visibility = View.VISIBLE
                         }
                         //set data on card once response works
                         binding.tvCaloryValue.text = module.calorieBalance.toString()
@@ -664,8 +753,8 @@ class HomeDashboardFragment : BaseFragment() {
                             binding.tvModuleValueSleepright,
                             module.sleepPerformanceDetail?.actualSleepData?.actualSleepDurationHours?.let {
                                 DateTimeUtils.formatSleepDuration(it)
-                            } ?: "0 hr"
-                            )
+                            } ?: "0 hr 0 min"
+                        )
 
 
                         setIfNotNullOrBlank(
@@ -683,6 +772,9 @@ class HomeDashboardFragment : BaseFragment() {
                         if (isSelected == true) {
                             binding.cardThinkrightMain.visibility = View.VISIBLE
                             binding.cardThinkright.visibility = View.GONE
+                            binding.cardMoveright.visibility = View.VISIBLE
+                            binding.cardEatright.visibility = View.VISIBLE
+                            binding.cardSleepright.visibility = View.VISIBLE
                         }
                         binding.tvMinutesTextValue.text = module.mindfulnessMinutes
                         binding.tvDaysTextValue.text = module.wellnessDays
@@ -695,7 +787,7 @@ class HomeDashboardFragment : BaseFragment() {
                             binding.tvModuleValueSleepright,
                             module.sleepPerformanceDetail?.actualSleepData?.actualSleepDurationHours?.let {
                                 DateTimeUtils.formatSleepDuration(it)
-                            } ?: "0 hr"
+                            } ?: "0 hr 0 min"
 
                         )
                         setIfNotNullOrBlank(
@@ -710,6 +802,9 @@ class HomeDashboardFragment : BaseFragment() {
                         if (isSelected == true) {
                             binding.cardEatrightMain.visibility = View.VISIBLE
                             binding.cardEatright.visibility = View.GONE
+                            binding.cardThinkright.visibility = View.VISIBLE
+                            binding.cardMoveright.visibility = View.VISIBLE
+                            binding.cardSleepright.visibility = View.VISIBLE
                         }
 
                         val (proteinValue, proteinTotal) = extractNumericValues(module.protein.toString())
@@ -760,7 +855,7 @@ class HomeDashboardFragment : BaseFragment() {
                             binding.tvModuleValueSleepright,
                             module.sleepPerformanceDetail?.actualSleepData?.actualSleepDurationHours?.let {
                                 DateTimeUtils.formatSleepDuration(it)
-                            } ?: "0 hr"
+                            } ?: "0 hr 0 min"
                         )
                         setIfNotNullOrBlank(
                             binding.tvModuleValueThinkright, module.mindfulTime?.toString()
@@ -774,6 +869,9 @@ class HomeDashboardFragment : BaseFragment() {
                         if (isSelected == true) {
                             binding.cardSleeprightMain.visibility = View.VISIBLE
                             binding.cardSleepright.visibility = View.GONE
+                            binding.cardEatright.visibility = View.VISIBLE
+                            binding.cardThinkright.visibility = View.VISIBLE
+                            binding.cardMoveright.visibility = View.VISIBLE
                             checkTimeAndSetVisibility(module)
                         }
 
@@ -786,7 +884,7 @@ class HomeDashboardFragment : BaseFragment() {
                             binding.tvModuleValueSleepright,
                             module.sleepPerformanceDetail?.actualSleepData?.actualSleepDurationHours?.let {
                                 DateTimeUtils.formatSleepDuration(it)
-                            } ?: "0 hr"
+                            } ?: "0 hr 0 min"
                         )
                         setIfNotNullOrBlank(
                             binding.tvModuleValueThinkright, module.mindfulTime?.toString()
@@ -1066,12 +1164,13 @@ class HomeDashboardFragment : BaseFragment() {
                     binding.cardSleepMainLog.visibility = View.GONE
                     // Update UI elements here
                     binding.cardSleeprightMain.visibility = View.VISIBLE
-                    binding.tvRem.text = module.rem.toString()
-                    binding.tvCore.text = module.core.toString()
-                    binding.tvDeep.text = module.deep.toString()
-                    binding.tvAwake.text = module.awake.toString()
-                    binding.tvSleepTime.text = module.sleepTime.toString()
-                    binding.tvWakeupTime.text = module.wakeUpTime.toString()
+                    binding.tvRem.text = DateTimeUtils.formatSleepDurationforidealSleep(module.rem ?: 0.0)//module.rem.toString()
+                    binding.tvCore.text = DateTimeUtils.formatSleepDurationforidealSleep(module.core ?: 0.0)//module.core.toString()
+                    binding.tvDeep.text = DateTimeUtils.formatSleepDurationforidealSleep(module.deep ?: 0.0)//module.deep.toString()
+                    binding.tvAwake.text =DateTimeUtils.formatSleepDurationforidealSleep(module.awake ?: 0.0)
+                        //module.awake.toString()
+                    binding.tvSleepTime.text = convertTo12HourZoneFormat(module.sleepTime.toString())
+                    binding.tvWakeupTime.text = convertTo12HourZoneFormat(module.wakeUpTime.toString())
 
                     val sleepData = listOf(
                         SleepSegmentModel(
@@ -1100,7 +1199,20 @@ class HomeDashboardFragment : BaseFragment() {
                     )
 
                     //binding.sleepStagesView.setSleepData(sleepData)
-                    newSleepStagesHandling(module.sleepStages ?: emptyList())
+                   // newSleepStagesHandling(module.sleepStages ?: emptyList())
+// Set Sleep Stages Data
+                    val sleepStageData: ArrayList<SleepStage> = arrayListOf()
+                    if (module?.sleepStages != null) {
+                        for (i in 0 until module?.sleepStages?.size!!) {
+                            module?.sleepStages?.getOrNull(i)?.let {
+                                sleepStageData.add(it)
+                            }
+                        }
+                        setSleepRightStageData(sleepStageData)
+
+                    }
+
+                    //setSleepRightStageData(module.sleepStages ?: emptyList())
                 }
             } catch (e: Exception) {
                 // Handle JSON parsing errors (e.g., malformed JSON)
@@ -1113,6 +1225,99 @@ class HomeDashboardFragment : BaseFragment() {
                 e.printStackTrace() // Log the error for debugging
             }
 
+        }
+    }
+
+
+    private fun setSleepRightStageData(sleepStageResponse: ArrayList<SleepStage>) {
+        if (sleepStageResponse.size > 0) {
+
+            remData.clear()
+            awakeData.clear()
+            coreData.clear()
+            deepData.clear()
+
+            var totalRemDuration = 0f
+            var totalAwakeDuration = 0f
+            var totalCoreDuration = 0f
+            var totalDeepDuration = 0f
+
+            for (i in 0 until sleepStageResponse.size) {
+                val startDateTime =
+                    LocalDateTime.parse(sleepStageResponse[i].startDatetime, formatters)
+                val endDateTime = LocalDateTime.parse(sleepStageResponse[i].endDatetime, formatters)
+                val duration = Duration.between(startDateTime, endDateTime).toMinutes()
+                    .toFloat() / 60f // Convert to hours
+
+                when (sleepStageResponse[i].stage) {
+                    "REM Sleep" -> {
+                        remData.add(duration)
+                        totalRemDuration += duration
+                    }
+
+                    "Deep Sleep" -> {
+                        deepData.add(duration)
+                        totalDeepDuration += duration
+                    }
+
+                    "Light Sleep" -> {
+                        coreData.add(duration)
+                        totalCoreDuration += duration
+                    }
+
+                    "Awake" -> {
+                        awakeData.add(duration)
+                        totalAwakeDuration += duration
+                    }
+                }
+            }
+            binding.tvCore.text = formatDuration(totalCoreDuration)
+            binding.tvAwake.text = formatDuration(totalAwakeDuration)
+            binding.tvDeep.text = formatDuration(totalDeepDuration)
+            binding.tvRem.text = formatDuration(totalRemDuration)
+
+            setStageGraph(sleepStageResponse)
+        }
+    }
+
+
+    private fun setStageGraph(sleepStageResponse: ArrayList<SleepStage>) {
+        val sleepData: ArrayList<SleepSegmentModel> = arrayListOf()
+        var currentPosition = 0f
+        val totalDuration = sleepStageResponse.sumOf {
+            Duration.between(
+                LocalDateTime.parse(it.startDatetime, formatters),
+                LocalDateTime.parse(it.endDatetime, formatters)
+            ).toMinutes().toDouble()
+        }.toFloat()
+
+        sleepStageResponse.forEach { stage ->
+            val startDateTime = LocalDateTime.parse(stage.startDatetime, formatters)
+            val endDateTime = LocalDateTime.parse(stage.endDatetime, formatters)
+            val duration = Duration.between(startDateTime, endDateTime).toMinutes().toFloat()
+            val start = currentPosition / totalDuration
+            val end = (currentPosition + duration) / totalDuration
+            val color = when (stage.stage) {
+                "REM Sleep" -> resources.getColor(R.color.light_blue_bar) // Light blue
+                "Deep Sleep" -> resources.getColor(R.color.purple_bar) // Dark blue
+                "Light Sleep" -> resources.getColor(R.color.blue_bar) // Medium blue
+                "Awake" -> resources.getColor(R.color.red_orange_bar) // Red
+                else -> Color.GRAY
+            }
+            sleepData.add(SleepSegmentModel(start, end, color, 110f))
+            currentPosition += duration
+        }
+
+        binding.sleepStagesView.setSleepData(sleepData)
+    }
+
+    private fun formatDuration(durationHours: Float): String {
+        val hours = durationHours.toInt()
+        val minutes = ((durationHours - hours) * 60).toInt()
+        return if (hours > 0) {
+            "$hours hr $minutes mins"
+        } else {
+            "$minutes mins"
         }
     }
 
@@ -1187,6 +1392,7 @@ class HomeDashboardFragment : BaseFragment() {
             false // Return false if condition is true and dialog is shown
         } else {
             if (!DashboardChecklistManager.checklistStatus) {
+                AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.FINISH_TO_UNLOCK_CLICK)
                 DialogUtils.showCheckListQuestionCommonDialog(requireContext())
                 false
             } else {
@@ -1206,9 +1412,6 @@ class HomeDashboardFragment : BaseFragment() {
 
         bottomSheetDialog.setContentView(bottomSheetView)
 
-
-        bottomSheetDialog.setContentView(bottomSheetView)
-
         // Set up the animation
         val bottomSheetLayout = bottomSheetView.findViewById<LinearLayout>(R.id.design_bottom_sheet)
         if (bottomSheetLayout != null) {
@@ -1223,6 +1426,7 @@ class HomeDashboardFragment : BaseFragment() {
 
         dialogBinding.btnExplorePlan.setOnClickListener {
             bottomSheetDialog.dismiss()
+            AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.SUBSCRIBE_RIGHT_LIFE_CLICK)
             startActivity(Intent(requireContext(), SubscriptionPlanListActivity::class.java).apply {
                 putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN")
             })
@@ -1243,5 +1447,26 @@ class HomeDashboardFragment : BaseFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    fun convertTo12HourZoneFormat(input: String): String {
+        lateinit var inputFormatter : DateTimeFormatter
+        if (input.length > 21) {
+            inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
+        }else{
+            inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+        }
+        val outputFormatter = DateTimeFormatter.ofPattern("hh:mm a") // 12-hour format with AM/PM
+
+        // Parse as LocalDateTime (no time zone info)
+        val utcDateTime = LocalDateTime.parse(input, inputFormatter)
+
+        // Convert to UTC ZonedDateTime
+        val utcZoned = utcDateTime.atZone(ZoneId.of("UTC"))
+
+        // Convert to system local time zone
+        val localZoned = utcZoned.withZoneSameInstant(ZoneId.systemDefault())
+
+        return outputFormatter.format(localZoned)
     }
 }

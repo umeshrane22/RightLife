@@ -18,6 +18,9 @@ import com.jetsynthesys.rightlife.databinding.ItemHeartRateCardBinding
 import com.jetsynthesys.rightlife.newdashboard.model.FacialScan
 import com.jetsynthesys.rightlife.newdashboard.model.ScanData
 import com.jetsynthesys.rightlife.ui.healthcam.ParameterModel
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.DateConverter
 import com.jetsynthesys.rightlife.ui.utility.Utils
 import java.io.Serializable
@@ -108,6 +111,9 @@ class HeartRateAdapter(
                 putExtra("position", holder.bindingAdapterPosition)
             }
             context.startActivity(intent)
+            AnalyticsLogger.logEvent(context, AnalyticsEvent.ALL_HEALTH_DATA_CLICK,
+                mapOf(AnalyticsParam.HEALTH_DATA_TYPE to unifiedList[holder.bindingAdapterPosition])
+            )
         }
     }
 

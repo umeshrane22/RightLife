@@ -10,6 +10,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.BaseActivity
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 
@@ -25,6 +28,16 @@ class ThirdFillerScreenActivity : BaseActivity() {
             header = sharedPreferenceManager.selectedWellnessFocus
         }
         val btnContinue = findViewById<Button>(R.id.btn_continue)
+
+        AnalyticsLogger.logEvent(
+            AnalyticsEvent.THREE_TIER_SCREEN_VISIT,
+            mapOf(
+                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
+                AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule
+            )
+        )
 
         var originalText = getString(R.string.third_filler_screen5_thinkright)
 

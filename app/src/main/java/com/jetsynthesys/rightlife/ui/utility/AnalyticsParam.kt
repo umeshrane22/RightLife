@@ -8,6 +8,8 @@ object AnalyticsParam {
     const val WEIGHT = "weight"
     const val HEIGHT = "height"
     const val GOAL = "goal"
+    const val BODY_FAT = "body_fat"
+    const val STRESS_MANAGEMENT = "stress_management"
     const val SUB_GOAL = "subgoal"
     const val USER_PLAN = "user_plan"
     const val TIMESTAMP = "timestamp"
@@ -38,4 +40,8 @@ object AnalyticsParam {
     const val DATA_EXPORT_REQUESTED = "data_export_requested"
     const val ACCOUNT_DELETED = "account_deleted"
     const val USER_SIGN_OUT = "user_signout"
+    const val SAVED_INTEREST = "selected_interest"
+    const val PROFILE_STATUS = "profile_status"
+    const val HEALTH_DATA_TYPE = "health_data_type"
+    const val DISCOVER_TYPE = "discover_type"
 }

@@ -21,6 +21,9 @@ import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ui.CommonAPICall
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
+import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import com.jetsynthesys.rightlife.ui.utility.disableViewForSeconds
 import java.text.DecimalFormat
@@ -86,6 +89,17 @@ class HeightSelectionFragment : Fragment() {
         if (!(activity as OnboardingQuestionnaireActivity).forProfileChecklist) {
             (activity as OnboardingQuestionnaireActivity).tvSkip.visibility = VISIBLE
         }
+
+        val sharedPreferenceManager = SharedPreferenceManager.getInstance(requireContext())
+        AnalyticsLogger.logEvent(
+            AnalyticsEvent.HEIGHT_SELECTION_VISIT,
+            mapOf(
+                AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
+                AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule
+            )
+        )
 
         rulerView = view.findViewById(R.id.rulerView)
         val markerView = view.findViewById<View>(R.id.markerView)
@@ -176,6 +190,19 @@ class HeightSelectionFragment : Fragment() {
                 cardViewSelection.visibility = GONE
                 llSelectedHeight.visibility = VISIBLE
                 tvSelectedHeight.text = selectedHeight
+
+                AnalyticsLogger.logEvent(
+                    AnalyticsEvent.HEIGHT_SELECTION,
+                    mapOf(
+                        AnalyticsParam.USER_ID to sharedPreferenceManager.userId,
+                        AnalyticsParam.TIMESTAMP to System.currentTimeMillis(),
+                        AnalyticsParam.GOAL to sharedPreferenceManager.selectedOnboardingModule,
+                        AnalyticsParam.SUB_GOAL to sharedPreferenceManager.selectedOnboardingSubModule,
+                        AnalyticsParam.GENDER to onboardingQuestionRequest.gender!!,
+                        AnalyticsParam.AGE to onboardingQuestionRequest.age!!,
+                        AnalyticsParam.HEIGHT to selectedHeight
+                    )
+                )
 
                 (activity as OnboardingQuestionnaireActivity).submitAnswer(onboardingQuestionRequest)
             }
