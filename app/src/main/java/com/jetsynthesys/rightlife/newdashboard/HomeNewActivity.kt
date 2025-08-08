@@ -97,6 +97,9 @@ class HomeNewActivity : BaseActivity() {
             }
         }
 
+        binding.scrollView.setOnScrollChangeListener { view, scrollX, scrollY, oldScrollX, oldScrollY ->
+            binding.swipeRefreshLayout.isEnabled = scrollY <= 5
+        }
 
         onBackPressedDispatcher.addCallback {
             if (binding.includedhomebottomsheet.bottomSheet.visibility == View.VISIBLE) {

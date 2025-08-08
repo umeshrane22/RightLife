@@ -34,6 +34,7 @@ import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
 import androidx.health.connect.client.records.WeightRecord
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.jetsynthesys.rightlife.BaseFragment
@@ -119,6 +120,17 @@ class HomeDashboardFragment : BaseFragment() {
         (requireActivity() as? HomeNewActivity)?.showHeader(true)
         fetchDashboardData()
         getAiDashboard()
+
+        val swipeRefreshLayout = activity?.findViewById<SwipeRefreshLayout>(R.id.swipeRefreshLayout)
+
+        swipeRefreshLayout?.setOnRefreshListener {
+            // Call your refresh logic
+            fetchDashboardData()
+            getDashboardChecklist()
+            getDashboardChecklistStatus()
+            getAiDashboard()
+            swipeRefreshLayout.isRefreshing = false // Stop the spinner
+        }
 
         binding.includeChecklist.rlChecklistEatright.setOnClickListener {
             startActivity(Intent(requireContext(), QuestionnaireEatRightActivity::class.java))

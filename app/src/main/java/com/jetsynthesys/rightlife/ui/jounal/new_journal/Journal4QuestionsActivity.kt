@@ -666,7 +666,7 @@ class Journal4QuestionsActivity : BaseActivity() {
                         this@Journal4QuestionsActivity, AnalyticsEvent.JOURNAL_ENTRY_CREATED,
                         mapOf(
                             AnalyticsParam.JOURNAL_TYPE to journalItem?.title!!,
-                            AnalyticsParam.JOURNAL_ID to journalEntry?.id!!
+                            AnalyticsParam.JOURNAL_ID to journalItem?.id!!
                         )
                     )
 

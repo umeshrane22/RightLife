@@ -16,6 +16,7 @@ class WeekDayAdapter(
     inner class DayViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val circle: ImageView = view.findViewById(R.id.dayCircle)
         val label: TextView = view.findViewById(R.id.dayLabel)
+        val smallDot: ImageView = view.findViewById(R.id.smallDot)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DayViewHolder {
@@ -28,9 +29,11 @@ class WeekDayAdapter(
         holder.label.text = days[position].day?.first().toString()
 
         if (days[position].duration!! > 0) {
-            holder.circle.setImageResource(R.drawable.circle_selected)
+            holder.circle.setImageResource(R.drawable.correct_green)
+            holder.smallDot.visibility = View.VISIBLE
         } else {
             holder.circle.setImageResource(R.drawable.circle_unselected)
+            holder.smallDot.visibility = View.GONE
         }
     }
 

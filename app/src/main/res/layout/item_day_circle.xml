@@ -21,4 +21,11 @@
         android:layout_marginTop="4dp"
         android:src="@drawable/circle_unselected" />
 
+    <ImageView
+        android:id="@+id/smallDot"
+        android:layout_width="3dp"
+        android:layout_height="3dp"
+        android:layout_marginTop="2dp"
+        android:src="@drawable/circle_selected" />
+
 </LinearLayout>

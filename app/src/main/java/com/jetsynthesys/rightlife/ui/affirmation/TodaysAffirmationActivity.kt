@@ -457,11 +457,11 @@ class TodaysAffirmationActivity : BaseActivity() {
         }
 
         bottomSheetView.findViewById<Button>(R.id.btnNo).setOnClickListener {
-            discardBottomSheetDialog.dismiss()
-        }
-        bottomSheetView.findViewById<Button>(R.id.btnYes).setOnClickListener {
             callPostMindFullDataAPI()
             finish()
+        }
+        bottomSheetView.findViewById<Button>(R.id.btnYes).setOnClickListener {
+            discardBottomSheetDialog.dismiss()
         }
 
     }
