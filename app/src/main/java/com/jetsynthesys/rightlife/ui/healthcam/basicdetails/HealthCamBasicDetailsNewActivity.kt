@@ -432,26 +432,42 @@ class HealthCamBasicDetailsNewActivity : BaseActivity() {
             }
         }
 
+        var startY = 0f
+        var isScrolling = false
+
         dialogBinding.numberPicker.setOnTouchListener { v, event ->
-            if (event.action == MotionEvent.ACTION_UP) {
-                val picker = v as NumberPicker
+            val picker = v as NumberPicker
 
-                val y = event.y
-                val height = picker.height
-                val visibleItems = 5 // NumberPicker typically shows 3 visible rows
-                val rowHeight = height / visibleItems
-                val centerY = height / 2
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    startY = event.y
+                    isScrolling = false
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    // If finger moved enough vertically, mark as scrolling
+                    if (Math.abs(event.y - startY) > picker.height / 20) {
+                        isScrolling = true
+                    }
+                }
+                MotionEvent.ACTION_UP -> {
+                    if (!isScrolling) {
+                        val height = picker.height
+                        val visibleItems = 5
+                        val rowHeight = height / visibleItems
+                        val centerY = height / 2
+                        val tolerance = rowHeight / 2
 
-                val tolerance = rowHeight / 2
-
-                // Check if touch was within center row (selected value)
-                if (y > centerY - tolerance && y < centerY + tolerance) {
-                    bottomSheetDialog.dismiss()
-                    return@setOnTouchListener true
+                        // Only dismiss if tapped on center row
+                        if (event.y > centerY - tolerance && event.y < centerY + tolerance) {
+                            bottomSheetDialog.dismiss()
+                            return@setOnTouchListener true
+                        }
+                    }
                 }
             }
             false
         }
+
 
         dialogBinding.btnConfirm.setOnClickListener {
             bottomSheetDialog.dismiss()
