@@ -312,7 +312,6 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         }
     }
 
-
     private fun updateChart(entries: List<BarEntry>, labels: List<String>, labelsDate: List<String>, stepData: StepTrackerData) {
         Log.d("StepFragment", "Entries size: ${entries.size}, Labels size: ${labels.size}, LabelsDate size: ${labelsDate.size}")
         Log.d("StepFragment", "Entries: $entries")
@@ -385,8 +384,22 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         avgStepsLine.textSize = 10f
         avgStepsLine.labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
 
+// Goal Steps Line बनाएं
+        val goalStepsLine = LimitLine(stepData.stepsGoal.toFloat(), "G")
+        goalStepsLine.lineColor = ContextCompat.getColor(requireContext(), R.color.green_text)
+        goalStepsLine.lineWidth = 1f
+        goalStepsLine.enableDashedLine(10f, 10f, 0f)
+        goalStepsLine.textColor = ContextCompat.getColor(requireContext(), R.color.green_text)
+        goalStepsLine.textSize = 10f
+        goalStepsLine.labelPosition = LimitLine.LimitLabelPosition.RIGHT_TOP
+
+// सभी पुरानी lines हटाएं सिर्फ एक बार
         leftYAxis.removeAllLimitLines()
+
+// दोनों lines add करें
         leftYAxis.addLimitLine(avgStepsLine)
+        leftYAxis.addLimitLine(goalStepsLine)
+        currentGoal = stepData.stepsGoal
 
         // Multiline X-axis labels
         val combinedLabels: List<String> = if (entries.size == 30) {

@@ -22,6 +22,7 @@ class DeleteWorkoutBottomSheet : BottomSheetDialogFragment() {
     private var calorieId: String? = null
     private var userId: String? = null
     private var onDeleteSuccess: (() -> Unit)? = null
+    private var onDeleteSuccessWithRefresh: (() -> Unit)? = null // New callback for refresh
 
     companion object {
         const val ARG_CALORIE_ID = "calorie_id"
@@ -56,7 +57,6 @@ class DeleteWorkoutBottomSheet : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val dialog = BottomSheetDialog(requireContext(), R.style.LoggedBottomSheetDialogTheme)
-        //dialog.setContentView(R.layout.fragment_edit_workout_bottom_sheet)
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
         val yesButton = view.findViewById<LinearLayoutCompat>(R.id.yes_btn_bottom_sheet)
@@ -85,6 +85,11 @@ class DeleteWorkoutBottomSheet : BottomSheetDialogFragment() {
         this.onDeleteSuccess = listener
     }
 
+    // New method to set refresh callback
+    fun setOnDeleteSuccessWithRefreshListener(listener: () -> Unit) {
+        this.onDeleteSuccessWithRefresh = listener
+    }
+
     private fun deleteCalorieRecord(calorieId: String, userId: String) {
         lifecycleScope.launch(Dispatchers.IO) {
             try {
@@ -98,7 +103,10 @@ class DeleteWorkoutBottomSheet : BottomSheetDialogFragment() {
                     withContext(Dispatchers.Main) {
                         if (deleteResponse != null) {
                             Toast.makeText(context, "Workout deleted: ${deleteResponse.message}", Toast.LENGTH_SHORT).show()
+
+                            // Call both callbacks
                             onDeleteSuccess?.invoke()
+                            onDeleteSuccessWithRefresh?.invoke() // This will refresh the fragment
                         } else {
                             Toast.makeText(context, "Deletion failed: Empty response", Toast.LENGTH_SHORT).show()
                         }

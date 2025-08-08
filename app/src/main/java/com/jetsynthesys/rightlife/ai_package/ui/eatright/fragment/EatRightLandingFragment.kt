@@ -728,9 +728,9 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
         }
 
       //  tvCaloriesValue.text = landingPageResponse.total_calories.toString()
-        tvProteinValue.text = round(landingPageResponse.total_protein).toInt().toString()
-        tvCabsValue.text = round(landingPageResponse.total_carbs).toInt().toString()
-        tvFatsValue.text = round(landingPageResponse.total_fat).toInt().toString()
+        tvProteinValue.text = formatValue(landingPageResponse.total_protein)
+        tvCabsValue.text = formatValue(landingPageResponse.total_carbs)
+        tvFatsValue.text = formatValue(landingPageResponse.total_fat)
         carbsUnitTv.text = " / " + landingPageResponse.max_carbs.toInt().toString() +" g"
         proteinUnitTv.text = " / " + landingPageResponse.max_protein.toInt().toString() +" g"
         fatsUnitTv.text = " / " + landingPageResponse.max_fat.toInt().toString() +" g"
@@ -765,7 +765,13 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
         animator.start()
         onOtherRecipeList(landingPageResponse.other_recipes_you_might_like)
     }
-
+    fun formatValue(value: Double): String {
+        return if (value >= 1000) {
+            String.format("%.1fk", value / 1000) // 1 decimal ke saath
+        } else {
+            value.toInt().toString() // normal integer
+        }
+    }
     private fun setTodayMealLogsData(){
 
         val regularRecipeData : RegularRecipeEntry? = null

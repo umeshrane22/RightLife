@@ -75,7 +75,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
         view.setBackgroundResource(R.drawable.gradient_color_background_workout)
         routine = arguments?.getString("routine").toString()
         routineName = arguments?.getString("routineName").toString()
-        workoutList = arguments?.getParcelableArrayList("workoutList") ?: ArrayList()
+        workoutList = arguments?.getParcelableArrayList<WorkoutSessionRecord>("workoutList") ?: ArrayList()
 
         // Fetch activityList from YourActivityFragment
         val activityList = arguments?.getParcelableArrayList<ActivityModel>("ACTIVITY_LIST") ?: ArrayList()

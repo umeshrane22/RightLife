@@ -406,7 +406,7 @@
                             android:id="@+id/goalLayout"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:visibility="gone"
+                            android:visibility="visible"
                             android:layout_marginStart="15dp"
                             android:orientation="horizontal">
 
@@ -453,7 +453,7 @@
                         app:layout_constraintTop_toBottomOf="@+id/total_steps_count"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        android:background="@drawable/add_cart_button_background"
+                        android:background="@drawable/edit_step_gaol_background"
                         android:layout_marginStart="20dp"
                         android:layout_marginEnd="20dp"
                         android:gravity="center"
@@ -461,12 +461,12 @@
 
                         <ImageView
                             android:id="@+id/icon_plus"
-                            android:layout_width="23dp"
-                            android:layout_height="23dp"
+                            android:layout_width="15dp"
+                            android:layout_height="15dp"
                             android:layout_gravity="center"
                             android:scaleType="fitXY"
-                            android:visibility="gone"
-                            android:src="@drawable/icon_feather_plus"
+                            android:visibility="visible"
+                            android:src="@drawable/edit_step_goal"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 
@@ -479,9 +479,9 @@
                             app:layout_constraintEnd_toEndOf="parent"
                             android:layout_gravity="center"
                             android:textSize="20sp"
-                            android:textColor="@color/white"
+                            android:textColor="@color/dotted_red"
                             android:fontFamily="@font/dmsans_bold"
-                            android:text="Set Up A Step Goal" />
+                            android:text="Edit Your Step Goal" />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
