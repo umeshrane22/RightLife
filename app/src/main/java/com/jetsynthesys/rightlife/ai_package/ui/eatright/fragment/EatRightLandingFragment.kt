@@ -628,10 +628,10 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
             unitMicroTv.text = landingPageResponse.micros.unit
             energyTypeTv.text = landingPageResponse.micros.micros_name
         }else{
-            todayMacrosWithDataLayout.visibility = View.GONE
-            todayMacroNoDataLayout.visibility = View.VISIBLE
-            todayMicrosWithDataLayout.visibility = View.GONE
-            todayMacroNoDataLayoutOne.visibility = View.VISIBLE
+            todayMacrosWithDataLayout.visibility = View.VISIBLE
+            todayMacroNoDataLayout.visibility = View.GONE
+            todayMicrosWithDataLayout.visibility = View.VISIBLE
+            todayMacroNoDataLayoutOne.visibility = View.GONE
         }
 
 //        if(landingPageResponse.micros.value > 0){
