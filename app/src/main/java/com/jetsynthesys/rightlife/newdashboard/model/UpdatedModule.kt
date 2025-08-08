@@ -13,7 +13,7 @@ data class UpdatedModule(
     @SerializedName("burned") val burned: String?,
     @SerializedName("mindfulTime") val mindfulTime: String?,
     @SerializedName("calories") val calories: String?,
-    @SerializedName("sleepDuration") val sleepDuration: Int?,
+    @SerializedName("sleepDuration") val sleepDuration: Double?,
     @SerializedName("isSelectedModule") val isSelectedModule: Boolean?,
     @SerializedName("mindfulnessMinutes") val mindfulnessMinutes: String?,
     @SerializedName("wellnessDays") val wellnessDays: String?,

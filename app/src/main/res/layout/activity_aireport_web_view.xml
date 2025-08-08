@@ -31,7 +31,7 @@
             android:ellipsize="end"
             android:fontFamily="@font/dmsans_bold"
             android:gravity="center"
-            android:text="AI Report"
+            android:text="RightLife Report"
             android:textColor="@color/txt_color_mind"
             android:textSize="18sp" />
 

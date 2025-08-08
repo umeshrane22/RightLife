@@ -39,6 +39,7 @@
         android:paddingHorizontal="@dimen/margin_card_16dp"
         android:layout_gravity="center_vertical"
         android:gravity="center_vertical"
+        android:visibility="gone"
         android:layout_height="50dp">
 
         <ImageView

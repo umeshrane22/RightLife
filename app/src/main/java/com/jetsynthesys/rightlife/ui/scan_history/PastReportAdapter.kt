@@ -66,6 +66,7 @@ class PastReportAdapter(
                     "FACIAL_SCAN" -> R.drawable.ic_face_scan
                     "MIND_AUDIT" -> R.drawable.ic_mind_audit
                     "FOOD_SNAP" -> R.drawable.ic_food_snap
+                    "AI_REPORT" -> R.drawable.ai_report_icon
                     else -> R.drawable.bg_circle
                 }
             )
