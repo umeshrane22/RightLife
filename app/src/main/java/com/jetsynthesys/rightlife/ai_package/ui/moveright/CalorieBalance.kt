@@ -1,5 +1,6 @@
 package com.jetsynthesys.rightlife.ai_package.ui.moveright
 
+
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -293,22 +294,15 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
     }
 
     /** Update BarChart with new data */
+
     private fun updateChart(entries: List<BarEntry>, labels: List<String>, labelsDate: List<String>) {
         val dataSet = BarDataSet(entries, "")
         val colors: ArrayList<Int> = ArrayList()
         entries.forEach { item ->
-            if (calorieBalanceGoal.equals("weight_loss")) {
-                if (item.y.toDouble() > calorieBalanceBurnTarget) {
-                    colors.add(ContextCompat.getColor(requireContext(), R.color.light_orange))
-                } else {
-                    colors.add(ContextCompat.getColor(requireContext(), R.color.color_green))
-                }
+            if (item.y.toDouble() > 0) {
+                colors.add(ContextCompat.getColor(requireContext(), R.color.red))
             } else {
-                if (item.y.toDouble() > calorieBalanceBurnTarget) {
-                    colors.add(ContextCompat.getColor(requireContext(), R.color.color_green))
-                } else {
-                    colors.add(ContextCompat.getColor(requireContext(), R.color.light_orange))
-                }
+                colors.add(ContextCompat.getColor(requireContext(), R.color.color_green))
             }
         }
         dataSet.colors = colors
@@ -319,12 +313,21 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
         } else {
             dataSet.setDrawValues(true)
         }
+
         dataSet.barShadowColor = Color.TRANSPARENT
         dataSet.highLightColor = ContextCompat.getColor(requireContext(), R.color.light_orange)
         val barData = BarData(dataSet)
         barData.barWidth = 0.4f
         barChart.data = barData
         barChart.setFitBars(true)
+
+        // Enable highlighting for vertical line
+        barChart.isHighlightPerTapEnabled = true
+        barChart.isHighlightPerDragEnabled = false
+
+        // Create invisible line dataset for vertical line effect
+        val lineEntries = mutableListOf<Entry>()
+        var selectedIndex = -1
 
         // Dynamically set Y-axis range to handle positive and negative values
         val leftYAxis: YAxis = barChart.axisLeft
@@ -353,19 +356,9 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
             }
         }
 
-        // X-axis with multiline labels (from second updateChart)
+        // X-axis with multiline labels
         val combinedLabels: List<String> = if (entries.size == 30) {
             labels
-            /*List(30) { index ->
-                when (index) {
-                    3 -> "1-7\nJun"
-                    10 -> "8-14\nJun"
-                    17 -> "15-21\nJun"
-                    24 -> "22-28\nJun"
-                    28 -> "29-30\nJun"
-                    else -> "" // Empty label for spacing
-                }
-            }*/
         } else {
             labels.take(entries.size).zip(labelsDate.take(entries.size)) { label, date ->
                 val cleanedDate = date.substringBefore(",")
@@ -405,6 +398,9 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
 
         barChart.axisRight.isEnabled = false
         barChart.description.isEnabled = false
+        //barChart.isHighlightPerTapEnabled = false
+
+
         barChart.setExtraOffsets(0f, 0f, 0f, 40f) // Increased bottom offset to prevent cutting
         val legend = barChart.legend
         legend.isEnabled = false
@@ -412,6 +408,14 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
         legend.textColor = Color.TRANSPARENT    // Hide text
         legend.textSize = 0f
         legend.setDrawInside(false)
+
+        // Add custom view for dotted line
+        val dottedLineView = View(requireContext()).apply {
+            setBackgroundColor(Color.TRANSPARENT)
+            visibility = View.GONE
+        }
+
+        // Add dotted line view as overlay (you might need to add this to parent layout)
 
         barChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
             override fun onValueSelected(e: Entry?, h: Highlight?) {
@@ -421,32 +425,16 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
                 if (e != null && h != null) {
                     val x = e.x.toInt()
                     val y = e.y
+                    Log.d("ChartClick", "Clicked X: $x, Y: $y")
+                    if (x >= 0 && x < labelsDate.size) { // Boundary check
+                        selectedItemDate.text = labelsDate[x]
+                        selectedCalorieTv.text = y.toInt().toString()
 
-                    selectedItemDate.text = labelsDate.getOrNull(x) ?: "N/A"
-                    selectedCalorieTv.text = y.toInt().toString()
-
-                    // Move CardView
-                    val barX = h.xPx
-                    val chartWidth = barChart.width.toFloat()
-                    val cardWidth = selectHeartRateLayout.width.toFloat()
-                    val targetX = barX - (cardWidth / 2f)
-                    val clampedX = max(0f, min(targetX, chartWidth - cardWidth))
-                    selectHeartRateLayout.x = clampedX
-
-                    // Wait for layout to be drawn before getting positions
-                    selectHeartRateLayout.post {
-                        val cardX = clampedX + cardWidth / 2f
-                        val cardY = selectHeartRateLayout.y + selectHeartRateLayout.height
-
-                        val barY = h.yPx
-
-                        // Set coordinates in dotted line view
-                        dottedLineView.setLineCoordinates(
-                            cardX,
-                            cardX,
-                            barX,
-                            barY
-                        )
+                        // Draw vertical dotted line using custom canvas drawing
+                        drawVerticalDottedLine(h?.x ?: 0f)
+                    } else {
+                        Log.e("ChartClick", "Index $x out of bounds for labelsDate size ${labelsDate.size}")
+                        selectHeartRateLayout.visibility = View.INVISIBLE
                     }
                 }
             }
@@ -454,7 +442,7 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
             override fun onNothingSelected() {
                 Log.d("ChartClick", "Nothing selected")
                 selectHeartRateLayout.visibility = View.INVISIBLE
-                dottedLineView.visibility = View.GONE
+                removeVerticalDottedLine()
             }
         })
 
@@ -462,6 +450,56 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
         barChart.invalidate()
     }
 
+    // Helper function to draw vertical dotted line
+    private fun drawVerticalDottedLine(xPosition: Float) {
+        // Create a custom overlay view with canvas drawing
+        val overlay = object : View(requireContext()) {
+            override fun onDraw(canvas: Canvas) {
+                super.onDraw(canvas)
+                canvas?.let { c ->
+                    val paint = Paint().apply {
+                        color = Color.BLACK
+                        strokeWidth = 3f
+                        style = Paint.Style.STROKE
+                        pathEffect = DashPathEffect(floatArrayOf(10f, 5f), 0f)
+                    }
+
+                    // Get chart bounds
+                    val chartRect = barChart.contentRect
+
+                    // Convert chart value to pixel position
+                    val transformer = barChart.getTransformer(YAxis.AxisDependency.LEFT)
+                    val pts = floatArrayOf(xPosition, 0f)
+                    transformer.pointValuesToPixel(pts)
+
+                    // Draw vertical line
+                    c.drawLine(
+                        pts[0],
+                        chartRect.bottom,
+                        pts[0],
+                        chartRect.bottom,
+                        paint
+                    )
+                }
+            }
+        }
+
+        // Add overlay to chart (this approach might need adjustment based on your layout)
+        val chartParent = barChart.parent as? ViewGroup
+        chartParent?.addView(overlay, ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT
+        ))
+
+        overlay.tag = "dotted_line_overlay"
+    }
+
+    // Helper function to remove vertical dotted line
+    private fun removeVerticalDottedLine() {
+        val chartParent = barChart.parent as? ViewGroup
+        val overlay = chartParent?.findViewWithTag<View>("dotted_line_overlay")
+        overlay?.let { chartParent.removeView(it) }
+    }
     /** Sample Data for Week */
     private fun getWeekData(): List<BarEntry> {
         return listOf(
@@ -507,7 +545,7 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
 //                        selectedDate = firstDateOfMonth
                         selectedMonthDate = selectedDate
                     } else {
-                       // val firstDateOfMonth = getFirstDateOfMonth(selectedMonthDate, 1)
+                        // val firstDateOfMonth = getFirstDateOfMonth(selectedMonthDate, 1)
                         selectedDate = selectedMonthDate
                     }
                     setSelectedDateMonth(selectedMonthDate, "Month")
@@ -518,7 +556,7 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
 //                        selectedDate = firstDateOfMonth
                         selectedHalfYearlyDate = selectedDate
                     } else {
-                      //  val firstDateOfMonth = getFirstDateOfMonth(selectedHalfYearlyDate, 1)
+                        //  val firstDateOfMonth = getFirstDateOfMonth(selectedHalfYearlyDate, 1)
                         selectedDate = selectedHalfYearlyDate
                     }
                     setSelectedDateMonth(selectedHalfYearlyDate, "Year")
@@ -648,30 +686,30 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
         val labels = generateWeeklyLabelsFor30Days(dateList[0])
         weeklyLabels.addAll(labelsWithEmpty)
         labelsDate.addAll(labels)
-       /* for (i in 0 until 30) {
-            weeklyLabels.add(
-                when (i) {
-                    2 -> "1-7"
-                    9 -> "8-14"
-                    15 -> "15-21"
-                    22 -> "22-28"
-                    29 -> "29-31"
-                    else -> ""
-                }
-            )
-            val dateLabel = (convertMonth(dateString) + "," + year)
-            if (i < 7) {
-                labelsDate.add("1-7 $dateLabel")
-            } else if (i < 14) {
-                labelsDate.add("8-14 $dateLabel")
-            } else if (i < 21) {
-                labelsDate.add("15-21 $dateLabel")
-            } else if (i < 28) {
-                labelsDate.add("22-28 $dateLabel")
-            } else {
-                labelsDate.add("29-31 $dateLabel")
-            }
-        }*/
+        /* for (i in 0 until 30) {
+             weeklyLabels.add(
+                 when (i) {
+                     2 -> "1-7"
+                     9 -> "8-14"
+                     15 -> "15-21"
+                     22 -> "22-28"
+                     29 -> "29-31"
+                     else -> ""
+                 }
+             )
+             val dateLabel = (convertMonth(dateString) + "," + year)
+             if (i < 7) {
+                 labelsDate.add("1-7 $dateLabel")
+             } else if (i < 14) {
+                 labelsDate.add("8-14 $dateLabel")
+             } else if (i < 21) {
+                 labelsDate.add("15-21 $dateLabel")
+             } else if (i < 28) {
+                 labelsDate.add("22-28 $dateLabel")
+             } else {
+                 labelsDate.add("29-31 $dateLabel")
+             }
+         }*/
 
         // Aggregate calories by day
         calorieAnalysisResponse.data.calorie_data.forEach { calorie ->

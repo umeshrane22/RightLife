@@ -290,16 +290,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         isTooltipShown = prefs.getBoolean("hasShownTooltips", false)
     }
 
-    private fun onDateRecyclerRefresh(){
-//        val currentDateTime = LocalDateTime.now()
-//        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-//        val formattedDate = currentDateTime.format(formatter)
-//        if (selectedDate!=null) {
-//            getWorkoutLogHistory(selectedDate!!)
-//        }else{
-//            getWorkoutLogHistory(formattedDate)
-//        }
-    }
+
 
     override fun onResume() {
         super.onResume()
@@ -318,7 +309,26 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         super.onDestroyView()
         handler.removeCallbacksAndMessages(null)
     }
+    private fun onDateRecyclerRefresh(){
+        // Refresh current date and workout history
+        val currentDateTime = LocalDateTime.now()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val formattedDate = currentDateTime.format(formatter)
+        val formatFullDate = DateTimeFormatter.ofPattern("E, d MMM yyyy")
+        workoutDateTv.text = currentDateTime.format(formatFullDate)
 
+        if (selectedDate == null || selectedDate.equals("")){
+            selectedDate = formattedDate
+        }
+
+        // Refresh workout history for current selected date
+        getWorkoutLogHistory(selectedDate!!)
+
+        // Also refresh the weekly calendar view
+        workoutWeeklyDayList = getWeekFrom(currentWeekStart)
+        lastDayOfCurrentWeek = workoutWeeklyDayList.get(workoutWeeklyDayList.size - 1).fullDate.toString()
+        onWorkoutLogWeeklyDayList(workoutWeeklyDayList, workoutLogHistory)
+    }
     fun showLoader(view: View) {
         loadingOverlay = view.findViewById(R.id.loading_overlay)
         loadingOverlay?.visibility = View.VISIBLE

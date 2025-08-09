@@ -70,7 +70,13 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
                 notifyDataSetChanged()
             }
 
-            bottomSheet.show((context as AppCompatActivity).supportFragmentManager, "EditWorkoutBottomSheet")
+            // Add new refresh callback
+            bottomSheet.setOnDeleteSuccessWithRefreshListener {
+                // This will trigger the fragment to refresh current date data
+                onRefreshDateClick()
+            }
+
+            bottomSheet.show((context as AppCompatActivity).supportFragmentManager, "DeleteWorkoutBottomSheet")
         }
 
         holder.edit.setOnClickListener {

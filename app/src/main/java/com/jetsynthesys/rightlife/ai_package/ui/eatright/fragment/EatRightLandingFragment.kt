@@ -632,10 +632,10 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
             unitMicroTv.text = landingPageResponse.micros.unit
             energyTypeTv.text = landingPageResponse.micros.micros_name
         }else{
-            todayMacrosWithDataLayout.visibility = View.GONE
-            todayMacroNoDataLayout.visibility = View.VISIBLE
-            todayMicrosWithDataLayout.visibility = View.GONE
-            todayMacroNoDataLayoutOne.visibility = View.VISIBLE
+            todayMacrosWithDataLayout.visibility = View.VISIBLE
+            todayMacroNoDataLayout.visibility = View.GONE
+            todayMicrosWithDataLayout.visibility = View.VISIBLE
+            todayMacroNoDataLayoutOne.visibility = View.GONE
         }
 
 //        if(landingPageResponse.micros.value > 0){
@@ -732,9 +732,9 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
         }
 
       //  tvCaloriesValue.text = landingPageResponse.total_calories.toString()
-        tvProteinValue.text = round(landingPageResponse.total_protein).toInt().toString()
-        tvCabsValue.text = round(landingPageResponse.total_carbs).toInt().toString()
-        tvFatsValue.text = round(landingPageResponse.total_fat).toInt().toString()
+        tvProteinValue.text = formatValue(landingPageResponse.total_protein)
+        tvCabsValue.text = formatValue(landingPageResponse.total_carbs)
+        tvFatsValue.text = formatValue(landingPageResponse.total_fat)
         carbsUnitTv.text = " / " + landingPageResponse.max_carbs.toInt().toString() +" g"
         proteinUnitTv.text = " / " + landingPageResponse.max_protein.toInt().toString() +" g"
         fatsUnitTv.text = " / " + landingPageResponse.max_fat.toInt().toString() +" g"
@@ -769,7 +769,13 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
         animator.start()
         onOtherRecipeList(landingPageResponse.other_recipes_you_might_like)
     }
-
+    fun formatValue(value: Double): String {
+        return if (value >= 1000) {
+            String.format("%.1fk", value / 1000) // 1 decimal ke saath
+        } else {
+            value.toInt().toString() // normal integer
+        }
+    }
     private fun setTodayMealLogsData(){
 
         val regularRecipeData : RegularRecipeEntry? = null
