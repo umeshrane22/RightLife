@@ -59,6 +59,7 @@ import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
 import androidx.health.connect.client.records.WeightRecord
 import androidx.health.connect.client.request.ReadRecordsRequest
 import androidx.health.connect.client.time.TimeRangeFilter
+import androidx.lifecycle.VIEW_MODEL_STORE_OWNER_KEY
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -177,6 +178,11 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private lateinit var tvRestoEndTime: TextView
     private lateinit var tvConsistencyDate: TextView
     private lateinit var tvConsistencyTime: TextView
+    private lateinit var tvSleepTimeTitle: TextView
+    private lateinit var tvSleepAnalysis: TextView
+    private lateinit var imgSleepTimeIcon: ImageView
+    private lateinit var imgWakeTimeIcon: ImageView
+    private lateinit var sleepPerformBtn : ImageView
     private lateinit var landingPageResponse: SleepLandingResponse
     private lateinit var landingAllData: SleepLandingAllData
     private lateinit var lineChart:LineChart
@@ -215,6 +221,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private lateinit var imgSleepInfo: ImageView
     private lateinit var imgIdealInfo: ImageView
     private lateinit var sleepIdeal : ImageView
+    private lateinit var tvSleepPerformTitle: TextView
+    private lateinit var imgSleepPerformIcon : ImageView
     private lateinit var consistencySleep : ImageView
     private lateinit var restorativeChart: SleepRestoChartView
     private var sleepSessionRecord: List<SleepSessionRecord>? = null
@@ -276,6 +284,14 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         sleepPerformView = view.findViewById(R.id.img_sleep_perform_arrow)
         btnSync = view.findViewById(R.id.lyt_sync_with_health)
         cardSleepTimeRequirementTop = view.findViewById(R.id.card_sleep_time_requirement_top)
+        tvSleepAnalysis = view.findViewById(R.id.tv_sleep_analysis)
+        tvSleepTimeTitle = view.findViewById(R.id.last_night_title)
+        imgSleepTimeIcon = view.findViewById(R.id.timer_icon)
+        tvSleepPerformTitle = view.findViewById(R.id.tv_sleep_perform_title)
+        imgSleepPerformIcon = view.findViewById(R.id.img_bed_icon1)
+        imgWakeTimeIcon = view.findViewById(R.id.img_mini_clock_icon1)
+        btnSync = view.findViewById(R.id.lyt_sync_with_health)
+        cardSleepTimeRequirementTop = view.findViewById(R.id.card_sleep_time_requirement_top)
         btnSleepSound = view.findViewById(R.id.btn_sleep_sound)
         headerTop = view.findViewById(R.id.header_top)
         img_edit_wakeup_time_top = view.findViewById(R.id.img_edit_wakeup_time_top)
@@ -299,7 +315,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         sleepTimeRequirementCardView = view.findViewById(R.id.card_sleep_time_requirement)
         val sleepStageInfo = view.findViewById<ImageView>(R.id.img_sleep_right)
         val editWakeup = view.findViewById<ImageView>(R.id.img_edit_wakeup_time)
-        val sleepPerform = view.findViewById<ImageView>(R.id.img_sleep_perform_right)
+        sleepPerformBtn = view.findViewById<ImageView>(R.id.img_sleep_perform_right)
         sleepIdeal = view.findViewById(R.id.img_sleep_ideal_actual)
         val restoSleep = view.findViewById<ImageView>(R.id.img_resto_sleep)
         val restoSleepNoData = view.findViewById<ImageView>(R.id.img_resto_sleep_nodata)
@@ -442,7 +458,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             navigateToFragment(SleepPerformanceFragment(), "SleepPerformanceFragment")
         }
 
-        sleepPerform.setOnClickListener {
+        sleepPerformBtn.setOnClickListener {
             navigateToFragment(SleepPerformanceFragment(), "SleepPerformanceFragment")
         }
 
@@ -1236,7 +1252,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
 
     private fun convertDecimalHoursToHrMinFormat(hoursDecimal: Double): String {
         var result = "0"
-        if (hoursDecimal == 0.0){
+        if (hoursDecimal == 0.0 || hoursDecimal == null){
             val totalMinutes = (hoursDecimal * 60).toInt()
             val hours = totalMinutes / 60
             val minutes = totalMinutes % 60
@@ -1925,7 +1941,35 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 tvPerformWakeTime.text = convertTo12HourZoneFormat(sleepPerformanceDetail.actualSleepData?.sleepEndTime!!)
             if (sleepPerformanceDetail.sleepPerformanceData?.sleepPerformance == 0.0){
                 tvPerformSleepPercent.text = "0"
+                tvPerformAction.visibility = View.GONE
+                tvPerformMessage.visibility = View.GONE
+                tvSleepAnalysis.visibility = View.VISIBLE
+                tvSleepTimeTitle.visibility = View.GONE
+                imgSleepPerformIcon.visibility = View.GONE
+                imgWakeTimeIcon.visibility = View.GONE
+                sleepPerformBtn.visibility = View.GONE
+                tvPerformStartTime.visibility = View.GONE
+                tvPerformWakeTime.visibility = View.GONE
+                tvSleepPerformTitle.text = "SleepRight"
+                imgSleepTimeIcon.setImageResource(R.drawable.ic_db_sleepright)
+                if (sleepPerformanceDetail.actualSleepData?.actualSleepDurationHours == null) {
+                    tvPerformSleepDuration.text = "0 hr"
+                }
+                if (sleepPerformanceDetail.idealSleepDuration == null) {
+                    tvPerformIdealDuration.text = "7 hr 30 min"
+                }
             }else{
+                tvPerformAction.visibility = View.VISIBLE
+                tvPerformMessage.visibility = View.VISIBLE
+                tvSleepAnalysis.visibility = View.GONE
+                tvSleepTimeTitle.visibility = View.VISIBLE
+                imgSleepPerformIcon.visibility = View.VISIBLE
+                imgWakeTimeIcon.visibility = View.VISIBLE
+                sleepPerformBtn.visibility = View.VISIBLE
+                tvPerformStartTime.visibility = View.VISIBLE
+                tvPerformWakeTime.visibility = View.VISIBLE
+                tvSleepPerformTitle.text = "Sleep Performance"
+                imgSleepTimeIcon.setImageResource(R.drawable.sleep_timer_icon)
                 tvPerformSleepPercent.text = sleepPerformanceDetail.sleepPerformanceData?.sleepPerformance?.toString()
             }
                 tvPerformSleepDuration.text = convertDecimalHoursToHrMinFormat(sleepPerformanceDetail.actualSleepData?.actualSleepDurationHours!!)
@@ -1958,8 +2002,26 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 }
             }*/
         }else{
-            performNoDataCardView.visibility = View.VISIBLE
-            performCardView.visibility = View.GONE
+            performNoDataCardView.visibility = View.GONE
+            performCardView.visibility = View.VISIBLE
+            if (sleepPerformanceDetail.sleepPerformanceData?.sleepPerformance == 0.0 || sleepPerformanceDetail.sleepPerformanceData?.sleepPerformance == null){
+                tvPerformSleepPercent.text = "0"
+                tvPerformAction.visibility = View.GONE
+                tvPerformMessage.visibility = View.GONE
+                tvSleepAnalysis.visibility = View.VISIBLE
+                tvSleepTimeTitle.visibility = View.GONE
+                imgSleepPerformIcon.visibility = View.GONE
+                imgWakeTimeIcon.visibility = View.GONE
+                sleepPerformBtn.visibility = View.GONE
+                tvSleepPerformTitle.text = "SleepRight"
+                imgSleepTimeIcon.setImageResource(R.drawable.ic_db_sleepright)
+                if (sleepPerformanceDetail.actualSleepData?.actualSleepDurationHours == null) {
+                    tvPerformSleepDuration.text = "0 hr"
+                }
+                if (sleepPerformanceDetail.idealSleepDuration == null) {
+                    tvPerformIdealDuration.text = "7 hr 30 min"
+                }
+            }
         }
     }
 

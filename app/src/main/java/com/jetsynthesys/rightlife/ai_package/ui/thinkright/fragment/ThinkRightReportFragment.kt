@@ -905,6 +905,11 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         })
     }
 
+    override fun onResume() {
+        super.onResume()
+        fetchAffirmationsList()
+    }
+
     private fun fetchThinkRecomendedData() {
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
         val call = ApiClient.apiService.fetchThinkRecomended(token,"HOME","THINK_RIGHT")

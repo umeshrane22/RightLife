@@ -351,9 +351,11 @@ class LogYourNapDialogFragment(private val requireContext: Context, private val 
     private fun logNap(sleepTime: String, wakeTime: String) {
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val source = "android"
-        val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        val date = selectedDate.format(dateFormatter)
-          val call = ApiClient.apiServiceFastApi.logNap(userId, source, date, LogNapRequest(sleepTime, wakeTime, set_reminder = 0, reminder_value = tvRemindTime.text.toString()))
+     //   val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+      //  val date = selectedDate.format(dateFormatter)
+        val dateTime = OffsetDateTime.parse(wakeTime)
+        val formattedDate = dateTime.toLocalDate().toString()
+          val call = ApiClient.apiServiceFastApi.logNap(userId, source, formattedDate, LogNapRequest(sleepTime, wakeTime, set_reminder = 0, reminder_value = tvRemindTime.text.toString()))
         call.enqueue(object : Callback<BaseResponse> {
             override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
                 if (response.isSuccessful) {
