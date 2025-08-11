@@ -120,7 +120,7 @@ class HomeNewActivity : BaseActivity() {
                         R.color.rightlife
                     )
                 )
-            isAdd = !isAdd // Toggle the state
+                isAdd = !isAdd // Toggle the state
 
             } else {
                 val currentFragment =
@@ -342,7 +342,7 @@ class HomeNewActivity : BaseActivity() {
             dynamicReportId = SharedPreferenceManager.getInstance(applicationContext).userId
             if (dynamicReportId.isEmpty()) {
                 // Some error handling if the ID is not available
-            }else{
+            } else {
                 val intent = Intent(this, AIReportWebViewActivity::class.java).apply {
                     // Put the dynamic ID as an extra
                     putExtra(AIReportWebViewActivity.EXTRA_REPORT_ID, dynamicReportId)
@@ -377,6 +377,10 @@ class HomeNewActivity : BaseActivity() {
             startActivity(Intent(this, JournalListActivity::class.java))
         } else if (intent.getBooleanExtra("start_profile", false)) {
             startActivity(Intent(this, ProfileSettingsActivity::class.java))
+        } else if (intent.getBooleanExtra("finish_MindAudit", false)) {
+            if (intent.getBooleanExtra("FROM_THINK_RIGHT", false)) {
+                startActivity(Intent(this, MainAIActivity::class.java))
+            }
         }
     }
 
@@ -399,8 +403,8 @@ class HomeNewActivity : BaseActivity() {
                     SharedPreferenceManager.getInstance(applicationContext)
                         .saveUserProfile(ResponseObj)
 
-                    SharedPreferenceManager.getInstance(applicationContext).
-                    setAIReportGeneratedView(ResponseObj.reportView)
+                    SharedPreferenceManager.getInstance(applicationContext)
+                        .setAIReportGeneratedView(ResponseObj.reportView)
 
                     if (ResponseObj.userdata.profilePicture != null) {
                         Glide.with(this@HomeNewActivity)
@@ -425,7 +429,7 @@ class HomeNewActivity : BaseActivity() {
                         if (!DashboardChecklistManager.paymentStatus) {
                             binding.trialExpiredLayout.trialExpiredLayout.visibility = View.VISIBLE
                             isTrialExpired = true
-                        }else{
+                        } else {
                             binding.trialExpiredLayout.trialExpiredLayout.visibility = View.GONE
                             isTrialExpired = false
                         }
@@ -621,7 +625,7 @@ class HomeNewActivity : BaseActivity() {
                 startActivity(Intent(this, SubscriptionPlanListActivity::class.java).apply {
                     putExtra("SUBSCRIPTION_TYPE", "SUBSCRIPTION_PLAN")
                 })
-            }else {
+            } else {
                 showInternetError()
             }
             //finish()
@@ -633,6 +637,7 @@ class HomeNewActivity : BaseActivity() {
     fun showHeader(show: Boolean) {
         binding.llCountDown.visibility = if (show && isCountDownVisible) View.VISIBLE else View.GONE
     }
+
     private fun showInternetError() {
         Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show()
     }
@@ -648,7 +653,6 @@ class HomeNewActivity : BaseActivity() {
     }
 
     private lateinit var billingClient: BillingClient
-
 
 
     private fun initBillingAndRecover() {
@@ -689,7 +693,6 @@ class HomeNewActivity : BaseActivity() {
             }
 
 
-
             override fun onBillingServiceDisconnected() {
 
                 // Retry connection if needed
@@ -699,7 +702,6 @@ class HomeNewActivity : BaseActivity() {
         })
 
     }
-
 
 
     private val TAG = "BillingRecovery"
@@ -712,12 +714,18 @@ class HomeNewActivity : BaseActivity() {
             .build()
 
         billingClient.queryPurchasesAsync(params) { billingResult, purchases ->
-            Log.d(TAG, "INAPP queryPurchasesAsync() result: code=${billingResult.responseCode}, purchasesCount=${purchases.size}")
+            Log.d(
+                TAG,
+                "INAPP queryPurchasesAsync() result: code=${billingResult.responseCode}, purchasesCount=${purchases.size}"
+            )
 
 
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                 for (purchase in purchases) {
-                    Log.d(TAG, "Found INAPP purchase: token=${purchase.purchaseToken}, state=${purchase.purchaseState}, acknowledged=${purchase.isAcknowledged}")
+                    Log.d(
+                        TAG,
+                        "Found INAPP purchase: token=${purchase.purchaseToken}, state=${purchase.purchaseState}, acknowledged=${purchase.isAcknowledged}"
+                    )
 
                     if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
                         Log.d(TAG, "Processing INAPP purchase: ${purchase.purchaseToken}")
@@ -738,17 +746,26 @@ class HomeNewActivity : BaseActivity() {
             .build()
 
         billingClient.queryPurchasesAsync(params) { billingResult, purchases ->
-            Log.d(TAG, "SUBS queryPurchasesAsync() result: code=${billingResult.responseCode}, purchasesCount=${purchases.size}")
+            Log.d(
+                TAG,
+                "SUBS queryPurchasesAsync() result: code=${billingResult.responseCode}, purchasesCount=${purchases.size}"
+            )
 
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                 for (purchase in purchases) {
-                    Log.d(TAG, "Found SUBS purchase: token=${purchase.purchaseToken}, state=${purchase.purchaseState}, acknowledged=${purchase.isAcknowledged}")
+                    Log.d(
+                        TAG,
+                        "Found SUBS purchase: token=${purchase.purchaseToken}, state=${purchase.purchaseState}, acknowledged=${purchase.isAcknowledged}"
+                    )
 
                     if (!purchase.isAcknowledged && purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
                         Log.d(TAG, "Acknowledging subscription: ${purchase.purchaseToken}")
                         acknowledgeSubscription(purchase)
                     } else if (purchase.isAcknowledged) {
-                        Log.d(TAG, "Subscription already acknowledged: ${purchase.purchaseToken} — consider updating backend/UI")
+                        Log.d(
+                            TAG,
+                            "Subscription already acknowledged: ${purchase.purchaseToken} — consider updating backend/UI"
+                        )
                         updateBackendForPurchase(purchase)
                     }
                 }
@@ -766,7 +783,10 @@ class HomeNewActivity : BaseActivity() {
             .build()
 
         billingClient.consumeAsync(consumeParams) { result, _ ->
-            Log.d(TAG, "consumeAsync() result: code=${result.responseCode} for token=${purchase.purchaseToken}")
+            Log.d(
+                TAG,
+                "consumeAsync() result: code=${result.responseCode} for token=${purchase.purchaseToken}"
+            )
 
             if (result.responseCode == BillingClient.BillingResponseCode.OK) {
                 Log.d(TAG, "Purchase consumed successfully: ${purchase.purchaseToken}")
@@ -785,7 +805,10 @@ class HomeNewActivity : BaseActivity() {
             .build()
 
         billingClient.acknowledgePurchase(acknowledgeParams) { result ->
-            Log.d(TAG, "acknowledgePurchase() result: code=${result.responseCode} for token=${purchase.purchaseToken}")
+            Log.d(
+                TAG,
+                "acknowledgePurchase() result: code=${result.responseCode} for token=${purchase.purchaseToken}"
+            )
 
             if (result.responseCode == BillingClient.BillingResponseCode.OK) {
                 Log.d(TAG, "Subscription acknowledged successfully: ${purchase.purchaseToken}")
@@ -797,7 +820,10 @@ class HomeNewActivity : BaseActivity() {
     }
 
     private fun updateBackendForPurchase(purchase: Purchase) {
-        Log.d(TAG, "Updating backend for purchase: token=${purchase.purchaseToken}, products=${purchase.products}")
+        Log.d(
+            TAG,
+            "Updating backend for purchase: token=${purchase.purchaseToken}, products=${purchase.products}"
+        )
 
         val paymentSuccessRequest = PaymentSuccessRequest().apply {
             planId = purchase.products.firstOrNull() ?: ""
@@ -825,7 +851,10 @@ class HomeNewActivity : BaseActivity() {
     }
 
     private fun saveSubscriptionSuccess(paymentSuccessRequest: PaymentSuccessRequest) {
-        Log.d(TAG, "Calling saveSubscriptionSuccess() with planId=${paymentSuccessRequest.planId}, orderId=${paymentSuccessRequest.orderId}")
+        Log.d(
+            TAG,
+            "Calling saveSubscriptionSuccess() with planId=${paymentSuccessRequest.planId}, orderId=${paymentSuccessRequest.orderId}"
+        )
 
         val call = apiService.savePaymentSuccess(
             sharedPreferenceManager.accessToken,
@@ -839,12 +868,18 @@ class HomeNewActivity : BaseActivity() {
                 if (response.isSuccessful && response.body() != null) {
                     Log.d(TAG, "savePaymentSuccess() success: ${response.body()}")
                 } else {
-                    Log.d(TAG, "savePaymentSuccess() failed: code=${response.code()}, message=${response.message()}")
+                    Log.d(
+                        TAG,
+                        "savePaymentSuccess() failed: code=${response.code()}, message=${response.message()}"
+                    )
                 }
             }
 
             override fun onFailure(call: Call<PaymentSuccessResponse>, t: Throwable) {
-                Log.d(TAG, "savePaymentSuccess() failed due to network or server error: ${t.localizedMessage}")
+                Log.d(
+                    TAG,
+                    "savePaymentSuccess() failed due to network or server error: ${t.localizedMessage}"
+                )
                 handleNoInternetView(t)
             }
         })
@@ -862,10 +897,11 @@ class HomeNewActivity : BaseActivity() {
         val layoutParams = window!!.attributes
         layoutParams.dimAmount = 0.7f // Adjust the dim amount (0.0 - 1.0)
         window.attributes = layoutParams
-        binding.btnSwitchAccount.setText("Cancel")
+        binding.btnSwitchAccount.text = "Cancel"
         binding.btnSwitchAccount.visibility = View.GONE
         binding.tvTitle.text = "Free Service Already Used on This Device"
-        binding.tvDescription.text = "Looks like this device has already claimed a free service under another account. To continue, log out and switch to a new device."
+        binding.tvDescription.text =
+            "Looks like this device has already claimed a free service under another account. To continue, log out and switch to a new device."
 
         // Handle close button click
         binding.btnOk.setOnClickListener {

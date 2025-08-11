@@ -152,6 +152,7 @@ public class MindAuditFeelingsFragment extends Fragment {
                         BasicScreeningQuestion basicScreeningQuestion = gson.fromJson(jsonString, BasicScreeningQuestion.class);
                         Intent intent = new Intent(requireActivity(), MindAuditBasicScreeningQuestionsActivity.class);
                         intent.putExtra(ARG_BASIC_QUESTION, basicScreeningQuestion);
+                        intent.putExtra("FROM_THINK_RIGHT",((MindAuditFromActivity) requireActivity()).isFromThinkRight);
                         startActivity(intent);
                     } catch (IOException e) {
                         throw new RuntimeException(e);

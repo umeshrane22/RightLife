@@ -28,6 +28,7 @@ public class MindAuditActivity extends BaseActivity {
     ImageView ic_back_dialog, close_dialog;
     HealthAuditPagerAdapter adapter;
     Button btn_howitworks;
+    boolean isFromThinkRight = false;
 
     /**
      * {@inheritDoc}
@@ -57,6 +58,8 @@ public class MindAuditActivity extends BaseActivity {
                 R.layout.page_one_mind, // Define these layout files in your res/layout directory
                 R.layout.page_two_mind,
         };
+
+        isFromThinkRight = getIntent().getBooleanExtra("FROM_THINK_RIGHT",false);
 
         // Set up the adapter
         adapter = new HealthAuditPagerAdapter(layouts);
@@ -93,6 +96,7 @@ public class MindAuditActivity extends BaseActivity {
                 viewPager.setCurrentItem(currentItem + 1);
             } else {
                 Intent intent = new Intent(MindAuditActivity.this, MindAuditFromActivity.class);
+                intent.putExtra("FROM_THINK_RIGHT",isFromThinkRight);
                 startActivity(intent);
             }
         });
@@ -171,6 +175,7 @@ public class MindAuditActivity extends BaseActivity {
                             if (!response.body().getResult().get(0).getAssessmentsTaken().isEmpty())
                                 intent.putExtra("Assessment", response.body().getResult().get(0).getAssessmentsTaken().get(0).getAssessment());
                         }
+                        intent.putExtra("FROM_THINK_RIGHT",isFromThinkRight);
                         startActivity(intent);
                         finish();
                     }

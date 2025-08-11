@@ -38,6 +38,7 @@ class MindAuditResultActivity : BaseActivity() {
     private var emotionsAdapter: EmotionsAdapter? = null
     private var reportId: String? = null
     private var isFrom: String? = null
+    private var isFromThinkRight = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,6 +47,7 @@ class MindAuditResultActivity : BaseActivity() {
 
         reportId = intent.getStringExtra("REPORT_ID")
         isFrom = intent.getStringExtra("FROM")
+        isFromThinkRight = intent.getBooleanExtra("FROM_THINK_RIGHT",false)
 
         binding.iconBack.setOnClickListener {
             onBackPressHandle()
@@ -127,6 +129,7 @@ class MindAuditResultActivity : BaseActivity() {
             val intent = Intent(this, HomeNewActivity::class.java)
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
             intent.putExtra("finish_MindAudit", true)
+            intent.putExtra("FROM_THINK_RIGHT",isFromThinkRight)
             startActivity(intent)
         }
     }

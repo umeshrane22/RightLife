@@ -11,7 +11,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -21,6 +20,7 @@ import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity;
 
 public class MindAuditBasicScreeningQuestionsActivity extends BaseActivity {
     public Button nextButton, submitButton;
+    public boolean isFromThinkRight = false;
     ImageView ic_back_dialog, close_dialog;
     private ViewPager2 viewPager;
     private Button prevButton;
@@ -41,6 +41,7 @@ public class MindAuditBasicScreeningQuestionsActivity extends BaseActivity {
         progressBar = findViewById(R.id.progressBar);
 
         basicScreeningQuestions = (BasicScreeningQuestion) getIntent().getSerializableExtra(MindAuditFeelingsFragment.ARG_BASIC_QUESTION);
+        isFromThinkRight = getIntent().getBooleanExtra("FROM_THINK_RIGHT", false);
 
         adapter = new MindAuditBasicQuestionsAdapter(this);
         adapter.setData(basicScreeningQuestions);
@@ -151,12 +152,14 @@ public class MindAuditBasicScreeningQuestionsActivity extends BaseActivity {
             //this.finish();
             finishAffinity(); // Finishes Activity D and all activities below it in the same task
             Intent intent = new Intent(MindAuditBasicScreeningQuestionsActivity.this, HomeNewActivity.class);
+            intent.putExtra("FROM_THINK_RIGHT", isFromThinkRight);
             startActivity(intent);
         });
 
         // Show the dialog
         dialog.show();
     }
+
     public interface OnNextButtonClickListener {
         void onNextClicked();
     }
