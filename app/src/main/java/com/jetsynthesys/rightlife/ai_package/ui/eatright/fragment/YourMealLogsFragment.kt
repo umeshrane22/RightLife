@@ -20,7 +20,6 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -50,7 +49,6 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.YourEveningSnac
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.YourLunchMealLogsAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.adapter.YourMorningSnackMealLogsAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.HomeTabMealFragment
-import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.tab.createmeal.DishFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MealLogWeeklyDayModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SnapDishLocalListModel
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
@@ -264,32 +262,6 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
         kcalStart = view.findViewById(R.id.kcalStart)
         kcalEnd = view.findViewById(R.id.kcalEnd)
 
-        if (moduleName.contentEquals("HomeDashboard")){
-            selectMealTypeBottomSheet = SelectMealTypeBottomSheet()
-            selectMealTypeBottomSheet.isCancelable = true
-            val args = Bundle()
-            args.putString("ModuleName", moduleName)
-            args.putString("selectedMealDate", selectedMealDate)
-            selectMealTypeBottomSheet.arguments = args
-            parentFragment.let { selectMealTypeBottomSheet.show(childFragmentManager, "SelectMealTypeBottomSheet") }
-        }else if (moduleName.contentEquals("EatRightLanding")){
-            selectMealTypeBottomSheet = SelectMealTypeBottomSheet()
-            selectMealTypeBottomSheet.isCancelable = true
-            val args = Bundle()
-            args.putString("ModuleName", moduleName)
-            args.putString("selectedMealDate", selectedMealDate)
-            selectMealTypeBottomSheet.arguments = args
-            parentFragment.let { selectMealTypeBottomSheet.show(childFragmentManager, "SelectMealTypeBottomSheet") }
-        }else if (moduleName.contentEquals("MoveRightLanding")) {
-            selectMealTypeBottomSheet = SelectMealTypeBottomSheet()
-            selectMealTypeBottomSheet.isCancelable = true
-            val args = Bundle()
-            args.putString("ModuleName", moduleName)
-            args.putString("selectedMealDate", selectedMealDate)
-            selectMealTypeBottomSheet.arguments = args
-            parentFragment.let { selectMealTypeBottomSheet.show(childFragmentManager, "SelectMealTypeBottomSheet") }
-        }
-
         mealLogWeeklyDayRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL,
             false)
         mealLogWeeklyDayRecyclerView.adapter = mealLogWeeklyDayAdapter
@@ -334,6 +306,31 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
         selectedWeeklyDayTv.text = currentDateTime.format(formatFullDate)
         if (selectedMealDate.equals("null") || selectedMealDate.equals("")){
             selectedMealDate = formattedDate
+        }
+        if (moduleName.contentEquals("HomeDashboard")){
+            selectMealTypeBottomSheet = SelectMealTypeBottomSheet()
+            selectMealTypeBottomSheet.isCancelable = true
+            val args = Bundle()
+            args.putString("ModuleName", moduleName)
+            args.putString("selectedMealDate", selectedMealDate)
+            selectMealTypeBottomSheet.arguments = args
+            parentFragment.let { selectMealTypeBottomSheet.show(childFragmentManager, "SelectMealTypeBottomSheet") }
+        }else if (moduleName.contentEquals("EatRightLanding")){
+            selectMealTypeBottomSheet = SelectMealTypeBottomSheet()
+            selectMealTypeBottomSheet.isCancelable = true
+            val args = Bundle()
+            args.putString("ModuleName", moduleName)
+            args.putString("selectedMealDate", selectedMealDate)
+            selectMealTypeBottomSheet.arguments = args
+            parentFragment.let { selectMealTypeBottomSheet.show(childFragmentManager, "SelectMealTypeBottomSheet") }
+        }else if (moduleName.contentEquals("MoveRightLanding")) {
+            selectMealTypeBottomSheet = SelectMealTypeBottomSheet()
+            selectMealTypeBottomSheet.isCancelable = true
+            val args = Bundle()
+            args.putString("ModuleName", moduleName)
+            args.putString("selectedMealDate", selectedMealDate)
+            selectMealTypeBottomSheet.arguments = args
+            parentFragment.let { selectMealTypeBottomSheet.show(childFragmentManager, "SelectMealTypeBottomSheet") }
         }
         getMealsLogHistory(formattedDate)
 
@@ -448,6 +445,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
         addBreakfastLayout.setOnClickListener {
             val fragment = HomeTabMealFragment()
             val args = Bundle()
+            args.putString("ModuleName", moduleName)
             args.putString("mealType", "breakfast")
             args.putString("selectedMealDate", selectedMealDate)
             fragment.arguments = args
@@ -461,6 +459,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
         addMorningSnackLayout.setOnClickListener {
             val fragment = HomeTabMealFragment()
             val args = Bundle()
+            args.putString("ModuleName", moduleName)
             args.putString("mealType", "morning_snack")
             args.putString("selectedMealDate", selectedMealDate)
             fragment.arguments = args
@@ -474,6 +473,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
         addLunchLayout.setOnClickListener {
             val fragment = HomeTabMealFragment()
             val args = Bundle()
+            args.putString("ModuleName", moduleName)
             args.putString("mealType", "lunch")
             args.putString("selectedMealDate", selectedMealDate)
             fragment.arguments = args
@@ -487,6 +487,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
         addEveningSnacksLayout.setOnClickListener {
             val fragment = HomeTabMealFragment()
             val args = Bundle()
+            args.putString("ModuleName", moduleName)
             args.putString("mealType", "evening_snack")
             args.putString("selectedMealDate", selectedMealDate)
             fragment.arguments = args
@@ -500,6 +501,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
         addDinnerLayout.setOnClickListener {
             val fragment = HomeTabMealFragment()
             val args = Bundle()
+            args.putString("ModuleName", moduleName)
             args.putString("mealType", "dinner")
             args.putString("selectedMealDate", selectedMealDate)
             fragment.arguments = args
