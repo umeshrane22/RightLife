@@ -368,6 +368,7 @@ class HomeNewActivity : BaseActivity() {
         super.onResume()
         checkForUpdate()
         getUserDetails()
+        initBillingAndRecover()
     }
 
     override fun onNewIntent(intent: Intent, caller: ComponentCaller) {
@@ -424,6 +425,9 @@ class HomeNewActivity : BaseActivity() {
                         if (!DashboardChecklistManager.paymentStatus) {
                             binding.trialExpiredLayout.trialExpiredLayout.visibility = View.VISIBLE
                             isTrialExpired = true
+                        }else{
+                            binding.trialExpiredLayout.trialExpiredLayout.visibility = View.GONE
+                            isTrialExpired = false
                         }
                     }
 
@@ -643,16 +647,9 @@ class HomeNewActivity : BaseActivity() {
 
                 // Optional: React to new purchases here if needed
 
-            }
-
-            .enablePendingPurchases(
-
-
-
+            }.enablePendingPurchases(
                 PendingPurchasesParams.newBuilder()
-
                     .enableOneTimeProducts()
-
                     .build()
 
             )
@@ -693,149 +690,131 @@ class HomeNewActivity : BaseActivity() {
 
 
 
+    private val TAG = "BillingRecovery"
+
     private fun recoverInAppPurchases() {
+        Log.d(TAG, "Starting recoverInAppPurchases()...")
 
         val params = QueryPurchasesParams.newBuilder()
-
             .setProductType(BillingClient.ProductType.INAPP)
-
             .build()
 
-
-
         billingClient.queryPurchasesAsync(params) { billingResult, purchases ->
+            Log.d(TAG, "INAPP queryPurchasesAsync() result: code=${billingResult.responseCode}, purchasesCount=${purchases.size}")
+
 
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-
                 for (purchase in purchases) {
+                    Log.d(TAG, "Found INAPP purchase: token=${purchase.purchaseToken}, state=${purchase.purchaseState}, acknowledged=${purchase.isAcknowledged}")
 
                     if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
-
-                        // Make sure it's not already consumed
-
+                        Log.d(TAG, "Processing INAPP purchase: ${purchase.purchaseToken}")
                         consumeIfNeeded(purchase)
-
                     }
-
                 }
-
+            } else {
+                Log.d(TAG, "INAPP purchase query failed: ${billingResult.debugMessage}")
             }
-
         }
-
     }
-
-
 
     private fun recoverSubscriptions() {
+        Log.d(TAG, "Starting recoverSubscriptions()...")
 
         val params = QueryPurchasesParams.newBuilder()
-
             .setProductType(BillingClient.ProductType.SUBS)
-
             .build()
-
-
 
         billingClient.queryPurchasesAsync(params) { billingResult, purchases ->
+            Log.d(TAG, "SUBS queryPurchasesAsync() result: code=${billingResult.responseCode}, purchasesCount=${purchases.size}")
 
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-
                 for (purchase in purchases) {
+                    Log.d(TAG, "Found SUBS purchase: token=${purchase.purchaseToken}, state=${purchase.purchaseState}, acknowledged=${purchase.isAcknowledged}")
 
                     if (!purchase.isAcknowledged && purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
-
+                        Log.d(TAG, "Acknowledging subscription: ${purchase.purchaseToken}")
                         acknowledgeSubscription(purchase)
-
+                    } else if (purchase.isAcknowledged) {
+                        Log.d(TAG, "Subscription already acknowledged: ${purchase.purchaseToken} — consider updating backend/UI")
+                        updateBackendForPurchase(purchase)
                     }
-
-                    // Optionally update UI/backend if already acknowledged
-
                 }
-
+            } else {
+                Log.d(TAG, "SUBS purchase query failed: ${billingResult.debugMessage}")
             }
-
         }
-
     }
-
-
 
     private fun consumeIfNeeded(purchase: Purchase) {
+        Log.d(TAG, "consumeIfNeeded() called for token=${purchase.purchaseToken}")
 
         val consumeParams = ConsumeParams.newBuilder()
-
             .setPurchaseToken(purchase.purchaseToken)
-
             .build()
-
-
 
         billingClient.consumeAsync(consumeParams) { result, _ ->
+            Log.d(TAG, "consumeAsync() result: code=${result.responseCode} for token=${purchase.purchaseToken}")
 
             if (result.responseCode == BillingClient.BillingResponseCode.OK) {
-
-                // ✅ Successfully consumed, update local or server state
+                Log.d(TAG, "Purchase consumed successfully: ${purchase.purchaseToken}")
                 updateBackendForPurchase(purchase)
+            } else {
+                Log.d(TAG, "Failed to consume purchase: ${result.debugMessage}")
             }
-
         }
-
     }
-
-
 
     private fun acknowledgeSubscription(purchase: Purchase) {
+        Log.d(TAG, "acknowledgeSubscription() called for token=${purchase.purchaseToken}")
 
         val acknowledgeParams = AcknowledgePurchaseParams.newBuilder()
-
             .setPurchaseToken(purchase.purchaseToken)
-
             .build()
 
-
-
         billingClient.acknowledgePurchase(acknowledgeParams) { result ->
+            Log.d(TAG, "acknowledgePurchase() result: code=${result.responseCode} for token=${purchase.purchaseToken}")
 
             if (result.responseCode == BillingClient.BillingResponseCode.OK) {
-
-                // ✅ Acknowledged successfully, update backend or UI
+                Log.d(TAG, "Subscription acknowledged successfully: ${purchase.purchaseToken}")
                 updateBackendForPurchase(purchase)
+            } else {
+                Log.d(TAG, "Failed to acknowledge subscription: ${result.debugMessage}")
             }
-
         }
-
     }
 
-
     private fun updateBackendForPurchase(purchase: Purchase) {
-        // Update backend or UI for booster
+        Log.d(TAG, "Updating backend for purchase: token=${purchase.purchaseToken}, products=${purchase.products}")
 
-        val paymentSuccessRequest = PaymentSuccessRequest()
-        paymentSuccessRequest.planId = purchase.products.firstOrNull() ?: ""
-        paymentSuccessRequest.planName = purchase.skus.get(0).toString()
-        paymentSuccessRequest.paymentGateway = "googlePlay"
-        paymentSuccessRequest.orderId = purchase.orderId//may be getting from payment response
-        paymentSuccessRequest.environment = "payment"
-        paymentSuccessRequest.notifyType = "SDK"
-        paymentSuccessRequest.couponId = ""//may be getting from payment response
-        paymentSuccessRequest.obfuscatedExternalAccountId = ""//may be getting from payment response
-        paymentSuccessRequest.price = purchase.products.get(0).toString()
+        val paymentSuccessRequest = PaymentSuccessRequest().apply {
+            planId = purchase.products.firstOrNull() ?: ""
+            planName = purchase.products.firstOrNull() ?: ""
+            paymentGateway = "googlePlay"
+            orderId = purchase.orderId ?: ""
+            environment = "payment"
+            notifyType = "SDK"
+            couponId = ""
+            obfuscatedExternalAccountId = ""
+            price = purchase.products.firstOrNull() ?: ""
 
-        val sdkDetail = SdkDetail()
-        sdkDetail.price = ""
-        sdkDetail.orderId = purchase.orderId ?: ""
-        sdkDetail.title = ""
-        sdkDetail.environment = "payment"
-        sdkDetail.description = ""
-        sdkDetail.currencyCode = "INR"
-        sdkDetail.currencySymbol = "₹"
+            sdkDetail = SdkDetail().apply {
+                price = ""
+                orderId = purchase.orderId ?: ""
+                title = ""
+                environment = "payment"
+                description = ""
+                currencyCode = "INR"
+                currencySymbol = "₹"
+            }
+        }
 
-        paymentSuccessRequest.sdkDetail = sdkDetail
         saveSubscriptionSuccess(paymentSuccessRequest)
     }
 
     private fun saveSubscriptionSuccess(paymentSuccessRequest: PaymentSuccessRequest) {
+        Log.d(TAG, "Calling saveSubscriptionSuccess() with planId=${paymentSuccessRequest.planId}, orderId=${paymentSuccessRequest.orderId}")
+
         val call = apiService.savePaymentSuccess(
             sharedPreferenceManager.accessToken,
             paymentSuccessRequest
@@ -846,13 +825,14 @@ class HomeNewActivity : BaseActivity() {
                 response: Response<PaymentSuccessResponse>
             ) {
                 if (response.isSuccessful && response.body() != null) {
-                    //response.body()?.data?.id?.let { updatePaymentId(it) }
+                    Log.d(TAG, "savePaymentSuccess() success: ${response.body()}")
                 } else {
-                    //showToast(response.message())
+                    Log.d(TAG, "savePaymentSuccess() failed: code=${response.code()}, message=${response.message()}")
                 }
             }
 
             override fun onFailure(call: Call<PaymentSuccessResponse>, t: Throwable) {
+                Log.d(TAG, "savePaymentSuccess() failed due to network or server error: ${t.localizedMessage}")
                 handleNoInternetView(t)
             }
         })
