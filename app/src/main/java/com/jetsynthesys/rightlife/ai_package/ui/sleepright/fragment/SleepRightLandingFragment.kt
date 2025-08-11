@@ -1971,9 +1971,15 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             restroDataCardView.visibility = View.VISIBLE
             tvRestoRemTime.text = addRemStageData(sleepRestorativeDetail?.sleepStagesData)
             tvRestoDeepTime.text = addDeepStageData(sleepRestorativeDetail?.sleepStagesData)
-            tvRestoStartTime.text = convertTo12HourZoneFormat(sleepRestorativeDetail?.sleepStartTime!!)
-            tvRestoEndTime.text = convertTo12HourZoneFormat(sleepRestorativeDetail.sleepEndTime!!)
-            restorativeChart.setSleepData(sleepRestorativeDetail.sleepStagesData)
+            if(sleepRestorativeDetail?.sleepStartTime != null) {
+                tvRestoStartTime.text = convertTo12HourZoneFormat(sleepRestorativeDetail.sleepStartTime!!)
+            }
+            if (sleepRestorativeDetail?.sleepEndTime != null) {
+                tvRestoEndTime.text = convertTo12HourZoneFormat(sleepRestorativeDetail.sleepEndTime!!)
+            }
+            if (sleepRestorativeDetail?.sleepStagesData != null) {
+                restorativeChart.setSleepData(sleepRestorativeDetail.sleepStagesData!!)
+            }
         }else{
           //  restroNoDataCardView.visibility = View.VISIBLE
             restroDataCardView.visibility = View.GONE
