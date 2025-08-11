@@ -461,6 +461,9 @@ class HomeNewActivity : BaseActivity() {
                 if (!DashboardChecklistManager.paymentStatus) {
                     binding.trialExpiredLayout.trialExpiredLayout.visibility = View.VISIBLE
                     isTrialExpired = true
+                }else{
+                    binding.trialExpiredLayout.trialExpiredLayout.visibility = View.GONE
+                    isTrialExpired = false
                 }
 
 
@@ -634,6 +637,15 @@ class HomeNewActivity : BaseActivity() {
         Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show()
     }
 
+    fun showSubsribeLayout(show: Boolean) {
+        if (!DashboardChecklistManager.paymentStatus) {
+            binding.trialExpiredLayout.trialExpiredLayout.visibility = View.VISIBLE
+            isTrialExpired = true
+        }else{
+            binding.trialExpiredLayout.trialExpiredLayout.visibility = View.GONE
+            isTrialExpired = false
+        }
+    }
 
     private lateinit var billingClient: BillingClient
 

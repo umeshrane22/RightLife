@@ -637,6 +637,7 @@ class HomeDashboardFragment : BaseFragment() {
                                         View.VISIBLE
                                     binding.llDiscoverLayout.visibility = View.VISIBLE
                                 }
+                                (requireActivity() as? HomeNewActivity)?.showSubsribeLayout(DashboardChecklistManager.paymentStatus)
                             } else {
                                 Toast.makeText(
                                     requireContext(),
@@ -1142,7 +1143,7 @@ class HomeDashboardFragment : BaseFragment() {
                     binding.tvPerformSleepDuration.text =
                         module.sleepPerformanceDetail?.actualSleepData?.actualSleepDurationHours?.let {
                             DateTimeUtils.formatSleepDuration(it)
-                        } ?: "0 hr"// (module.sleepDuration ?: "0min").toString()
+                        } ?: "0 hr 0 min"// (module.sleepDuration ?: "0min").toString()
                     binding.tvPerformIdealDuration.text =
                         module.sleepPerformanceDetail?.idealSleepDuration?.let {
                             DateTimeUtils.formatSleepDuration(
