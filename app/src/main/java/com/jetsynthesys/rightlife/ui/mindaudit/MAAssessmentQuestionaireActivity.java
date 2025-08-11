@@ -51,6 +51,7 @@ public class MAAssessmentQuestionaireActivity extends BaseActivity {
     private ProgressBar progressBar;
     private MindAuditAssessmentQuestions mindAuditAssessmentQuestions;
     private String header;
+    private boolean isFromThinkRight = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -66,6 +67,7 @@ public class MAAssessmentQuestionaireActivity extends BaseActivity {
         progressBar = findViewById(R.id.progressBar);
 
         header = getIntent().getStringExtra("AssessmentType");
+        isFromThinkRight = getIntent().getBooleanExtra("FROM_THINK_RIGHT", false);
 
         tvHeader.setText(header);
 
@@ -262,6 +264,7 @@ public class MAAssessmentQuestionaireActivity extends BaseActivity {
                         finish();
                         Intent intent = new Intent(MAAssessmentQuestionaireActivity.this, MindAuditResultActivity.class);
                         intent.putExtra("FROM", "MAAssessment");
+                        intent.putExtra("FROM_THINK_RIGHT", isFromThinkRight);
                         intent.putExtra("Assessment", header); // pass your string or data
                         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                         startActivity(intent);

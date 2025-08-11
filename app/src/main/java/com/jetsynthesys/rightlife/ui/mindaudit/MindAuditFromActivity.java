@@ -28,12 +28,15 @@ public class MindAuditFromActivity extends BaseActivity {
     private Button prevButton, submitButton;
     private MindAuditFormPagerAdapter adapter;
     private ProgressBar progressBar;
+    public boolean isFromThinkRight;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //EdgeToEdge.enable(this);
         setChildContentView(R.layout.activity_mind_audit_from);
+
+        isFromThinkRight = getIntent().getBooleanExtra("FROM_THINK_RIGHT",false);
 
 
         ic_back_dialog = findViewById(R.id.ic_back_dialog);
@@ -220,6 +223,7 @@ public class MindAuditFromActivity extends BaseActivity {
             //this.finish();
             finishAffinity();
             Intent intent = new Intent(MindAuditFromActivity.this, HomeNewActivity.class);
+            intent.putExtra("FROM_THINK_RIGHT",isFromThinkRight);
             startActivity(intent);
 
         });

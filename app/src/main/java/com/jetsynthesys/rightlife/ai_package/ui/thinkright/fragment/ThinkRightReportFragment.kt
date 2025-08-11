@@ -305,10 +305,14 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
             startActivity(Intent(requireContext(), PractiseAffirmationPlaylistActivity::class.java))
         }
         view.findViewById<LinearLayout>(R.id.play_now_mind_audit).setOnClickListener {
-            startActivity(Intent(requireContext(), MindAuditActivity::class.java))
+            startActivity(Intent(requireContext(), MindAuditActivity::class.java).apply {
+                putExtra("FROM_THINK_RIGHT",true)
+            })
         }
         reassessYourMental.setOnClickListener {
-            startActivity(Intent(requireContext(), MindAuditActivity::class.java))
+            startActivity(Intent(requireContext(), MindAuditActivity::class.java).apply {
+                putExtra("FROM_THINK_RIGHT",true)
+            })
         }
         view.findViewById<LinearLayout>(R.id.lyt_journaling).setOnClickListener {
             startActivity(Intent(requireContext(), JournalListActivity::class.java))
@@ -320,7 +324,9 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
             startActivity(Intent(requireContext(), BreathworkActivity::class.java))
         }
         view.findViewById<ConstraintLayout>(R.id.lyt_top_header).setOnClickListener {
-            startActivity(Intent(requireContext(), MindAuditActivity::class.java))
+            startActivity(Intent(requireContext(), MindAuditActivity::class.java).apply {
+                putExtra("FROM_THINK_RIGHT",true)
+            })
         }
         view.findViewById<ImageView>(R.id.ivSetting).setOnClickListener {
             startActivity(Intent(requireContext(), TodaysAffirmationActivity::class.java))

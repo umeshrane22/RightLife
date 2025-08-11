@@ -41,6 +41,7 @@ public class MASuggestedAssessmentActivity extends BaseActivity {
     private final ArrayList<String> suggestedAssessmentString = new ArrayList<>();
     private final ArrayList<String> allAssessments = new ArrayList<>();
     private String selectedAssessment;
+    private boolean isFromThinkRight = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -64,6 +65,7 @@ public class MASuggestedAssessmentActivity extends BaseActivity {
 
         assessments = (Assessments) getIntent().getSerializableExtra("AssessmentData");
         selectedAssessment = getIntent().getStringExtra("SelectedAssessment");
+        isFromThinkRight = getIntent().getBooleanExtra("FROM_THINK_RIGHT",false);
 
         if (selectedAssessment != null) {
             showDisclaimerDialog(selectedAssessment);
@@ -167,6 +169,7 @@ public class MASuggestedAssessmentActivity extends BaseActivity {
         btnTakeAssessment.setOnClickListener(view -> {
             Intent intent = new Intent(MASuggestedAssessmentActivity.this, MAAssessmentQuestionaireActivity.class);
             intent.putExtra("AssessmentType", header);
+            intent.putExtra("FROM_THINK_RIGHT",isFromThinkRight);
             startActivity(intent);
         });
         // Show the dialog
