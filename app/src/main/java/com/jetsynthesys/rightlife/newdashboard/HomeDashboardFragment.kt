@@ -79,6 +79,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Locale
+import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 
 class HomeDashboardFragment : BaseFragment() {
@@ -814,20 +815,19 @@ class HomeDashboardFragment : BaseFragment() {
                         val (carbsValue, carbsTotal) = extractNumericValues(module.carbs.toString())
                         val (fatsValue, fatsTotal) = extractNumericValues(module.fats.toString())
 
-                        binding.tvProtienValue.text =
-                            "" + proteinValue.toDouble().roundToLong().toInt()
-                        binding.proteinUnitTv.text = "/" + proteinTotal + " g"
+                        binding.tvProtienValue.text =  formatValue(proteinValue.toDouble())// "" + proteinValue.toDouble().roundToLong().toInt()
+                        binding.proteinUnitTv.text = "/" + proteinTotal.toDoubleOrNull()?.roundToInt()?.toString() +"g" ?: "0" + " g"
                         binding.proteinProgressBar.max = proteinTotal.toDouble().toInt()
                         binding.proteinProgressBar.progress = proteinValue.toDouble().toInt()
 
 
-                        binding.tvCarbsValue.text = "" + carbsValue.toDouble().roundToLong().toInt()
-                        binding.carbsUnitTv.text = "/" + carbsTotal + " g"
+                        binding.tvCarbsValue.text = formatValue(carbsValue.toDouble())//"" + carbsValue.toDouble().roundToLong().toInt()
+                        binding.carbsUnitTv.text = "/" + carbsTotal.toDoubleOrNull()?.roundToInt()?.toString() +"g" ?: "0" + " g"
                         binding.carbsProgressBar.max = carbsTotal.toDouble().toInt()
                         binding.carbsProgressBar.progress = carbsValue.toDouble().toInt()
 
-                        binding.tvFatsValue.text = "" + fatsValue.toDouble().roundToLong().toInt()
-                        binding.fatsUnitTv.text = "/" + fatsTotal + " g"
+                        binding.tvFatsValue.text = formatValue(fatsValue.toDouble())//"" + fatsValue.toDouble().roundToLong().toInt()
+                        binding.fatsUnitTv.text = "/" + fatsTotal.toDoubleOrNull()?.roundToInt()?.toString() +"g" ?: "0" + " g"
                         binding.fatsProgressBar.max = fatsTotal.toDouble().toInt()
                         binding.fatsProgressBar.progress = fatsValue.toDouble().toInt()
 
@@ -1471,5 +1471,13 @@ class HomeDashboardFragment : BaseFragment() {
         val localZoned = utcZoned.withZoneSameInstant(ZoneId.systemDefault())
 
         return outputFormatter.format(localZoned)
+    }
+
+    fun formatValue(value: Double): String {
+        return if (value >= 1000) {
+            String.format("%.1fk", value / 1000) // 1 decimal ke saath
+        } else {
+            value.toInt().toString() // normal integer
+        }
     }
 }
