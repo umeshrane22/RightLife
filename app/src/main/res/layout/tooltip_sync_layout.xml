@@ -11,7 +11,6 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="15dp"
         android:layout_gravity="end"
         android:orientation="vertical">
 
@@ -20,7 +19,7 @@
             android:layout_height="12dp"
             android:src="@drawable/tooltip_arrow_vector"
             android:layout_gravity="end"
-            android:layout_marginEnd="40dp" />
+            android:layout_marginEnd="30dp" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -41,7 +40,7 @@
                 android:textColor="@color/black_no_meals"
                 android:fontFamily="@font/dmsans_regular"
                 android:textSize="14sp"
-                android:padding="8dp" />
+                android:padding="5dp" />
         </LinearLayout>
 
     </LinearLayout>

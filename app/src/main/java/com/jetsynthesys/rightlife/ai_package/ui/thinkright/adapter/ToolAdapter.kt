@@ -54,7 +54,33 @@ class ToolAdapter(context: Context, private val tools: List<ModuleData>, val onT
                     .placeholder(R.drawable.ic_plus)
                     .into(holder.itemView.findViewById<ImageView>(R.id.iv_selected))
             }
-            else -> println("Regular day")
+            "Free Form" -> {
+                Glide.with(mContext)
+                    .load(  R.drawable.ic_freeform_journal)
+                    .placeholder(R.drawable.ic_plus)
+                    .into(holder.itemView.findViewById<ImageView>(R.id.iv_selected))
+            }
+
+            "Bullet" -> {
+                Glide.with(mContext)
+                    .load(  R.drawable.ic_bullet_journal)
+                    .placeholder(R.drawable.ic_plus)
+                    .into(holder.itemView.findViewById<ImageView>(R.id.iv_selected))
+            }
+
+            "Gratitude" -> {
+                Glide.with(mContext)
+                    .load(  R.drawable.ic_gratitude_journal)
+                    .placeholder(R.drawable.ic_plus)
+                    .into(holder.itemView.findViewById<ImageView>(R.id.iv_selected))
+            }
+
+            "Grief" -> {
+                Glide.with(mContext)
+                    .load(  R.drawable.ic_grief_journal)
+                    .placeholder(R.drawable.ic_plus)
+                    .into(holder.itemView.findViewById<ImageView>(R.id.iv_selected))
+            }
         }
 
         holder.mainLayout.setOnClickListener {

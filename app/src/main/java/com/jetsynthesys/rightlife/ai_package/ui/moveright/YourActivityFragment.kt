@@ -493,12 +493,12 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         }
         handler.postDelayed(tooltipRunnable1!!, 1000)
 
-        tooltipRunnable2 = Runnable {
-            if (isResumed) {
-                showTooltipDialog(imageCalender, "You can access calendar \n view from here.")
-            }
-        }
-        handler.postDelayed(tooltipRunnable2!!, 5000)
+      //  tooltipRunnable2 = Runnable {
+      //      if (isResumed) {
+      //          showTooltipDialog(imageCalender, "You can access calendar \n view from here.")
+     //       }
+    //    }
+     //   handler.postDelayed(tooltipRunnable2!!, 5000)
 
         val prefs = requireContext().getSharedPreferences("TooltipPrefs", Context.MODE_PRIVATE)
         prefs.edit().putBoolean("hasShownTooltips", true).apply()

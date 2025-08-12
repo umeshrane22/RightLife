@@ -12,6 +12,7 @@ import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.model.RoutineWorkoutDisplayModel
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.RemoveWorkoutBottomSheet
+import java.math.RoundingMode
 
 class RoutineWorkoutListAdapter(
     private val context: Context,
@@ -40,7 +41,7 @@ class RoutineWorkoutListAdapter(
             .load(imageUrl) // <-- your image URL string
             .into(holder.workoutIcon)
         holder.servesCount.text = item.duration
-        holder.calValue.text = item.caloriesBurned
+        holder.calValue.text = item.caloriesBurned.toBigDecimal().setScale(2, RoundingMode.HALF_UP).toString()
         holder.subtractionValue.text = item.intensity
 
         // Hide unused views

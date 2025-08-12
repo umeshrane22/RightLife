@@ -22,6 +22,7 @@ import com.jetsynthesys.rightlife.ai_package.model.WorkoutSessionRecord
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.viewmodel.WorkoutViewModel
 import com.jetsynthesys.rightlife.databinding.FragmentSearchWorkoutBinding
 import com.google.android.material.tabs.TabLayout
+import com.jetsynthesys.rightlife.ai_package.model.WorkoutRoutineItem
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -31,6 +32,7 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
     private lateinit var searchWorkoutBackButton: ImageView
     private var workoutList = ArrayList<WorkoutSessionRecord>()
     private var mSelectedDate = ""
+    private  var workoutLists : WorkoutRoutineItem? = null
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentSearchWorkoutBinding
         get() = FragmentSearchWorkoutBinding::inflate
@@ -44,6 +46,7 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
         val routine = arguments?.getString("routine")
         val routineName = arguments?.getString("routineName")
         workoutList = arguments?.getParcelableArrayList("workoutList") ?: ArrayList()
+        workoutLists = arguments?.getParcelable<WorkoutRoutineItem>("WORKOUT_MODEL")
         var selectedTab = arguments?.getInt("selectedTab", 0) ?: 0  // 🔥 get selected tab index
         val searchEditText: EditText = view.findViewById(R.id.searchEditText)
         val tabLayout = view.findViewById<TabLayout>(R.id.tabLayout)

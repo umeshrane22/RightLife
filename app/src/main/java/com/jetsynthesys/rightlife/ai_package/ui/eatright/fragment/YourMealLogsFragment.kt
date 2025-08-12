@@ -385,7 +385,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
         //Set Tooltip
         val isShow = SharedPreferenceManager.getInstance(requireActivity()).isMealCalenderTooltipShowed("MealCalenderTooltip")
         if (!isShow){
-            showTooltipDialog(layoutToolbar)
+          //  showTooltipDialog(layoutToolbar)
         }
 
         imageCalender.setOnClickListener {
@@ -1806,6 +1806,6 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
     }
 
     override fun onMealTypeSelected(mealType: String) {
-        dialogToolTip?.dismiss()
+       // dialogToolTip?.dismiss()
     }
 }
