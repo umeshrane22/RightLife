@@ -13,10 +13,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.core.content.ContextCompat
 import com.github.mikephil.charting.animation.ChartAnimator
 import com.github.mikephil.charting.buffer.BarBuffer
 import com.github.mikephil.charting.charts.BarChart
@@ -146,6 +148,10 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
                     currentTab = 0
                     barChart.visibility = View.VISIBLE
                     layoutLineChart.visibility = View.GONE
+                    val rbWeek = requireView().findViewById<RadioButton>(R.id.rbWeek)
+                    val rbMonth = requireView().findViewById<RadioButton>(R.id.rbMonth)
+                    rbWeek.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+                    rbMonth.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
                     val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
                     val startDate = getOneWeekEarlierDate().format(dateFormatter)
                     val endDate = getTodayDate().format(dateFormatter)
@@ -157,6 +163,10 @@ class MindfulnessAnalysisFragment : BaseFragment<FragmentMindfullGraphBinding>()
                     currentTab = 1
                     barChart.visibility = View.VISIBLE
                     layoutLineChart.visibility = View.GONE
+                    val rbWeek = requireView().findViewById<RadioButton>(R.id.rbWeek)
+                    val rbMonth = requireView().findViewById<RadioButton>(R.id.rbMonth)
+                    rbWeek.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
+                    rbMonth.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
                     val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
                     val startDate = getOneMonthEarlierDate().format(dateFormatter)
                     val endDate = getTodayDate().format(dateFormatter)

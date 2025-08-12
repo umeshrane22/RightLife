@@ -174,6 +174,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     private lateinit var recomendationRecyclerView: RecyclerView
     private lateinit var thinkRecomendedResponse : ThinkRecomendedResponse
     private lateinit var recomendationAdapter: RecommendedAdapterSleep
+    private var isSyncData : Boolean = false
 
     private val allReadPermissions = setOf(
         HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class),
@@ -407,7 +408,6 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 requireActivity().finish()
             }
         })
-        fetchUserWorkouts()
 
         syncWithHealthConnectButton.setOnClickListener {
             val availabilityStatus = HealthConnectClient.getSdkStatus(requireContext())
@@ -479,11 +479,6 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                     date = selectedDate
                 )
                 if (response.isSuccessful) {
-                    if (isAdded  && view != null){
-                        requireActivity().runOnUiThread {
-                            dismissLoader(requireView())
-                        }
-                    }
                     val fitnessData = response.body()
                     fitnessData?.let {
                         val rhrData = padData(it.data.restingHeartRate.last7Days.map { day -> day.bpm }, 7)
@@ -541,8 +536,6 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                         )
                         // Heart rate zone checks and UI updates
                         withContext(Dispatchers.Main) {
-
-
                             text_activity.text = it.data.activityFactor.today.toString() ?: "0"
                             val allInvalid = (/*it.data.calorieBalance.calorieBurnTarget == null || it.data.calorieBalance.calorieBurnTarget == 0f) &&
                                     (it.data.calorieBalance.difference == null || it.data.calorieBalance.difference == 0f) &&*/
@@ -705,11 +698,26 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                     averageStepsTv.text = averageStepCount.toString()
                                     goalStepsTv.text = goalStepCount.toString()
                                 }else{
-                                    step_forward_icon.visibility = View.INVISIBLE
                                    if(it.data.caloriesBurned.today.toDouble() == 0.0){
-                                       stepNoDataLayout.visibility = View.VISIBLE
-                                       stepWithDataCardLayout.visibility = View.GONE
+                                       if (isSyncData){
+                                           step_forward_icon.visibility = View.VISIBLE
+                                           stepNoDataLayout.visibility = View.GONE
+                                           stepWithDataCardLayout.visibility = View.VISIBLE
+                                           stepLineGraphView.clear()
+                                           stepLineGraphView.addDataSet(todayStepsData, 0xFFFD6967.toInt()) // Red
+                                           stepLineGraphView.addDataSet(averageStepsData, 0xFF707070.toInt()) // Gray
+                                           stepLineGraphView.addDataSet(goalStepsData, 0xFF03B27B.toInt()) // Green (dotted)
+                                           stepLineGraphView.invalidate()
+                                           todayStepsTv.text = todayStepCount.toString()
+                                           averageStepsTv.text = averageStepCount.toString()
+                                           goalStepsTv.text = goalStepCount.toString()
+                                       }else{
+                                           step_forward_icon.visibility = View.INVISIBLE
+                                           stepNoDataLayout.visibility = View.VISIBLE
+                                           stepWithDataCardLayout.visibility = View.GONE
+                                       }
                                    }else{
+                                       step_forward_icon.visibility = View.VISIBLE
                                        stepNoDataLayout.visibility = View.GONE
                                        stepWithDataCardLayout.visibility = View.VISIBLE
                                        stepLineGraphView.clear()
@@ -721,7 +729,6 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                        averageStepsTv.text = averageStepCount.toString()
                                        goalStepsTv.text = goalStepCount.toString()
                                    }
-
                                 }
                             }
                             if (heartRateZones != null) {
@@ -870,6 +877,11 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        fetchUserWorkouts()
     }
 
     private fun padData(data: List<Float>, targetSize: Int): FloatArray {
@@ -1264,6 +1276,8 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 storeSamsungHealthData()
             }else if(dataOrigin.equals("com.samsung.android.wear.shealth")){
                 storeSamsungHealthData()
+            }else{
+                storeHealthData()
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -1366,16 +1380,30 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                         // Combine synced and unsynced CardItems
                         val allCardItems = syncedCardItems + unsyncedCardItems
 
+                        if (isAdded  && view != null){
+                            requireActivity().runOnUiThread {
+                                dismissLoader(requireView())
+                            }
+                        }
+
                         withContext(Dispatchers.Main) {
                             if (allCardItems.isNotEmpty()) {
                                 val hasValidHeartRate = syncedCardItems.any { item ->
                                     item.heartRateData.any { it.heartRate > 0 }
                                 }
-
                                 workoutImageIcon.visibility = if (hasValidHeartRate) View.VISIBLE else View.GONE
                                 dataFilledworkout.visibility = View.VISIBLE
                                 nodataWorkout.visibility = View.GONE
+                                isSyncData = true
 
+                                step_forward_icon.visibility = View.VISIBLE
+                                stepNoDataLayout.visibility = View.GONE
+                                stepWithDataCardLayout.visibility = View.VISIBLE
+                                stepLineGraphView.clear()
+                                stepLineGraphView.addDataSet( FloatArray(24) { 0f }, 0xFFFD6967.toInt()) // Red
+                                stepLineGraphView.addDataSet( FloatArray(24) { 0f }, 0xFF707070.toInt()) // Gray
+                                stepLineGraphView.addDataSet( FloatArray(24) { 0f }, 0xFF03B27B.toInt()) // Green (dotted)
+                                stepLineGraphView.invalidate()
                                 val adapter = CarouselAdapter(allCardItems) { cardItem, position ->
                                     val fragment = WorkoutAnalyticsFragment().apply {
                                         arguments = Bundle().apply { putSerializable("cardItem", cardItem) }
@@ -1420,11 +1448,21 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                             }
                         }
                     } ?: withContext(Dispatchers.Main) {
+                        if (isAdded  && view != null){
+                            requireActivity().runOnUiThread {
+                                dismissLoader(requireView())
+                            }
+                        }
                         nodataWorkout.visibility = View.VISIBLE
                         dataFilledworkout.visibility = View.GONE
                         Toast.makeText(requireContext(), "No workout data received", Toast.LENGTH_SHORT).show()
                     }
                 } else {
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                     withContext(Dispatchers.Main) {
                         nodataWorkout.visibility = View.VISIBLE
                         dataFilledworkout.visibility = View.GONE
@@ -1433,6 +1471,11 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
+                if (isAdded  && view != null){
+                    requireActivity().runOnUiThread {
+                        dismissLoader(requireView())
+                    }
+                }
                 withContext(Dispatchers.Main) {
                     nodataWorkout.visibility = View.VISIBLE
                     dataFilledworkout.visibility = View.GONE
@@ -1915,6 +1958,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
             }
         }
     }
+
     private fun fetchThinkRecomendedData() {
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
         val call = ApiClient.apiService.fetchThinkRecomended(token,"HOME","MOVE_RIGHT")

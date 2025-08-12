@@ -412,6 +412,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/sleep_text_color"
+                        android:id="@+id/tv_sleep_perform_title"
                         android:text="Sleep Performance"
                         android:fontFamily="@font/dmsans_bold"
                         android:textSize="16sp"
@@ -428,6 +429,19 @@
                         android:layout_marginEnd="15dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/sleep_text_color"
+                        android:id="@+id/tv_sleep_analysis"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:visibility="gone"
+                        android:text="Sleep Analysis"
+                        android:textSize="14sp"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginTop="15dp"
+                        app:layout_constraintTop_toBottomOf="@+id/tv_sleep_perform_title"
+                        app:layout_constraintStart_toStartOf="parent" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -438,7 +452,7 @@
                         android:text="Sleep Time:"
                         android:textSize="14sp"
                         android:layout_marginStart="15dp"
-                        android:layout_marginTop="20dp"
+                        android:layout_marginTop="10dp"
                         app:layout_constraintTop_toBottomOf="@+id/img_sleep_perform_right"
                         app:layout_constraintStart_toStartOf="parent" />
 
@@ -451,7 +465,7 @@
                         android:textSize="14sp"
                         android:fontFamily="@font/dmsans_bold"
                         android:layout_marginStart="5dp"
-                        android:layout_marginTop="20dp"
+                        android:layout_marginTop="10dp"
                         app:layout_constraintTop_toBottomOf="@+id/img_sleep_perform_right"
                         app:layout_constraintStart_toEndOf="@+id/img_bed_icon1" />
 
@@ -460,7 +474,7 @@
                         android:layout_height="16dp"
                         android:src="@drawable/sleep_bed_mini_icon"
                         android:id="@+id/img_bed_icon1"
-                        android:layout_marginTop="22dp"
+                        android:layout_marginTop="12dp"
                         android:layout_marginStart="5dp"
                         app:layout_constraintStart_toEndOf="@id/last_night_title"
                         app:layout_constraintTop_toBottomOf="@id/img_sleep_perform_right" />
@@ -474,7 +488,7 @@
                         android:fontFamily="@font/dmsans_bold"
                         android:id="@+id/tv_perform_wake_time"
                         android:layout_marginStart="6dp"
-                        android:layout_marginTop="20dp"
+                        android:layout_marginTop="10dp"
                         app:layout_constraintTop_toBottomOf="@+id/img_sleep_perform_right"
                         app:layout_constraintStart_toEndOf="@id/img_mini_clock_icon1" />
 
@@ -483,7 +497,7 @@
                         android:layout_height="16dp"
                         android:src="@drawable/sleep_clock_mini_icon"
                         android:id="@+id/img_mini_clock_icon1"
-                        android:layout_marginTop="22dp"
+                        android:layout_marginTop="12dp"
                         android:layout_marginStart="10dp"
                         app:layout_constraintStart_toEndOf="@id/tv_perform_start_time"
                         app:layout_constraintTop_toBottomOf="@id/img_sleep_perform_right" />
@@ -492,12 +506,12 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:id="@+id/lyt_sleep_perform"
-                        app:layout_constraintTop_toBottomOf="@id/img_mini_clock_icon1"
+                        app:layout_constraintTop_toBottomOf="@id/tv_sleep_perform_title"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         android:weightSum="10"
                         android:gravity="center"
-                        android:layout_marginTop="5dp"
+                        android:layout_marginTop="25dp"
                         android:orientation="horizontal">
 
                         <ImageView

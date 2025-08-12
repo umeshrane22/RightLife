@@ -56,6 +56,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
     private  var workoutLists : WorkoutRoutineItem? = null
     private var routine: String = ""
     private var routineName: String = ""
+    private var editRoutine: String = ""
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentCreateRoutineBinding
         get() = FragmentCreateRoutineBinding::inflate
@@ -75,6 +76,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
         view.setBackgroundResource(R.drawable.gradient_color_background_workout)
         routine = arguments?.getString("routine").toString()
         routineName = arguments?.getString("routineName").toString()
+        editRoutine = arguments?.getString("edit_routine").toString()
         workoutList = arguments?.getParcelableArrayList<WorkoutSessionRecord>("workoutList") ?: ArrayList()
 
         // Fetch activityList from YourActivityFragment
@@ -135,17 +137,32 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
         }
 
         addBtnLog.setOnClickListener {
-            val fragment = SearchWorkoutFragment()
-            val args = Bundle().apply {
-                putString("routine", "routine")
-                putString("routineName", textViewRoutine.text.toString())
-                putParcelableArrayList("workoutList", workoutList)
-            }
-            fragment.arguments = args
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
-                addToBackStack(null)
-                commit()
+            if (editRoutine == "edit_routine"){
+                val fragment = SearchWorkoutFragment()
+                val args = Bundle().apply {
+                    putString("routine", "edit_routine")
+                    putString("routineName", textViewRoutine.text.toString())
+                    putParcelable("WORKOUT_MODEL", workoutLists)
+                }
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                    addToBackStack(null)
+                    commit()
+                }
+            }else {
+                val fragment = SearchWorkoutFragment()
+                val args = Bundle().apply {
+                    putString("routine", "routine")
+                    putString("routineName", textViewRoutine.text.toString())
+                    putParcelableArrayList("workoutList", workoutList)
+                }
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                    addToBackStack(null)
+                    commit()
+                }
             }
         }
 

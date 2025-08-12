@@ -461,7 +461,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
             args.putString("searchType", "mealScanResult")
             args.putString("ModuleName", moduleName)
             args.putString("mealId", mealId)
-            args.putString("mealName", mealName)
+            args.putString("mealName", foodNameEdit.text.toString())
             args.putString("mealType", mealType)
             args.putString("homeTab", homeTab)
             args.putString("selectedMealDate", selectedMealDate)
@@ -774,7 +774,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
             val snapMealFragment = SnapDishFragment()
             val args = Bundle()
             args.putString("mealId", mealId)
-            args.putString("mealName", mealName)
+            args.putString("mealName", foodNameEdit.text.toString())
             args.putString("ModuleName", moduleName)
             args.putString("searchType", "MealScanResult")
             args.putString("mealType", mealType)
@@ -803,7 +803,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
         args.putBoolean("test", false)
         args.putString("ModuleName", moduleName)
         args.putString("mealId", mealId)
-        args.putString("mealName", mealName)
+        args.putString("mealName", foodNameEdit.text.toString())
         args.putString("mealType", mealType)
         args.putString("homeTab", homeTab)
         args.putString("selectedMealDate", selectedMealDate)
@@ -852,7 +852,12 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
             if (nutritionResponse.data.size > 0) {
                 val capitalized =
                     nutritionResponse.data.get(0).name.replaceFirstChar { it.uppercase() }
-                foodNameEdit.setText(capitalized)
+                if (!mealName.equals("null") && !mealName.equals("")){
+                    foodNameEdit.setText(mealName.replaceFirstChar { it.uppercase() })
+                }else{
+                    mealName = capitalized
+                    foodNameEdit.setText(capitalized)
+                }
             }
         }
     }
@@ -886,9 +891,9 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
                 }
             }
             // Set food name
-            if (snapRecipeData.data.size > 0) {
+            if (!mealName.equals("null") && !mealName.equals("")) {
                 val capitalized =
-                    snapRecipeData.data.get(0).name.toString().replaceFirstChar { it.uppercase() }
+                    mealName.replaceFirstChar { it.uppercase() }
                 foodNameEdit.setText(capitalized)
             }
         }
@@ -1132,7 +1137,6 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
                         }
                     }
                 }
-
                 override fun onFailure(call: Call<SnapMealLogResponse>, t: Throwable) {
                     Log.e("Error", "API call failed: ${t.message}")
                     Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
@@ -1215,7 +1219,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
             snapMealLogList.add(mealLogData)
         }
         val updateMealRequest = UpdateSnapMealRequest(
-            meal_name = mealName,
+            meal_name = foodNameEdit.text.toString(),
             meal_log = snapMealLogList
         )
         val call = ApiClient.apiServiceFastApi.updateSnapSaveMeal(mealId, userId, updateMealRequest)
@@ -1351,7 +1355,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
             snapMealLogList.add(mealLogData)
         }
         val updateMealRequest = UpdateSnapMealLogRequest(
-            meal_name = mealName,
+            meal_name = foodNameEdit.text.toString(),
             meal_log = snapMealLogList
         )
         val call = ApiClient.apiServiceFastApi.updateSnapLogMeal(userId, mealId, updateMealRequest)

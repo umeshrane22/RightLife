@@ -121,7 +121,7 @@ class RatingReportFeedbackBottomSheet : BottomSheetDialogFragment() {
                 //dismiss()
                 view.postDelayed({
                     listener?.onReportFeedbackRating(1.0, isSave)
-                }, 3000) // 5000ms = 5 seconds
+                }, 1000) // 5000ms = 5 seconds
 
                 val sharedPreferenceManager = SharedPreferenceManager.getInstance(context)
             }else{

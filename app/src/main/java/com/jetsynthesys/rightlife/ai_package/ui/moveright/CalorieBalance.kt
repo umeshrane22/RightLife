@@ -294,7 +294,6 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
     }
 
     /** Update BarChart with new data */
-
     private fun updateChart(entries: List<BarEntry>, labels: List<String>, labelsDate: List<String>) {
         val dataSet = BarDataSet(entries, "")
         val colors: ArrayList<Int> = ArrayList()
@@ -314,20 +313,18 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
             dataSet.setDrawValues(true)
         }
 
+        dataSet.highLightAlpha = 0 // removes color overlay
         dataSet.barShadowColor = Color.TRANSPARENT
-        dataSet.highLightColor = ContextCompat.getColor(requireContext(), R.color.light_orange)
+        dataSet.highLightColor = Color.TRANSPARENT
         val barData = BarData(dataSet)
         barData.barWidth = 0.4f
         barChart.data = barData
         barChart.setFitBars(true)
-
         // Enable highlighting for vertical line
+        barChart.setScaleEnabled(false)
+        barChart.isDoubleTapToZoomEnabled = false
         barChart.isHighlightPerTapEnabled = true
         barChart.isHighlightPerDragEnabled = false
-
-        // Create invisible line dataset for vertical line effect
-        val lineEntries = mutableListOf<Entry>()
-        var selectedIndex = -1
 
         // Dynamically set Y-axis range to handle positive and negative values
         val leftYAxis: YAxis = barChart.axisLeft
@@ -400,7 +397,6 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
         barChart.description.isEnabled = false
         //barChart.isHighlightPerTapEnabled = false
 
-
         barChart.setExtraOffsets(0f, 0f, 0f, 40f) // Increased bottom offset to prevent cutting
         val legend = barChart.legend
         legend.isEnabled = false
@@ -408,20 +404,16 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
         legend.textColor = Color.TRANSPARENT    // Hide text
         legend.textSize = 0f
         legend.setDrawInside(false)
-
         // Add custom view for dotted line
         val dottedLineView = View(requireContext()).apply {
             setBackgroundColor(Color.TRANSPARENT)
             visibility = View.GONE
         }
-
         // Add dotted line view as overlay (you might need to add this to parent layout)
-
         barChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
             override fun onValueSelected(e: Entry?, h: Highlight?) {
                 selectHeartRateLayout.visibility = View.VISIBLE
                 dottedLineView.visibility = View.VISIBLE
-
                 if (e != null && h != null) {
                     val x = e.x.toInt()
                     val y = e.y
@@ -429,7 +421,6 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
                     if (x >= 0 && x < labelsDate.size) { // Boundary check
                         selectedItemDate.text = labelsDate[x]
                         selectedCalorieTv.text = y.toInt().toString()
-
                         // Draw vertical dotted line using custom canvas drawing
                         drawVerticalDottedLine(h?.x ?: 0f)
                     } else {
@@ -438,14 +429,12 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
                     }
                 }
             }
-
             override fun onNothingSelected() {
                 Log.d("ChartClick", "Nothing selected")
                 selectHeartRateLayout.visibility = View.INVISIBLE
                 removeVerticalDottedLine()
             }
         })
-
         barChart.animateY(1000)
         barChart.invalidate()
     }
