@@ -658,7 +658,11 @@ class HomeNewActivity : BaseActivity() {
     private fun initBillingAndRecover() {
 
         billingClient = BillingClient.newBuilder(this)
-
+            .enablePendingPurchases(
+                PendingPurchasesParams.newBuilder()
+                    .enableOneTimeProducts()
+                    .build()
+            )
             .setListener { billingResult, purchases ->
 
                 // Optional: React to new purchases here if needed
@@ -712,6 +716,7 @@ class HomeNewActivity : BaseActivity() {
         val params = QueryPurchasesParams.newBuilder()
             .setProductType(BillingClient.ProductType.INAPP)
             .build()
+
 
         billingClient.queryPurchasesAsync(params) { billingResult, purchases ->
             Log.d(
