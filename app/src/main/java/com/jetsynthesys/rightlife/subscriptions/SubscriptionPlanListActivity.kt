@@ -53,6 +53,9 @@ class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
     private var receivedProductId: String? = null // Will be set from intent
     private var receivedProductType = "BOOSTER" // Default value, can be overridden by intent
     private var isSubscriptionTaken: Boolean = false
+    private var lastClickTime = 0L
+    private val CLICK_DEBOUNCE_TIME = 2000L // 2 seconds
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,6 +87,14 @@ class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
 
         adapter = SubscriptionPlanAdapter(planList) { plan ->
             // showToast("Plan Clicked - " + plan.googlePlay)
+
+            val currentTime = System.currentTimeMillis()
+            if (currentTime - lastClickTime < CLICK_DEBOUNCE_TIME) {
+                showToast("Please wait before making another purchase")
+                return@SubscriptionPlanAdapter
+            }
+            lastClickTime = currentTime
+
             selectedPlan = plan // Save plan for later
             val intent = Intent(this, BillingActivity::class.java)
             intent.putExtra("PRODUCT_ID", plan.googlePlay) // Replace "your_specific_product_id"
@@ -391,6 +402,8 @@ class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
                                 ).show()
                                 Log.d("Billing--", "Consumable purchase successful")
                                 //call your method to update UI or backend
+                                updateBackendForPurchase(purchase)
+                                isSubscriptionTaken = true
                             } else {
                                 Toast.makeText(
                                     this@SubscriptionPlanListActivity,
@@ -427,6 +440,8 @@ class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
                                     ).show()
                                     //call your method to update UI or backend
                                     showSubscriptionStatus(purchase)
+                                    updateBackendForPurchase(purchase)
+                                    isSubscriptionTaken = true
                                 } else {
                                     Toast.makeText(
                                         this@SubscriptionPlanListActivity,
@@ -448,8 +463,7 @@ class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
                     }
                 }
             }
-            updateBackendForPurchase(purchase)
-            isSubscriptionTaken = true
+
         }
     }
 
