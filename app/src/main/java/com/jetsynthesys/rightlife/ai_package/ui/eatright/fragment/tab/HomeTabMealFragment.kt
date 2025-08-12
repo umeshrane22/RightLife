@@ -216,7 +216,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
                 args.putString("ModuleName", moduleName)
                 args.putString("mealType", mealType)
                 mealSearchFragment.arguments = args
-                replace(R.id.flFragment, mealSearchFragment, "Steps")
+                replace(R.id.flFragment, mealSearchFragment, "SnapMealFragmentTag")
                 addToBackStack(null)
                 commit()
             }
@@ -396,7 +396,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
                 args.putString("gallery","gallery")
                 args.putString("ImagePathsecound", imagePathsecond.toString())
                 mealSearchFragment.arguments = args
-                replace(R.id.flFragment, mealSearchFragment, "Steps")
+                replace(R.id.flFragment, mealSearchFragment, "SnapMealFragmentTag")
                 addToBackStack(null)
                 commit()
             }

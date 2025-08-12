@@ -303,10 +303,11 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val formattedDate = currentDateTime.format(formatter)
         val formatFullDate = DateTimeFormatter.ofPattern("E, d MMM yyyy")
-        selectedWeeklyDayTv.text = currentDateTime.format(formatFullDate)
         if (selectedMealDate.equals("null") || selectedMealDate.equals("")){
             selectedMealDate = formattedDate
         }
+        currentWeekStart = getStartOfWeek(LocalDate.parse(selectedMealDate, formatter))
+        selectedWeeklyDayTv.text = LocalDate.parse(selectedMealDate, formatter).format(formatFullDate)
         if (moduleName.contentEquals("HomeDashboard")){
             selectMealTypeBottomSheet = SelectMealTypeBottomSheet()
             selectMealTypeBottomSheet.isCancelable = true
@@ -332,7 +333,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             selectMealTypeBottomSheet.arguments = args
             parentFragment.let { selectMealTypeBottomSheet.show(childFragmentManager, "SelectMealTypeBottomSheet") }
         }
-        getMealsLogHistory(formattedDate)
+        getMealsLogHistory(selectedMealDate)
 
         mealLogWeeklyDayList = getWeekFrom(currentWeekStart)
         lastDayOfCurrentWeek = mealLogWeeklyDayList.get(mealLogWeeklyDayList.size - 1).fullDate.toString()
@@ -1781,6 +1782,10 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
                 }
             }
         })
+    }
+
+    private fun getStartOfWeek(date: LocalDate): LocalDate {
+        return date.with(java.time.DayOfWeek.MONDAY)
     }
 
     private fun getWeekFrom(startDate: LocalDate): List<MealLogWeeklyDayModel> {
