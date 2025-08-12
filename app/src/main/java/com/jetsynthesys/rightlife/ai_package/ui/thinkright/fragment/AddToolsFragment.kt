@@ -357,7 +357,7 @@ class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
     }
 
     private fun fetchToolsList( filterKey:String) {
-        progressDialog.show()
+      //  progressDialog.show()
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
      //   val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdlM2ZiMjdiMzNlZGZkNzRlMDY5OWFjIiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiIiLCJsYXN0TmFtZSI6IiIsImRldmljZUlkIjoiVEUxQS4yNDAyMTMuMDA5IiwibWF4RGV2aWNlUmVhY2hlZCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MtdG9rZW4ifSwiaWF0IjoxNzQzMDU2OTEwLCJleHAiOjE3NTg3ODE3MTB9.gYLi895fpb4HGitALoGDRwHw3MIDCjYXTyqAKDNjS0A"
        // val userId = "67a5fae9197992511e71b1c8"
@@ -367,7 +367,7 @@ class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
             call.enqueue(object : Callback<ToolsResponse> {
                 override fun onResponse(call: Call<ToolsResponse>, response: Response<ToolsResponse>) {
                     if (response.isSuccessful) {
-                        progressDialog.dismiss()
+                     //   progressDialog.dismiss()
                         if (response.body()!=null) {
                             toolsResponse = response.body()!!
                                 toolsResponse.data.let {
@@ -379,13 +379,13 @@ class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
                     } else {
                         Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                         Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                        progressDialog.dismiss()
+                     //   progressDialog.dismiss()
                     }
                 }
                 override fun onFailure(call: Call<ToolsResponse>, t: Throwable) {
                     Log.e("Error", "API call failed: ${t.message}")
                     Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                    progressDialog.dismiss()
+                   // progressDialog.dismiss()
                 }
             })
         }else{
@@ -393,7 +393,7 @@ class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
             call.enqueue(object : Callback<ToolsResponse> {
                 override fun onResponse(call: Call<ToolsResponse>, response: Response<ToolsResponse>) {
                     if (response.isSuccessful) {
-                        progressDialog.dismiss()
+                     //   progressDialog.dismiss()
                         if (response.body()!=null) {
                             toolsResponse = response.body()!!
                                 toolsResponse.data.let {
@@ -405,13 +405,13 @@ class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
                     } else {
                         Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                         Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                        progressDialog.dismiss()
+                      //  progressDialog.dismiss()
                     }
                 }
                 override fun onFailure(call: Call<ToolsResponse>, t: Throwable) {
                     Log.e("Error", "API call failed: ${t.message}")
                     Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                    progressDialog.dismiss()
+                  //  progressDialog.dismiss()
                 }
             })
         }
@@ -419,14 +419,14 @@ class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
     }
 
     private fun selectTools(title1: String?, isSelectedModule1: Boolean) {
-        progressDialog.show()
+       // progressDialog.show()
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
        // val token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7ImlkIjoiNjdlM2ZiMjdiMzNlZGZkNzRlMDY5OWFjIiwicm9sZSI6InVzZXIiLCJjdXJyZW5jeVR5cGUiOiJJTlIiLCJmaXJzdE5hbWUiOiIiLCJsYXN0TmFtZSI6IiIsImRldmljZUlkIjoiVEUxQS4yNDAyMTMuMDA5IiwibWF4RGV2aWNlUmVhY2hlZCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MtdG9rZW4ifSwiaWF0IjoxNzQzMDU2OTEwLCJleHAiOjE3NTg3ODE3MTB9.gYLi895fpb4HGitALoGDRwHw3MIDCjYXTyqAKDNjS0A"
         val call = ApiClient.apiService.selectTools(token,AddToolRequest(moduleId = moduleId, isSelectedModule = isSelectedModule))
         call.enqueue(object : Callback<BaseResponse> {
             override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
                 if (response.isSuccessful) {
-                    progressDialog.dismiss()
+                   // progressDialog.dismiss()
                     if (response.body()!=null) {
                         baseResponse = response.body()!!
                         if (isSelectedModule1){
@@ -443,13 +443,13 @@ class AddToolsFragment: BaseFragment<FragmentAllToolsListBinding>() {
                 } else {
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
-                    progressDialog.dismiss()
+                   // progressDialog.dismiss()
                 }
             }
             override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
-                progressDialog.dismiss()
+               // progressDialog.dismiss()
             }
         })
     }
