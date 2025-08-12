@@ -188,6 +188,7 @@ class SubscriptionPlanListActivity : BaseActivity(), PurchasesUpdatedListener {
             ) {
                 if (response.isSuccessful && response.body() != null) {
                     response.body()?.data?.id?.let { updatePaymentId(it) }
+                    showToast(response.message())
                 } else {
                     showToast(response.message())
                 }
