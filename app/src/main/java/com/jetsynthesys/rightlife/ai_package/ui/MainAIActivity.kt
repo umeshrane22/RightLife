@@ -43,7 +43,7 @@ class MainAIActivity : BaseActivity() {
                     val args = Bundle()
                     args.putString("ModuleName", "HomeDashboard")
                     mealSearchFragment.arguments = args
-                    replace(R.id.flFragment, mealSearchFragment, "Steps")
+                    replace(R.id.flFragment, mealSearchFragment, "SnapMealFragmentTag")
                     addToBackStack(null)
                     commit()
                 }

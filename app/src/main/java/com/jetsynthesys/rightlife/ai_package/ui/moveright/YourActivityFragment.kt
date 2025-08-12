@@ -174,12 +174,14 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val formattedDate = currentDateTime.format(formatter)
         val formatFullDate = DateTimeFormatter.ofPattern("E, d MMM yyyy")
-        workoutDateTv.text = currentDateTime.format(formatFullDate)
 
         if (selectedDate == null || selectedDate.equals("")){
             selectedDate = formattedDate
         }
-        getWorkoutLogHistory(formattedDate)
+
+        currentWeekStart = getStartOfWeek(LocalDate.parse(selectedDate, formatter))
+        workoutDateTv.text = LocalDate.parse(selectedDate, formatter).format(formatFullDate)
+        getWorkoutLogHistory(selectedDate!!)
         workoutWeeklyDayList = getWeekFrom(currentWeekStart)
         lastDayOfCurrentWeek = workoutWeeklyDayList.get(workoutWeeklyDayList.size - 1).fullDate.toString()
         onWorkoutLogWeeklyDayList(workoutWeeklyDayList, workoutLogHistory)
@@ -194,6 +196,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
             currentWeekStart = currentWeekStart.minusWeeks(1)
             workoutWeeklyDayList = getWeekFrom(currentWeekStart)
             lastDayOfCurrentWeek = workoutWeeklyDayList.get(workoutWeeklyDayList.size - 1).fullDate.toString()
+            workoutDateTv.text = currentWeekStart.format(formatFullDate)
             selectedDate = currentWeekStart.toString()
             getWorkoutLogHistory(currentWeekStart.toString())
             onWorkoutLogWeeklyDayList(workoutWeeklyDayList, workoutLogHistory)
@@ -206,6 +209,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                 currentWeekStart = currentWeekStart.plusWeeks(1)
                 workoutWeeklyDayList = getWeekFrom(currentWeekStart)
                 lastDayOfCurrentWeek = workoutWeeklyDayList.get(workoutWeeklyDayList.size - 1).fullDate.toString()
+                workoutDateTv.text = currentWeekStart.format(formatFullDate)
                 selectedDate = currentWeekStart.toString()
                 getWorkoutLogHistory(currentWeekStart.toString())
                 onWorkoutLogWeeklyDayList(workoutWeeklyDayList, workoutLogHistory)
@@ -630,6 +634,9 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
             }
 
             if (weekList.isNotEmpty()) {
+                val currentDateTime = LocalDateTime.now()
+                val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                val todayDate = currentDateTime.format(formatter)
                 weekLists.addAll(weekList as Collection<WorkoutWeeklyDayModel>)
                 var workoutLogDateData: WorkoutWeeklyDayModel? = null
                 var isClick = false
@@ -664,6 +671,10 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
        // fetchCalories(formattedDate)
         fetchUserWorkouts(formattedDate)
         selectedDate = formattedDate
+    }
+
+    private fun getStartOfWeek(date: LocalDate): LocalDate {
+        return date.with(java.time.DayOfWeek.MONDAY)
     }
 
     private fun getWeekFrom(startDate: LocalDate): List<WorkoutWeeklyDayModel> {

@@ -330,7 +330,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
                 val args = Bundle()
                 args.putString("ModuleName", "EatRight")
                 mealSearchFragment.arguments = args
-                replace(R.id.flFragment, mealSearchFragment, "Steps")
+                replace(R.id.flFragment, mealSearchFragment, "SnapMealFragmentTag")
                 addToBackStack(null)
                 commit()
             }
@@ -370,7 +370,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
                 val args = Bundle()
                 args.putString("ModuleName", "EatRight")
                 mealSearchFragment.arguments = args
-                replace(R.id.flFragment, mealSearchFragment, "Steps")
+                replace(R.id.flFragment, mealSearchFragment, "SnapMealFragmentTag")
                 addToBackStack(null)
                 commit()
             }
@@ -634,8 +634,8 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
         }else{
             todayMacrosWithDataLayout.visibility = View.VISIBLE
             todayMacroNoDataLayout.visibility = View.GONE
-            todayMicrosWithDataLayout.visibility = View.VISIBLE
-            todayMacroNoDataLayoutOne.visibility = View.GONE
+            todayMicrosWithDataLayout.visibility = View.GONE
+            todayMacroNoDataLayoutOne.visibility = View.VISIBLE
         }
 
 //        if(landingPageResponse.micros.value > 0){

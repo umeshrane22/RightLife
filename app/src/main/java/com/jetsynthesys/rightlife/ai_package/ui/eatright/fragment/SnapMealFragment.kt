@@ -39,6 +39,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import android.util.Base64
+import android.view.KeyEvent
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.TextView
@@ -743,7 +744,51 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
                 REQUEST_CODE_PERMISSIONS
             )
         }
+
+        // Intercept device back press while this dialog is showing
+        dialog?.setOnKeyListener { _, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
+                closeSnapMealFragment()
+                true // consume back press
+            } else {
+                false
+            }
+        }
     }
+
+    private fun closeSnapMealFragment() {
+      //  dismiss() // Close the dialog first
+
+        if (moduleName.equals("HomeDashboard")){
+//                startActivity(Intent(context, HomeDashboardActivity::class.java))
+//                requireActivity().finish()
+            requireActivity().onBackPressedDispatcher.onBackPressed()
+        }else if (homeTab.equals("homeTab")){
+            dismiss()
+            val fragment = HomeTabMealFragment()
+            val args = Bundle()
+            args.putString("selectedMealDate", selectedMealDate)
+            args.putString("ModuleName", moduleName)
+            args.putString("mealType", mealType)
+            fragment.arguments = args
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                replace(R.id.flFragment, fragment, "landing")
+                addToBackStack("landing")
+                commit()
+            }
+        }else{
+            dismiss()
+            val fragmentManager = requireActivity().supportFragmentManager
+            val snapMealFragment = fragmentManager.findFragmentByTag("SnapMealFragmentTag")
+
+            snapMealFragment?.let {
+                fragmentManager.beginTransaction()
+                    .remove(it)
+                    .commitAllowingStateLoss()
+            }
+        }
+    }
+
 
     private fun requestGalleryPermissionIfNeeded(): Boolean {
         return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU &&
