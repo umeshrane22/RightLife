@@ -1009,7 +1009,7 @@ class HomeNewActivity : BaseActivity() {
         dialog.show()
     }
 
-    private fun fetchHealthDataFromHealthConnect() {
+    public fun fetchHealthDataFromHealthConnect() {
             val availabilityStatus = HealthConnectClient.getSdkStatus(this)
             if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
                 healthConnectClient = HealthConnectClient.getOrCreate(this)

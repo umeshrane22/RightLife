@@ -631,6 +631,8 @@ class HomeDashboardFragment : BaseFragment() {
                                     binding.includeChecklist.llLayoutChecklist.visibility =
                                         View.GONE
                                     binding.llDiscoverLayout.visibility = View.GONE
+                                    val activity = requireActivity() as HomeNewActivity
+                                    activity.fetchHealthDataFromHealthConnect();
                                 } else {
                                     binding.llDashboardMainData.visibility = View.GONE
                                     binding.includeChecklist.llLayoutChecklist.visibility =

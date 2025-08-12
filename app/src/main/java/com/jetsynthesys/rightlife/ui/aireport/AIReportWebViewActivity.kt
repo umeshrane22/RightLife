@@ -33,7 +33,15 @@ class AIReportWebViewActivity : BaseActivity(), RatingReportFeedbackBottomSheet.
         setContentView(binding.root)
 
         binding.backButton.setOnClickListener {
-            ratingReportFeedbackDialog(true)
+            if (SharedPreferenceManager.getInstance(this).userProfile?.isReportGenerated == true && SharedPreferenceManager.getInstance(
+                    this
+                ).userProfile?.reportView == false
+            ) {
+
+                ratingReportFeedbackDialog(true)
+            }else{
+                onBackPressedDispatcher.onBackPressed()
+            }
         }
 
         val reportId = intent.getStringExtra(EXTRA_REPORT_ID)
