@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F7F7F7"
@@ -343,53 +344,57 @@
                 android:visibility="visible"
                 app:cardCornerRadius="@dimen/margin_card_16dp">
 
-                <RelativeLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_toStartOf="@+id/btn_buy_facescan"
-                        android:orientation="horizontal"
-                        android:layout_centerVertical="true"
-                        android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/txt_booster_count"
+                        android:layout_width="60dp"
+                        android:textColor="@color/dark_blue"
+                        android:text="0"
+                        android:fontFamily="@font/dmsans_bold"
+                        android:textSize="32dp"
+                        android:gravity="center"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginHorizontal="7dp"
+                        android:background="@drawable/roundedcornerbutton"
+                        android:backgroundTint="@color/light_blue"
+                        android:layout_height="50dp"
+                        tools:visibility="visible"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
 
-                        <TextView
-                            android:id="@+id/txt_booster_count"
-                            android:layout_width="60dp"
-                            android:textColor="@color/dark_blue"
-                            android:text="0"
-                            android:fontFamily="@font/dmsans_bold"
-                            android:textSize="32dp"
-                            android:gravity="center"
-                            android:layout_gravity="center_vertical"
-                            android:layout_marginHorizontal="7dp"
-                            android:background="@drawable/roundedcornerbutton"
-                            android:backgroundTint="@color/light_blue"
-                            android:layout_height="50dp" />
+                    <View
+                        android:id="@+id/view_divider"
+                        android:layout_width="2dp"
+                        android:background="@color/color_switch_gray"
+                        android:layout_marginStart="5dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_height="50dp"
+                        tools:visibility="visible"
+                        app:layout_constraintStart_toEndOf="@id/txt_booster_count"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
 
-                        <View
-                            android:id="@+id/view_divider"
-                            android:layout_width="2dp"
-                            android:background="@color/color_switch_gray"
-                            android:layout_marginStart="5dp"
-                            android:layout_gravity="center_vertical"
-                            android:layout_height="50dp" />
-
-                        <TextView
-                            android:id="@+id/txt_remaining_msg"
-                            android:layout_width="wrap_content"
-                            android:textColor="@color/text_color_app"
-                            android:text="Your scans remaining."
-                            android:fontFamily="@font/dmsans_regular"
-                            android:layout_weight="1"
-                            android:maxLines="3"
-                            android:textSize="@dimen/textsize_medium"
-                            android:gravity="center"
-                            android:layout_gravity="center_vertical"
-                            android:layout_height="wrap_content" />
-
-                    </LinearLayout>
+                    <TextView
+                        android:id="@+id/txt_remaining_msg"
+                        android:layout_width="0dp"
+                        android:textColor="@color/text_color_app"
+                        android:text="Your scans remaining."
+                        android:fontFamily="@font/dmsans_regular"
+                        android:layout_weight="1"
+                        android:maxLines="3"
+                        android:textSize="@dimen/textsize_medium"
+                        android:gravity="center"
+                        android:layout_marginHorizontal="5dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintStart_toEndOf="@id/view_divider"
+                        app:layout_constraintEnd_toStartOf="@id/btn_buy_facescan"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
 
                     <Button
                         android:id="@+id/btn_buy_facescan"
@@ -398,15 +403,19 @@
                         android:layout_marginVertical="@dimen/margin_card_16dp"
                         android:layout_marginHorizontal="12dp"
                         android:text="Buy"
+                        tools:text="Scan Again"
                         android:layout_alignParentEnd="true"
                         android:textSize="14sp"
                         android:paddingHorizontal="-8dp"
                         android:paddingVertical="-4dp"
                         android:fontFamily="@font/dmsans_bold"
                         android:textColor="@color/white"
-                        android:backgroundTint="@color/menuselected" />
+                        android:backgroundTint="@color/menuselected"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
 
-                </RelativeLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.cardview.widget.CardView>
 
