@@ -1276,6 +1276,8 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 storeSamsungHealthData()
             }else if(dataOrigin.equals("com.samsung.android.wear.shealth")){
                 storeSamsungHealthData()
+            }else{
+                storeHealthData()
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -1956,6 +1958,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
             }
         }
     }
+
     private fun fetchThinkRecomendedData() {
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
         val call = ApiClient.apiService.fetchThinkRecomended(token,"HOME","MOVE_RIGHT")

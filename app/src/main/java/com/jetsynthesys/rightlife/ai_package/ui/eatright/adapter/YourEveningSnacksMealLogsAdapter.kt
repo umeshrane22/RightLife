@@ -189,14 +189,14 @@ class YourEveningSnacksMealLogsAdapter(val context: Context, private var dataLis
 
             val snapData = data.meal_nutrition_summary
             if (snapData != null){
-                if (data.dish!!.isNotEmpty()){
-                    val mealNames  = data.dish!!.map { it.name }
-                    val name = mealNames.joinToString(", ")
-                    val capitalized = name.replaceFirstChar { it.uppercase() }
-                    mealName.text = capitalized
-                }else{
+//                if (data.dish!!.isNotEmpty()){
+//                    val mealNames  = data.dish!!.map { it.name }
+//                    val name = mealNames.joinToString(", ")
+//                    val capitalized = name.replaceFirstChar { it.uppercase() }
+//                    mealName.text = capitalized
+//                }else{
                     mealName.text = data.meal_name
-                }
+//                }
                 servesCount.text = "1"
                 val mealTime = ""
                 mealTimeTv.text = ""//mealTime.toInt().toString()
