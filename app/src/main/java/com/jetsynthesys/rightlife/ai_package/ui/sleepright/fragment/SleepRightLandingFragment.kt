@@ -2298,27 +2298,34 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     }
 
     private fun setRestorativeSleepData(sleepRestorativeDetail: SleepRestorativeDetail?) {
-        val remTime = addRemStageData(sleepRestorativeDetail?.sleepStagesData)
-        val deepTime = addDeepStageData(sleepRestorativeDetail?.sleepStagesData)
-        if (remTime != "00hr 00mins" && deepTime != "00hr 00mins") {
-            restroNoDataCardView.visibility = View.GONE
-            restroDataCardView.visibility = View.VISIBLE
-            tvRestoRemTime.text = addRemStageData(sleepRestorativeDetail?.sleepStagesData)
-            tvRestoDeepTime.text = addDeepStageData(sleepRestorativeDetail?.sleepStagesData)
-            if(sleepRestorativeDetail?.sleepStartTime != null) {
-                tvRestoStartTime.text = convertTo12HourZoneFormat(sleepRestorativeDetail.sleepStartTime!!)
-            }
-            if (sleepRestorativeDetail?.sleepEndTime != null) {
-                tvRestoEndTime.text = convertTo12HourZoneFormat(sleepRestorativeDetail.sleepEndTime!!)
-            }
-            if (sleepRestorativeDetail?.sleepStagesData != null) {
-                restorativeChart.setSleepData(sleepRestorativeDetail.sleepStagesData!!)
+        if (sleepRestorativeDetail?.sleepStagesData?.isNotEmpty() == true) {
+            val remTime = addRemStageData(sleepRestorativeDetail?.sleepStagesData)
+            val deepTime = addDeepStageData(sleepRestorativeDetail?.sleepStagesData)
+            if (remTime != "00hr 00mins" && deepTime != "00hr 00mins") {
+                restroNoDataCardView.visibility = View.GONE
+                restroDataCardView.visibility = View.VISIBLE
+                tvRestoRemTime.text = addRemStageData(sleepRestorativeDetail?.sleepStagesData)
+                tvRestoDeepTime.text = addDeepStageData(sleepRestorativeDetail?.sleepStagesData)
+                if (sleepRestorativeDetail?.sleepStartTime != null) {
+                    tvRestoStartTime.text =
+                        convertTo12HourZoneFormat(sleepRestorativeDetail.sleepStartTime!!)
+                }
+                if (sleepRestorativeDetail?.sleepEndTime != null) {
+                    tvRestoEndTime.text =
+                        convertTo12HourZoneFormat(sleepRestorativeDetail.sleepEndTime!!)
+                }
+                if (sleepRestorativeDetail?.sleepStagesData != null) {
+                    restorativeChart.setSleepData(sleepRestorativeDetail.sleepStagesData!!)
+                }
+            } else {
+                //  restroNoDataCardView.visibility = View.VISIBLE
+                restroDataCardView.visibility = View.GONE
             }
         }else{
-          //  restroNoDataCardView.visibility = View.VISIBLE
             restroDataCardView.visibility = View.GONE
+            restroNoDataCardView.visibility = View.VISIBLE
         }
-        }
+    }
 
     private fun addDeepStageData(sleepStagesData: ArrayList<SleepStagesData>?): String {
         var totalDeepDuration = 0.0
