@@ -1,11 +1,13 @@
 package com.jetsynthesys.rightlife.newdashboard
 
+import android.annotation.SuppressLint
 import android.app.ComponentCaller
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.Rect
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
@@ -14,6 +16,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
@@ -159,6 +162,7 @@ class HomeNewActivity : BaseActivity() {
         HealthPermission.getReadPermission(BloodPressureRecord::class)
     )
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeNewBinding.inflate(layoutInflater)
@@ -191,6 +195,7 @@ class HomeNewActivity : BaseActivity() {
         onBackPressedDispatcher.addCallback {
             if (binding.includedhomebottomsheet.bottomSheet.visibility == View.VISIBLE) {
                 binding.includedhomebottomsheet.bottomSheet.visibility = View.GONE
+                binding.includedhomebottomsheet.bottomSheetParent.setBackgroundColor(Color.TRANSPARENT)
                 val currentFragment =
                     supportFragmentManager.findFragmentById(R.id.fragmentContainer)
                 when (currentFragment) {
@@ -235,6 +240,7 @@ class HomeNewActivity : BaseActivity() {
 
             if (binding.includedhomebottomsheet.bottomSheet.visibility == View.VISIBLE) {
                 bottom_sheet.visibility = View.GONE
+                binding.includedhomebottomsheet.bottomSheetParent.setBackgroundColor(Color.TRANSPARENT)
                 val currentFragment =
                     supportFragmentManager.findFragmentById(R.id.fragmentContainer)
                 when (currentFragment) {
@@ -243,6 +249,11 @@ class HomeNewActivity : BaseActivity() {
                 }
             } else {
                 bottom_sheet.visibility = View.VISIBLE
+                binding.includedhomebottomsheet.bottomSheetParent.setBackgroundColor(
+                    Color.parseColor(
+                        "#CC000000"
+                    )
+                )
             }
             v.isSelected = !v.isSelected
 
@@ -280,17 +291,79 @@ class HomeNewActivity : BaseActivity() {
 
         // Handle menu item clicks
         binding.menuHome.setOnClickListener {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainer, HomeDashboardFragment())
-                .commit()
-            updateMenuSelection(R.id.menu_home)
+            if (binding.includedhomebottomsheet.bottomSheet.visibility == View.VISIBLE) {
+                bottom_sheet.visibility = View.GONE
+                binding.includedhomebottomsheet.bottomSheetParent.setBackgroundColor(Color.TRANSPARENT)
+                binding.fab.animate().rotationBy(180f).setDuration(60)
+                    .setInterpolator(DecelerateInterpolator()).withEndAction {
+                        // Change icon after rotation
+                        if (isAdd) {
+                            binding.fab.setImageResource(R.drawable.icon_quicklink_plus_black) // Change to close icon
+                            binding.fab.backgroundTintList = ContextCompat.getColorStateList(
+                                this, R.color.rightlife
+                            )
+                            binding.fab.imageTintList = ColorStateList.valueOf(
+                                resources.getColor(
+                                    R.color.black
+                                )
+                            )
+                        } else {
+                            binding.fab.setImageResource(R.drawable.icon_quicklink_plus) // Change back to add icon
+                            binding.fab.backgroundTintList = ContextCompat.getColorStateList(
+                                this, R.color.white
+                            )
+                            binding.fab.imageTintList = ColorStateList.valueOf(
+                                resources.getColor(
+                                    R.color.rightlife
+                                )
+                            )
+                        }
+                        isAdd = !isAdd // Toggle the state
+                    }.start()
+            } else {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragmentContainer, HomeDashboardFragment())
+                    .commit()
+                updateMenuSelection(R.id.menu_home)
+            }
         }
 
         binding.menuExplore.setOnClickListener {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainer, HomeExploreFragment())
-                .commit()
-            updateMenuSelection(R.id.menu_explore)
+            if (binding.includedhomebottomsheet.bottomSheet.visibility == View.VISIBLE) {
+                bottom_sheet.visibility = View.GONE
+                binding.includedhomebottomsheet.bottomSheetParent.setBackgroundColor(Color.TRANSPARENT)
+                binding.fab.animate().rotationBy(180f).setDuration(60)
+                    .setInterpolator(DecelerateInterpolator()).withEndAction {
+                        // Change icon after rotation
+                        if (isAdd) {
+                            binding.fab.setImageResource(R.drawable.icon_quicklink_plus_black) // Change to close icon
+                            binding.fab.backgroundTintList = ContextCompat.getColorStateList(
+                                this, R.color.rightlife
+                            )
+                            binding.fab.imageTintList = ColorStateList.valueOf(
+                                resources.getColor(
+                                    R.color.black
+                                )
+                            )
+                        } else {
+                            binding.fab.setImageResource(R.drawable.icon_quicklink_plus) // Change back to add icon
+                            binding.fab.backgroundTintList = ContextCompat.getColorStateList(
+                                this, R.color.white
+                            )
+                            binding.fab.imageTintList = ColorStateList.valueOf(
+                                resources.getColor(
+                                    R.color.rightlife
+                                )
+                            )
+                        }
+                        isAdd = !isAdd // Toggle the state
+                    }.start()
+            } else {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragmentContainer, HomeExploreFragment())
+                    .commit()
+                updateMenuSelection(R.id.menu_explore)
+            }
         }
 
         with(binding) {
