@@ -1,30 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/bottom_sheet"
+    android:id="@+id/bottomSheetParent"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:visibility="gone"
-    android:orientation="vertical">
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:layout_weight="1"
-        android:clickable="true"
-        android:focusable="true"
-        android:src="@drawable/bg_transperent_box" />
+    android:layout_height="match_parent"
+    android:gravity="bottom"
+    android:background="@color/colorTransperent">
 
     <LinearLayout
-
+        android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:background="@drawable/toproundedcornershape"
-        android:clickable="true"
-        android:focusable="true"
         android:orientation="vertical"
         android:padding="5dp"
-        android:visibility="visible">
+        android:focusable="true"
+        android:clickable="true"
+        android:visibility="gone">
 
 
         <LinearLayout
@@ -187,7 +179,6 @@
 
                         </LinearLayout>
                     </LinearLayout>
-
                     <LinearLayout
                         android:id="@+id/ll_mood_log"
                         android:layout_width="0dp"
@@ -197,8 +188,8 @@
                         android:backgroundTint="@color/white"
                         android:elevation="5dp"
                         android:gravity="center"
-                        android:orientation="vertical"
-                        android:visibility="gone">
+                        android:visibility="gone"
+                        android:orientation="vertical">
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -240,9 +231,10 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
                     android:background="@drawable/roundedcornershape"
-                    android:gravity="center"
                     android:orientation="horizontal"
+                    android:gravity="center"
                     android:visibility="visible">
+
 
 
                     <LinearLayout
