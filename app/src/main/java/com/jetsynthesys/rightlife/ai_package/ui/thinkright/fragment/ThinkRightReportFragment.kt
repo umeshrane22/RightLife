@@ -5,7 +5,6 @@ import android.app.Dialog
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.app.ProgressDialog
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
@@ -47,7 +46,6 @@ import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.flexbox.FlexboxLayout
-import com.google.android.material.card.MaterialCardView
 import com.google.android.material.snackbar.Snackbar
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
@@ -80,6 +78,7 @@ import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
 import com.jetsynthesys.rightlife.databinding.FragmentThinkRightLandingBinding
 import com.jetsynthesys.rightlife.ui.ActivityUtils
 import com.jetsynthesys.rightlife.ui.affirmation.PractiseAffirmationPlaylistActivity
+import com.jetsynthesys.rightlife.ui.affirmation.TodaysAffirmationActivity
 import com.jetsynthesys.rightlife.ui.aireport.AIReportWebViewActivity
 import com.jetsynthesys.rightlife.ui.breathwork.BreathworkActivity
 import com.jetsynthesys.rightlife.ui.breathwork.BreathworkSessionActivity
@@ -316,10 +315,10 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
             ActivityUtils.startMindAuditActivity(requireContext(), true)
         }
         view.findViewById<LinearLayout>(R.id.lyt_journaling).setOnClickListener {
-            ActivityUtils.startJournalListActivity(requireContext())
+            ActivityUtils.startJournalListActivity(requireContext(), true)
         }
         view.findViewById<LinearLayout>(R.id.lyt_add_new).setOnClickListener {
-            ActivityUtils.startJournalNewActivity(requireContext())
+            ActivityUtils.startJournalNewActivity(requireContext(), true)
         }
         view.findViewById<LinearLayout>(R.id.lyt_breathing).setOnClickListener {
             ActivityUtils.startBreathWorkActivity(requireContext())
@@ -1181,7 +1180,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
             startActivity(Intent(requireContext(), BreathworkActivity::class.java))
         } else if (toolsData.moduleName.contentEquals("Journalling")) {
             startActivity(Intent(requireContext(), JournalNewActivity::class.java).apply {
-                putExtra("FROM_THINK_RIGHT",true)
+                putExtra("FROM_THINK_RIGHT", true)
             })
         } else if (toolsData.moduleName.contentEquals("Affirmation")) {
             startActivity(Intent(requireContext(), TodaysAffirmationActivity::class.java))
