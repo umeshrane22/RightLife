@@ -63,20 +63,17 @@ import com.jetsynthesys.rightlife.newdashboard.model.SleepStage
 import com.jetsynthesys.rightlife.newdashboard.model.UpdatedModule
 import com.jetsynthesys.rightlife.runWhenAttached
 import com.jetsynthesys.rightlife.subscriptions.SubscriptionPlanListActivity
+import com.jetsynthesys.rightlife.ui.ActivityUtils
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.DialogUtils
-import com.jetsynthesys.rightlife.ui.healthcam.HealthCamActivity
 import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity
 import com.jetsynthesys.rightlife.ui.new_design.OnboardingQuestionnaireActivity
-import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireEatRightActivity
-import com.jetsynthesys.rightlife.ui.questionnaire.QuestionnaireThinkRightActivity
 import com.jetsynthesys.rightlife.ui.scan_history.PastReportActivity
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
 import com.jetsynthesys.rightlife.ui.utility.AppConstants
 import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils
-import com.jetsynthesys.rightlife.ui.utility.DateTimeUtils.formatDuration
 import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -168,10 +165,10 @@ class HomeDashboardFragment : BaseFragment() {
         }
 
         binding.includeChecklist.rlChecklistEatright.setOnClickListener {
-            startActivity(Intent(requireContext(), QuestionnaireEatRightActivity::class.java))
+            ActivityUtils.startEatRightQuestionnaireActivity(requireContext())
         }
         binding.includeChecklist.rlChecklistSleepright.setOnClickListener {
-            startActivity(Intent(requireContext(), QuestionnaireThinkRightActivity::class.java))
+            ActivityUtils.startThinkRightQuestionnaireActivity(requireContext())
         }
 
         binding.rlViewPastReports.setOnClickListener {
@@ -212,11 +209,7 @@ class HomeDashboardFragment : BaseFragment() {
                 activity = requireActivity(), // or just `this` in Activity
                 launcher = permissionLauncher,
                 onPermissionGranted = {
-                    startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
-                        putExtra("ModuleName", "EatRight")
-                        putExtra("BottomSeatName", "SnapMealTypeEat")
-                        putExtra("snapMealId", snapMealId)
-                    })
+                    ActivityUtils.startMealScanActivity(requireContext(), snapMealId ?: "")
                 },
                 onPermissionDenied = {
                     // ❌ Show user-facing message or disable features
@@ -243,7 +236,7 @@ class HomeDashboardFragment : BaseFragment() {
                         )
                     )
                 } else {
-                    startActivity(Intent(requireContext(), HealthCamActivity::class.java))
+                    ActivityUtils.startFaceScanActivity(requireContext())
                 }
             } else {
                 activity.showSwitchAccountDialog(requireContext(), "", "")
@@ -253,56 +246,38 @@ class HomeDashboardFragment : BaseFragment() {
         binding.cardThinkrightMain.setOnClickListener {
             AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.THINK_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
-                startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
-                    putExtra("ModuleName", "ThinkRight")
-                    putExtra("BottomSeatName", "Not")
-                })
+                ActivityUtils.startThinkRightReportsActivity(requireContext(), "Not")
             }
         }
         binding.cardEatrightMain.setOnClickListener {
             AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.EAT_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
-                startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
-                    putExtra("ModuleName", "EatRight")
-                    putExtra("BottomSeatName", "Not")
-                })
+                ActivityUtils.startEatRightReportsActivity(requireContext(), "Not")
             }
         }
 
         binding.cardMoverightMain.setOnClickListener {
             AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.MOVE_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
-                startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
-                    putExtra("ModuleName", "MoveRight")
-                    putExtra("BottomSeatName", "Not")
-                })
+                ActivityUtils.startMoveRightReportsActivity(requireContext(), "Not")
             }
         }
         binding.cardSleeprightMain.setOnClickListener {
             AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.SLEEP_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
-                startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
-                    putExtra("ModuleName", "SleepRight")
-                    putExtra("BottomSeatName", "Not")
-                })
+                ActivityUtils.startSleepRightReportsActivity(requireContext(), "Not")
             }
         }
         binding.cardSleepMainIdeal.setOnClickListener {
             AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.SLEEP_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
-                startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
-                    putExtra("ModuleName", "SleepRight")
-                    putExtra("BottomSeatName", "Not")
-                })
+                ActivityUtils.startSleepRightReportsActivity(requireContext(), "Not")
             }
         }
         binding.cardSleepMainLog.setOnClickListener {
             AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.SLEEP_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
-                startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
-                    putExtra("ModuleName", "SleepRight")
-                    putExtra("BottomSeatName", "Not")
-                })
+                ActivityUtils.startSleepRightReportsActivity(requireContext(), "Not")
             }
         }
 
@@ -311,75 +286,51 @@ class HomeDashboardFragment : BaseFragment() {
         binding.cardThinkrightMainNodata.setOnClickListener {
             AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.THINK_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
-                startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
-                    putExtra("ModuleName", "ThinkRight")
-                    putExtra("BottomSeatName", "Not")
-                })
+                ActivityUtils.startThinkRightReportsActivity(requireContext(), "Not")
             }
         }
         binding.cardEatrightMainNodata.setOnClickListener {
             AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.EAT_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
-                startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
-                    putExtra("ModuleName", "EatRight")
-                    putExtra("BottomSeatName", "Not")
-                })
+                ActivityUtils.startEatRightReportsActivity(requireContext(), "Not")
             }
         }
 
         binding.cardMoverightMainNodata.setOnClickListener {
             if (checkTrailEndedAndShowDialog()) {
                 AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.MOVE_RIGHT_CLICK)
-                startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
-                    putExtra("ModuleName", "MoveRight")
-                    putExtra("BottomSeatName", "Not")
-                })
+                ActivityUtils.startMoveRightReportsActivity(requireContext(), "Not")
             }
         }
         binding.cardSleeprightMainNodata.setOnClickListener {
             AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.SLEEP_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
-                startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
-                    putExtra("ModuleName", "SleepRight")
-                    putExtra("BottomSeatName", "Not")
-                })
+                ActivityUtils.startSleepRightReportsActivity(requireContext(), "Not")
             }
         }
 
         binding.cardEatright.setOnClickListener {
             AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.EAT_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
-                startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
-                    putExtra("ModuleName", "EatRight")
-                    putExtra("BottomSeatName", "Not")
-                })
+                ActivityUtils.startEatRightReportsActivity(requireContext(), "Not")
             }
         }
         binding.cardSleepright.setOnClickListener {
             AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.SLEEP_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
-                startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
-                    putExtra("ModuleName", "SleepRight")
-                    putExtra("BottomSeatName", "Not")
-                })
+                ActivityUtils.startSleepRightReportsActivity(requireContext(), "Not")
             }
         }
         binding.cardThinkright.setOnClickListener {
             AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.THINK_RIGHT_CLICK)
             if (checkTrailEndedAndShowDialog()) {
-                startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
-                    putExtra("ModuleName", "ThinkRight")
-                    putExtra("BottomSeatName", "Not")
-                })
+                ActivityUtils.startThinkRightReportsActivity(requireContext(), "Not")
             }
         }
         binding.cardMoveright.setOnClickListener {
             if (checkTrailEndedAndShowDialog()) {
                 AnalyticsLogger.logEvent(requireContext(), AnalyticsEvent.MOVE_RIGHT_CLICK)
-                startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
-                    putExtra("ModuleName", "MoveRight")
-                    putExtra("BottomSeatName", "Not")
-                })
+                ActivityUtils.startMoveRightReportsActivity(requireContext(), "Not")
             }
         }
 
@@ -667,8 +618,7 @@ class HomeDashboardFragment : BaseFragment() {
                                     binding.includeChecklist.llLayoutChecklist.visibility =
                                         View.GONE
                                     binding.llDiscoverLayout.visibility = View.GONE
-                                    /*val activity = requireActivity() as HomeNewActivity
-                                    activity.fetchHealthDataFromHealthConnect();*/
+                                    ActivityUtils.startChecklistCompleteActivity(requireContext())
                                 } else {
                                     binding.llDashboardMainData.visibility = View.GONE
                                     binding.includeChecklist.llLayoutChecklist.visibility =
@@ -1203,13 +1153,22 @@ class HomeDashboardFragment : BaseFragment() {
                     binding.cardSleepMainLog.visibility = View.GONE
                     // Update UI elements here
                     binding.cardSleeprightMain.visibility = View.VISIBLE
-                    binding.tvRem.text = DateTimeUtils.formatSleepDurationforidealSleep(module.rem ?: 0.0)//module.rem.toString()
-                    binding.tvCore.text = DateTimeUtils.formatSleepDurationforidealSleep(module.core ?: 0.0)//module.core.toString()
-                    binding.tvDeep.text = DateTimeUtils.formatSleepDurationforidealSleep(module.deep ?: 0.0)//module.deep.toString()
-                    binding.tvAwake.text =DateTimeUtils.formatSleepDurationforidealSleep(module.awake ?: 0.0)
-                        //module.awake.toString()
-                    binding.tvSleepTime.text = convertTo12HourZoneFormat(module.sleepTime.toString())
-                    binding.tvWakeupTime.text = convertTo12HourZoneFormat(module.wakeUpTime.toString())
+                    binding.tvRem.text = DateTimeUtils.formatSleepDurationforidealSleep(
+                        module.rem ?: 0.0
+                    )//module.rem.toString()
+                    binding.tvCore.text = DateTimeUtils.formatSleepDurationforidealSleep(
+                        module.core ?: 0.0
+                    )//module.core.toString()
+                    binding.tvDeep.text = DateTimeUtils.formatSleepDurationforidealSleep(
+                        module.deep ?: 0.0
+                    )//module.deep.toString()
+                    binding.tvAwake.text =
+                        DateTimeUtils.formatSleepDurationforidealSleep(module.awake ?: 0.0)
+                    //module.awake.toString()
+                    binding.tvSleepTime.text =
+                        convertTo12HourZoneFormat(module.sleepTime.toString())
+                    binding.tvWakeupTime.text =
+                        convertTo12HourZoneFormat(module.wakeUpTime.toString())
 
                     val sleepData = listOf(
                         SleepSegmentModel(
@@ -1238,12 +1197,12 @@ class HomeDashboardFragment : BaseFragment() {
                     )
 
                     //binding.sleepStagesView.setSleepData(sleepData)
-                   // newSleepStagesHandling(module.sleepStages ?: emptyList())
+                    // newSleepStagesHandling(module.sleepStages ?: emptyList())
 // Set Sleep Stages Data
                     val sleepStageData: ArrayList<SleepStage> = arrayListOf()
-                    if (module?.sleepStages != null) {
-                        for (i in 0 until module?.sleepStages?.size!!) {
-                            module?.sleepStages?.getOrNull(i)?.let {
+                    if (module.sleepStages != null) {
+                        for (i in 0 until module.sleepStages.size) {
+                            module.sleepStages.getOrNull(i)?.let {
                                 sleepStageData.add(it)
                             }
                         }
@@ -1489,10 +1448,10 @@ class HomeDashboardFragment : BaseFragment() {
     }
 
     fun convertTo12HourZoneFormat(input: String): String {
-        lateinit var inputFormatter : DateTimeFormatter
+        lateinit var inputFormatter: DateTimeFormatter
         if (input.length > 21) {
             inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
-        }else{
+        } else {
             inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
         }
         val outputFormatter = DateTimeFormatter.ofPattern("hh:mm a") // 12-hour format with AM/PM
