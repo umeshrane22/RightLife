@@ -93,6 +93,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
     private var selectedMealDate : String = ""
     var imageSelectedListener: OnImageSelectedListener? = null
     private lateinit var imagePathsecond : Uri
+    private var mealQuantity : String = ""
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentHomeTabMealBinding
         get() = FragmentHomeTabMealBinding::inflate
@@ -123,6 +124,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
         mealType = arguments?.getString("mealType").toString()
         tabType = arguments?.getString("tabType").toString()
         selectedMealDate = arguments?.getString("selectedMealDate").toString()
+        mealQuantity = arguments?.getString("mealQuantity").toString()
         val dishLocalListModels = if (Build.VERSION.SDK_INT >= 33) {
             arguments?.getParcelable("snapDishLocalListModel", SnapDishLocalListModel::class.java)
         } else {
@@ -166,6 +168,12 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
         if (dishLocalListModels != null){
             snapDishLocalListModel = dishLocalListModels
             dishLists.addAll(snapDishLocalListModel!!.data)
+        }
+
+        if (mealQuantity != "null" && !mealQuantity.equals("")){
+            mealQuantity = mealQuantity
+        }else{
+            mealQuantity = "1.0"
         }
 
         val tabTitles = arrayOf("Frequently Logged", "My Meal", "My Recipe")
@@ -476,7 +484,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
                 dishLists?.forEach { snapRecipe ->
                     val mealLogData = DishLog(
                         receipe_id = snapRecipe.id,
-                        meal_quantity = 1.0,
+                        meal_quantity = mealQuantity.toDouble(),
                         unit = "g",
                         measure = "Bowl"
                     )
@@ -490,7 +498,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
                 selectedMealLogList?.forEach { selectedDish ->
                     val mealLogData = DishLog(
                         receipe_id = selectedDish.meal_id,
-                        meal_quantity = 1.0,
+                        meal_quantity = mealQuantity.toDouble(),
                         unit = "g",
                         measure = "Bowl"
                     )

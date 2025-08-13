@@ -84,6 +84,7 @@
                     android:fontFamily="@font/dmsans_bold"
                     android:layout_gravity="center"
                     android:layout_marginStart="10dp"
+                    android:layout_marginTop="2dp"
                     android:textColor="@color/black_no_meals"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/editNameIC"
@@ -153,7 +154,7 @@
                     android:id="@+id/datePickerLayout"
                     android:layout_width="0dp"
                     android:layout_height="40dp"
-                    android:layout_marginEnd="15dp"
+                    android:layout_marginEnd="8dp"
                     android:layout_marginStart="15dp"
                     android:layout_weight="1"
                     android:background="@drawable/white_meal_date_bg"
@@ -167,7 +168,7 @@
                         android:textSize="14sp"
                         android:layout_weight="0.9"
                         android:layout_gravity="center"
-                        android:layout_marginStart="15dp"
+                        android:layout_marginStart="7dp"
                         android:fontFamily="@font/dmsans_bold"
                         android:textColor="@color/black_no_meals" />
 
@@ -175,6 +176,7 @@
                         android:id="@+id/ivDatePicker"
                         android:layout_width="20dp"
                         android:layout_height="20dp"
+                        android:layout_marginEnd="2dp"
                         android:layout_weight="0.1"
                         android:layout_gravity="center_vertical"
                         android:src="@drawable/updown_icon" />
@@ -184,7 +186,7 @@
                     android:layout_width="0dp"
                     android:layout_height="40dp"
                     android:layout_marginEnd="15dp"
-                    android:layout_marginStart="15dp"
+                    android:layout_marginStart="7dp"
                     android:layout_weight="1"
                     android:background="@drawable/white_meal_date_bg"
                     android:orientation="horizontal">
@@ -194,12 +196,11 @@
                         android:layout_width="wrap_content"
                         android:layout_height="20dp"
                         android:textSize="14sp"
-                        android:padding="2dp"
                         android:textStyle="bold"
                         android:layout_weight="0.9"
                         android:background="@color/white"
                         android:layout_gravity="center"
-                        android:layout_marginStart="15dp"
+                        android:layout_marginStart="7dp"
                         android:fontFamily="@font/dmsans_bold"
                         android:textColor="@color/black_no_meals"/>
 
@@ -220,6 +221,7 @@
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:layout_weight="0.1"
+                        android:layout_marginEnd="2dp"
                         android:layout_gravity="center_vertical"
                         android:src="@drawable/updown_icon" />
                 </androidx.appcompat.widget.LinearLayoutCompat>

@@ -164,6 +164,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
     private var loadingOverlay : FrameLayout? = null
     private var lastDayOfCurrentWeek : String = ""
     private var dialogToolTip : Dialog? = null
+    private var currentWeekStartItem: LocalDate = LocalDate.now().with(DayOfWeek.MONDAY)
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentYourMealLogsBinding
         get() = FragmentYourMealLogsBinding::inflate
@@ -371,7 +372,11 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
                mealLogWeeklyDayList = getWeekFrom(currentWeekStart)
                lastDayOfCurrentWeek = mealLogWeeklyDayList.get(mealLogWeeklyDayList.size - 1).fullDate.toString()
                selectedWeeklyDayTv.text = currentWeekStart.format(formatFullDate)
-               selectedMealDate = currentWeekStart.toString()
+               if (currentWeekStart == currentWeekStartItem){
+                   selectedMealDate = formattedDate
+               }else{
+                   selectedMealDate = currentWeekStart.toString()
+               }
                onMealLogWeeklyDayList(mealLogWeeklyDayList, mealLogHistory)
                getMealsLogHistory(currentWeekStart.toString())
 
@@ -615,7 +620,6 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
     }
 
     private fun onMealLogWeeklyDayList(weekList: List<MealLogWeeklyDayModel>, mealLogHistory: ArrayList<LoggedMealHistory>) {
-        val today = LocalDate.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val localDate = LocalDate.parse(selectedMealDate, formatter)
         val weekLists : ArrayList<MealLogWeeklyDayModel> = ArrayList()

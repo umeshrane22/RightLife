@@ -374,13 +374,13 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
 
     private fun setRestorativeSleepData(restorativeSleepResponse: RestorativeSleepAllData?) {
         if (restorativeSleepResponse?.progress_detail?.progress_sign == "plus"){
-            percentageIcon.visibility = View.VISIBLE
+            percentageIcon.visibility = View.GONE
             percentageIcon.setImageResource(R.drawable.ic_up)
-            percentageText.visibility = View.VISIBLE
+            percentageText.visibility = View.GONE
             percentageText.text = " "+ restorativeSleepResponse?.progress_detail?.progress_percentage + " past week"
         }else{
-            percentageIcon.visibility = View.VISIBLE
-            percentageText.visibility = View.VISIBLE
+            percentageIcon.visibility = View.GONE
+            percentageText.visibility = View.GONE
             percentageIcon.setImageResource(R.drawable.ic_down)
             percentageIcon.setBackgroundColor(resources.getColor(R.color.red))
             percentageText.text = " "+ restorativeSleepResponse?.progress_detail?.progress_percentage + " past week"
