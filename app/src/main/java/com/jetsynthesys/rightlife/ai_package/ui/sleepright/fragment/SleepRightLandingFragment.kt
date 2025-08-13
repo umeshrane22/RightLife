@@ -111,6 +111,7 @@ import com.jetsynthesys.rightlife.ai_package.model.response.SleepSoundResponse
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.adapter.RecommendedAdapterSleep
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.RestorativeSleepFragment.MultilineXAxisRenderer
 import com.jetsynthesys.rightlife.ai_package.ui.thinkright.fragment.SleepInfoDialogFragment
+import com.jetsynthesys.rightlife.ui.ActivityUtils
 import com.jetsynthesys.rightlife.ui.aireport.AIReportWebViewActivity
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import kotlinx.coroutines.CoroutineScope
@@ -374,9 +375,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             }
         }
         btnSleepSound.setOnClickListener {
-            startActivity(Intent(requireContext(), NewSleepSoundActivity::class.java).apply {
-                //putExtra("PlayList", "PlayList")
-            })
+            ActivityUtils.startSleepSoundActivity(requireContext())
         }
 
         sleepStageInfo.setOnClickListener {
