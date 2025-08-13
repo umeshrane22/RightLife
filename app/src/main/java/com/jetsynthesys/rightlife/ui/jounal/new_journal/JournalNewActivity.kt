@@ -20,6 +20,7 @@ class JournalNewActivity : BaseActivity() {
     private var isFromTool = false
     private var whereToGo = ""
     private var startDate = ""
+    private var isFromThinkRight = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +30,7 @@ class JournalNewActivity : BaseActivity() {
         isFromTool = intent.getBooleanExtra("IS_FROM_TOOLS", false)
         whereToGo = intent.getStringExtra("TOOLS_VALUE").toString()
         startDate = intent.getStringExtra("StartDate").toString()
+        isFromThinkRight = intent.getBooleanExtra("FROM_THINK_RIGHT", false)
         if (startDate.isEmpty())
             startDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
 
@@ -123,9 +125,12 @@ class JournalNewActivity : BaseActivity() {
                 this@JournalNewActivity,
                 JournalPromptActivity::class.java
             )
+        }.apply {
+            putExtra("Section", journalItem)
+            putExtra("StartDate", startDate)
+            putExtra("FROM_THINK_RIGHT", isFromThinkRight)
         }
-        intent.putExtra("Section", journalItem)
-        intent.putExtra("StartDate", startDate)
+
         startActivity(intent)
     }
 

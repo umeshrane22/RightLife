@@ -10,8 +10,6 @@ import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -166,7 +164,7 @@ class HomeNewActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeNewBinding.inflate(layoutInflater)
         setChildContentView(binding.root)
-        this?.let {
+        this.let {
             if (HealthConnectClient.getSdkStatus(it) == HealthConnectClient.SDK_AVAILABLE) {
                 healthConnectClient = HealthConnectClient.getOrCreate(it)
             }
@@ -471,6 +469,10 @@ class HomeNewActivity : BaseActivity() {
             if (intent.getBooleanExtra("FROM_THINK_RIGHT", false)) {
                 startActivity(Intent(this, MainAIActivity::class.java))
             }
+        } else if (intent.getBooleanExtra("finish_Journal", false)) {
+            if (intent.getBooleanExtra("FROM_THINK_RIGHT", false)) {
+                startActivity(Intent(this, MainAIActivity::class.java))
+            }
         }
     }
 
@@ -555,7 +557,7 @@ class HomeNewActivity : BaseActivity() {
                 if (!DashboardChecklistManager.paymentStatus) {
                     binding.trialExpiredLayout.trialExpiredLayout.visibility = View.VISIBLE
                     isTrialExpired = true
-                }else{
+                } else {
                     binding.trialExpiredLayout.trialExpiredLayout.visibility = View.GONE
                     isTrialExpired = false
                 }
@@ -736,7 +738,7 @@ class HomeNewActivity : BaseActivity() {
         if (!DashboardChecklistManager.paymentStatus) {
             binding.trialExpiredLayout.trialExpiredLayout.visibility = View.VISIBLE
             isTrialExpired = true
-        }else{
+        } else {
             binding.trialExpiredLayout.trialExpiredLayout.visibility = View.GONE
             isTrialExpired = false
         }
@@ -1009,16 +1011,20 @@ class HomeNewActivity : BaseActivity() {
         dialog.show()
     }
 
-    public fun fetchHealthDataFromHealthConnect() {
-            val availabilityStatus = HealthConnectClient.getSdkStatus(this)
-            if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
-                healthConnectClient = HealthConnectClient.getOrCreate(this)
-                lifecycleScope.launch {
-                    requestPermissionsAndReadAllData()
-                }
-            } else {
-                Toast.makeText(this@HomeNewActivity, "Please install or update health connect from the Play Store.", Toast.LENGTH_LONG).show()
+    fun fetchHealthDataFromHealthConnect() {
+        val availabilityStatus = HealthConnectClient.getSdkStatus(this)
+        if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
+            healthConnectClient = HealthConnectClient.getOrCreate(this)
+            lifecycleScope.launch {
+                requestPermissionsAndReadAllData()
             }
+        } else {
+            Toast.makeText(
+                this@HomeNewActivity,
+                "Please install or update health connect from the Play Store.",
+                Toast.LENGTH_LONG
+            ).show()
+        }
     }
 
     private suspend fun requestPermissionsAndReadAllData() {
@@ -1031,29 +1037,39 @@ class HomeNewActivity : BaseActivity() {
             }
         } catch (e: Exception) {
             withContext(Dispatchers.Main) {
-                Toast.makeText(this@HomeNewActivity, "Error checking permissions: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this@HomeNewActivity,
+                    "Error checking permissions: ${e.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
 
-    private val requestPermissionsLauncher = registerForActivityResult(PermissionController.createRequestPermissionResultContract()) { granted ->
-        lifecycleScope.launch {
-            if (granted.containsAll(allReadPermissions)) {
-                fetchAllHealthData()
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(this@HomeNewActivity, "Permissions Granted", Toast.LENGTH_SHORT).show()
+    private val requestPermissionsLauncher =
+        registerForActivityResult(PermissionController.createRequestPermissionResultContract()) { granted ->
+            lifecycleScope.launch {
+                if (granted.containsAll(allReadPermissions)) {
+                    fetchAllHealthData()
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            this@HomeNewActivity,
+                            "Permissions Granted",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                    }
+                    fetchAllHealthData()
                 }
-            } else {
-                withContext(Dispatchers.Main) {
-                }
-                fetchAllHealthData()
             }
         }
-    }
 
     private suspend fun fetchAllHealthData() {
         try {
-            val grantedPermissions = healthConnectClient.permissionController.getGrantedPermissions()
+            val grantedPermissions =
+                healthConnectClient.permissionController.getGrantedPermissions()
             lifecycleScope.launch {
                 if (HealthPermission.getReadPermission(SleepSessionRecord::class) in grantedPermissions) {
                     val response = healthConnectClient.readRecords(
@@ -1065,9 +1081,12 @@ class HomeNewActivity : BaseActivity() {
                     for (record in response.records) {
                         val deviceInfo = record.metadata.device
                         if (deviceInfo != null) {
-                            SharedPreferenceManager.getInstance(this@HomeNewActivity).saveDeviceName(deviceInfo.manufacturer)
-                            Log.d("Device Info", """ Manufacturer: ${deviceInfo.manufacturer}
-                Model: ${deviceInfo.model} Type: ${deviceInfo.type} """.trimIndent())
+                            SharedPreferenceManager.getInstance(this@HomeNewActivity)
+                                .saveDeviceName(deviceInfo.manufacturer)
+                            Log.d(
+                                "Device Info", """ Manufacturer: ${deviceInfo.manufacturer}
+                Model: ${deviceInfo.model} Type: ${deviceInfo.type} """.trimIndent()
+                            )
                         } else {
                             Log.d("Device Info", "No device info available")
                         }
@@ -1076,11 +1095,12 @@ class HomeNewActivity : BaseActivity() {
             }
             var endTime = Instant.now()
             var startTime = Instant.now()
-            val syncTime = SharedPreferenceManager.getInstance(this@HomeNewActivity).moveRightSyncTime ?: ""
+            val syncTime =
+                SharedPreferenceManager.getInstance(this@HomeNewActivity).moveRightSyncTime ?: ""
             if (syncTime == "") {
                 endTime = Instant.now()
                 startTime = endTime.minus(Duration.ofDays(30))
-            }else{
+            } else {
                 endTime = Instant.now()
                 startTime = convertUtcToInstant(syncTime)
             }
@@ -1097,9 +1117,12 @@ class HomeNewActivity : BaseActivity() {
                     for (record in stepsResponse.records) {
                         val deviceInfo = record.metadata.device
                         if (deviceInfo != null) {
-                            SharedPreferenceManager.getInstance(this@HomeNewActivity).saveDeviceName(deviceInfo.manufacturer)
-                            Log.d("Device Info", """ Manufacturer: ${deviceInfo.manufacturer}
-                Model: ${deviceInfo.model} Type: ${deviceInfo.type} """.trimIndent())
+                            SharedPreferenceManager.getInstance(this@HomeNewActivity)
+                                .saveDeviceName(deviceInfo.manufacturer)
+                            Log.d(
+                                "Device Info", """ Manufacturer: ${deviceInfo.manufacturer}
+                Model: ${deviceInfo.model} Type: ${deviceInfo.type} """.trimIndent()
+                            )
                         } else {
                             Log.d("Device Info", "No device info available")
                         }
@@ -1118,7 +1141,8 @@ class HomeNewActivity : BaseActivity() {
                     )
                 )
                 totalCaloriesBurnedRecord = caloriesResponse.records
-                val totalBurnedCalories = totalCaloriesBurnedRecord?.sumOf { it.energy.inKilocalories.toInt() } ?: 0
+                val totalBurnedCalories =
+                    totalCaloriesBurnedRecord?.sumOf { it.energy.inKilocalories.toInt() } ?: 0
                 Log.d("HealthData", "Total Burned Calories: $totalBurnedCalories kcal")
             } else {
                 totalCaloriesBurnedRecord = emptyList()
@@ -1132,7 +1156,7 @@ class HomeNewActivity : BaseActivity() {
                     )
                 )
                 heartRateRecord = response.records
-            }else {
+            } else {
                 heartRateRecord = emptyList()
                 Log.d("HealthData", "Heart rate permission denied")
             }
@@ -1145,9 +1169,12 @@ class HomeNewActivity : BaseActivity() {
                 )
                 restingHeartRecord = restingHRResponse.records
                 restingHeartRecord?.forEach { record ->
-                    Log.d("HealthData", "Resting Heart Rate: ${record.beatsPerMinute} bpm, Time: ${record.time}")
+                    Log.d(
+                        "HealthData",
+                        "Resting Heart Rate: ${record.beatsPerMinute} bpm, Time: ${record.time}"
+                    )
                 }
-            }else {
+            } else {
                 restingHeartRecord = emptyList()
                 Log.d("HealthData", "Heart rate permission denied")
             }
@@ -1160,9 +1187,12 @@ class HomeNewActivity : BaseActivity() {
                 )
                 activeCalorieBurnedRecord = activeCalorieResponse.records
                 activeCalorieBurnedRecord?.forEach { record ->
-                    Log.d("HealthData", "Resting Heart Rate: ${record.energy} kCal, Time: ${record.startTime}")
+                    Log.d(
+                        "HealthData",
+                        "Resting Heart Rate: ${record.energy} kCal, Time: ${record.startTime}"
+                    )
                 }
-            }else {
+            } else {
                 activeCalorieBurnedRecord = emptyList()
                 Log.d("HealthData", "Heart rate permission denied")
             }
@@ -1175,9 +1205,12 @@ class HomeNewActivity : BaseActivity() {
                 )
                 basalMetabolicRateRecord = basalMetabolic.records
                 basalMetabolicRateRecord?.forEach { record ->
-                    Log.d("HealthData", "Resting Heart Rate: ${record.basalMetabolicRate}, Time: ${record.time}")
+                    Log.d(
+                        "HealthData",
+                        "Resting Heart Rate: ${record.basalMetabolicRate}, Time: ${record.time}"
+                    )
                 }
-            }else {
+            } else {
                 basalMetabolicRateRecord = emptyList()
                 Log.d("HealthData", "Heart rate permission denied")
             }
@@ -1190,9 +1223,12 @@ class HomeNewActivity : BaseActivity() {
                 )
                 bloodPressureRecord = bloodPressure.records
                 bloodPressureRecord?.forEach { record ->
-                    Log.d("HealthData", "Resting Heart Rate: ${record.systolic}, Time: ${record.time}")
+                    Log.d(
+                        "HealthData",
+                        "Resting Heart Rate: ${record.systolic}, Time: ${record.time}"
+                    )
                 }
-            }else {
+            } else {
                 bloodPressureRecord = emptyList()
                 Log.d("HealthData", "Heart rate permission denied")
             }
@@ -1205,9 +1241,12 @@ class HomeNewActivity : BaseActivity() {
                 )
                 heartRateVariability = restingVresponse.records
                 heartRateVariability?.forEach { record ->
-                    Log.d("HealthData", "Resting Heart Rate: ${record.heartRateVariabilityMillis}, Time: ${record.time}")
+                    Log.d(
+                        "HealthData",
+                        "Resting Heart Rate: ${record.heartRateVariabilityMillis}, Time: ${record.time}"
+                    )
                 }
-            }else {
+            } else {
                 heartRateVariability = emptyList()
                 Log.d("HealthData", "Heart rate permission denied")
             }
@@ -1220,7 +1259,10 @@ class HomeNewActivity : BaseActivity() {
                 )
                 sleepSessionRecord = sleepResponse.records
                 sleepSessionRecord?.forEach { record ->
-                    Log.d("HealthData", "Sleep Session: Start: ${record.startTime}, End: ${record.endTime}, Stages: ${record.stages}")
+                    Log.d(
+                        "HealthData",
+                        "Sleep Session: Start: ${record.startTime}, End: ${record.endTime}, Stages: ${record.stages}"
+                    )
                 }
             } else {
                 sleepSessionRecord = emptyList()
@@ -1235,7 +1277,10 @@ class HomeNewActivity : BaseActivity() {
                 )
                 exerciseSessionRecord = exerciseResponse.records
                 exerciseSessionRecord?.forEach { record ->
-                    Log.d("HealthData", "Exercise Session: Type: ${record.exerciseType}, Start: ${record.startTime}, End: ${record.endTime}")
+                    Log.d(
+                        "HealthData",
+                        "Exercise Session: Type: ${record.exerciseType}, Start: ${record.startTime}, End: ${record.endTime}"
+                    )
                 }
             } else {
                 exerciseSessionRecord = emptyList()
@@ -1250,7 +1295,10 @@ class HomeNewActivity : BaseActivity() {
                 )
                 speedRecord = speedResponse.records
                 speedRecord?.forEach { record ->
-                    Log.d("HealthData", "Speed: ${record.samples.joinToString { it.speed.inMetersPerSecond.toString() }} m/s")
+                    Log.d(
+                        "HealthData",
+                        "Speed: ${record.samples.joinToString { it.speed.inMetersPerSecond.toString() }} m/s"
+                    )
                 }
             } else {
                 speedRecord = emptyList()
@@ -1265,7 +1313,10 @@ class HomeNewActivity : BaseActivity() {
                 )
                 weightRecord = weightResponse.records
                 weightRecord?.forEach { record ->
-                    Log.d("HealthData", "Weight: ${record.weight.inKilograms} kg, Time: ${record.time}")
+                    Log.d(
+                        "HealthData",
+                        "Weight: ${record.weight.inKilograms} kg, Time: ${record.time}"
+                    )
                 }
             } else {
                 weightRecord = emptyList()
@@ -1280,7 +1331,10 @@ class HomeNewActivity : BaseActivity() {
                 )
                 bodyFatRecord = bodyFatResponse.records
                 bodyFatRecord?.forEach { record ->
-                    Log.d("HealthData", "Body Fat: ${record.percentage.value * 100}%, Time: ${record.time}")
+                    Log.d(
+                        "HealthData",
+                        "Body Fat: ${record.percentage.value * 100}%, Time: ${record.time}"
+                    )
                 }
             } else {
                 bodyFatRecord = emptyList()
@@ -1309,7 +1363,10 @@ class HomeNewActivity : BaseActivity() {
                 )
                 oxygenSaturationRecord = oxygenSaturationResponse.records
                 oxygenSaturationRecord?.forEach { record ->
-                    Log.d("HealthData", "Oxygen Saturation: ${record.percentage.value}%, Time: ${record.time}")
+                    Log.d(
+                        "HealthData",
+                        "Oxygen Saturation: ${record.percentage.value}%, Time: ${record.time}"
+                    )
                 }
             } else {
                 oxygenSaturationRecord = emptyList()
@@ -1324,7 +1381,10 @@ class HomeNewActivity : BaseActivity() {
                 )
                 respiratoryRateRecord = respiratoryRateResponse.records
                 respiratoryRateRecord?.forEach { record ->
-                    Log.d("HealthData", "Respiratory Rate: ${record.rate} breaths/min, Time: ${record.time}")
+                    Log.d(
+                        "HealthData",
+                        "Respiratory Rate: ${record.rate} breaths/min, Time: ${record.time}"
+                    )
                 }
             } else {
                 respiratoryRateRecord = emptyList()
@@ -1342,27 +1402,34 @@ class HomeNewActivity : BaseActivity() {
                     dataOrigin = record.metadata.dataOrigin.packageName
                     val deviceInfo = record.metadata.device
                     if (deviceInfo != null) {
-                        SharedPreferenceManager.getInstance(this@HomeNewActivity).saveDeviceName(deviceInfo.manufacturer)
-                        Log.d("Device Info", """ Manufacturer: ${deviceInfo.manufacturer}
-                Model: ${deviceInfo.model} Type: ${deviceInfo.type} """.trimIndent())
+                        SharedPreferenceManager.getInstance(this@HomeNewActivity)
+                            .saveDeviceName(deviceInfo.manufacturer)
+                        Log.d(
+                            "Device Info", """ Manufacturer: ${deviceInfo.manufacturer}
+                Model: ${deviceInfo.model} Type: ${deviceInfo.type} """.trimIndent()
+                        )
                     } else {
                         Log.d("Device Info", "No device info available")
                     }
                 }
             }
-            if (dataOrigin.equals("com.google.android.apps.fitness")){
+            if (dataOrigin.equals("com.google.android.apps.fitness")) {
                 storeHealthData()
-            }else if(dataOrigin.equals("com.sec.android.app.shealth")){
+            } else if (dataOrigin.equals("com.sec.android.app.shealth")) {
                 storeSamsungHealthData()
-            }else if(dataOrigin.equals("com.samsung.android.wear.shealth")){
+            } else if (dataOrigin.equals("com.samsung.android.wear.shealth")) {
                 storeSamsungHealthData()
-            }else{
+            } else {
                 storeHealthData()
             }
         } catch (e: Exception) {
             e.printStackTrace()
             withContext(Dispatchers.Main) {
-                Toast.makeText(this@HomeNewActivity, "Error fetching health data: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this@HomeNewActivity,
+                    "Error fetching health data: ${e.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
@@ -1547,12 +1614,12 @@ class HomeNewActivity : BaseActivity() {
                     val calories = totalCaloriesBurnedRecord?.filter {
                         it.startTime >= record.startTime && it.endTime <= record.endTime
                     }?.sumOf { it.energy.inKilocalories.toInt() } ?: 0
-                    val distance = record.metadata.dataOrigin?.let { 5.0 } ?: 0.0
+                    val distance = record.metadata.dataOrigin.let { 5.0 }
                     if (calories > 0) {
                         WorkoutRequest(
                             start_datetime = convertToTargetFormat(record.startTime.toString()),
                             end_datetime = convertToTargetFormat(record.endTime.toString()),
-                            source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName ,
+                            source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName,
                             record_type = "Workout",
                             workout_type = workoutType,
                             duration = ((record.endTime.toEpochMilli() - record.startTime.toEpochMilli()) / 1000 / 60).toString(),
@@ -1583,17 +1650,28 @@ class HomeNewActivity : BaseActivity() {
                     sleep_stage = sleepStage,
                     workout = workout
                 )
-                val response = com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient.apiServiceFastApi.storeHealthData(request)
+                val response =
+                    com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient.apiServiceFastApi.storeHealthData(
+                        request
+                    )
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
                         val todaysTime = Instant.now()
-                        val syncTime = ZonedDateTime.parse(todaysTime.toString(), DateTimeFormatter.ISO_DATE_TIME)
-                        SharedPreferenceManager.getInstance(this@HomeNewActivity).saveMoveRightSyncTime(syncTime.toString())
+                        val syncTime = ZonedDateTime.parse(
+                            todaysTime.toString(),
+                            DateTimeFormatter.ISO_DATE_TIME
+                        )
+                        SharedPreferenceManager.getInstance(this@HomeNewActivity)
+                            .saveMoveRightSyncTime(syncTime.toString())
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(this@HomeNewActivity, "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@HomeNewActivity,
+                        "Exception: ${e.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
 
                 }
             }
@@ -1612,7 +1690,8 @@ class HomeNewActivity : BaseActivity() {
                             record_type = "ActiveEnergyBurned",
                             unit = "kcal",
                             value = record.energy.inKilocalories.toString(),
-                            source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName ?: "samsung"
+                            source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
+                                ?: "samsung"
                         )
                     } else null
                 } ?: emptyList()
@@ -1623,7 +1702,8 @@ class HomeNewActivity : BaseActivity() {
                         record_type = "BasalMetabolic",
                         unit = "power",
                         value = record.basalMetabolicRate.toString(),
-                        source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName ?: "samsung"
+                        source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
+                            ?: "samsung"
                     )
                 } ?: emptyList()
                 val distanceWalkingRunning = distanceRecord?.mapNotNull { record ->
@@ -1634,7 +1714,8 @@ class HomeNewActivity : BaseActivity() {
                             record_type = "DistanceWalkingRunning",
                             unit = "km",
                             value = String.format("%.2f", record.distance.inKilometers),
-                            source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName ?: "samsung"
+                            source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
+                                ?: "samsung"
                         )
                     } else null
                 } ?: emptyList()
@@ -1646,7 +1727,8 @@ class HomeNewActivity : BaseActivity() {
                             record_type = "StepCount",
                             unit = "count",
                             value = record.count.toString(),
-                            source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName ?: "samsung"
+                            source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
+                                ?: "samsung"
                         )
                     } else null
                 } ?: emptyList()
@@ -1659,7 +1741,8 @@ class HomeNewActivity : BaseActivity() {
                                 record_type = "HeartRate",
                                 unit = "bpm",
                                 value = sample.beatsPerMinute.toInt().toString(),
-                                source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName ?: "samsung"
+                                source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
+                                    ?: "samsung"
                             )
                         } else null
                     }
@@ -1671,7 +1754,8 @@ class HomeNewActivity : BaseActivity() {
                         record_type = "HeartRateVariability",
                         unit = "double",
                         value = record.heartRateVariabilityMillis.toString(),
-                        source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName ?: "samsung"
+                        source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
+                            ?: "samsung"
                     )
                 } ?: emptyList()
                 val restingHeartRate = restingHeartRecord?.map { record ->
@@ -1681,7 +1765,8 @@ class HomeNewActivity : BaseActivity() {
                         record_type = "RestingHeartRate",
                         unit = "bpm",
                         value = record.beatsPerMinute.toString(),
-                        source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName ?: "samsung"
+                        source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
+                            ?: "samsung"
                     )
                 } ?: emptyList()
                 val respiratoryRate = respiratoryRateRecord?.mapNotNull { record ->
@@ -1692,7 +1777,8 @@ class HomeNewActivity : BaseActivity() {
                             record_type = "RespiratoryRate",
                             unit = "breaths/min",
                             value = String.format("%.1f", record.rate),
-                            source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName ?: "samsung"
+                            source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
+                                ?: "samsung"
                         )
                     } else null
                 } ?: emptyList()
@@ -1704,7 +1790,8 @@ class HomeNewActivity : BaseActivity() {
                             record_type = "OxygenSaturation",
                             unit = "%",
                             value = String.format("%.1f", record.percentage.value),
-                            source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName ?: "samsung"
+                            source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
+                                ?: "samsung"
                         )
                     } else null
                 } ?: emptyList()
@@ -1715,7 +1802,8 @@ class HomeNewActivity : BaseActivity() {
                         record_type = "BloodPressureSystolic",
                         unit = "millimeterOfMercury",
                         value = record.systolic.inMillimetersOfMercury.toString(),
-                        source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName ?: "samsung"
+                        source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
+                            ?: "samsung"
                     )
                 } ?: emptyList()
                 val bloodPressureDiastolic = bloodPressureRecord?.mapNotNull { record ->
@@ -1725,7 +1813,8 @@ class HomeNewActivity : BaseActivity() {
                         record_type = "BloodPressureDiastolic",
                         unit = "millimeterOfMercury",
                         value = record.diastolic.inMillimetersOfMercury.toString(),
-                        source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName ?: "samsung"
+                        source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
+                            ?: "samsung"
                     )
                 } ?: emptyList()
                 val bodyMass = weightRecord?.mapNotNull { record ->
@@ -1736,7 +1825,8 @@ class HomeNewActivity : BaseActivity() {
                             record_type = "BodyMass",
                             unit = "kg",
                             value = String.format("%.1f", record.weight.inKilograms),
-                            source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName ?: "samsung"
+                            source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
+                                ?: "samsung"
                         )
                     } else null
                 } ?: emptyList()
@@ -1747,7 +1837,8 @@ class HomeNewActivity : BaseActivity() {
                         record_type = "BodyFat",
                         unit = "percentage",
                         value = String.format("%.1f", record.percentage),
-                        source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName ?: "samsung"
+                        source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
+                            ?: "samsung"
                     )
                 } ?: emptyList()
                 val sleepStage = sleepSessionRecord?.flatMap { record ->
@@ -1766,7 +1857,8 @@ class HomeNewActivity : BaseActivity() {
                                 record_type = it,
                                 unit = "sleep_stage",
                                 value = it,
-                                source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName ?: "samsung"
+                                source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
+                                    ?: "samsung"
                             )
                         }
                     }
@@ -1780,12 +1872,13 @@ class HomeNewActivity : BaseActivity() {
                     val calories = totalCaloriesBurnedRecord?.filter {
                         it.startTime >= record.startTime && it.endTime <= record.endTime
                     }?.sumOf { it.energy.inKilocalories.toInt() } ?: 0
-                    val distance = record.metadata.dataOrigin?.let { 5.0 } ?: 0.0
+                    val distance = record.metadata.dataOrigin.let { 5.0 }
                     if (calories > 0) {
                         WorkoutRequest(
                             start_datetime = convertToSamsungFormat(record.startTime.toString()),
                             end_datetime = convertToSamsungFormat(record.endTime.toString()),
-                            source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName ?: "samsung",
+                            source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
+                                ?: "samsung",
                             record_type = "Workout",
                             workout_type = workoutType,
                             duration = ((record.endTime.toEpochMilli() - record.startTime.toEpochMilli()) / 1000 / 60).toString(),
@@ -1816,17 +1909,28 @@ class HomeNewActivity : BaseActivity() {
                     sleep_stage = sleepStage,
                     workout = workout
                 )
-                val response = com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient.apiServiceFastApi.storeHealthData(request)
+                val response =
+                    com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient.apiServiceFastApi.storeHealthData(
+                        request
+                    )
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
                         val todaysTime = Instant.now()
-                        val syncTime = ZonedDateTime.parse(todaysTime.toString(), DateTimeFormatter.ISO_DATE_TIME)
-                        SharedPreferenceManager.getInstance(this@HomeNewActivity).saveMoveRightSyncTime(syncTime.toString())
+                        val syncTime = ZonedDateTime.parse(
+                            todaysTime.toString(),
+                            DateTimeFormatter.ISO_DATE_TIME
+                        )
+                        SharedPreferenceManager.getInstance(this@HomeNewActivity)
+                            .saveMoveRightSyncTime(syncTime.toString())
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(this@HomeNewActivity, "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@HomeNewActivity,
+                        "Exception: ${e.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
@@ -1855,8 +1959,10 @@ class HomeNewActivity : BaseActivity() {
                 val seconds = nanos / 1_000_000_000
                 val nanoAdjustment = (nanos % 1_000_000_000).toInt()
                 val instant = Instant.ofEpochSecond(seconds, nanoAdjustment.toLong())
-                val targetFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZone(
-                    ZoneOffset.UTC)
+                val targetFormatter =
+                    DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZone(
+                        ZoneOffset.UTC
+                    )
                 targetFormatter.format(instant)
             } catch (e: Exception) {
                 ""
@@ -1912,7 +2018,8 @@ class HomeNewActivity : BaseActivity() {
                 val seconds = nanos / 1_000_000_000
                 val nanoAdjustment = (nanos % 1_000_000_000).toInt()
                 val instant = Instant.ofEpochSecond(seconds, nanoAdjustment.toLong())
-                val targetFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZone(ZoneOffset.UTC)
+                val targetFormatter =
+                    DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZone(ZoneOffset.UTC)
                 return targetFormatter.format(instant)
             } catch (e: Exception) {
                 ""
@@ -1925,7 +2032,8 @@ class HomeNewActivity : BaseActivity() {
                 val formatter = DateTimeFormatter.ofPattern(pattern).withZone(ZoneOffset.UTC)
                 val temporal = formatter.parse(input)
                 val instant = Instant.from(temporal)
-                val targetFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZone(ZoneOffset.UTC)
+                val targetFormatter =
+                    DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZone(ZoneOffset.UTC)
                 return targetFormatter.format(instant)
             } catch (e: DateTimeParseException) {
                 // Try next format

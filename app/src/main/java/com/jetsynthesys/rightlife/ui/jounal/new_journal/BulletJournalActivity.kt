@@ -20,6 +20,7 @@ class BulletJournalActivity : BaseActivity() {
     private var previousText = ""
     private var hasStarted = false
     private var startDate = ""
+    private var isFromThinkRight = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +33,7 @@ class BulletJournalActivity : BaseActivity() {
         journalItem = intent.getSerializableExtra("Section") as? JournalItem
         journalEntry = intent.getSerializableExtra("JournalEntry") as? JournalEntry
         startDate = intent.getStringExtra("StartDate").toString()
+        isFromThinkRight = intent.getBooleanExtra("FROM_THINK_RIGHT", false)
         if (startDate.isEmpty())
             startDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
 
@@ -129,7 +131,8 @@ class BulletJournalActivity : BaseActivity() {
                     putExtra("Section", journalItem)
                     putExtra("Answer", binding.etJournalEntry.text.toString())
                     putExtra("JournalEntry", journalEntry)
-                    intent.putExtra("StartDate", startDate)
+                    putExtra("StartDate", startDate)
+                    putExtra("FROM_THINK_RIGHT", isFromThinkRight)
                 }
             startActivity(intent)
 
