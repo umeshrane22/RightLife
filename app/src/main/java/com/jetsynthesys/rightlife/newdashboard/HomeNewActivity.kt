@@ -408,16 +408,10 @@ class HomeNewActivity : BaseActivity() {
             }
             includedhomebottomsheet.llMealplan.setOnClickListener {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_SNAP_MEAL_CLICK)
-                startActivity(Intent(this@HomeNewActivity, MainAIActivity::class.java).apply {
-                    putExtra("ModuleName", "EatRight")
-                    putExtra("BottomSeatName", "SnapMealTypeEat")
-                    if (sharedPreferenceManager.snapMealId.isNotEmpty()) {
-                        intent.putExtra(
-                            "snapMealId",
-                            sharedPreferenceManager.snapMealId
-                        ) // make sure snapMealId is declared and initialized
-                    }
-                })
+                ActivityUtils.startEatRightReportsActivity(
+                    this@HomeNewActivity,
+                    "SnapMealTypeEat",
+                    sharedPreferenceManager.snapMealId.ifEmpty { "" })
             }
 
         }

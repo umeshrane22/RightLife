@@ -498,7 +498,6 @@ class HomeDashboardFragment : BaseFragment() {
             sharedPreferenceManager.saveSnapMealId(snapMealId)
             this.snapMealId = snapMealId
         }
-
     }
 
     private fun setStatusOfChecklist(
@@ -625,6 +624,9 @@ class HomeDashboardFragment : BaseFragment() {
                                         View.VISIBLE
                                     binding.llDiscoverLayout.visibility = View.VISIBLE
                                 }
+                                (requireActivity() as? HomeNewActivity)?.showSubsribeLayout(
+                                    DashboardChecklistManager.paymentStatus
+                                )
                                 (requireActivity() as? HomeNewActivity)?.showSubsribeLayout(DashboardChecklistManager.paymentStatus)
                                 (requireActivity() as? HomeNewActivity)?.getUserDetails()
                             } else {
