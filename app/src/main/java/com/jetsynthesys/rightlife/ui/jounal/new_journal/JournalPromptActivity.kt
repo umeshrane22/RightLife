@@ -33,6 +33,7 @@ class JournalPromptActivity : BaseActivity() {
     private var questions4: ArrayList<Question> = ArrayList()
     private var sectionList: ArrayList<Section> = ArrayList()
     private var startDate = ""
+    private var isFromThinkRight = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,6 +45,7 @@ class JournalPromptActivity : BaseActivity() {
 
         val journalItem: JournalItem = intent.getSerializableExtra("Section") as JournalItem
         startDate = intent.getStringExtra("StartDate").toString()
+        isFromThinkRight = intent.getBooleanExtra("FROM_THINK_RIGHT", false)
         if (startDate.isEmpty())
             startDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
 
@@ -84,7 +86,8 @@ class JournalPromptActivity : BaseActivity() {
                         putExtra("Answer", question.question)
                         putExtra("QuestionList", questionsList)
                         putExtra("Position", questionsList.indexOf(question))
-                        intent.putExtra("StartDate", startDate)
+                        putExtra("StartDate", startDate)
+                        putExtra("FROM_THINK_RIGHT", isFromThinkRight)
                     }
                 startActivity(intent)
             }
