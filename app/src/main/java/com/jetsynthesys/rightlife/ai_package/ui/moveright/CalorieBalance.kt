@@ -2,6 +2,7 @@ package com.jetsynthesys.rightlife.ai_package.ui.moveright
 
 
 import android.content.Context
+import android.content.res.Resources
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.DashPathEffect
@@ -22,6 +23,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.cardview.widget.CardView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.github.mikephil.charting.charts.BarChart
@@ -79,6 +81,7 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
     private var selectedHalfYearlyDate: String = ""
     private lateinit var selectedDate: TextView
     private lateinit var selectedItemDate: TextView
+    private lateinit var dottedLine: View
     private lateinit var selectHeartRateLayout: CardView
     private lateinit var selectedCalorieTv: TextView
     private lateinit var averageBurnCalorie: TextView
@@ -105,6 +108,7 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
         barChart = view.findViewById(R.id.heartRateChart)
         dottedLineView = view.findViewById(R.id.dottedLineView)
         radioGroup = view.findViewById(R.id.tabGroup)
+        dottedLine = view.findViewById(R.id.dottedLineView1)
         backwardImage = view.findViewById(R.id.backwardImage)
         forwardImage = view.findViewById(R.id.forwardImage)
         selectedDate = view.findViewById(R.id.selectedDate)
@@ -422,7 +426,40 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
                         selectedItemDate.text = labelsDate[x]
                         selectedCalorieTv.text = y.toInt().toString()
                         // Draw vertical dotted line using custom canvas drawing
-                        drawVerticalDottedLine(h?.x ?: 0f)
+                       // drawVerticalDottedLine(h?.x ?: 0f)
+                        val pos = FloatArray(2)
+                        pos[0] = h.x
+                        pos[1] = 0f
+
+                        // Convert chart value to pixel position
+                        barChart.getTransformer(YAxis.AxisDependency.LEFT).pointValuesToPixel(pos)
+
+                        // Ensure chart is drawn before setting position
+                        barChart.post {
+                            dottedLine.visibility = View.VISIBLE
+
+                            // Use translationX to move the line smoothly
+                            dottedLine.translationX = pos[0]
+                           // selectHeartRateLayout.translationX = pos[0] - 450
+                        }
+                        val barX = h.xPx
+                        val chartWidth = barChart.width.toFloat()
+                        val cardWidth = selectHeartRateLayout.width.toFloat()
+                        val targetX = barX - (cardWidth / 2f)
+
+                        val margin = 10 * Resources.getSystem().displayMetrics.density
+                        val clampedX = max(margin, min(targetX, chartWidth - cardWidth - margin))
+
+                        selectHeartRateLayout.x = clampedX
+
+                        // Wait for layout to be drawn before getting positions
+                        /*selectHeartRateLayout.post {
+                            val cardX = clampedX + cardWidth / 2f
+                            val cardY = selectHeartRateLayout.y + selectHeartRateLayout.height
+
+                            val barY = h.yPx
+                        }*/
+
                     } else {
                         Log.e("ChartClick", "Index $x out of bounds for labelsDate size ${labelsDate.size}")
                         selectHeartRateLayout.visibility = View.INVISIBLE
@@ -433,6 +470,7 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
                 Log.d("ChartClick", "Nothing selected")
                 selectHeartRateLayout.visibility = View.INVISIBLE
                 removeVerticalDottedLine()
+                dottedLine.visibility = View.GONE
             }
         })
         barChart.animateY(1000)
