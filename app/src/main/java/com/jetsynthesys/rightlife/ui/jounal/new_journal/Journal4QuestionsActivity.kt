@@ -16,6 +16,7 @@ import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.PopupWindow
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -56,6 +57,7 @@ class Journal4QuestionsActivity : BaseActivity() {
     private var selectedTags: ArrayList<String> = ArrayList()
     private var journalEntry: JournalEntry? = JournalEntry()
     private var startDate = ""
+    var isFromThinkRight: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,6 +68,7 @@ class Journal4QuestionsActivity : BaseActivity() {
 
         journalItem = intent.getSerializableExtra("Section") as? JournalItem
         startDate = intent.getStringExtra("StartDate").toString()
+        isFromThinkRight = intent.getBooleanExtra("FROM_THINK_RIGHT", false)
         if (startDate.isEmpty())
             startDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
 
@@ -75,8 +78,13 @@ class Journal4QuestionsActivity : BaseActivity() {
 
         //back button
         binding.btnBack.setOnClickListener {
-            onBackPressedDispatcher.onBackPressed()
+            closeActivity()
         }
+
+        onBackPressedDispatcher.addCallback {
+            closeActivity()
+        }
+
         binding.tvEntryDate.text = DateTimeUtils.formatCurrentDate()
         binding.tvEntryText.text = answer
 
@@ -662,13 +670,13 @@ class Journal4QuestionsActivity : BaseActivity() {
                         response.message(),
                         Toast.LENGTH_SHORT
                     ).show()
-                   /* AnalyticsLogger.logEvent(
-                        this@Journal4QuestionsActivity, AnalyticsEvent.JOURNAL_ENTRY_CREATED,
-                        mapOf(
-                            AnalyticsParam.JOURNAL_TYPE to journalItem?.title!!,
-                            AnalyticsParam.JOURNAL_ID to journalItem?.id!!
-                        )
-                    )*/
+                    /* AnalyticsLogger.logEvent(
+                         this@Journal4QuestionsActivity, AnalyticsEvent.JOURNAL_ENTRY_CREATED,
+                         mapOf(
+                             AnalyticsParam.JOURNAL_TYPE to journalItem?.title!!,
+                             AnalyticsParam.JOURNAL_ID to journalItem?.id!!
+                         )
+                     )*/
                     val journalType = journalItem?.title
                     val journalId = journalEntry?.id
 
@@ -680,7 +688,7 @@ class Journal4QuestionsActivity : BaseActivity() {
                                 AnalyticsParam.JOURNAL_ID to journalId
                             )
                         )
-                    }else {
+                    } else {
                         AnalyticsLogger.logEvent(
                             this@Journal4QuestionsActivity, AnalyticsEvent.JOURNAL_ENTRY_CREATED,
                             mapOf(
@@ -752,6 +760,7 @@ class Journal4QuestionsActivity : BaseActivity() {
             ).apply {
                 flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
                 putExtra("start_journal", true)
+                putExtra("FROM_THINK_RIGHT", isFromThinkRight)
             })
     }
 

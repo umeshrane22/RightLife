@@ -20,6 +20,7 @@ class GriefJournalActivity : BaseActivity() {
     private var questionsList: ArrayList<Question>? = ArrayList()
     private var position: Int = 0
     private var startDate = ""
+    var isFromThinkRight: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +33,7 @@ class GriefJournalActivity : BaseActivity() {
         questionsList = intent.getSerializableExtra("QuestionList") as? ArrayList<Question>
         position = intent.getIntExtra("Position", 0)
         startDate = intent.getStringExtra("StartDate").toString()
+        isFromThinkRight = intent.getBooleanExtra("FROM_THINK_RIGHT", false)
         if (startDate.isEmpty())
             startDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
 
@@ -107,6 +109,7 @@ class GriefJournalActivity : BaseActivity() {
                 Intent(this@GriefJournalActivity, Journal4QuestionsActivity::class.java).apply {
                     putExtra("Section", journalItem)
                     putExtra("Answer", binding.etJournalEntry.text.toString())
+                    putExtra("FROM_THINK_RIGHT", isFromThinkRight)
                     if (journalEntry != null)
                         putExtra("QuestionId", journalEntry?.questionId)
                     else
