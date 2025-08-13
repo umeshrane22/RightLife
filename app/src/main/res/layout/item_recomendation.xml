@@ -109,17 +109,65 @@
 
         </LinearLayout>
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/authorText"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="AshmithaVishnu   |   30"
-        android:textSize="12sp"
-        android:layout_marginStart="15dp"
-        android:textColor="@color/black"
-        android:paddingTop="1dp"
-        android:paddingBottom="3dp"/>
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/authorText"
+            android:layout_width="110dp"
+            android:layout_height="wrap_content"
+            android:text="AshmithaVishnu   |   30"
+            android:textSize="11sp"
+            android:layout_marginStart="15dp"
+            android:textColor="@color/black"
+            android:paddingTop="1dp"
+            android:paddingBottom="3dp"/>
+        <TextView
+            android:id="@+id/authorText1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="|"
+            android:textSize="12sp"
+            android:layout_marginStart="10dp"
+            android:textColor="@color/light_grey"
+            android:paddingTop="1dp"
+            android:paddingBottom="3dp"/>
+        <TextView
+            android:id="@+id/authorText2"
+            android:layout_width="85dp"
+            android:layout_height="wrap_content"
+            android:text="ghh"
+            android:paddingStart="12dp"
+            android:textSize="10sp"
+            android:layout_marginStart="5dp"
+            android:textColor="@color/light_grey"
+            android:paddingTop="1dp"
+            android:paddingBottom="3dp"/>
+        <TextView
+            android:id="@+id/authorText3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="|"
+            android:textSize="12sp"
+            android:layout_marginStart="5dp"
+            android:textColor="@color/light_grey"
+            android:paddingTop="1dp"
+            android:paddingBottom="3dp"/>
+        <TextView
+            android:id="@+id/authorText4"
+            android:layout_width="90dp"
+            android:layout_height="wrap_content"
+            android:text="fhf"
+            android:textSize="10sp"
+            android:paddingStart="5dp"
+            android:layout_marginStart="5dp"
+            android:textColor="@color/light_grey"
+            android:paddingTop="1dp"
+            android:paddingBottom="3dp"/>
+    </LinearLayout>
+
+
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"

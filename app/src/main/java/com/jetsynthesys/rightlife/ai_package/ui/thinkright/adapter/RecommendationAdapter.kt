@@ -33,7 +33,9 @@ class RecommendationAdapter(val context: Context,private val items: ArrayList<Co
     inner class RecommendationViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val title: TextView = view.findViewById(R.id.titleText)
         val tag: TextView = view.findViewById(R.id.topicTag2)
-        val author: TextView = view.findViewById(R.id.authorText)
+        val author: TextView = view.findViewById(R.id.authorText2)
+        val author2: TextView = view.findViewById(R.id.authorText)
+        val author4: TextView = view.findViewById(R.id.authorText4)
         val image: ImageView = view.findViewById(R.id.thumbnailImage)
         val overlay: ImageView = view.findViewById(R.id.overlayIcon)
         val viewLine: View = view.findViewById(R.id.view_line)
@@ -69,7 +71,7 @@ class RecommendationAdapter(val context: Context,private val items: ArrayList<Co
         spannableBuilder.append(categorySpan)
 
         // Part 2: formattedDate and duration (12sp, dark grey, medium)
-        val duration = item.meta?.duration ?: ""
+        var duration =  ""
         val dateDurationSpan = SpannableString("$formattedDate  |  $duration")
 
 // Set 12sp size for entire span
@@ -109,8 +111,31 @@ class RecommendationAdapter(val context: Context,private val items: ArrayList<Co
 
         spannableBuilder.append(dateDurationSpan)
 
+
+        if (item.contentType.equals("SERIES")){
+            duration = item.episodeCount.toString() + " ep"
+        }else{
+            duration = item.meta?.duration.toString()
+        }
+        when (item.contentType) {
+            "SERIES" -> {
+                duration=  "${item.episodeCount ?: 0} ep"
+            }
+
+            "TEXT" -> {
+                duration = "${item.readingTime ?: ""} min read"
+            }
+
+            else -> {
+
+                duration = item.meta?.duration?.let { formattedDuration(it) }.toString()
+            }
+        }
+
         // Set to TextView
-        holder.author.text = spannableBuilder
+        holder.author.text = formattedDate
+        holder.author2.text = categoryName
+        holder.author4.text = duration
 
 
         Glide.with(context)
@@ -173,7 +198,12 @@ class RecommendationAdapter(val context: Context,private val items: ArrayList<Co
     }
 
     override fun getItemCount(): Int = items.size
-
+    fun formattedDuration(duration:Int): String {
+        val totalSeconds = duration ?: 0
+        val minutes = totalSeconds / 60
+        val seconds = totalSeconds % 60
+        return String.format("%02d:%02d", minutes, seconds)
+    }
     fun convertIsoToCustomDate(isoDateString: String): String {
         // Parse ISO 8601 string to LocalDateTime (assuming UTC/Z)
         val formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
