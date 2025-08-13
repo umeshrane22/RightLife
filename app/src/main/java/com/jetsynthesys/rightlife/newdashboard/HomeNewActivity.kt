@@ -504,11 +504,17 @@ class HomeNewActivity : BaseActivity() {
             startActivity(Intent(this, ProfileSettingsActivity::class.java))
         } else if (intent.getBooleanExtra("finish_MindAudit", false)) {
             if (intent.getBooleanExtra("FROM_THINK_RIGHT", false)) {
-                startActivity(Intent(this, MainAIActivity::class.java))
+                startActivity(Intent(this, MainAIActivity::class.java).apply {
+                    putExtra("ModuleName", "ThinkRight")
+                    putExtra("BottomSeatName", "Not")
+                })
             }
         } else if (intent.getBooleanExtra("finish_Journal", false)) {
             if (intent.getBooleanExtra("FROM_THINK_RIGHT", false)) {
-                startActivity(Intent(this, MainAIActivity::class.java))
+                startActivity(Intent(this, MainAIActivity::class.java).apply {
+                    putExtra("ModuleName", "ThinkRight")
+                    putExtra("BottomSeatName", "Not")
+                })
             }
         }
     }

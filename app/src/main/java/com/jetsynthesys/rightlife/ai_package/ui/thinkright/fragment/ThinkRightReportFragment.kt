@@ -78,6 +78,7 @@ import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
 import com.jetsynthesys.rightlife.databinding.FragmentThinkRightLandingBinding
 import com.jetsynthesys.rightlife.ui.ActivityUtils
 import com.jetsynthesys.rightlife.ui.affirmation.PractiseAffirmationPlaylistActivity
+import com.jetsynthesys.rightlife.ui.affirmation.TodaysAffirmationActivity
 import com.jetsynthesys.rightlife.ui.aireport.AIReportWebViewActivity
 import com.jetsynthesys.rightlife.ui.breathwork.BreathworkActivity
 import com.jetsynthesys.rightlife.ui.breathwork.BreathworkSessionActivity
@@ -326,10 +327,10 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
             ActivityUtils.startMindAuditActivity(requireContext(), true)
         }
         view.findViewById<LinearLayout>(R.id.lyt_journaling).setOnClickListener {
-            ActivityUtils.startJournalListActivity(requireContext())
+            ActivityUtils.startJournalListActivity(requireContext(), true)
         }
         view.findViewById<LinearLayout>(R.id.lyt_add_new).setOnClickListener {
-            ActivityUtils.startJournalNewActivity(requireContext())
+            ActivityUtils.startJournalNewActivity(requireContext(), true)
         }
         view.findViewById<LinearLayout>(R.id.lyt_breathing).setOnClickListener {
             ActivityUtils.startBreathWorkActivity(requireContext())
@@ -1209,7 +1210,9 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         if (toolsData.moduleName.contentEquals("Breathwork")) {
             ActivityUtils.startBreathWorkActivity(requireContext())
         } else if (toolsData.moduleName.contentEquals("Journalling")) {
-            ActivityUtils.startJournalNewActivity(requireContext())
+            startActivity(Intent(requireContext(), JournalNewActivity::class.java).apply {
+                putExtra("FROM_THINK_RIGHT", true)
+            })
         } else if (toolsData.moduleName.contentEquals("Affirmation")) {
             ActivityUtils.startTodaysAffirmationActivity(requireContext())
         }

@@ -46,7 +46,9 @@ object ActivityUtils {
                 }
             )
         } else {
-            context.startActivity(Intent(context, MindAuditActivity::class.java))
+            context.startActivity(Intent(context, MindAuditActivity::class.java).apply {
+                putExtra("FROM_THINK_RIGHT", isFromThinkRight)
+            })
         }
     }
 
@@ -143,7 +145,7 @@ object ActivityUtils {
             context.startActivity(Intent(context, BreathworkActivity::class.java))
     }
 
-    fun startJournalListActivity(context: Context) {
+    fun startJournalListActivity(context: Context, isFromThinkRight: Boolean = false) {
         val sharedPreferenceManager = SharedPreferenceManager.getInstance(context)
 
         if (sharedPreferenceManager.getFirstTimeView(SharedPreferenceConstants.JOURNAL_CONTEXT_SCREEN)) {
@@ -152,13 +154,18 @@ object ActivityUtils {
                 Intent(
                     context,
                     JournalContextScreenActivity::class.java
-                )
+                ).apply { putExtra("FROM_THINK_RIGHT", isFromThinkRight) }
             )
         } else
-            context.startActivity(Intent(context, JournalListActivity::class.java))
+            context.startActivity(Intent(context, JournalListActivity::class.java).apply {
+                putExtra(
+                    "FROM_THINK_RIGHT",
+                    isFromThinkRight
+                )
+            })
     }
 
-    fun startJournalNewActivity(context: Context) {
+    fun startJournalNewActivity(context: Context, isFromThinkRight: Boolean = false) {
         val sharedPreferenceManager = SharedPreferenceManager.getInstance(context)
 
         if (sharedPreferenceManager.getFirstTimeView(SharedPreferenceConstants.JOURNAL_CONTEXT_SCREEN)) {
@@ -169,10 +176,13 @@ object ActivityUtils {
                     JournalContextScreenActivity::class.java
                 ).apply {
                     putExtra("IS_CREATE_JOURNAL", true)
+                    putExtra("FROM_THINK_RIGHT", isFromThinkRight)
                 }
             )
         } else
-            context.startActivity(Intent(context, JournalNewActivity::class.java))
+            context.startActivity(Intent(context, JournalNewActivity::class.java).apply {
+                putExtra("FROM_THINK_RIGHT", isFromThinkRight)
+            })
     }
 
     fun startFaceScanActivity(context: Context) {

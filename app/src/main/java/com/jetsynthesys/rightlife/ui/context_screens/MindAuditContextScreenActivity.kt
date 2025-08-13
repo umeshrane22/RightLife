@@ -24,8 +24,12 @@ class MindAuditContextScreenActivity : BaseActivity() {
             onBackPressedDispatcher.onBackPressed()
         }
 
+        val isFromThinkRight = intent.getBooleanExtra("FROM_THINK_RIGHT", false)
+
         binding.btnNext.setOnClickListener {
-            startActivity(Intent(this, MindAuditActivity::class.java))
+            startActivity(Intent(this, MindAuditActivity::class.java).apply {
+                putExtra("FROM_THINK_RIGHT", isFromThinkRight)
+            })
             finish()
         }
 

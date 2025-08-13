@@ -17,6 +17,7 @@ class JournalContextScreenActivity : BaseActivity() {
         setChildContentView(binding.root)
 
         val isCreateJournal = intent.getBooleanExtra("IS_CREATE_JOURNAL", false)
+        val isFromThinkRight = intent.getBooleanExtra("FROM_THINK_RIGHT", false)
 
         Glide.with(this)
             .asGif()
@@ -29,9 +30,19 @@ class JournalContextScreenActivity : BaseActivity() {
 
         binding.btnNext.setOnClickListener {
             val intent = if (isCreateJournal)
-                Intent(this, JournalNewActivity::class.java)
+                Intent(this, JournalNewActivity::class.java).apply {
+                    putExtra(
+                        "FROM_THINK_RIGHT",
+                        isFromThinkRight
+                    )
+                }
             else
-                Intent(this, JournalListActivity::class.java)
+                Intent(this, JournalListActivity::class.java).apply {
+                    putExtra(
+                        "FROM_THINK_RIGHT",
+                        isFromThinkRight
+                    )
+                }
             startActivity(intent)
             finish()
         }
