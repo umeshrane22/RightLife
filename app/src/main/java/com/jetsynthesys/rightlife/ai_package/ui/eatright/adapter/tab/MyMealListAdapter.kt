@@ -107,14 +107,14 @@ class MyMealListAdapter(private val context: Context, private var dataLists: Arr
             val dewpointValue: TextView = itemView.findViewById(R.id.tv_dewpoint_value)
 
             val data = item.dish
-//            if (data.isNotEmpty()){
-//                val mealNames  = data!!.map { it.name }
-//                val name = mealNames.joinToString(", ")
-//                val capitalized = name.replaceFirstChar { it.uppercase() }
-//                mealName.text = capitalized
-//            }else{
+            if (data.isNotEmpty()){
+                val mealNames  = data!!.map { it.name }
+                val name = mealNames.joinToString(", ")
+                val capitalized = name.replaceFirstChar { it.uppercase() }
+                mealName.text = capitalized
+            }else{
                 mealName.text = item.meal_name
- //           }
+            }
             mealTitle.text = item.meal_name
             servesCount.text = item.total_servings.toString()
             calValue.text = item.total_calories.toInt().toString()
@@ -150,14 +150,14 @@ class MyMealListAdapter(private val context: Context, private var dataLists: Arr
             val dewpointValue: TextView = itemView.findViewById(R.id.tv_dewpoint_value)
 
             val data = item.receipe_data
-//            if (data.isNotEmpty()){
-//                val mealNames  = data!!.map { it.receipe.recipe_name }
-//                val name = mealNames.joinToString(", ")
-//                val capitalized = name.replaceFirstChar { it.uppercase() }
-//                mealName.text = capitalized
-//            }else{
+            if (data.isNotEmpty()){
+                val mealNames  = data!!.map { it.receipe.recipe_name }
+                val name = mealNames.joinToString(", ")
+                val capitalized = name.replaceFirstChar { it.uppercase() }
+                mealName.text = capitalized
+            }else{
                 mealName.text = item.meal_name
-//            }
+            }
             mealTitle.text = item.meal_name
             servesCount.text = item.total_servings.toString()
             calValue.text = item.total_calories.toInt().toString()

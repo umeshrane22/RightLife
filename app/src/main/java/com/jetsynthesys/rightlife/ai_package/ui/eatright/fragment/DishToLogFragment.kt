@@ -317,6 +317,7 @@ class DishToLogFragment : BaseFragment<FragmentDishBinding>() {
                     if (snapDishLocalListModel?.data != null){
                         val fragment = HomeTabMealFragment()
                         val args = Bundle()
+                        args.putString("mealQuantity", quantityEdit.text.toString())
                         args.putString("ModuleName", moduleName)
                         args.putString("searchType","DishToLog")
                         args.putString("mealType", mealType)

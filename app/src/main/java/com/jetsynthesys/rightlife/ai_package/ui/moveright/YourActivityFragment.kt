@@ -87,6 +87,8 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
     private var isTooltipShown = false
     private var lastDayOfCurrentWeek : String = ""
     private var selectedDate: String? = null
+    private var isTodayDate : Boolean = false
+    private var currentWeekStartItem: LocalDate = LocalDate.now().with(DayOfWeek.MONDAY)
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentYourActivityBinding
         get() = FragmentYourActivityBinding::inflate
@@ -210,7 +212,11 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                 workoutWeeklyDayList = getWeekFrom(currentWeekStart)
                 lastDayOfCurrentWeek = workoutWeeklyDayList.get(workoutWeeklyDayList.size - 1).fullDate.toString()
                 workoutDateTv.text = currentWeekStart.format(formatFullDate)
-                selectedDate = currentWeekStart.toString()
+                if (currentWeekStart == currentWeekStartItem){
+                    selectedDate = formattedDate
+                }else{
+                    selectedDate = currentWeekStart.toString()
+                }
                 getWorkoutLogHistory(currentWeekStart.toString())
                 onWorkoutLogWeeklyDayList(workoutWeeklyDayList, workoutLogHistory)
                 nextWeekBtn.setImageResource(R.drawable.forward_activity)
@@ -617,7 +623,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
 
     private fun onWorkoutLogWeeklyDayList(weekList: List<WorkoutWeeklyDayModel>, workoutLogHistory: ArrayList<WorkoutRecord>) {
 
-            val today = LocalDate.parse(selectedDate)
+            val selectedDateItem = LocalDate.parse(selectedDate)
             val weekLists: ArrayList<WorkoutWeeklyDayModel> = ArrayList()
             if (workoutLogHistory.size > 0 && weekList.isNotEmpty()) {
                 workoutLogHistory.forEach { workoutLog ->
@@ -634,15 +640,12 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
             }
 
             if (weekList.isNotEmpty()) {
-                val currentDateTime = LocalDateTime.now()
-                val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                val todayDate = currentDateTime.format(formatter)
                 weekLists.addAll(weekList as Collection<WorkoutWeeklyDayModel>)
                 var workoutLogDateData: WorkoutWeeklyDayModel? = null
                 var isClick = false
                 var index = -1
                 for (currentDay in weekLists) {
-                    if (currentDay.fullDate == today) {
+                    if (currentDay.fullDate == selectedDateItem) {
                         workoutLogDateData = currentDay
                         isClick = true
                         index = weekLists.indexOfFirst { it.fullDate == currentDay.fullDate }

@@ -1039,6 +1039,18 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                     val workoutType = when (record.exerciseType) {
                         ExerciseSessionRecord.EXERCISE_TYPE_RUNNING -> "Running"
                         ExerciseSessionRecord.EXERCISE_TYPE_WALKING -> "Walking"
+                        ExerciseSessionRecord.EXERCISE_TYPE_GYMNASTICS -> "Gym"
+                        ExerciseSessionRecord.EXERCISE_TYPE_OTHER_WORKOUT -> "Other Workout"
+                        ExerciseSessionRecord.EXERCISE_TYPE_BIKING -> "Biking"
+                        ExerciseSessionRecord.EXERCISE_TYPE_BIKING_STATIONARY -> "Biking Stationary"
+                        ExerciseSessionRecord.EXERCISE_TYPE_SWIMMING_POOL -> "Cycling"
+                        ExerciseSessionRecord.EXERCISE_TYPE_SWIMMING_OPEN_WATER -> "Swimming"
+                        ExerciseSessionRecord.EXERCISE_TYPE_STRENGTH_TRAINING -> "Strength Training"
+                        ExerciseSessionRecord.EXERCISE_TYPE_YOGA -> "Yoga"
+                        ExerciseSessionRecord.EXERCISE_TYPE_HIGH_INTENSITY_INTERVAL_TRAINING -> "HIIT"
+                        ExerciseSessionRecord.EXERCISE_TYPE_BADMINTON -> "Badminton"
+                        ExerciseSessionRecord.EXERCISE_TYPE_BASKETBALL -> "Basketball"
+                        ExerciseSessionRecord.EXERCISE_TYPE_BASEBALL -> "Baseball"
                         else -> "Other"
                     }
                     val calories = totalCaloriesBurnedRecord?.filter {

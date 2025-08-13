@@ -1,5 +1,6 @@
 package com.jetsynthesys.rightlife.ai_package.ui.moveright
 
+import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
@@ -52,6 +53,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.lang.Math.max
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -60,6 +62,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import kotlin.math.min
 
 class StepFragment : BaseFragment<FragmentStepBinding>() {
 
@@ -94,6 +97,7 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
     private var loadingOverlay : FrameLayout? = null
     private lateinit var customProgressPreviousWeek : BasicProgressBar
     private lateinit var customProgressBarFatBurn : SimpleProgressBar
+    private lateinit var dottedLine: View
     private var currentGoal = 0
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -126,6 +130,7 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         valuePreviousWeek = view.findViewById(R.id.value_previous_week)
         customProgressPreviousWeek = view.findViewById(R.id.customProgressPreviousWeek)
         customProgressBarFatBurn = view.findViewById(R.id.customProgressBarFatBurn)
+        dottedLine = view.findViewById(R.id.dottedLineView1)
 
         layout_btn_log_meal.setOnClickListener {
             val args = Bundle().apply {
@@ -466,13 +471,32 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
         barChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
             override fun onValueSelected(e: Entry?, h: Highlight?) {
                 selectHeartRateLayout.visibility = View.VISIBLE
-                if (e != null) {
+                if (e != null  && h != null) {
                     val x = e.x.toInt()
                     val y = e.y
                     Log.d("ChartClick", "Clicked X: $x, Steps: $y, LabelsDate size: ${labelsDate.size}")
                     if (x in 0 until labelsDate.size) {
                         selectedItemDate.text = labelsDate[x]
                         selectedCalorieTv.text = y.toInt().toString()
+                        val pos = FloatArray(2)
+                        pos[0] = h.x
+                        pos[1] = 0f
+                        // Convert chart value to pixel position
+                        barChart.getTransformer(YAxis.AxisDependency.LEFT).pointValuesToPixel(pos)
+                        // Ensure chart is drawn before setting position
+                        barChart.post {
+                            dottedLine.visibility = View.VISIBLE
+                            // Use translationX to move the line smoothly
+                            dottedLine.translationX = pos[0]
+                            // selectHeartRateLayout.translationX = pos[0] - 450
+                        }
+                        val barX = h.xPx
+                        val chartWidth = barChart.width.toFloat()
+                        val cardWidth = selectHeartRateLayout.width.toFloat()
+                        val targetX = barX - (cardWidth / 2f)
+                        val margin = 10 * Resources.getSystem().displayMetrics.density
+                        val clampedX = max(margin, min(targetX, chartWidth - cardWidth - margin))
+                        selectHeartRateLayout.x = clampedX
                     } else {
                         Log.e("ChartClick", "Index $x out of bounds for labelsDate size ${labelsDate.size}")
                         selectHeartRateLayout.visibility = View.INVISIBLE
@@ -483,6 +507,7 @@ class StepFragment : BaseFragment<FragmentStepBinding>() {
             override fun onNothingSelected() {
                 Log.d("ChartClick", "Nothing selected")
                 selectHeartRateLayout.visibility = View.INVISIBLE
+                dottedLine.visibility = View.GONE
             }
         })
 

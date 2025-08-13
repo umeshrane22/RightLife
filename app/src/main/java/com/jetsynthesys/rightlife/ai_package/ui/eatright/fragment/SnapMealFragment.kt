@@ -666,11 +666,7 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
         if (allPermissionsGranted()) {
             startCamera()
         } else {
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                REQUIRED_PERMISSIONS,
-                REQUEST_CODE_PERMISSIONS
-            )
+            ActivityCompat.requestPermissions(requireActivity(), REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
         }
 
         view.findViewById<ImageView>(R.id.closeButton)?.setOnClickListener {

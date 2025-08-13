@@ -374,15 +374,15 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
 
     private fun setRestorativeSleepData(restorativeSleepResponse: RestorativeSleepAllData?) {
         if (restorativeSleepResponse?.progress_detail?.progress_sign == "plus"){
-            percentageIcon.visibility = View.VISIBLE
+            percentageIcon.visibility = View.GONE
             percentageIcon.setImageResource(R.drawable.ic_up)
-            percentageText.visibility = View.VISIBLE
+            percentageText.visibility = View.GONE
             percentageText.text = " "+ restorativeSleepResponse?.progress_detail?.progress_percentage + " past week"
         }else{
-            percentageIcon.visibility = View.VISIBLE
-            percentageText.visibility = View.VISIBLE
+            percentageIcon.visibility = View.GONE
+            percentageText.visibility = View.GONE
             percentageIcon.setImageResource(R.drawable.ic_down)
-            percentageIcon.setBackgroundColor(resources.getColor(R.color.red))
+          //  percentageIcon.setBackgroundColor(resources.getColor(R.color.red))
             percentageText.text = " "+ restorativeSleepResponse?.progress_detail?.progress_percentage + " past week"
         }
         var totalRemDuration = 0.0
@@ -444,11 +444,22 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
         return round(this * factor) / factor
     }
 
-    private fun convertDecimalHoursToHrMinFormat(hoursDecimal: Double): String {
+    private fun convertDecimalHoursToHrMinFormat1(hoursDecimal: Double): String {
         val totalMinutes = (hoursDecimal * 60).toInt()
         val hours = totalMinutes / 60
         val minutes = totalMinutes % 60
         return String.format("%02dhr %02dmins", hours, minutes)
+    }
+    fun convertDecimalHoursToHrMinFormat(minutes: Double): String {
+        val totalMinutes = minutes.toInt()
+        val hours = totalMinutes / 60
+        val remainingMinutes = totalMinutes % 60
+
+        return when {
+            hours > 0 && remainingMinutes > 0 -> "${hours}h ${remainingMinutes}m"
+            hours > 0 -> "${hours}hr"
+            else -> "${remainingMinutes}min"
+        }
     }
 
     fun mapToSleepChartData(startDate: String, endDate: String, restorativeSleepDetails: List<RestorativeSleepData>): List<Pair<String, SleepStageDurations>> {

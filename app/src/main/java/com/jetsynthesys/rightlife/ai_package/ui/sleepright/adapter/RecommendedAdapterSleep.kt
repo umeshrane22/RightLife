@@ -38,6 +38,8 @@ class RecommendedAdapterSleep(val context: Context, private val items: ArrayList
         val tag: TextView = view.findViewById(R.id.topicTag2)
         val tag1: TextView = view.findViewById(R.id.topicTag)
         val author: TextView = view.findViewById(R.id.authorText)
+        val author2: TextView = view.findViewById(R.id.authorText2)
+        val author4: TextView = view.findViewById(R.id.authorText4)
         val image: ImageView = view.findViewById(R.id.thumbnailImage)
         val moduleNameImage: ImageView = view.findViewById(R.id.moduleNameImage)
         val image_recommended: ImageView = view.findViewById(R.id.image_recommended)
@@ -99,16 +101,16 @@ class RecommendedAdapterSleep(val context: Context, private val items: ArrayList
             }
         }
 
-        val dateDurationSpan = SpannableString("$formattedDate              |          $duration")
+       // val dateDurationSpan = SpannableString("$formattedDate              |          $duration")
 
 // Set 12sp size for entire span
-        dateDurationSpan.setSpan(RelativeSizeSpan(12f / 14f), 0, dateDurationSpan.length, 0)
+       // dateDurationSpan.setSpan(RelativeSizeSpan(12f / 14f), 0, dateDurationSpan.length, 0)
 
 // Set medium weight for entire span
-        dateDurationSpan.setSpan(StyleSpan(Typeface.NORMAL), 0, dateDurationSpan.length, 0) // Medium approximated as normal
+       // dateDurationSpan.setSpan(StyleSpan(Typeface.NORMAL), 0, dateDurationSpan.length, 0) // Medium approximated as normal
 
 // Set dark grey for formattedDate and duration (excluding "|")
-        val pipeIndex = formattedDate?.length // Index where " | " starts
+       /* val pipeIndex = formattedDate?.length // Index where " | " starts
         if (pipeIndex != null) {
             dateDurationSpan.setSpan(
                 ForegroundColorSpan(ContextCompat.getColor(holder.author.context, android.R.color.darker_gray)),
@@ -136,10 +138,12 @@ class RecommendedAdapterSleep(val context: Context, private val items: ArrayList
             )
         }
 
-        spannableBuilder.append(dateDurationSpan)
+        spannableBuilder.append(dateDurationSpan)*/
 
         // Set to TextView
-        holder.author.text = spannableBuilder
+        holder.author.text = categoryName.toString()
+        holder.author2.text = formattedDate.toString()
+        holder.author4.text = duration
         holder.itemView.setOnClickListener {
             if (item.contentType.equals("TEXT", ignoreCase = true)) {
                 context.startActivity(Intent(context, ArticlesDetailActivity::class.java).apply {

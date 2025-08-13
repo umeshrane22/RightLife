@@ -254,7 +254,14 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
             // Disable user interaction (disable dropdown)
             spinner.isEnabled = false
             spinner.isClickable = false
-        } else {
+        }else if (homeTab.equals("homeTab")){
+            saveMealLayout.visibility = View.VISIBLE
+            val defaultIndex = items.indexOf(formatMealTypeName(mealType))
+            if (defaultIndex != -1) {
+                spinner.setSelection(defaultIndex)
+                selectedMealType = items[defaultIndex]
+            }
+        }else {
             saveMealLayout.visibility = View.VISIBLE
         }
 
@@ -384,17 +391,17 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
                     commit()
                 }
             }else if (homeTab.equals("homeTab")){
-            val fragment = HomeTabMealFragment()
-            val args = Bundle()
+                val fragment = HomeTabMealFragment()
+                val args = Bundle()
                 args.putString("selectedMealDate", selectedMealDate)
-            args.putString("ModuleName", moduleName)
-            args.putString("mealType", mealType)
-            fragment.arguments = args
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                replace(R.id.flFragment, fragment, "landing")
-                addToBackStack("landing")
-                commit()
-            }
+                args.putString("ModuleName", moduleName)
+                args.putString("mealType", mealType)
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "landing")
+                    addToBackStack("landing")
+                    commit()
+                }
         } else{
                 startActivity(Intent(context, HomeNewActivity::class.java))
                 requireActivity().finish()
@@ -426,17 +433,17 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
                     commit()
                 }
             }else if (homeTab.equals("homeTab")){
-            val fragment = HomeTabMealFragment()
-            val args = Bundle()
-                args.putString("selectedMealDate", selectedMealDate)
-            args.putString("ModuleName", moduleName)
-            args.putString("mealType", mealType)
-            fragment.arguments = args
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                replace(R.id.flFragment, fragment, "landing")
-                addToBackStack("landing")
-                commit()
-            }
+                    val fragment = HomeTabMealFragment()
+                    val args = Bundle()
+                    args.putString("selectedMealDate", selectedMealDate)
+                    args.putString("ModuleName", moduleName)
+                    args.putString("mealType", mealType)
+                    fragment.arguments = args
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.flFragment, fragment, "landing")
+                        addToBackStack("landing")
+                        commit()
+                    }
         } else{
                 startActivity(Intent(context, HomeNewActivity::class.java))
                 requireActivity().finish()
@@ -1160,6 +1167,18 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
             else -> input.lowercase().replace(" ", "_")
         }
     }
+
+    private fun formatMealTypeName(meal: String): String {
+        return when (meal.lowercase()) {
+            "breakfast" -> "Breakfast"
+            "morning_snack" -> "Morning Snack"
+            "lunch" -> "Lunch"
+            "evening_snack" -> "Evening Snacks"
+            "dinner" -> "Dinner"
+            else -> meal.replaceFirstChar { it.uppercase() } // fallback
+        }
+    }
+
 
     private fun updateSnapMealsSave(snapRecipeList: ArrayList<SearchResultItem>) {
         if (isAdded && view != null) {

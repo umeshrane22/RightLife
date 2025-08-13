@@ -175,6 +175,12 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     private lateinit var tvBreathingTitle2: TextView
     private lateinit var tvBreathingDuration1: TextView
     private lateinit var tvBreathingDuration2: TextView
+    private lateinit var tvBreathingDuration3: TextView
+    private lateinit var tvBreathingDuration4: TextView
+    private lateinit var tvBreathingFormat1: TextView
+    private lateinit var tvBreathingFormat2: TextView
+    private lateinit var tvBreathingFormat3: TextView
+    private lateinit var tvBreathingFormat4: TextView
     private lateinit var lytBreathing1: ConstraintLayout
     private lateinit var lytBreathing2: ConstraintLayout
     private lateinit var emotionIcon: ImageView
@@ -211,6 +217,12 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         tvBreathingTitle2 = view.findViewById(R.id.tv_breathing_title2)
         tvBreathingDuration1 = view.findViewById(R.id.tv_breathing_duration1)
         tvBreathingDuration2 = view.findViewById(R.id.tv_breathing_duration2)
+        tvBreathingDuration3 = view.findViewById(R.id.tv_breathing_duration3)
+        tvBreathingDuration4 = view.findViewById(R.id.tv_breathing_duration4)
+        tvBreathingFormat1 = view.findViewById(R.id.tv_breathing_format1)
+        tvBreathingFormat2 = view.findViewById(R.id.tv_breathing_format2)
+        tvBreathingFormat3 = view.findViewById(R.id.tv_breathing_format3)
+        tvBreathingFormat4 = view.findViewById(R.id.tv_breathing_format4)
         tvJournalDesc = view.findViewById(R.id.tv_journaling_desc)
         tvJournalTime = view.findViewById(R.id.tv_journaling_time)
         affirmationCount = view.findViewById(R.id.tv_affirmation_count)
@@ -745,15 +757,21 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                         if (breathingResponse.data.size == 1) {
                             lytBreathing1.visibility = View.VISIBLE
                             lytBreathing2.visibility = View.GONE
-                            tvBreathingDuration1.text = breathingResponse.data.getOrNull(0)?.duration.toString()
-                            tvBreathingTitle1.text = breathingResponse.data.getOrNull(0)?.title.toString()
-                        } else if (breathingResponse.data.size == 2) {
+                            var duration1 = convertSecondsToHourMinPretty(breathingResponse.data.getOrNull(0)?.duration ?: 0)
+                            var format1 = duration1.split(" ")
+                            tvBreathingDuration1.setText(duration1)
+                            tvBreathingTitle1.setText(breathingResponse.data.getOrNull(0)?.title.toString())
+                        }else if (breathingResponse.data.size == 2){
                             lytBreathing1.visibility = View.VISIBLE
                             lytBreathing2.visibility = View.VISIBLE
-                            tvBreathingDuration1.text = breathingResponse.data.getOrNull(0)?.duration.toString()
-                            tvBreathingTitle1.text = breathingResponse.data.getOrNull(0)?.title.toString()
-                            tvBreathingTitle2.text = breathingResponse.data.getOrNull(1)?.title.toString()
-                            tvBreathingDuration2.text = breathingResponse.data.getOrNull(1)?.duration.toString()
+                            var duration1 = convertSecondsToHourMinPretty(breathingResponse.data.getOrNull(0)?.duration ?: 0)
+                            var format1 = duration1.split(" ")
+                            var duration2 = convertSecondsToHourMinPretty(breathingResponse.data.getOrNull(1)?.duration ?: 0)
+                            var format2 = duration2.split(" ")
+                            tvBreathingDuration1.setText(duration1)
+                            tvBreathingDuration3.setText(duration2)
+                            tvBreathingTitle1.setText(breathingResponse.data.getOrNull(0)?.title.toString())
+                            tvBreathingTitle2.setText(breathingResponse.data.getOrNull(1)?.title.toString())
                         }
 
                         lytBreathing1.setOnClickListener {
@@ -793,6 +811,24 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                 }
             }
         })
+    }
+
+    fun convertSecondsToHourMinPretty(seconds: Int): String {
+        return when {
+            seconds < 60 -> {
+                "${seconds}sec"
+            }
+            seconds < 3600 -> {
+                val minutes = seconds / 60
+                val remainingSeconds = seconds % 60
+                "${minutes}min ${remainingSeconds}sec"
+            }
+            else -> {
+                val hours = seconds / 3600
+                val minutes = (seconds % 3600) / 60
+                "${hours}hr ${minutes}min"
+            }
+        }
     }
 
     private fun navigateToBreathworkSession(breathingData: BreathingData) {
@@ -978,6 +1014,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     override fun onResume() {
         super.onResume()
         fetchAffirmationsList()
+        getBreathingData()
     }
 
     private fun fetchThinkRecomendedData() {

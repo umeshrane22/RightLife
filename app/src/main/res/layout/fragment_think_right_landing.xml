@@ -1112,7 +1112,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:visibility="gone"
+                    android:visibility="visible"
                     android:orientation="horizontal">
 
                     <TextView
@@ -1490,7 +1490,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:background="#FFFFFF"
-                        android:padding="16dp">
+                        android:padding="10dp">
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -1512,7 +1512,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:text="Breathing"
-                                android:textSize="16sp"
+                                android:textSize="13sp"
                                 android:textColor="@color/eatright_text_color"
                                 android:fontFamily="@font/dmsans_medium"
                                 android:layout_weight="1"
@@ -1576,7 +1576,7 @@
                                     app:layout_constraintStart_toStartOf="parent"
                                     android:text="Box Breathing"
                                     android:fontFamily="@font/dmsans_medium"
-                                    android:textSize="16sp"
+                                    android:textSize="13sp"
                                     android:textColor="@color/eatright_text_color" />
 
                                 <LinearLayout
@@ -1589,13 +1589,12 @@
                                     android:layout_marginStart="10dp"
                                     android:layout_marginEnd="10dp"
                                     android:orientation="horizontal">
-
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:id="@+id/tv_breathing_duration1"
-                                        android:text="20"
-                                        android:textSize="24sp"
+                                        android:text="13"
+                                        android:textSize="18sp"
                                         android:fontFamily="@font/dmsans_bold"
                                         android:layout_gravity="center"
                                         android:textColor="@color/eatright_text_color" />
@@ -1603,13 +1602,39 @@
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:text=" min"
-                                        android:layout_marginTop="5dp"
+                                        android:id="@+id/tv_breathing_format1"
+                                        android:text="min"
+                                        android:visibility="gone"
                                         android:textSize="13sp"
-                                        android:fontFamily="@font/dmsans_regular"
+                                        android:layout_marginTop="5dp"
+                                        android:fontFamily="@font/dmsans_bold"
                                         android:layout_gravity="center"
                                         android:textAlignment="center"
-                                        android:textColor="@color/active_text_color" />
+                                        android:textColor="@color/eatright_text_color" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:id="@+id/tv_breathing_duration2"
+                                        android:text="16"
+                                        android:visibility="gone"
+                                        android:textSize="18sp"
+                                        android:fontFamily="@font/dmsans_bold"
+                                        android:layout_gravity="center"
+                                        android:textColor="@color/eatright_text_color" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:id="@+id/tv_breathing_format2"
+                                        android:visibility="gone"
+                                        android:text="min"
+                                        android:textSize="13sp"
+                                        android:layout_marginTop="5dp"
+                                        android:fontFamily="@font/dmsans_bold"
+                                        android:layout_gravity="center"
+                                        android:textAlignment="center"
+                                        android:textColor="@color/eatright_text_color" />
                                 </LinearLayout>
                             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -1617,7 +1642,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:paddingBottom="10dp"
-                                android:layout_marginStart="10dp"
+                                android:layout_marginStart="5dp"
                                 android:background="@drawable/white_grey_meal_bg"
                                 android:layout_weight="5"
                                 android:id="@+id/lyt_breathing_2"
@@ -1672,9 +1697,9 @@
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:id="@+id/tv_breathing_duration2"
+                                        android:id="@+id/tv_breathing_duration3"
                                         android:text="15"
-                                        android:textSize="24sp"
+                                        android:textSize="18sp"
                                         android:fontFamily="@font/dmsans_bold"
                                         android:layout_gravity="center"
                                         android:textColor="@color/eatright_text_color" />
@@ -1682,13 +1707,38 @@
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
-                                        android:text=" min"
+                                        android:id="@+id/tv_breathing_format3"
+                                        android:text="min"
+                                        android:visibility="gone"
                                         android:textSize="13sp"
                                         android:layout_marginTop="5dp"
-                                        android:fontFamily="@font/dmsans_regular"
+                                        android:fontFamily="@font/dmsans_bold"
                                         android:layout_gravity="center"
                                         android:textAlignment="center"
-                                        android:textColor="@color/active_text_color" />
+                                        android:textColor="@color/eatright_text_color" />
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:id="@+id/tv_breathing_duration4"
+                                        android:text="15"
+                                        android:visibility="gone"
+                                        android:textSize="18sp"
+                                        android:fontFamily="@font/dmsans_bold"
+                                        android:layout_gravity="center"
+                                        android:textColor="@color/eatright_text_color" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:id="@+id/tv_breathing_format4"
+                                        android:text="min"
+                                        android:visibility="gone"
+                                        android:textSize="13sp"
+                                        android:layout_marginTop="5dp"
+                                        android:fontFamily="@font/dmsans_bold"
+                                        android:layout_gravity="center"
+                                        android:textAlignment="center"
+                                        android:textColor="@color/eatright_text_color" />
                                 </LinearLayout>
                             </androidx.constraintlayout.widget.ConstraintLayout>
                         </LinearLayout>
