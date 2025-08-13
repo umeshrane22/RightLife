@@ -5,6 +5,7 @@ import android.app.Dialog
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.app.ProgressDialog
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
@@ -46,6 +47,7 @@ import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.flexbox.FlexboxLayout
+import com.google.android.material.card.MaterialCardView
 import com.google.android.material.snackbar.Snackbar
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
@@ -922,6 +924,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
                 startActivity(Intent(requireContext(), JournalNewActivity::class.java).apply {
                     putExtra("IS_FROM_TOOLS", true)
                     putExtra("TOOLS_VALUE", toolsData._id)
+                    putExtra("FROM_THINK_RIGHT", true)
                 }
                 )
 
@@ -1175,11 +1178,13 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     private fun onToolsItem(toolsData: ToolGridData, position: Int, isRefresh: Boolean) {
 
         if (toolsData.moduleName.contentEquals("Breathwork")) {
-            ActivityUtils.startBreathWorkActivity(requireContext())
+            startActivity(Intent(requireContext(), BreathworkActivity::class.java))
         } else if (toolsData.moduleName.contentEquals("Journalling")) {
-            ActivityUtils.startJournalNewActivity(requireContext())
+            startActivity(Intent(requireContext(), JournalNewActivity::class.java).apply {
+                putExtra("FROM_THINK_RIGHT",true)
+            })
         } else if (toolsData.moduleName.contentEquals("Affirmation")) {
-            ActivityUtils.startTodaysAffirmationActivity(requireContext())
+            startActivity(Intent(requireContext(), TodaysAffirmationActivity::class.java))
         }
     }
 

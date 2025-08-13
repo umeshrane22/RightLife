@@ -15,6 +15,7 @@ import java.time.format.DateTimeFormatter
 
 class FreeFormJournalActivity : BaseActivity() {
 
+    private var isFromThinkRight = false
     private lateinit var binding: ActivityFreeformBinding
     private var journalItem: JournalItem? = JournalItem()
     private var journalEntry: JournalEntry? = JournalEntry()
@@ -29,6 +30,7 @@ class FreeFormJournalActivity : BaseActivity() {
         binding.tvGreeting.text = "Hello $name,\nWhat’s on your mind?"
 
         journalEntry = intent.getSerializableExtra("JournalEntry") as? JournalEntry
+        isFromThinkRight = intent.getBooleanExtra("FROM_THINK_RIGHT", false)
 
         journalItem = intent.getSerializableExtra("Section") as? JournalItem
         startDate = intent.getStringExtra("StartDate").toString()
@@ -93,7 +95,8 @@ class FreeFormJournalActivity : BaseActivity() {
                     putExtra("Answer", binding.etJournalEntry.text.toString())
                     putExtra("JournalEntry", journalEntry)
                     putExtra("StartDate",startDate)
-                    intent.putExtra("StartDate", startDate)
+                    putExtra("StartDate", startDate)
+                    putExtra("FROM_THINK_RIGHT", isFromThinkRight)
                 }
             startActivity(intent)
 

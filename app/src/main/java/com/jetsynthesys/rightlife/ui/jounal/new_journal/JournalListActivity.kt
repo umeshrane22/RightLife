@@ -23,6 +23,7 @@ import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.databinding.ActivityJournalListBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetDeleteTagBinding
+import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity
 import com.jetsynthesys.rightlife.showCustomToast
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.DialogUtils
@@ -49,27 +50,30 @@ class JournalListActivity : BaseActivity() {
     private val calendar = Calendar.getInstance()
     private var selectedDate: CalendarDay? = null
     private var startDate = ""
+    var isFromThinkRight: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityJournalListBinding.inflate(layoutInflater)
         setChildContentView(binding.root)
         startDate = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
+        isFromThinkRight = intent.getBooleanExtra("FROM_THINK_RIGHT", false)
 
         binding.addEntryButton.setOnClickListener {
             startActivity(Intent(this, JournalNewActivity::class.java).apply {
                 putExtra("StartDate", startDate)
+                putExtra("FROM_THINK_RIGHT", isFromThinkRight)
             })
         }
 
         binding.btnBack.setOnClickListener {
             callPostMindFullDataAPI()
-            finish()
+            closeActivity()
         }
 
         onBackPressedDispatcher.addCallback(this) {
             callPostMindFullDataAPI()
-            finish()
+            closeActivity()
         }
 
         binding.btnInfo.setOnClickListener {
@@ -264,6 +268,7 @@ class JournalListActivity : BaseActivity() {
                 startActivity(intent.apply {
                     putExtra("JournalEntry", journalEntry)
                     putExtra("StartDate", startDate)
+                    putExtra("FROM_THINK_RIGHT", isFromThinkRight)
                 })
             } else {
                 showDeleteBottomSheet(journalEntry)
@@ -411,6 +416,18 @@ class JournalListActivity : BaseActivity() {
         } catch (e: Exception) {
             false // return false for invalid date format
         }
+    }
+
+    private fun closeActivity() {
+        if (isFromThinkRight) {
+            val intent = Intent(this, HomeNewActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                putExtra("finish_Journal", true)
+                putExtra("FROM_THINK_RIGHT", isFromThinkRight)
+            }
+            startActivity(intent)
+        }
+        finish()
     }
 
 
