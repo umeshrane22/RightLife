@@ -88,7 +88,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
-
                     <RadioGroup
                         android:id="@+id/tabGroup"
                         android:layout_width="match_parent"
@@ -342,7 +341,7 @@
                         android:layout_width="3dp"
                         android:layout_height="200dp"
                         android:background="@drawable/dotted_line"
-                        android:visibility="visible"
+                        android:visibility="gone"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent"/>
                     <com.github.mikephil.charting.charts.BarChart
