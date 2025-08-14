@@ -1041,23 +1041,38 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     )
                 } ?: emptyList()
                 val sleepStage = sleepSessionRecord?.flatMap { record ->
-                    record.stages.mapNotNull { stage ->
-                        val stageValue = when (stage.stage) {
-                            SleepSessionRecord.STAGE_TYPE_DEEP -> "Deep Sleep"
-                            SleepSessionRecord.STAGE_TYPE_LIGHT -> "Light Sleep"
-                            SleepSessionRecord.STAGE_TYPE_REM -> "REM Sleep"
-                            SleepSessionRecord.STAGE_TYPE_AWAKE -> "Awake"
-                            else -> null
-                        }
-                        stageValue?.let {
+                    if (record.stages.isEmpty()) {
+                        // No stages → return default "sleep"
+                        listOf(
                             SleepStageJson(
-                                start_datetime = convertToTargetFormat(stage.startTime.toString()),
-                                end_datetime = convertToTargetFormat(stage.endTime.toString()),
-                                record_type = it,
-                                unit = "sleep_stage",
-                                value = it,
+                                start_datetime = convertToTargetFormat(record.startTime.toString()),
+                                end_datetime = convertToTargetFormat(record.endTime.toString()),
+                                record_type = "Asleep",
+                                unit = "stage",
+                                value = "Asleep",
                                 source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
                             )
+                        )
+                    } else {
+                        // Map actual stages
+                        record.stages.mapNotNull { stage ->
+                            val stageValue = when (stage.stage) {
+                                SleepSessionRecord.STAGE_TYPE_DEEP -> "Deep Sleep"
+                                SleepSessionRecord.STAGE_TYPE_LIGHT -> "Light Sleep"
+                                SleepSessionRecord.STAGE_TYPE_REM -> "REM Sleep"
+                                SleepSessionRecord.STAGE_TYPE_AWAKE -> "Awake"
+                                else -> null
+                            }
+                            stageValue?.let {
+                                SleepStageJson(
+                                    start_datetime = convertToTargetFormat(stage.startTime.toString()),
+                                    end_datetime = convertToTargetFormat(stage.endTime.toString()),
+                                    record_type = it,
+                                    unit = "sleep_stage",
+                                    value = it,
+                                    source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                                )
+                            }
                         }
                     }
                 } ?: emptyList()
