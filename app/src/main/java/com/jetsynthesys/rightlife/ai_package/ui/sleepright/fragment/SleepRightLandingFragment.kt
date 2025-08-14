@@ -2317,6 +2317,17 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     tvPerformIdealDuration.text = "7 hr 30 min"
                 }
             }
+            if (!isRepeat) {
+                val dialog = LogYourNapDialogFragment(
+                    requireContext = requireContext(),
+                    listener = object : OnLogYourNapSelectedListener {
+                        override fun onLogTimeSelected(time: String) {
+                            fetchSleepLandingData()
+                        }
+                    }
+                )
+                dialog.show(parentFragmentManager, "LogYourNapDialogFragment")
+            }
         }
     }
 

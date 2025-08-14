@@ -456,7 +456,7 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
         val remainingMinutes = totalMinutes % 60
 
         return when {
-            hours > 0 && remainingMinutes > 0 -> "${hours}h ${remainingMinutes}m"
+            hours > 0 && remainingMinutes > 0 -> "${hours}hr ${remainingMinutes}min"
             hours > 0 -> "${hours}hr"
             else -> "${remainingMinutes}min"
         }
@@ -594,6 +594,7 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
             stackLabels = arrayOf("REM Sleep", "Deep Sleep")
             valueTextColor = Color.TRANSPARENT
             valueTextSize = 10f
+            highLightColor = Color.TRANSPARENT
         }
 
         barChart.setRenderer(
@@ -694,6 +695,8 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
             stackLabels = arrayOf("REM Sleep", "Deep Sleep")
             valueTextColor = Color.TRANSPARENT
             valueTextSize = 10f
+            isHighlightEnabled = true
+            highLightColor = Color.TRANSPARENT
         }
 
         barChart.setRenderer(
@@ -701,7 +704,9 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
         )
 
         barChart.run {
-            data = BarData(dataSet)
+            data = BarData(dataSet).apply {
+                barWidth = 0.5f
+            }
             description.isEnabled = false
             axisLeft.axisMinimum = 0f
             axisRight.isEnabled = false
@@ -711,7 +716,6 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
             setScaleEnabled(false)
             animateY(1000)
 
-            // ✅ Add bottom offset for multi-line X labels
             setExtraBottomOffset(24f)
 
             xAxis.apply {

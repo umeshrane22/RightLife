@@ -663,11 +663,12 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewFinder = view.findViewById(R.id.viewFinder)
-        if (allPermissionsGranted()) {
+       // requestPermissionsIfNeeded()
+        /*if (allPermissionsGranted()) {
             startCamera()
         } else {
             ActivityCompat.requestPermissions(requireActivity(), REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
-        }
+        }*/
 
         view.findViewById<ImageView>(R.id.closeButton)?.setOnClickListener {
 
@@ -729,9 +730,40 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
         cameraExecutor = Executors.newSingleThreadExecutor()
     }
 
+    private fun onPermissionsGranted() {
+        startCamera()
+    }
+
+    private fun onPermissionsDenied(deniedPermissions: List<String>) {
+        requireActivity().onBackPressedDispatcher.onBackPressed()
+    }
+
+    private val permissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val allGranted = permissions.all { it.value }
+
+        if (allGranted) {
+            // ✅ All permissions granted
+            onPermissionsGranted()
+        } else {
+
+            onPermissionsDenied(permissions.filterValues { !it }.keys.toList())
+        }
+    }
+
+    private fun requestPermissionsIfNeeded() {
+        if (allPermissionsGranted()) {
+            onPermissionsGranted()
+        } else {
+            permissionLauncher.launch(REQUIRED_PERMISSIONS)
+        }
+    }
+
     override fun onResume() {
         super.onResume()
-        if (allPermissionsGranted()) {
+        requestPermissionsIfNeeded()
+        /*if (allPermissionsGranted()) {
             startCamera()
         } else {
             ActivityCompat.requestPermissions(
@@ -739,7 +771,7 @@ class CameraDialogFragment(private val imagePath: String, val moduleName : Strin
                 REQUIRED_PERMISSIONS,
                 REQUEST_CODE_PERMISSIONS
             )
-        }
+        }*/
 
         // Intercept device back press while this dialog is showing
         dialog?.setOnKeyListener { _, keyCode, event ->
