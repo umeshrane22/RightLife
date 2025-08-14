@@ -1783,8 +1783,10 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
 
         //IdealActualResponse
         if (landingAllData.idealVsActualSleepTime.isNotEmpty()) {
-            if (landingAllData.idealVsActualSleepTime.getOrNull(landingAllData.idealVsActualSleepTime.size.minus(1))?.actualSleepHours!=null && landingAllData.idealVsActualSleepTime.getOrNull(landingAllData.idealVsActualSleepTime.size.minus(1))?.idealSleepHours!=null){
-                if (landingAllData.idealVsActualSleepTime.getOrNull(landingAllData.idealVsActualSleepTime.size.minus(1))?.actualSleepHours!=0.0 && landingAllData.idealVsActualSleepTime.getOrNull(landingAllData.idealVsActualSleepTime.size.minus(1))?.idealSleepHours!=0.0){
+            if (landingAllData.idealVsActualSleepTime.getOrNull(landingAllData.idealVsActualSleepTime.size.minus(1))?.actualSleepHours != null
+                && landingAllData.idealVsActualSleepTime.getOrNull(landingAllData.idealVsActualSleepTime.size.minus(1))?.idealSleepHours != null){
+                if (landingAllData.idealVsActualSleepTime.getOrNull(landingAllData.idealVsActualSleepTime.size.minus(1))?.actualSleepHours != 0.0
+                    || landingAllData.idealVsActualSleepTime.getOrNull(landingAllData.idealVsActualSleepTime.size.minus(1))?.idealSleepHours != 0.0){
                     actualNoDataCardView.visibility = View.GONE
                     sleepIdeal.visibility = View.VISIBLE
                     lineChart.visibility = View.VISIBLE
@@ -2246,7 +2248,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 tvSleepTimeTitle.visibility = View.GONE
                 imgSleepPerformIcon.visibility = View.GONE
                 imgWakeTimeIcon.visibility = View.GONE
-                sleepPerformBtn.visibility = View.GONE
+                sleepPerformBtn.visibility = View.VISIBLE
                 tvPerformStartTime.visibility = View.GONE
                 tvPerformWakeTime.visibility = View.GONE
                 tvSleepPerformTitle.text = "SleepRight"
@@ -2322,7 +2324,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 tvSleepTimeTitle.visibility = View.GONE
                 imgSleepPerformIcon.visibility = View.GONE
                 imgWakeTimeIcon.visibility = View.GONE
-                sleepPerformBtn.visibility = View.GONE
+                sleepPerformBtn.visibility = View.VISIBLE
                 tvSleepPerformTitle.text = "SleepRight"
                 imgSleepTimeIcon.setImageResource(R.drawable.ic_db_sleepright)
                 if (sleepPerformanceDetail.actualSleepData?.actualSleepDurationHours == null) {
