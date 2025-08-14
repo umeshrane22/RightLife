@@ -33,6 +33,7 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.YourMealLogsFr
 import com.jetsynthesys.rightlife.databinding.FragmentHomeTabMealBinding
 import com.google.android.material.tabs.TabLayout
 import com.google.gson.Gson
+import com.jetsynthesys.rightlife.ai_package.PermissionManager
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.request.DishLog
 import com.jetsynthesys.rightlife.ai_package.model.request.MealLogItem
@@ -94,6 +95,11 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
     var imageSelectedListener: OnImageSelectedListener? = null
     private lateinit var imagePathsecond : Uri
     private var mealQuantity : String = ""
+    private lateinit var permissionManager: PermissionManager
+    private val permissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { result ->
+            permissionManager.handlePermissionResult(result)
+        }
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentHomeTabMealBinding
         get() = FragmentHomeTabMealBinding::inflate
@@ -216,18 +222,29 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
         }
 
         imageScan.setOnClickListener {
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                val mealSearchFragment = SnapMealFragment()
-                val args = Bundle()
-                args.putString("selectedMealDate", selectedMealDate)
-                args.putString("homeTab", "homeTab")
-                args.putString("ModuleName", moduleName)
-                args.putString("mealType", mealType)
-                mealSearchFragment.arguments = args
-                replace(R.id.flFragment, mealSearchFragment, "SnapMealFragmentTag")
-                addToBackStack(null)
-                commit()
-            }
+            permissionManager = PermissionManager(
+                activity = requireActivity(), // or just `this` in Activity
+                launcher = permissionLauncher,
+                onPermissionGranted = {
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        val mealSearchFragment = SnapMealFragment()
+                        val args = Bundle()
+                        args.putString("selectedMealDate", selectedMealDate)
+                        args.putString("homeTab", "homeTab")
+                        args.putString("ModuleName", moduleName)
+                        args.putString("mealType", mealType)
+                        mealSearchFragment.arguments = args
+                        replace(R.id.flFragment, mealSearchFragment, "SnapMealFragmentTag")
+                        addToBackStack(null)
+                        commit()
+                    }
+                },
+                onPermissionDenied = {
+                    // ❌ Show user-facing message or disable features
+                    Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT).show()
+                }
+            )
+            permissionManager.checkAndRequestPermissions()
         }
         imageGallery.setOnClickListener {
             openGallery()
@@ -392,23 +409,34 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
     }
     private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let {
-            imageSelectedListener?.onImageSelected(it)
-            imagePathsecond = it
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                val mealSearchFragment = SnapMealFragment()
-                val args = Bundle()
-                args.putString("homeTab", "homeTab")
-                args.putString("ModuleName", moduleName)
-                args.putString("mealType", mealType)
-                args.putString("selectedMealDate", selectedMealDate)
-                args.putString("gallery","gallery")
-                args.putString("ImagePathsecound", imagePathsecond.toString())
-                mealSearchFragment.arguments = args
-                replace(R.id.flFragment, mealSearchFragment, "SnapMealFragmentTag")
-                addToBackStack(null)
-                commit()
-            }
-            Toast.makeText(requireContext(), "Image loaded from gallery!", Toast.LENGTH_SHORT).show()
+            permissionManager = PermissionManager(
+                activity = requireActivity(), // or just `this` in Activity
+                launcher = permissionLauncher,
+                onPermissionGranted = {
+                    imageSelectedListener?.onImageSelected(it)
+                    imagePathsecond = it
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        val mealSearchFragment = SnapMealFragment()
+                        val args = Bundle()
+                        args.putString("homeTab", "homeTab")
+                        args.putString("ModuleName", moduleName)
+                        args.putString("mealType", mealType)
+                        args.putString("selectedMealDate", selectedMealDate)
+                        args.putString("gallery","gallery")
+                        args.putString("ImagePathsecound", imagePathsecond.toString())
+                        mealSearchFragment.arguments = args
+                        replace(R.id.flFragment, mealSearchFragment, "SnapMealFragmentTag")
+                        addToBackStack(null)
+                        commit()
+                    }
+                    Toast.makeText(requireContext(), "Image loaded from gallery!", Toast.LENGTH_SHORT).show()
+                },
+                onPermissionDenied = {
+                    // ❌ Show user-facing message or disable features
+                    Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT).show()
+                }
+            )
+            permissionManager.checkAndRequestPermissions()
         } ?: Toast.makeText(requireContext(), "No image selected", Toast.LENGTH_SHORT).show()
     }
     private val REQUIRED_PERMISSIONS = mutableListOf(

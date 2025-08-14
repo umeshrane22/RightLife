@@ -37,6 +37,7 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
        if (item.isSynced){
            holder.edit.visibility = View.GONE
            holder.delete.visibility = View.GONE
+           holder.tv_subtraction_value_Intensity.visibility = View.GONE
            holder.bpmUnit.visibility = View.VISIBLE
            holder.wearable.visibility = View.VISIBLE
            holder.bpmUnit.text = "bpm"
@@ -45,6 +46,7 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
        }else{
            holder.edit.visibility = View.VISIBLE
            holder.delete.visibility = View.VISIBLE
+           holder.tv_subtraction_value_Intensity.visibility = View.VISIBLE
            holder.wearable.visibility = View.GONE
            holder.bpmUnit.visibility = View.GONE
            holder.subtractionValue.text = item.intensity
@@ -105,6 +107,7 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
         val serve: ImageView = itemView.findViewById(R.id.image_serve)
         val serves: TextView = itemView.findViewById(R.id.tv_serves)
         val duration: TextView = itemView.findViewById(R.id.tv_serves_count)
+        val tv_subtraction_value_Intensity: TextView = itemView.findViewById(R.id.tv_subtraction_value_Intensity)
         val cal: ImageView = itemView.findViewById(R.id.image_cal)
         val calValue: TextView = itemView.findViewById(R.id.tv_cal_value)
         val calUnit: TextView = itemView.findViewById(R.id.tv_cal_unit)
