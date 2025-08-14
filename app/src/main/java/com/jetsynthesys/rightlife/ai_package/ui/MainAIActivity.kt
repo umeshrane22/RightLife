@@ -2,7 +2,9 @@ package com.jetsynthesys.rightlife.ai_package.ui
 
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.ai_package.PermissionManager
 import com.jetsynthesys.rightlife.ai_package.base.BaseActivity
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.SnapMealFragment
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.ViewSnapMealInsightsFragment
@@ -16,6 +18,11 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainAIActivity : BaseActivity() {
 
     lateinit var bi: ActivityMainAiBinding
+    private lateinit var permissionManager: PermissionManager
+    private val permissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { result ->
+            permissionManager.handlePermissionResult(result)
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,15 +45,26 @@ class MainAIActivity : BaseActivity() {
                     commit()
                 }
             }else{
-                supportFragmentManager.beginTransaction().apply {
-                    val mealSearchFragment = SnapMealFragment()
-                    val args = Bundle()
-                    args.putString("ModuleName", "HomeDashboard")
-                    mealSearchFragment.arguments = args
-                    replace(R.id.flFragment, mealSearchFragment, "SnapMealFragmentTag")
-                    addToBackStack(null)
-                    commit()
-                }
+                permissionManager = PermissionManager(
+                    activity = this, // or just `this` in Activity
+                    launcher = permissionLauncher,
+                    onPermissionGranted = {
+                        supportFragmentManager.beginTransaction().apply {
+                            val mealSearchFragment = SnapMealFragment()
+                            val args = Bundle()
+                            args.putString("ModuleName", "HomeDashboard")
+                            mealSearchFragment.arguments = args
+                            replace(R.id.flFragment, mealSearchFragment, "SnapMealFragmentTag")
+                            addToBackStack(null)
+                            commit()
+                        }
+                    },
+                    onPermissionDenied = {
+                        // ❌ Show user-facing message or disable features
+                        Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
+                    }
+                )
+                permissionManager.checkAndRequestPermissions()
             }
         }else  if (bottomSeatName.contentEquals("MealLogTypeEat")){
             supportFragmentManager.beginTransaction().apply {

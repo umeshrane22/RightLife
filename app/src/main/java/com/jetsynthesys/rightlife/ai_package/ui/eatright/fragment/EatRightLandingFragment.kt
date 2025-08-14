@@ -1,8 +1,10 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment
 
+import android.Manifest
 import android.animation.ValueAnimator
 import android.content.Intent
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -17,6 +19,7 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
@@ -29,6 +32,7 @@ import androidx.recyclerview.widget.SnapHelper
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.card.MaterialCardView
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.ai_package.PermissionManager
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.ThinkRecomendedResponse
@@ -153,7 +157,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
     private var loadingOverlay : FrameLayout? = null
     private var waterIntakeValue : Float = 0f
     private lateinit var rightLifeReportCard : FrameLayout
-
+    private lateinit var permissionManager: PermissionManager
     private lateinit var userData: Userdata
     private lateinit var userDataResponse: UserProfileResponse
     private lateinit var sharedPreferenceManager: SharedPreferenceManager
@@ -184,6 +188,10 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
         null, null,false, :: onDinnerRegularRecipeDeleteItem, :: onDinnerRegularRecipeEditItem,
         :: onDinnerSnapMealDeleteItem, :: onDinnerSnapMealEditItem, true, false) }
 
+    private val permissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { result ->
+            permissionManager.handlePermissionResult(result)
+        }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         newBoolean = true
@@ -325,15 +333,26 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
         }
 
         snapMealBtn.setOnClickListener {
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                val mealSearchFragment = SnapMealFragment()
-                val args = Bundle()
-                args.putString("ModuleName", "EatRight")
-                mealSearchFragment.arguments = args
-                replace(R.id.flFragment, mealSearchFragment, "SnapMealFragmentTag")
-                addToBackStack(null)
-                commit()
-            }
+            permissionManager = PermissionManager(
+                activity = requireActivity(), // or just `this` in Activity
+                launcher = permissionLauncher,
+                onPermissionGranted = {
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        val mealSearchFragment = SnapMealFragment()
+                        val args = Bundle()
+                        args.putString("ModuleName", "EatRight")
+                        mealSearchFragment.arguments = args
+                        replace(R.id.flFragment, mealSearchFragment, "SnapMealFragmentTag")
+                        addToBackStack(null)
+                        commit()
+                    }
+                },
+                onPermissionDenied = {
+                    // ❌ Show user-facing message or disable features
+                    Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT).show()
+                }
+            )
+            permissionManager.checkAndRequestPermissions()
         }
 
         imageBack.setOnClickListener {
@@ -364,16 +383,28 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
             }
         }
 
+
         snapMealNoData.setOnClickListener {
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                val mealSearchFragment = SnapMealFragment()
-                val args = Bundle()
-                args.putString("ModuleName", "EatRight")
-                mealSearchFragment.arguments = args
-                replace(R.id.flFragment, mealSearchFragment, "SnapMealFragmentTag")
-                addToBackStack(null)
-                commit()
-            }
+            permissionManager = PermissionManager(
+                activity = requireActivity(), // or just `this` in Activity
+                launcher = permissionLauncher,
+                onPermissionGranted = {
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        val mealSearchFragment = SnapMealFragment()
+                        val args = Bundle()
+                        args.putString("ModuleName", "EatRight")
+                        mealSearchFragment.arguments = args
+                        replace(R.id.flFragment, mealSearchFragment, "SnapMealFragmentTag")
+                        addToBackStack(null)
+                        commit()
+                    }
+                },
+                onPermissionDenied = {
+                    // ❌ Show user-facing message or disable features
+                    Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT).show()
+                }
+            )
+            permissionManager.checkAndRequestPermissions()
         }
 
         macroIc.setOnClickListener {
