@@ -350,7 +350,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
     }
 
     private fun fetchUserWorkouts(formattedDate: String) {
-        if (isAdded  && view != null){
+        if (isAdded && view != null) {
             requireActivity().runOnUiThread {
                 showLoader(requireView())
             }
@@ -359,8 +359,13 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
             try {
                 val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
                 val currentDate = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
-                val response = ApiClient.apiServiceFastApi.getNewUserWorkouts(userId = userid, start_date = formattedDate, end_date = formattedDate,
-                    page = 1, limit = 10)
+                val response = ApiClient.apiServiceFastApi.getNewUserWorkouts(
+                    userId = userid,
+                    start_date = formattedDate,
+                    end_date = formattedDate,
+                    page = 1,
+                    limit = 10
+                )
                 if (response.isSuccessful) {
                     val workouts = response.body()
                     workouts?.let {
@@ -394,7 +399,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                                 icon = "",
                                 intensity = "",
                                 isSynced = true,
-                                activityId = workout.activity_id
+                                activityId = workout.activity_id ?: "" // Handle null activity_id
                             )
                         }
                         // Map unsyncedWorkouts to CardItem objects
@@ -420,7 +425,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                                 icon = workout.icon,
                                 intensity = workout.intensity,
                                 isSynced = false,
-                                activityId = workout.activity_id
+                                activityId = workout.activity_id ?: "" // Handle null activity_id
                             )
                         }
                         // Combine synced and unsynced CardItems
@@ -455,7 +460,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                                 Log.d("FetchCalories", "No activities to display for date $formattedDate")
                             }
                             layoutSaveWorkout.isEnabled = true
-                            if (isAdded  && view != null){
+                            if (isAdded && view != null) {
                                 requireActivity().runOnUiThread {
                                     dismissLoader(requireView())
                                 }
@@ -473,7 +478,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                     withContext(Dispatchers.Main) {
                         myActivityRecyclerView.visibility = View.GONE
                         Toast.makeText(requireContext(), "Error: ${response.code()} - ${response.message()}", Toast.LENGTH_SHORT).show()
-                        if (isAdded  && view != null){
+                        if (isAdded && view != null) {
                             requireActivity().runOnUiThread {
                                 dismissLoader(requireView())
                             }
@@ -485,7 +490,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                 withContext(Dispatchers.Main) {
                     myActivityRecyclerView.visibility = View.GONE
                     Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
-                    if (isAdded  && view != null){
+                    if (isAdded && view != null) {
                         requireActivity().runOnUiThread {
                             dismissLoader(requireView())
                         }
