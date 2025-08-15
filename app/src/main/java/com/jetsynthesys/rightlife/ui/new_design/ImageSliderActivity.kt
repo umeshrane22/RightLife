@@ -497,11 +497,11 @@ class ImageSliderActivity : BaseActivity() {
                     val responseCode = response.code()
 
                     if (responseCode == 500) {
-                        Toast.makeText(
+                      /*  Toast.makeText(
                             this@ImageSliderActivity,
                             "Server Error: 500 - Internal Server Error",
                             Toast.LENGTH_SHORT
-                        ).show()
+                        ).show()*/
                         showSwitchAccountDialog(this@ImageSliderActivity,"","")
                     } else {
                         // Try to parse errorBody if present

@@ -1006,7 +1006,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
             val syncTime = SharedPreferenceManager.getInstance(requireContext()).moveRightSyncTime ?: ""
             if (syncTime == "") {
                 endTime = Instant.now()
-                startTime = endTime.minus(Duration.ofDays(20))
+                startTime = endTime.minus(Duration.ofDays(7))
             }else{
                 endTime = Instant.now()
                 startTime = convertUtcToInstant(syncTime)
@@ -1037,7 +1037,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 stepsRecord = emptyList()
               Log.d("HealthData", "Steps permission denied")
             }
-            if (HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class) in grantedPermissions) {
+           /* if (HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class) in grantedPermissions) {
                 val caloriesResponse = healthConnectClient.readRecords(
                     ReadRecordsRequest(
                         recordType = TotalCaloriesBurnedRecord::class,
@@ -1050,7 +1050,30 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
             } else {
                 totalCaloriesBurnedRecord = emptyList()
                 Log.d("HealthData", "Calories permission denied")
+            }*/
+            if (HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class) in grantedPermissions) {
+                val caloriesResponse = healthConnectClient.readRecords(
+                    ReadRecordsRequest(
+                        recordType = TotalCaloriesBurnedRecord::class,
+                        timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                    )
+                )
+                totalCaloriesBurnedRecord = caloriesResponse.records
+
+                // Iterate each record individually
+                totalCaloriesBurnedRecord?.forEach { record ->
+                    val burnedCalories = record.energy.inKilocalories
+                    val start = record.startTime
+                    val end = record.endTime
+                    Log.d("HealthData", "Calories: $burnedCalories kcal | From: $start To: $end")
+
+                    // TODO: send this record data wherever you want
+                }
+            } else {
+                totalCaloriesBurnedRecord = emptyList()
+                Log.d("HealthData", "Calories permission denied")
             }
+
             if (HealthPermission.getReadPermission(HeartRateRecord::class) in grantedPermissions) {
                 val response = healthConnectClient.readRecords(
                     ReadRecordsRequest(
@@ -1076,7 +1099,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 }
             }else {
                 restingHeartRecord = emptyList()
-                Log.d("HealthData", "Heart rate permission denied")
+                Log.d("HealthData", "Resting Heart rate permission denied")
             }
             if (HealthPermission.getReadPermission(ActiveCaloriesBurnedRecord::class) in grantedPermissions) {
                 val activeCalorieResponse = healthConnectClient.readRecords(
@@ -1087,11 +1110,11 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 )
                 activeCalorieBurnedRecord = activeCalorieResponse.records
                 activeCalorieBurnedRecord?.forEach { record ->
-                   Log.d("HealthData", "Resting Heart Rate: ${record.energy} kCal, Time: ${record.startTime}")
+                   Log.d("HealthData", "Active Callory Burn Rate: ${record.energy} kCal, Time: ${record.startTime}")
                 }
             }else {
                 activeCalorieBurnedRecord = emptyList()
-                Log.d("HealthData", "Heart rate permission denied")
+                Log.d("HealthData", "Active Calory burn permission denied")
             }
             if (HealthPermission.getReadPermission(BasalMetabolicRateRecord::class) in grantedPermissions) {
                 val basalMetabolic = healthConnectClient.readRecords(
@@ -1106,7 +1129,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 }
             }else {
                 basalMetabolicRateRecord = emptyList()
-               Log.d("HealthData", "Heart rate permission denied")
+               Log.d("HealthData", "Basal Metabolic permission denied")
             }
             if (HealthPermission.getReadPermission(BloodPressureRecord::class) in grantedPermissions) {
                 val bloodPressure = healthConnectClient.readRecords(
@@ -1121,7 +1144,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 }
             }else {
                 bloodPressureRecord = emptyList()
-                Log.d("HealthData", "Heart rate permission denied")
+                Log.d("HealthData", "Blood Pressure  permission denied")
             }
             if (HealthPermission.getReadPermission(HeartRateVariabilityRmssdRecord::class) in grantedPermissions) {
                 val restingVresponse = healthConnectClient.readRecords(
@@ -1136,7 +1159,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 }
             }else {
                 heartRateVariability = emptyList()
-                Log.d("HealthData", "Heart rate permission denied")
+                Log.d("HealthData", "Heart rate Variability permission denied")
             }
             if (HealthPermission.getReadPermission(SleepSessionRecord::class) in grantedPermissions) {
                 val sleepResponse = healthConnectClient.readRecords(
@@ -1496,7 +1519,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
-                val activeEnergyBurned = totalCaloriesBurnedRecord?.mapNotNull { record ->
+                val activeEnergyBurned = activeCalorieBurnedRecord?.mapNotNull { record ->
                     if (record.energy.inKilocalories > 0) {
                         EnergyBurnedRequest(
                             start_datetime = convertToTargetFormat(record.startTime.toString()),
@@ -1696,11 +1719,11 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                         ExerciseSessionRecord.EXERCISE_TYPE_BASEBALL -> "Baseball"
                         else -> "Other"
                     }
-                    val calories = 0//totalCaloriesBurnedRecord?.filter {
-//                        it.startTime >= record.startTime && it.endTime <= record.endTime
-//                    }?.sumOf { it.energy.inKilocalories.toInt() } ?: 0
+                    /*val calories = totalCaloriesBurnedRecord?.filter {
+                        it.startTime >= record.startTime && it.endTime <= record.endTime
+                    }?.sumOf { it.energy.inKilocalories.toInt() } ?: 0*/
                     val distance = record.metadata.dataOrigin?.let { 5.0 } ?: 0.0
-                    if (calories > 0) {
+                    //if (calories > 0) {
                         WorkoutRequest(
                             start_datetime = convertToTargetFormat(record.startTime.toString()),
                             end_datetime = convertToTargetFormat(record.endTime.toString()),
@@ -1714,7 +1737,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                             calories_unit = "kcal",
                             distance_unit = "km"
                         )
-                    } else null
+                   // } else null
                 } ?: emptyList()
                 val request = StoreHealthDataRequest(
                     user_id = userid,
