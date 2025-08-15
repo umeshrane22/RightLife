@@ -39,8 +39,10 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.jetsynthesys.rightlife.BaseFragment
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.ai_package.PermissionManager
 import com.jetsynthesys.rightlife.ai_package.model.SleepStagesData
 import com.jetsynthesys.rightlife.ai_package.ui.MainAIActivity
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.SnapMealFragment
 import com.jetsynthesys.rightlife.ai_package.ui.sleepright.fragment.SleepSegmentModel
 import com.jetsynthesys.rightlife.databinding.BottomsheetTrialEndedBinding
 import com.jetsynthesys.rightlife.databinding.FragmentHomeDashboardBinding
@@ -91,6 +93,11 @@ class HomeDashboardFragment : BaseFragment() {
     private val coreData: ArrayList<Float> = arrayListOf()
     private val deepData: ArrayList<Float> = arrayListOf()
     private val formatters = DateTimeFormatter.ISO_DATE_TIME
+    private lateinit var permissionManager: PermissionManager
+    private val permissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { result ->
+            permissionManager.handlePermissionResult(result)
+        }
 
     private lateinit var healthConnectClient: HealthConnectClient
     private var checklistComplete = true
@@ -186,11 +193,22 @@ class HomeDashboardFragment : BaseFragment() {
             startActivity(intent)
         }
         binding.includeChecklist.rlChecklistSnapmeal.setOnClickListener {
-            startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
-                putExtra("ModuleName", "EatRight")
-                putExtra("BottomSeatName", "SnapMealTypeEat")
-                putExtra("snapMealId", snapMealId)
-            })
+            permissionManager = PermissionManager(
+                activity = requireActivity(), // or just `this` in Activity
+                launcher = permissionLauncher,
+                onPermissionGranted = {
+                    startActivity(Intent(requireContext(), MainAIActivity::class.java).apply {
+                        putExtra("ModuleName", "EatRight")
+                        putExtra("BottomSeatName", "SnapMealTypeEat")
+                        putExtra("snapMealId", snapMealId)
+                    })
+                },
+                onPermissionDenied = {
+                    // ❌ Show user-facing message or disable features
+                    Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT).show()
+                }
+            )
+            permissionManager.checkAndRequestPermissions()
         }
         binding.includeChecklist.rlChecklistFacescan.setOnClickListener {
             val activity = requireActivity() as HomeNewActivity

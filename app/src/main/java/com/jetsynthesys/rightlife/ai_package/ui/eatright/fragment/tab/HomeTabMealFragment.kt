@@ -386,17 +386,31 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
     }
 
     private fun openGallery() {
-        if (allPermissionsGranted()) {
-            Handler(Looper.getMainLooper()).post {
-                pickImageLauncher.launch("image/*")
+        permissionManager = PermissionManager(
+            activity = requireActivity(), // or just `this` in Activity
+            launcher = permissionLauncher,
+            onPermissionGranted = {
+                Handler(Looper.getMainLooper()).post {
+                    pickImageLauncher.launch("image/*")
+                }
+            },
+            onPermissionDenied = {
+                // ❌ Show user-facing message or disable features
+                Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT).show()
             }
-        } else {
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                REQUIRED_PERMISSIONS,
-                REQUEST_CODE_PERMISSIONS
-            )
-        }
+        )
+        permissionManager.checkAndRequestPermissions()
+      //  if (allPermissionsGranted()) {
+      //      Handler(Looper.getMainLooper()).post {
+       //         pickImageLauncher.launch("image/*")
+      //      }
+     //   } else {
+       //     ActivityCompat.requestPermissions(
+       //         requireActivity(),
+        //        REQUIRED_PERMISSIONS,
+        //        REQUEST_CODE_PERMISSIONS
+        //    )
+      //  }
     }
 
     companion object {
@@ -409,34 +423,23 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
     }
     private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let {
-            permissionManager = PermissionManager(
-                activity = requireActivity(), // or just `this` in Activity
-                launcher = permissionLauncher,
-                onPermissionGranted = {
-                    imageSelectedListener?.onImageSelected(it)
-                    imagePathsecond = it
-                    requireActivity().supportFragmentManager.beginTransaction().apply {
-                        val mealSearchFragment = SnapMealFragment()
-                        val args = Bundle()
-                        args.putString("homeTab", "homeTab")
-                        args.putString("ModuleName", moduleName)
-                        args.putString("mealType", mealType)
-                        args.putString("selectedMealDate", selectedMealDate)
-                        args.putString("gallery","gallery")
-                        args.putString("ImagePathsecound", imagePathsecond.toString())
-                        mealSearchFragment.arguments = args
-                        replace(R.id.flFragment, mealSearchFragment, "SnapMealFragmentTag")
-                        addToBackStack(null)
-                        commit()
-                    }
-                    Toast.makeText(requireContext(), "Image loaded from gallery!", Toast.LENGTH_SHORT).show()
-                },
-                onPermissionDenied = {
-                    // ❌ Show user-facing message or disable features
-                    Toast.makeText(requireContext(), "Permission denied", Toast.LENGTH_SHORT).show()
-                }
-            )
-            permissionManager.checkAndRequestPermissions()
+            imageSelectedListener?.onImageSelected(it)
+            imagePathsecond = it
+            requireActivity().supportFragmentManager.beginTransaction().apply {
+                val mealSearchFragment = SnapMealFragment()
+                val args = Bundle()
+                args.putString("homeTab", "homeTab")
+                args.putString("ModuleName", moduleName)
+                args.putString("mealType", mealType)
+                args.putString("selectedMealDate", selectedMealDate)
+                args.putString("gallery","gallery")
+                args.putString("ImagePathsecound", imagePathsecond.toString())
+                mealSearchFragment.arguments = args
+                replace(R.id.flFragment, mealSearchFragment, "SnapMealFragmentTag")
+                addToBackStack(null)
+                commit()
+            }
+            Toast.makeText(requireContext(), "Image loaded from gallery!", Toast.LENGTH_SHORT).show()
         } ?: Toast.makeText(requireContext(), "No image selected", Toast.LENGTH_SHORT).show()
     }
     private val REQUIRED_PERMISSIONS = mutableListOf(
