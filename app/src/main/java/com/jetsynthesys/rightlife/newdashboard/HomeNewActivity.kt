@@ -20,6 +20,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.PermissionController
@@ -62,6 +63,7 @@ import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.BuildConfig
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
+import com.jetsynthesys.rightlife.ai_package.PermissionManager
 import com.jetsynthesys.rightlife.ai_package.model.BloodPressure
 import com.jetsynthesys.rightlife.ai_package.model.BodyFatPercentage
 import com.jetsynthesys.rightlife.ai_package.model.BodyMass
@@ -76,6 +78,7 @@ import com.jetsynthesys.rightlife.ai_package.model.StepCountRequest
 import com.jetsynthesys.rightlife.ai_package.model.StoreHealthDataRequest
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutRequest
 import com.jetsynthesys.rightlife.ai_package.ui.MainAIActivity
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.SnapMealFragment
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
 import com.jetsynthesys.rightlife.databinding.ActivityHomeNewBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetTrialEndedBinding
@@ -140,6 +143,12 @@ class HomeNewActivity : BaseActivity() {
     private var oxygenSaturationRecord: List<OxygenSaturationRecord>? = null
     private var respiratoryRateRecord: List<RespiratoryRateRecord>? = null
     private lateinit var healthConnectClient: HealthConnectClient
+
+    private lateinit var permissionManager: PermissionManager
+    private val permissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { result ->
+            permissionManager.handlePermissionResult(result)
+        }
 
     private val allReadPermissions = setOf(
         HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class),
@@ -349,16 +358,27 @@ class HomeNewActivity : BaseActivity() {
             }
             includedhomebottomsheet.llMealplan.setOnClickListener {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_SNAP_MEAL_CLICK)
-                startActivity(Intent(this@HomeNewActivity, MainAIActivity::class.java).apply {
-                    putExtra("ModuleName", "EatRight")
-                    putExtra("BottomSeatName", "SnapMealTypeEat")
-                    if (sharedPreferenceManager.snapMealId.isNotEmpty()) {
-                        intent.putExtra(
-                            "snapMealId",
-                            sharedPreferenceManager.snapMealId
-                        ) // make sure snapMealId is declared and initialized
+                permissionManager = PermissionManager(
+                    activity = this@HomeNewActivity, // or just `this` in Activity
+                    launcher = permissionLauncher,
+                    onPermissionGranted = {
+                        startActivity(Intent(this@HomeNewActivity, MainAIActivity::class.java).apply {
+                            putExtra("ModuleName", "EatRight")
+                            putExtra("BottomSeatName", "SnapMealTypeEat")
+                            if (sharedPreferenceManager.snapMealId.isNotEmpty()) {
+                                intent.putExtra(
+                                    "snapMealId",
+                                    sharedPreferenceManager.snapMealId
+                                ) // make sure snapMealId is declared and initialized
+                            }
+                        })
+                    },
+                    onPermissionDenied = {
+                        // ❌ Show user-facing message or disable features
+                        Toast.makeText(this@HomeNewActivity, "Permission denied", Toast.LENGTH_SHORT).show()
                     }
-                })
+                )
+                permissionManager.checkAndRequestPermissions()
             }
 
         }
