@@ -596,7 +596,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             val syncTime = SharedPreferenceManager.getInstance(requireContext()).moveRightSyncTime ?: ""
             if (syncTime == "") {
                 endTime = Instant.now()
-                startTime = endTime.minus(Duration.ofDays(30))
+                startTime = endTime.minus(Duration.ofDays(20))
             }else{
                 endTime = Instant.now()
                 startTime = convertUtcToInstant(syncTime)
@@ -1094,9 +1094,12 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                         ExerciseSessionRecord.EXERCISE_TYPE_BASEBALL -> "Baseball"
                         else -> "Other"
                     }
-                    val calories = record.metadata.dataOrigin?.let { 300 } ?: 0
+                    val workoutCaloriesBurned = 0//calculateEnergyBurnedInPeriod(totalCaloriesBurnedRecord ?: emptyList(),
+//                        record.startTime,
+//                        record.endTime
+//                    )
                     val distance = record.metadata.dataOrigin?.let { 5.0 } ?: 0.0
-                    if (calories > 0) {
+                    if (workoutCaloriesBurned > 0) {
                         WorkoutRequest(
                             start_datetime = convertToTargetFormat(record.startTime.toString()),
                             end_datetime = convertToTargetFormat(record.endTime.toString()),
@@ -1104,7 +1107,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                             record_type = "Workout",
                             workout_type = workoutType,
                             duration = ((record.endTime.toEpochMilli() - record.startTime.toEpochMilli()) / 1000 / 60).toString(),
-                            calories_burned = calories.toString(),
+                            calories_burned = "",
                             distance = String.format("%.1f", distance),
                             duration_unit = "minutes",
                             calories_unit = "kcal",
@@ -1142,6 +1145,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                         fetchSleepLandingData()
                         isRepeat = true
                     } else {
+                        isRepeat = true
                          Toast.makeText(requireContext(), "Error storing data: ${response.code()} - ${response.message()}", Toast.LENGTH_SHORT).show()
                         if (isAdded  && view != null){
                             requireActivity().runOnUiThread {
@@ -1154,6 +1158,11 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 withContext(Dispatchers.Main) {
                     Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
                     isRepeat = true
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                 }
             }
         }
@@ -1310,23 +1319,38 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     )
                 } ?: emptyList()
                 val sleepStage = sleepSessionRecord?.flatMap { record ->
-                    record.stages.mapNotNull { stage ->
-                        val stageValue = when (stage.stage) {
-                            SleepSessionRecord.STAGE_TYPE_DEEP -> "Deep Sleep"
-                            SleepSessionRecord.STAGE_TYPE_LIGHT -> "Light Sleep"
-                            SleepSessionRecord.STAGE_TYPE_REM -> "REM Sleep"
-                            SleepSessionRecord.STAGE_TYPE_AWAKE -> "Awake"
-                            else -> null
-                        }
-                        stageValue?.let {
+                    if (record.stages.isEmpty()) {
+                        // No stages → return default "sleep"
+                        listOf(
                             SleepStageJson(
-                                start_datetime = convertToSamsungFormat(stage.startTime.toString()),
-                                end_datetime = convertToSamsungFormat(stage.endTime.toString()),
-                                record_type = it,
-                                unit = "sleep_stage",
-                                value = it,
+                                start_datetime = convertToSamsungFormat(record.startTime.toString()),
+                                end_datetime = convertToSamsungFormat(record.endTime.toString()),
+                                record_type = "Asleep",
+                                unit = "stage",
+                                value = "Asleep",
                                 source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
                             )
+                        )
+                    } else {
+                        // Map actual stages
+                        record.stages.mapNotNull { stage ->
+                            val stageValue = when (stage.stage) {
+                                SleepSessionRecord.STAGE_TYPE_DEEP -> "Deep Sleep"
+                                SleepSessionRecord.STAGE_TYPE_LIGHT -> "Light Sleep"
+                                SleepSessionRecord.STAGE_TYPE_REM -> "REM Sleep"
+                                SleepSessionRecord.STAGE_TYPE_AWAKE -> "Awake"
+                                else -> null
+                            }
+                            stageValue?.let {
+                                SleepStageJson(
+                                    start_datetime = convertToSamsungFormat(stage.startTime.toString()),
+                                    end_datetime = convertToSamsungFormat(stage.endTime.toString()),
+                                    record_type = it,
+                                    unit = "sleep_stage",
+                                    value = it,
+                                    source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                                )
+                            }
                         }
                     }
                 } ?: emptyList()
@@ -1334,11 +1358,23 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     val workoutType = when (record.exerciseType) {
                         ExerciseSessionRecord.EXERCISE_TYPE_RUNNING -> "Running"
                         ExerciseSessionRecord.EXERCISE_TYPE_WALKING -> "Walking"
+                        ExerciseSessionRecord.EXERCISE_TYPE_GYMNASTICS -> "Gym"
+                        ExerciseSessionRecord.EXERCISE_TYPE_OTHER_WORKOUT -> "Other Workout"
+                        ExerciseSessionRecord.EXERCISE_TYPE_BIKING -> "Biking"
+                        ExerciseSessionRecord.EXERCISE_TYPE_BIKING_STATIONARY -> "Biking Stationary"
+                        ExerciseSessionRecord.EXERCISE_TYPE_SWIMMING_POOL -> "Cycling"
+                        ExerciseSessionRecord.EXERCISE_TYPE_SWIMMING_OPEN_WATER -> "Swimming"
+                        ExerciseSessionRecord.EXERCISE_TYPE_STRENGTH_TRAINING -> "Strength Training"
+                        ExerciseSessionRecord.EXERCISE_TYPE_YOGA -> "Yoga"
+                        ExerciseSessionRecord.EXERCISE_TYPE_HIGH_INTENSITY_INTERVAL_TRAINING -> "HIIT"
+                        ExerciseSessionRecord.EXERCISE_TYPE_BADMINTON -> "Badminton"
+                        ExerciseSessionRecord.EXERCISE_TYPE_BASKETBALL -> "Basketball"
+                        ExerciseSessionRecord.EXERCISE_TYPE_BASEBALL -> "Baseball"
                         else -> "Other"
                     }
-                    val calories = totalCaloriesBurnedRecord?.filter {
-                        it.startTime >= record.startTime && it.endTime <= record.endTime
-                    }?.sumOf { it.energy.inKilocalories.toInt() } ?: 0
+                    val calories = 0//totalCaloriesBurnedRecord?.filter {
+//                        it.startTime >= record.startTime && it.endTime <= record.endTime
+//                    }?.sumOf { it.energy.inKilocalories.toInt() } ?: 0
                     val distance = record.metadata.dataOrigin?.let { 5.0 } ?: 0.0
                     if (calories > 0) {
                         WorkoutRequest(
@@ -1348,7 +1384,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                             record_type = "Workout",
                             workout_type = workoutType,
                             duration = ((record.endTime.toEpochMilli() - record.startTime.toEpochMilli()) / 1000 / 60).toString(),
-                            calories_burned = calories.toString(),
+                            calories_burned = "",
                             distance = String.format("%.1f", distance),
                             duration_unit = "minutes",
                             calories_unit = "kcal",
@@ -1385,15 +1421,44 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                         fetchSleepLandingData()
                     } else {
                         isRepeat = true
+                        Toast.makeText(requireContext(), "Error storing data: ${response.code()} - ${response.message()}", Toast.LENGTH_SHORT).show()
+                        if (isAdded  && view != null){
+                            requireActivity().runOnUiThread {
+                                dismissLoader(requireView())
+                            }
+                        }
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
                     isRepeat = true
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                 }
             }
         }
+    }
+
+    fun calculateEnergyBurnedInPeriod(
+        totalCaloriesBurnedRecord: List<TotalCaloriesBurnedRecord>,
+        workoutStart: Instant,
+        workoutEnd: Instant
+    ): Double {
+        val startInstant = workoutStart
+        val endInstant = workoutEnd
+
+        return totalCaloriesBurnedRecord
+            .filter { record ->
+                val recordStart = record.startTime
+                val recordEnd = record.endTime
+                // Only include records within workout time range
+                !recordStart.isBefore(startInstant) && !recordEnd.isAfter(endInstant)
+            }
+            .sumOf { it.energy.inKilocalories}
     }
 
     private fun fetchSoundSleepData() {
@@ -2174,6 +2239,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             "$minutes mins"
         }
     }
+
     private fun fetchThinkRecomendedData() {
         val token = SharedPreferenceManager.getInstance(requireActivity()).accessToken
         val call = ApiClient.apiService.fetchThinkRecomended(token,"HOME","SLEEP_RIGHT")
@@ -2610,8 +2676,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         return bitmap
     }
 
-
-
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     fun showDownloadNotification(context: Context, fileName: String, fileUri: Uri) {
         val channelId = "download_channel"
@@ -2650,26 +2714,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         NotificationManagerCompat.from(context).notify(1, notification)
     }
 
-    private fun storeData(){
-        val jsonData : SleepJson = loadStepData()
-        val fullList = jsonData.dataPoints
-        val sleepJsonRequest = SleepJsonRequest(
-            user_id = "68010b615a508d0cfd6ac9ca",
-            source = "android",
-            sleep_stage = fullList.map {
-                SleepStageJson(
-                    value = it.fitValue[0].value?.intVal.toString(),
-                    record_type = it.fitValue[0].value?.intVal.toString(),
-                    end_datetime = convertToTargetFormat(it.endTimeNanos.toString()),
-                    unit = it.dataTypeName.toString(),
-                    start_datetime = convertToTargetFormat(it.startTimeNanos.toString()),
-                    source_name = "google"
-                )
-            } as ArrayList<SleepStageJson>
-        )
-        storeJsonHealthData(sleepJsonRequest)
-    }
-
     fun convertNanoToFormattedDate(nanoTime: Long): String {
         val millis = nanoTime / 1_000_000
         val date = Date(millis)
@@ -2678,30 +2722,6 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
         formatter.timeZone = TimeZone.getTimeZone("UTC")
         return formatter.format(date)
-    }
-
-    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    private fun storeJsonHealthData(sleepJsonRequest: SleepJsonRequest) {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val userid = SharedPreferenceManager.getInstance(requireActivity()).userId ?: ""
-
-                val response = ApiClient.apiServiceFastApi.storeSleepData(sleepJsonRequest)
-
-                withContext(Dispatchers.Main) {
-                    if (response.isSuccessful) {
-                        val responseBody = response.body()
-                     //   Toast.makeText(requireContext(), responseBody?.message ?: "Health data stored successfully", Toast.LENGTH_SHORT).show()
-                    } else {
-                     //   Toast.makeText(requireContext(), "Error storing data: ${response.code()} - ${response.message()}", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                 //   Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
     }
 
     override fun onResume() {

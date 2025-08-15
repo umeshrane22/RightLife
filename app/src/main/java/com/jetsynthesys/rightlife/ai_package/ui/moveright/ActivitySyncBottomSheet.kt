@@ -255,7 +255,6 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
             Log.d("ActivitySyncBottomSheet", "Fragment not attached, skipping fetch")
             return
         }
-
         Log.d("ActivitySyncBottomSheet", "Fetching health data")
         var endTime = Instant.now()
         var startTime = Instant.now()
@@ -264,13 +263,12 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
         } else ""
         if (syncTime.isEmpty()) {
             endTime = Instant.now()
-            startTime = endTime.minus(Duration.ofDays(31))
+            startTime = endTime.minus(Duration.ofDays(20))
         } else {
             endTime = Instant.now()
             startTime = convertUtcToInstant(syncTime)
         }
         Log.d("ActivitySyncBottomSheet", "Time range: start=$startTime, end=$endTime")
-
         try {
             // Fetch device info
             val grantedPermissions = healthConnectClient.permissionController.getGrantedPermissions()
@@ -577,7 +575,6 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
             Log.d("ActivitySyncBottomSheet", "Fragment not attached, aborting storeHealthData")
             return
         }
-
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
                 Log.d("ActivitySyncBottomSheet", "Storing health data")
@@ -759,37 +756,63 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                 Log.d("ActivitySyncBottomSheet", "Prepared ${bodyFatPercentage.size} body fat percentage records")
 
                 val sleepStage = sleepSessionRecord?.flatMap { record ->
-                    record.stages.mapNotNull { stage ->
-                        val stageValue = when (stage.stage) {
-                            SleepSessionRecord.STAGE_TYPE_DEEP -> "Deep Sleep"
-                            SleepSessionRecord.STAGE_TYPE_LIGHT -> "Light Sleep"
-                            SleepSessionRecord.STAGE_TYPE_REM -> "REM Sleep"
-                            SleepSessionRecord.STAGE_TYPE_AWAKE -> "Awake"
-                            else -> null
-                        }
-                        stageValue?.let {
+                    if (record.stages.isEmpty()) {
+                        // No stages → return default "sleep"
+                        listOf(
                             SleepStageJson(
-                                start_datetime = convertToTargetFormat(stage.startTime.toString()),
-                                end_datetime = convertToTargetFormat(stage.endTime.toString()),
-                                record_type = it,
-                                unit = "sleep_stage",
-                                value = it,
-                                source_name = deviceName
+                                start_datetime = convertToTargetFormat(record.startTime.toString()),
+                                end_datetime = convertToTargetFormat(record.endTime.toString()),
+                                record_type = "Asleep",
+                                unit = "stage",
+                                value = "Asleep",
+                                source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
                             )
+                        )
+                    } else {
+                        // Map actual stages
+                        record.stages.mapNotNull { stage ->
+                            val stageValue = when (stage.stage) {
+                                SleepSessionRecord.STAGE_TYPE_DEEP -> "Deep Sleep"
+                                SleepSessionRecord.STAGE_TYPE_LIGHT -> "Light Sleep"
+                                SleepSessionRecord.STAGE_TYPE_REM -> "REM Sleep"
+                                SleepSessionRecord.STAGE_TYPE_AWAKE -> "Awake"
+                                else -> null
+                            }
+                            stageValue?.let {
+                                SleepStageJson(
+                                    start_datetime = convertToTargetFormat(stage.startTime.toString()),
+                                    end_datetime = convertToTargetFormat(stage.endTime.toString()),
+                                    record_type = it,
+                                    unit = "sleep_stage",
+                                    value = it,
+                                    source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                                )
+                            }
                         }
                     }
                 } ?: emptyList()
                 Log.d("ActivitySyncBottomSheet", "Prepared ${sleepStage.size} sleep stage records")
-
                 val workout = exerciseSessionRecord?.mapNotNull { record ->
                     val workoutType = when (record.exerciseType) {
                         ExerciseSessionRecord.EXERCISE_TYPE_RUNNING -> "Running"
                         ExerciseSessionRecord.EXERCISE_TYPE_WALKING -> "Walking"
+                        ExerciseSessionRecord.EXERCISE_TYPE_GYMNASTICS -> "Gym"
+                        ExerciseSessionRecord.EXERCISE_TYPE_OTHER_WORKOUT -> "Other Workout"
+                        ExerciseSessionRecord.EXERCISE_TYPE_BIKING -> "Biking"
+                        ExerciseSessionRecord.EXERCISE_TYPE_BIKING_STATIONARY -> "Biking Stationary"
+                        ExerciseSessionRecord.EXERCISE_TYPE_SWIMMING_POOL -> "Cycling"
+                        ExerciseSessionRecord.EXERCISE_TYPE_SWIMMING_OPEN_WATER -> "Swimming"
+                        ExerciseSessionRecord.EXERCISE_TYPE_STRENGTH_TRAINING -> "Strength Training"
+                        ExerciseSessionRecord.EXERCISE_TYPE_YOGA -> "Yoga"
+                        ExerciseSessionRecord.EXERCISE_TYPE_HIGH_INTENSITY_INTERVAL_TRAINING -> "HIIT"
+                        ExerciseSessionRecord.EXERCISE_TYPE_BADMINTON -> "Badminton"
+                        ExerciseSessionRecord.EXERCISE_TYPE_BASKETBALL -> "Basketball"
+                        ExerciseSessionRecord.EXERCISE_TYPE_BASEBALL -> "Baseball"
                         else -> "Other"
                     }
-                    val calories = totalCaloriesBurnedRecord?.filter {
-                        it.startTime >= record.startTime && it.endTime <= record.endTime
-                    }?.sumOf { it.energy.inKilocalories.toInt() } ?: 0
+                    val calories = 0//totalCaloriesBurnedRecord?.filter {
+//                        it.startTime >= record.startTime && it.endTime <= record.endTime
+//                    }?.sumOf { it.energy.inKilocalories.toInt() } ?: 0
                     val distance = record.metadata.dataOrigin?.let { 5.0 } ?: 0.0
                     if (calories > 0) {
                         WorkoutRequest(
@@ -799,7 +822,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                             record_type = "Workout",
                             workout_type = workoutType,
                             duration = ((record.endTime.toEpochMilli() - record.startTime.toEpochMilli()) / 1000 / 60).toString(),
-                            calories_burned = calories.toString(),
+                            calories_burned = "",
                             distance = String.format("%.1f", distance),
                             duration_unit = "minutes",
                             calories_unit = "kcal",
@@ -1015,23 +1038,38 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                     )
                 } ?: emptyList()
                 val sleepStage = sleepSessionRecord?.flatMap { record ->
-                    record.stages.mapNotNull { stage ->
-                        val stageValue = when (stage.stage) {
-                            SleepSessionRecord.STAGE_TYPE_DEEP -> "Deep Sleep"
-                            SleepSessionRecord.STAGE_TYPE_LIGHT -> "Light Sleep"
-                            SleepSessionRecord.STAGE_TYPE_REM -> "REM Sleep"
-                            SleepSessionRecord.STAGE_TYPE_AWAKE -> "Awake"
-                            else -> null
-                        }
-                        stageValue?.let {
+                    if (record.stages.isEmpty()) {
+                        // No stages → return default "sleep"
+                        listOf(
                             SleepStageJson(
-                                start_datetime = convertToSamsungFormat(stage.startTime.toString()),
-                                end_datetime = convertToSamsungFormat(stage.endTime.toString()),
-                                record_type = it,
-                                unit = "sleep_stage",
-                                value = it,
+                                start_datetime = convertToSamsungFormat(record.startTime.toString()),
+                                end_datetime = convertToSamsungFormat(record.endTime.toString()),
+                                record_type = "Asleep",
+                                unit = "stage",
+                                value = "Asleep",
                                 source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
                             )
+                        )
+                    } else {
+                        // Map actual stages
+                        record.stages.mapNotNull { stage ->
+                            val stageValue = when (stage.stage) {
+                                SleepSessionRecord.STAGE_TYPE_DEEP -> "Deep Sleep"
+                                SleepSessionRecord.STAGE_TYPE_LIGHT -> "Light Sleep"
+                                SleepSessionRecord.STAGE_TYPE_REM -> "REM Sleep"
+                                SleepSessionRecord.STAGE_TYPE_AWAKE -> "Awake"
+                                else -> null
+                            }
+                            stageValue?.let {
+                                SleepStageJson(
+                                    start_datetime = convertToSamsungFormat(stage.startTime.toString()),
+                                    end_datetime = convertToSamsungFormat(stage.endTime.toString()),
+                                    record_type = it,
+                                    unit = "sleep_stage",
+                                    value = it,
+                                    source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                                )
+                            }
                         }
                     }
                 } ?: emptyList()
@@ -1053,9 +1091,9 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                         ExerciseSessionRecord.EXERCISE_TYPE_BASEBALL -> "Baseball"
                         else -> "Other"
                     }
-                    val calories = totalCaloriesBurnedRecord?.filter {
-                        it.startTime >= record.startTime && it.endTime <= record.endTime
-                    }?.sumOf { it.energy.inKilocalories.toInt() } ?: 0
+                    val calories = 0//totalCaloriesBurnedRecord?.filter {
+//                        it.startTime >= record.startTime && it.endTime <= record.endTime
+//                    }?.sumOf { it.energy.inKilocalories.toInt() } ?: 0
                     val distance = record.metadata.dataOrigin?.let { 5.0 } ?: 0.0
                     if (calories > 0) {
                         WorkoutRequest(
@@ -1065,7 +1103,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                             record_type = "Workout",
                             workout_type = workoutType,
                             duration = ((record.endTime.toEpochMilli() - record.startTime.toEpochMilli()) / 1000 / 60).toString(),
-                            calories_burned = calories.toString(),
+                            calories_burned = "",
                             distance = String.format("%.1f", distance),
                             duration_unit = "minutes",
                             calories_unit = "kcal",

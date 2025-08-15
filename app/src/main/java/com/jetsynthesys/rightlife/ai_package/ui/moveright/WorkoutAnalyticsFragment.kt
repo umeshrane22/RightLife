@@ -23,6 +23,9 @@ import com.jetsynthesys.rightlife.ai_package.ui.moveright.customProgressBar.Ligh
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.customProgressBar.StripedProgressBar
 import com.jetsynthesys.rightlife.databinding.FragmentWorkoutAnalyticsBinding
 import java.text.SimpleDateFormat
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 data class HRDataPoint(val time: Long, val bpm: Int)
@@ -124,8 +127,8 @@ class WorkoutAnalyticsFragment : BaseFragment<FragmentWorkoutAnalyticsBinding>()
             view.findViewById<TextView>(R.id.functional_strength_text).text = item.title
 
             // Set the timeline (start and end times)
-            val startTime = item.heartRateData.firstOrNull()?.date?.let { formatTime(it) } ?: "N/A"
-            val endTime = item.heartRateData.lastOrNull()?.date?.let { formatTime(it) } ?: "N/A"
+            val startTime = item.heartRateData.firstOrNull()?.date?.let { convertUtcToSystemLocal(it) } ?: "N/A"
+            val endTime = item.heartRateData.lastOrNull()?.date?.let { convertUtcToSystemLocal(it) } ?: "N/A"
             view.findViewById<TextView>(R.id.timeline_text).text = "$startTime to $endTime"
 
             // Set the duration, calories burned, and average heart rate
@@ -191,9 +194,11 @@ class WorkoutAnalyticsFragment : BaseFragment<FragmentWorkoutAnalyticsBinding>()
             // Convert heartRateData to HRDataPoint and set it on the graph
             dataPoints.clear()
             item.heartRateData.forEach { heartRateData ->
+                val zdt = ZonedDateTime.parse(heartRateData.date)
+                val millis = zdt.toInstant().toEpochMilli()
                 val time = parseTime(heartRateData.date)
                 val bpm = heartRateData.heartRate.toInt()
-                dataPoints.add(HRDataPoint(time, bpm))
+                dataPoints.add(HRDataPoint(millis, bpm))
             }
             heartRateGraph.setData(dataPoints)
         } ?: run {
@@ -215,6 +220,16 @@ class WorkoutAnalyticsFragment : BaseFragment<FragmentWorkoutAnalyticsBinding>()
             val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
             val date = sdf.parse(timestamp)
             timeFormat.format(date).lowercase()
+        } catch (e: Exception) {
+            "N/A"
+        }
+    }
+
+    private fun convertUtcToSystemLocal(utcTime: String): String {
+        return try {
+        val utcDateTime = ZonedDateTime.parse(utcTime)
+        val localDateTime = utcDateTime.withZoneSameInstant(ZoneId.systemDefault())
+         localDateTime.format(DateTimeFormatter.ofPattern("h:mm a", Locale.getDefault())).lowercase()
         } catch (e: Exception) {
             "N/A"
         }
