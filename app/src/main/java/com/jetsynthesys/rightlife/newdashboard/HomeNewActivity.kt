@@ -20,6 +20,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.PermissionController
@@ -62,6 +63,7 @@ import com.jetsynthesys.rightlife.BaseActivity
 import com.jetsynthesys.rightlife.BuildConfig
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.RetrofitData.ApiClient
+import com.jetsynthesys.rightlife.ai_package.PermissionManager
 import com.jetsynthesys.rightlife.ai_package.model.BloodPressure
 import com.jetsynthesys.rightlife.ai_package.model.BodyFatPercentage
 import com.jetsynthesys.rightlife.ai_package.model.BodyMass
@@ -76,6 +78,7 @@ import com.jetsynthesys.rightlife.ai_package.model.StepCountRequest
 import com.jetsynthesys.rightlife.ai_package.model.StoreHealthDataRequest
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutRequest
 import com.jetsynthesys.rightlife.ai_package.ui.MainAIActivity
+import com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment.SnapMealFragment
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
 import com.jetsynthesys.rightlife.databinding.ActivityHomeNewBinding
 import com.jetsynthesys.rightlife.databinding.BottomsheetTrialEndedBinding
@@ -140,6 +143,12 @@ class HomeNewActivity : BaseActivity() {
     private var oxygenSaturationRecord: List<OxygenSaturationRecord>? = null
     private var respiratoryRateRecord: List<RespiratoryRateRecord>? = null
     private lateinit var healthConnectClient: HealthConnectClient
+
+    private lateinit var permissionManager: PermissionManager
+    private val permissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { result ->
+            permissionManager.handlePermissionResult(result)
+        }
 
     private val allReadPermissions = setOf(
         HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class),
@@ -349,16 +358,27 @@ class HomeNewActivity : BaseActivity() {
             }
             includedhomebottomsheet.llMealplan.setOnClickListener {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_SNAP_MEAL_CLICK)
-                startActivity(Intent(this@HomeNewActivity, MainAIActivity::class.java).apply {
-                    putExtra("ModuleName", "EatRight")
-                    putExtra("BottomSeatName", "SnapMealTypeEat")
-                    if (sharedPreferenceManager.snapMealId.isNotEmpty()) {
-                        intent.putExtra(
-                            "snapMealId",
-                            sharedPreferenceManager.snapMealId
-                        ) // make sure snapMealId is declared and initialized
+                permissionManager = PermissionManager(
+                    activity = this@HomeNewActivity, // or just `this` in Activity
+                    launcher = permissionLauncher,
+                    onPermissionGranted = {
+                        startActivity(Intent(this@HomeNewActivity, MainAIActivity::class.java).apply {
+                            putExtra("ModuleName", "EatRight")
+                            putExtra("BottomSeatName", "SnapMealTypeEat")
+                            if (sharedPreferenceManager.snapMealId.isNotEmpty()) {
+                                intent.putExtra(
+                                    "snapMealId",
+                                    sharedPreferenceManager.snapMealId
+                                ) // make sure snapMealId is declared and initialized
+                            }
+                        })
+                    },
+                    onPermissionDenied = {
+                        // ❌ Show user-facing message or disable features
+                        Toast.makeText(this@HomeNewActivity, "Permission denied", Toast.LENGTH_SHORT).show()
                     }
-                })
+                )
+                permissionManager.checkAndRequestPermissions()
             }
 
         }
@@ -1099,7 +1119,7 @@ class HomeNewActivity : BaseActivity() {
                 SharedPreferenceManager.getInstance(this@HomeNewActivity).moveRightSyncTime ?: ""
             if (syncTime == "") {
                 endTime = Instant.now()
-                startTime = endTime.minus(Duration.ofDays(30))
+                startTime = endTime.minus(Duration.ofDays(20))
             } else {
                 endTime = Instant.now()
                 startTime = convertUtcToInstant(syncTime)
@@ -1585,23 +1605,38 @@ class HomeNewActivity : BaseActivity() {
                     )
                 } ?: emptyList()
                 val sleepStage = sleepSessionRecord?.flatMap { record ->
-                    record.stages.mapNotNull { stage ->
-                        val stageValue = when (stage.stage) {
-                            SleepSessionRecord.STAGE_TYPE_DEEP -> "Deep Sleep"
-                            SleepSessionRecord.STAGE_TYPE_LIGHT -> "Light Sleep"
-                            SleepSessionRecord.STAGE_TYPE_REM -> "REM Sleep"
-                            SleepSessionRecord.STAGE_TYPE_AWAKE -> "Awake"
-                            else -> null
-                        }
-                        stageValue?.let {
+                    if (record.stages.isEmpty()) {
+                        // No stages → return default "sleep"
+                        listOf(
                             SleepStageJson(
-                                start_datetime = convertToTargetFormat(stage.startTime.toString()),
-                                end_datetime = convertToTargetFormat(stage.endTime.toString()),
-                                record_type = it,
-                                unit = "sleep_stage",
-                                value = it,
-                                source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
+                                start_datetime = convertToTargetFormat(record.startTime.toString()),
+                                end_datetime = convertToTargetFormat(record.endTime.toString()),
+                                record_type = "Asleep",
+                                unit = "stage",
+                                value = "Asleep",
+                                source_name =  SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
                             )
+                        )
+                    } else {
+                        // Map actual stages
+                        record.stages.mapNotNull { stage ->
+                            val stageValue = when (stage.stage) {
+                                SleepSessionRecord.STAGE_TYPE_DEEP -> "Deep Sleep"
+                                SleepSessionRecord.STAGE_TYPE_LIGHT -> "Light Sleep"
+                                SleepSessionRecord.STAGE_TYPE_REM -> "REM Sleep"
+                                SleepSessionRecord.STAGE_TYPE_AWAKE -> "Awake"
+                                else -> null
+                            }
+                            stageValue?.let {
+                                SleepStageJson(
+                                    start_datetime = convertToTargetFormat(stage.startTime.toString()),
+                                    end_datetime = convertToTargetFormat(stage.endTime.toString()),
+                                    record_type = it,
+                                    unit = "sleep_stage",
+                                    value = it,
+                                    source_name =  SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
+                                )
+                            }
                         }
                     }
                 } ?: emptyList()
@@ -1609,11 +1644,23 @@ class HomeNewActivity : BaseActivity() {
                     val workoutType = when (record.exerciseType) {
                         ExerciseSessionRecord.EXERCISE_TYPE_RUNNING -> "Running"
                         ExerciseSessionRecord.EXERCISE_TYPE_WALKING -> "Walking"
+                        ExerciseSessionRecord.EXERCISE_TYPE_GYMNASTICS -> "Gym"
+                        ExerciseSessionRecord.EXERCISE_TYPE_OTHER_WORKOUT -> "Other Workout"
+                        ExerciseSessionRecord.EXERCISE_TYPE_BIKING -> "Biking"
+                        ExerciseSessionRecord.EXERCISE_TYPE_BIKING_STATIONARY -> "Biking Stationary"
+                        ExerciseSessionRecord.EXERCISE_TYPE_SWIMMING_POOL -> "Cycling"
+                        ExerciseSessionRecord.EXERCISE_TYPE_SWIMMING_OPEN_WATER -> "Swimming"
+                        ExerciseSessionRecord.EXERCISE_TYPE_STRENGTH_TRAINING -> "Strength Training"
+                        ExerciseSessionRecord.EXERCISE_TYPE_YOGA -> "Yoga"
+                        ExerciseSessionRecord.EXERCISE_TYPE_HIGH_INTENSITY_INTERVAL_TRAINING -> "HIIT"
+                        ExerciseSessionRecord.EXERCISE_TYPE_BADMINTON -> "Badminton"
+                        ExerciseSessionRecord.EXERCISE_TYPE_BASKETBALL -> "Basketball"
+                        ExerciseSessionRecord.EXERCISE_TYPE_BASEBALL -> "Baseball"
                         else -> "Other"
                     }
-                    val calories = totalCaloriesBurnedRecord?.filter {
-                        it.startTime >= record.startTime && it.endTime <= record.endTime
-                    }?.sumOf { it.energy.inKilocalories.toInt() } ?: 0
+                    val calories = 0//totalCaloriesBurnedRecord?.filter {
+//                        it.startTime >= record.startTime && it.endTime <= record.endTime
+//                    }?.sumOf { it.energy.inKilocalories.toInt() } ?: 0
                     val distance = record.metadata.dataOrigin.let { 5.0 }
                     if (calories > 0) {
                         WorkoutRequest(
@@ -1623,7 +1670,7 @@ class HomeNewActivity : BaseActivity() {
                             record_type = "Workout",
                             workout_type = workoutType,
                             duration = ((record.endTime.toEpochMilli() - record.startTime.toEpochMilli()) / 1000 / 60).toString(),
-                            calories_burned = calories.toString(),
+                            calories_burned = "",
                             distance = String.format("%.1f", distance),
                             duration_unit = "minutes",
                             calories_unit = "kcal",
@@ -1842,24 +1889,38 @@ class HomeNewActivity : BaseActivity() {
                     )
                 } ?: emptyList()
                 val sleepStage = sleepSessionRecord?.flatMap { record ->
-                    record.stages.mapNotNull { stage ->
-                        val stageValue = when (stage.stage) {
-                            SleepSessionRecord.STAGE_TYPE_DEEP -> "Deep Sleep"
-                            SleepSessionRecord.STAGE_TYPE_LIGHT -> "Light Sleep"
-                            SleepSessionRecord.STAGE_TYPE_REM -> "REM Sleep"
-                            SleepSessionRecord.STAGE_TYPE_AWAKE -> "Awake"
-                            else -> null
-                        }
-                        stageValue?.let {
+                    if (record.stages.isEmpty()) {
+                        // No stages → return default "sleep"
+                        listOf(
                             SleepStageJson(
-                                start_datetime = convertToSamsungFormat(stage.startTime.toString()),
-                                end_datetime = convertToSamsungFormat(stage.endTime.toString()),
-                                record_type = it,
-                                unit = "sleep_stage",
-                                value = it,
+                                start_datetime = convertToSamsungFormat(record.startTime.toString()),
+                                end_datetime = convertToSamsungFormat(record.endTime.toString()),
+                                record_type = "Asleep",
+                                unit = "stage",
+                                value = "Asleep",
                                 source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
-                                    ?: "samsung"
                             )
+                        )
+                    } else {
+                        // Map actual stages
+                        record.stages.mapNotNull { stage ->
+                            val stageValue = when (stage.stage) {
+                                SleepSessionRecord.STAGE_TYPE_DEEP -> "Deep Sleep"
+                                SleepSessionRecord.STAGE_TYPE_LIGHT -> "Light Sleep"
+                                SleepSessionRecord.STAGE_TYPE_REM -> "REM Sleep"
+                                SleepSessionRecord.STAGE_TYPE_AWAKE -> "Awake"
+                                else -> null
+                            }
+                            stageValue?.let {
+                                SleepStageJson(
+                                    start_datetime = convertToSamsungFormat(stage.startTime.toString()),
+                                    end_datetime = convertToSamsungFormat(stage.endTime.toString()),
+                                    record_type = it,
+                                    unit = "sleep_stage",
+                                    value = it,
+                                    source_name = SharedPreferenceManager.getInstance(this@HomeNewActivity).deviceName
+                                )
+                            }
                         }
                     }
                 } ?: emptyList()
@@ -1881,9 +1942,9 @@ class HomeNewActivity : BaseActivity() {
                         ExerciseSessionRecord.EXERCISE_TYPE_BASEBALL -> "Baseball"
                         else -> "Other"
                     }
-                    val calories = totalCaloriesBurnedRecord?.filter {
-                        it.startTime >= record.startTime && it.endTime <= record.endTime
-                    }?.sumOf { it.energy.inKilocalories.toInt() } ?: 0
+                    val calories = 0//totalCaloriesBurnedRecord?.filter {
+//                        it.startTime >= record.startTime && it.endTime <= record.endTime
+//                    }?.sumOf { it.energy.inKilocalories.toInt() } ?: 0
                     val distance = record.metadata.dataOrigin.let { 5.0 }
                     if (calories > 0) {
                         WorkoutRequest(
@@ -1894,7 +1955,7 @@ class HomeNewActivity : BaseActivity() {
                             record_type = "Workout",
                             workout_type = workoutType,
                             duration = ((record.endTime.toEpochMilli() - record.startTime.toEpochMilli()) / 1000 / 60).toString(),
-                            calories_burned = calories.toString(),
+                            calories_burned = "",
                             distance = String.format("%.1f", distance),
                             duration_unit = "minutes",
                             calories_unit = "kcal",

@@ -18,11 +18,6 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainAIActivity : BaseActivity() {
 
     lateinit var bi: ActivityMainAiBinding
-    private lateinit var permissionManager: PermissionManager
-    private val permissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { result ->
-            permissionManager.handlePermissionResult(result)
-        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,26 +40,15 @@ class MainAIActivity : BaseActivity() {
                     commit()
                 }
             }else{
-                permissionManager = PermissionManager(
-                    activity = this, // or just `this` in Activity
-                    launcher = permissionLauncher,
-                    onPermissionGranted = {
-                        supportFragmentManager.beginTransaction().apply {
-                            val mealSearchFragment = SnapMealFragment()
-                            val args = Bundle()
-                            args.putString("ModuleName", "HomeDashboard")
-                            mealSearchFragment.arguments = args
-                            replace(R.id.flFragment, mealSearchFragment, "SnapMealFragmentTag")
-                            addToBackStack(null)
-                            commit()
-                        }
-                    },
-                    onPermissionDenied = {
-                        // ❌ Show user-facing message or disable features
-                        Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
-                    }
-                )
-                permissionManager.checkAndRequestPermissions()
+                supportFragmentManager.beginTransaction().apply {
+                    val mealSearchFragment = SnapMealFragment()
+                    val args = Bundle()
+                    args.putString("ModuleName", "HomeDashboard")
+                    mealSearchFragment.arguments = args
+                    replace(R.id.flFragment, mealSearchFragment, "SnapMealFragmentTag")
+                    addToBackStack(null)
+                    commit()
+                }
             }
         }else  if (bottomSeatName.contentEquals("MealLogTypeEat")){
             supportFragmentManager.beginTransaction().apply {

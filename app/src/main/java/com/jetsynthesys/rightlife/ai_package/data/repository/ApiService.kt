@@ -328,11 +328,6 @@ interface ApiService {
         @Body request: StoreHealthDataRequest
     ): Response<StoreHealthDataResponse>
 
-    @POST("move/store/")
-    suspend fun storeSleepData(
-        @Body request: SleepJsonRequest
-    ): Response<StoreHealthDataResponse>
-
     @POST("move/routine/create/")
     suspend fun createRoutine(
         @Body request: CreateRoutineRequest

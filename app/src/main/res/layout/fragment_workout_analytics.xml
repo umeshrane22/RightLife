@@ -97,7 +97,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/dmsans_bold"
                 android:textColor="@color/black"
-                android:textSize="16dp"
+                android:textSize="16sp"
                 android:text="Your Heart Rate Analysis"
                 android:layout_marginTop="80dp"
                 android:layout_marginStart="20dp"
@@ -133,14 +133,17 @@
 
                     <androidx.cardview.widget.CardView
                         android:id="@+id/total_duration_Layout"
-                        android:layout_width="110dp"
+                        android:layout_width="0dp"
                         android:layout_height="54dp"
                         app:cardBackgroundColor="@color/border_line"
                         app:cardCornerRadius="10dp"
                         android:layout_marginTop="20dp"
-                        android:layout_marginStart="3dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="5dp"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/heartRateGraph">
+                        app:layout_constraintTop_toBottomOf="@+id/heartRateGraph"
+                        app:layout_constraintEnd_toStartOf="@+id/calorie_burned_Layout"
+                        app:layout_constraintHorizontal_weight="1">
 
                         <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_width="match_parent"
@@ -154,15 +157,15 @@
                                 android:layout_marginStart="16dp"
                                 android:layout_marginEnd="16dp"
                                 android:text="1 hr 03 mins"
-                                android:textSize="19sp"
+                                android:textSize="15sp"
                                 android:textColor="@color/workout_textcolor"
                                 app:layout_constraintTop_toTopOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent" />
 
                             <ImageView
-                                android:layout_width="5dp"
-                                android:layout_height="5dp"
+                                android:layout_width="8dp"
+                                android:layout_height="8dp"
                                 android:src="@drawable/awesome"
                                 app:layout_constraintTop_toTopOf="@+id/today_duration"
                                 app:layout_constraintBottom_toBottomOf="@+id/today_duration"
@@ -186,14 +189,17 @@
 
                     <androidx.cardview.widget.CardView
                         android:id="@+id/calorie_burned_Layout"
-                        android:layout_width="110dp"
+                        android:layout_width="0dp"
                         android:layout_height="54dp"
                         app:cardBackgroundColor="@color/border_line"
                         app:cardCornerRadius="10dp"
                         android:layout_marginTop="20dp"
-                        android:layout_marginStart="3dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginEnd="5dp"
                         app:layout_constraintStart_toEndOf="@+id/total_duration_Layout"
-                        app:layout_constraintTop_toBottomOf="@+id/heartRateGraph">
+                        app:layout_constraintTop_toBottomOf="@+id/heartRateGraph"
+                        app:layout_constraintEnd_toStartOf="@+id/avg_heartrate_Layout"
+                        app:layout_constraintHorizontal_weight="1">
 
                         <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_width="match_parent"
@@ -207,15 +213,15 @@
                                 android:layout_marginStart="16dp"
                                 android:layout_marginEnd="16dp"
                                 android:text="514 cal"
-                                android:textSize="19sp"
+                                android:textSize="15sp"
                                 android:textColor="@color/workout_textcolor"
                                 app:layout_constraintTop_toTopOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintEnd_toEndOf="parent" />
 
                             <ImageView
-                                android:layout_width="6dp"
-                                android:layout_height="7dp"
+                                android:layout_width="8dp"
+                                android:layout_height="8dp"
                                 android:src="@drawable/calorie_burned_icon"
                                 app:layout_constraintBottom_toBottomOf="@+id/calorie_burned"
                                 app:layout_constraintTop_toTopOf="@+id/calorie_burned"
@@ -241,15 +247,17 @@
 
                     <androidx.cardview.widget.CardView
                         android:id="@+id/avg_heartrate_Layout"
-                        android:layout_width="110dp"
+                        android:layout_width="0dp"
                         android:layout_height="54dp"
                         app:cardBackgroundColor="@color/border_line"
                         app:cardCornerRadius="10dp"
                         android:layout_marginTop="20dp"
-                        android:layout_marginStart="3dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginEnd="10dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/calorie_burned_Layout"
-                        app:layout_constraintTop_toBottomOf="@+id/heartRateGraph">
+                        app:layout_constraintTop_toBottomOf="@+id/heartRateGraph"
+                        app:layout_constraintHorizontal_weight="1">
 
                         <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_width="match_parent"
@@ -263,7 +271,7 @@
                                 android:layout_marginStart="16dp"
                                 android:layout_marginEnd="16dp"
                                 android:text="514 cal"
-                                android:textSize="19sp"
+                                android:textSize="15sp"
                                 android:textColor="@color/workout_textcolor"
                                 app:layout_constraintTop_toTopOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"

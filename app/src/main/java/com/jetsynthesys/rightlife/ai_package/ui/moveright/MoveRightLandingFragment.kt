@@ -700,7 +700,8 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                     goalStepsTv.text = goalStepCount.toString()
                                 }else{
                                    if(it.data.caloriesBurned.today.toDouble() == 0.0){
-                                       if (isSyncData){
+                                       val result = hasAnyValueGreaterThanZero(avgHrData)
+                                       if (result){
                                            step_forward_icon.visibility = View.VISIBLE
                                            stepNoDataLayout.visibility = View.GONE
                                            stepWithDataCardLayout.visibility = View.VISIBLE
@@ -880,6 +881,10 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         }
     }
 
+    fun hasAnyValueGreaterThanZero(array: FloatArray): Boolean {
+        return array.any { it > 0f }
+    }
+
     override fun onResume() {
         super.onResume()
         fetchUserWorkouts()
@@ -956,6 +961,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     fun convertUtcToInstant(utcString: String): Instant {
         return Instant.from(DateTimeFormatter.ISO_INSTANT.parse(utcString))
     }
+
     private fun showPermissionDialog() {
         AlertDialog.Builder(requireContext())
             .setTitle("Permission Required")
@@ -1000,7 +1006,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
             val syncTime = SharedPreferenceManager.getInstance(requireContext()).moveRightSyncTime ?: ""
             if (syncTime == "") {
                 endTime = Instant.now()
-                startTime = endTime.minus(Duration.ofDays(30))
+                startTime = endTime.minus(Duration.ofDays(20))
             }else{
                 endTime = Instant.now()
                 startTime = convertUtcToInstant(syncTime)
@@ -1637,23 +1643,38 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                     )
                 } ?: emptyList()
                 val sleepStage = sleepSessionRecord?.flatMap { record ->
-                    record.stages.mapNotNull { stage ->
-                        val stageValue = when (stage.stage) {
-                            SleepSessionRecord.STAGE_TYPE_DEEP -> "Deep Sleep"
-                            SleepSessionRecord.STAGE_TYPE_LIGHT -> "Light Sleep"
-                            SleepSessionRecord.STAGE_TYPE_REM -> "REM Sleep"
-                            SleepSessionRecord.STAGE_TYPE_AWAKE -> "Awake"
-                            else -> null
-                        }
-                        stageValue?.let {
+                    if (record.stages.isEmpty()) {
+                        // No stages → return default "sleep"
+                        listOf(
                             SleepStageJson(
-                                start_datetime = convertToTargetFormat(stage.startTime.toString()),
-                                end_datetime = convertToTargetFormat(stage.endTime.toString()),
-                                record_type = it,
-                                unit = "sleep_stage",
-                                value = it,
-                                source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName
+                                start_datetime = convertToTargetFormat(record.startTime.toString()),
+                                end_datetime = convertToTargetFormat(record.endTime.toString()),
+                                record_type = "Asleep",
+                                unit = "stage",
+                                value = "Asleep",
+                                source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
                             )
+                        )
+                    } else {
+                        // Map actual stages
+                        record.stages.mapNotNull { stage ->
+                            val stageValue = when (stage.stage) {
+                                SleepSessionRecord.STAGE_TYPE_DEEP -> "Deep Sleep"
+                                SleepSessionRecord.STAGE_TYPE_LIGHT -> "Light Sleep"
+                                SleepSessionRecord.STAGE_TYPE_REM -> "REM Sleep"
+                                SleepSessionRecord.STAGE_TYPE_AWAKE -> "Awake"
+                                else -> null
+                            }
+                            stageValue?.let {
+                                SleepStageJson(
+                                    start_datetime = convertToTargetFormat(stage.startTime.toString()),
+                                    end_datetime = convertToTargetFormat(stage.endTime.toString()),
+                                    record_type = it,
+                                    unit = "sleep_stage",
+                                    value = it,
+                                    source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                                )
+                            }
                         }
                     }
                 } ?: emptyList()
@@ -1675,9 +1696,9 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                         ExerciseSessionRecord.EXERCISE_TYPE_BASEBALL -> "Baseball"
                         else -> "Other"
                     }
-                    val calories = totalCaloriesBurnedRecord?.filter {
-                        it.startTime >= record.startTime && it.endTime <= record.endTime
-                    }?.sumOf { it.energy.inKilocalories.toInt() } ?: 0
+                    val calories = 0//totalCaloriesBurnedRecord?.filter {
+//                        it.startTime >= record.startTime && it.endTime <= record.endTime
+//                    }?.sumOf { it.energy.inKilocalories.toInt() } ?: 0
                     val distance = record.metadata.dataOrigin?.let { 5.0 } ?: 0.0
                     if (calories > 0) {
                         WorkoutRequest(
@@ -1687,7 +1708,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                             record_type = "Workout",
                             workout_type = workoutType,
                             duration = ((record.endTime.toEpochMilli() - record.startTime.toEpochMilli()) / 1000 / 60).toString(),
-                            calories_burned = calories.toString(),
+                            calories_burned = "",
                             distance = String.format("%.1f", distance),
                             duration_unit = "minutes",
                             calories_unit = "kcal",
@@ -1722,14 +1743,25 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                         SharedPreferenceManager.getInstance(requireContext()).saveMoveRightSyncTime(syncTime.toString())
                         isRepeat = true
                         fetchMoveLanding(recyclerView, adapter)
+                        fetchUserWorkouts()
                     } else {
                         isRepeat = true
+                        if (isAdded  && view != null){
+                            requireActivity().runOnUiThread {
+                                dismissLoader(requireView())
+                            }
+                        }
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
                     isRepeat = true
+                    if (isAdded  && view != null){
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
                 }
             }
         }
@@ -1886,23 +1918,38 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                     )
                 } ?: emptyList()
                 val sleepStage = sleepSessionRecord?.flatMap { record ->
-                    record.stages.mapNotNull { stage ->
-                        val stageValue = when (stage.stage) {
-                            SleepSessionRecord.STAGE_TYPE_DEEP -> "Deep Sleep"
-                            SleepSessionRecord.STAGE_TYPE_LIGHT -> "Light Sleep"
-                            SleepSessionRecord.STAGE_TYPE_REM -> "REM Sleep"
-                            SleepSessionRecord.STAGE_TYPE_AWAKE -> "Awake"
-                            else -> null
-                        }
-                        stageValue?.let {
+                    if (record.stages.isEmpty()) {
+                        // No stages → return default "sleep"
+                        listOf(
                             SleepStageJson(
-                                start_datetime = convertToSamsungFormat(stage.startTime.toString()),
-                                end_datetime = convertToSamsungFormat(stage.endTime.toString()),
-                                record_type = it,
-                                unit = "sleep_stage",
-                                value = it,
+                                start_datetime = convertToSamsungFormat(record.startTime.toString()),
+                                end_datetime = convertToSamsungFormat(record.endTime.toString()),
+                                record_type = "Asleep",
+                                unit = "stage",
+                                value = "Asleep",
                                 source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
                             )
+                        )
+                    } else {
+                        // Map actual stages
+                        record.stages.mapNotNull { stage ->
+                            val stageValue = when (stage.stage) {
+                                SleepSessionRecord.STAGE_TYPE_DEEP -> "Deep Sleep"
+                                SleepSessionRecord.STAGE_TYPE_LIGHT -> "Light Sleep"
+                                SleepSessionRecord.STAGE_TYPE_REM -> "REM Sleep"
+                                SleepSessionRecord.STAGE_TYPE_AWAKE -> "Awake"
+                                else -> null
+                            }
+                            stageValue?.let {
+                                SleepStageJson(
+                                    start_datetime = convertToSamsungFormat(stage.startTime.toString()),
+                                    end_datetime = convertToSamsungFormat(stage.endTime.toString()),
+                                    record_type = it,
+                                    unit = "sleep_stage",
+                                    value = it,
+                                    source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
+                                )
+                            }
                         }
                     }
                 } ?: emptyList()
@@ -1910,11 +1957,23 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                     val workoutType = when (record.exerciseType) {
                         ExerciseSessionRecord.EXERCISE_TYPE_RUNNING -> "Running"
                         ExerciseSessionRecord.EXERCISE_TYPE_WALKING -> "Walking"
+                        ExerciseSessionRecord.EXERCISE_TYPE_GYMNASTICS -> "Gym"
+                        ExerciseSessionRecord.EXERCISE_TYPE_OTHER_WORKOUT -> "Other Workout"
+                        ExerciseSessionRecord.EXERCISE_TYPE_BIKING -> "Biking"
+                        ExerciseSessionRecord.EXERCISE_TYPE_BIKING_STATIONARY -> "Biking Stationary"
+                        ExerciseSessionRecord.EXERCISE_TYPE_SWIMMING_POOL -> "Cycling"
+                        ExerciseSessionRecord.EXERCISE_TYPE_SWIMMING_OPEN_WATER -> "Swimming"
+                        ExerciseSessionRecord.EXERCISE_TYPE_STRENGTH_TRAINING -> "Strength Training"
+                        ExerciseSessionRecord.EXERCISE_TYPE_YOGA -> "Yoga"
+                        ExerciseSessionRecord.EXERCISE_TYPE_HIGH_INTENSITY_INTERVAL_TRAINING -> "HIIT"
+                        ExerciseSessionRecord.EXERCISE_TYPE_BADMINTON -> "Badminton"
+                        ExerciseSessionRecord.EXERCISE_TYPE_BASKETBALL -> "Basketball"
+                        ExerciseSessionRecord.EXERCISE_TYPE_BASEBALL -> "Baseball"
                         else -> "Other"
                     }
-                    val calories = totalCaloriesBurnedRecord?.filter {
-                        it.startTime >= record.startTime && it.endTime <= record.endTime
-                    }?.sumOf { it.energy.inKilocalories.toInt() } ?: 0
+                    val calories = 0//totalCaloriesBurnedRecord?.filter {
+//                        it.startTime >= record.startTime && it.endTime <= record.endTime
+//                    }?.sumOf { it.energy.inKilocalories.toInt() } ?: 0
                     val distance = record.metadata.dataOrigin?.let { 5.0 } ?: 0.0
                     if (calories > 0) {
                         WorkoutRequest(
@@ -1924,7 +1983,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                             record_type = "Workout",
                             workout_type = workoutType,
                             duration = ((record.endTime.toEpochMilli() - record.startTime.toEpochMilli()) / 1000 / 60).toString(),
-                            calories_burned = calories.toString(),
+                            calories_burned = "",
                             distance = String.format("%.1f", distance),
                             duration_unit = "minutes",
                             calories_unit = "kcal",
@@ -1959,6 +2018,7 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                         SharedPreferenceManager.getInstance(requireContext()).saveMoveRightSyncTime(syncTime.toString())
                         isRepeat = true
                         fetchMoveLanding(recyclerView, adapter)
+                        fetchUserWorkouts()
                     } else {
                         isRepeat = true
                     }
@@ -2015,7 +2075,6 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         }
         return bodyFatList
     }
-
 
     private fun loadBodyFatJsonData(): BodyFatJson {
         val json = context?.assets?.open("assets/fit/alldata/derived_com.google.body.fat.percentage_com.goo.json")
@@ -2078,7 +2137,6 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
 
         return "" // Unable to parse
     }
-
 
     fun convertToTargetFormat(input: String): String {
         val possibleFormats = listOf(
@@ -2204,5 +2262,4 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                 }
         }, 2000)
     }
-
 }

@@ -15,6 +15,9 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.model.CardItem
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.graphs.LineGraphViewWorkout
 import java.text.SimpleDateFormat
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 class CarouselAdapter(
@@ -95,8 +98,8 @@ class CarouselAdapter(
                 noDataTextWorkoutLoggedManually.visibility = View.GONE
                 val heartRates = item.heartRateData.map { it.heartRate.toFloat() }
                 lineGraph.updateData(heartRates)
-                leftTimeLabel.text = item.heartRateData.firstOrNull()?.date?.let { formatTime(it) } ?: "N/A"
-                rightTimeLabel.text = item.heartRateData.lastOrNull()?.date?.let { formatTime(it) } ?: "N/A"
+                leftTimeLabel.text = item.heartRateData.firstOrNull()?.date?.let { convertUtcToSystemLocal(it) } ?: "N/A"
+                rightTimeLabel.text = item.heartRateData.lastOrNull()?.date?.let { convertUtcToSystemLocal(it) } ?: "N/A"
                 val displayMetrics = itemView.context.resources.displayMetrics
                 val screenWidthDp = displayMetrics.widthPixels / displayMetrics.density
                 val layoutParams = timeline_line.layoutParams as ConstraintLayout.LayoutParams
@@ -132,6 +135,16 @@ class CarouselAdapter(
 
             lineGraph.setOnClickListener {
                 onGraphClick(item, position)
+            }
+        }
+
+        private fun convertUtcToSystemLocal(utcTime: String): String {
+            return try {
+                val utcDateTime = ZonedDateTime.parse(utcTime)
+                val localDateTime = utcDateTime.withZoneSameInstant(ZoneId.systemDefault())
+                localDateTime.format(DateTimeFormatter.ofPattern("h:mm a", Locale.getDefault())).lowercase()
+            } catch (e: Exception) {
+                "N/A"
             }
         }
 
