@@ -25,7 +25,6 @@ import androidx.health.connect.client.records.OxygenSaturationRecord
 import androidx.health.connect.client.records.RespiratoryRateRecord
 import androidx.health.connect.client.records.RestingHeartRateRecord
 import androidx.health.connect.client.records.SleepSessionRecord
-import androidx.health.connect.client.records.SpeedRecord
 import androidx.health.connect.client.records.StepsRecord
 import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
 import androidx.health.connect.client.records.WeightRecord
@@ -50,7 +49,6 @@ import com.jetsynthesys.rightlife.ai_package.model.StepCountRequest
 import com.jetsynthesys.rightlife.ai_package.model.StoreHealthDataRequest
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutRequest
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -75,7 +73,6 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
     private var bloodPressureRecord: List<BloodPressureRecord>? = null
     private var sleepSessionRecord: List<SleepSessionRecord>? = null
     private var exerciseSessionRecord: List<ExerciseSessionRecord>? = null
-    private var speedRecord: List<SpeedRecord>? = null
     private var weightRecord: List<WeightRecord>? = null
     private var distanceRecord: List<DistanceRecord>? = null
     private var bodyFatRecord: List<BodyFatRecord>? = null
@@ -88,20 +85,19 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
     private val allReadPermissions = setOf(
         HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class),
         HealthPermission.getReadPermission(ActiveCaloriesBurnedRecord::class),
+        HealthPermission.getReadPermission(BasalMetabolicRateRecord::class),
+        HealthPermission.getReadPermission(DistanceRecord::class),
         HealthPermission.getReadPermission(StepsRecord::class),
         HealthPermission.getReadPermission(HeartRateRecord::class),
+        HealthPermission.getReadPermission(HeartRateVariabilityRmssdRecord::class),
+        HealthPermission.getReadPermission(RestingHeartRateRecord::class),
+        HealthPermission.getReadPermission(RespiratoryRateRecord::class),
+        HealthPermission.getReadPermission(OxygenSaturationRecord::class),
+        HealthPermission.getReadPermission(BloodPressureRecord::class),
+        HealthPermission.getReadPermission(WeightRecord::class),
+        HealthPermission.getReadPermission(BodyFatRecord::class),
         HealthPermission.getReadPermission(SleepSessionRecord::class),
         HealthPermission.getReadPermission(ExerciseSessionRecord::class),
-        HealthPermission.getReadPermission(SpeedRecord::class),
-        HealthPermission.getReadPermission(WeightRecord::class),
-        HealthPermission.getReadPermission(DistanceRecord::class),
-        HealthPermission.getReadPermission(OxygenSaturationRecord::class),
-        HealthPermission.getReadPermission(RespiratoryRateRecord::class),
-        HealthPermission.getReadPermission(BodyFatRecord::class),
-        HealthPermission.getReadPermission(RestingHeartRateRecord::class),
-        HealthPermission.getReadPermission(BasalMetabolicRateRecord::class),
-        HealthPermission.getReadPermission(HeartRateVariabilityRmssdRecord::class),
-        HealthPermission.getReadPermission(BloodPressureRecord::class)
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -263,7 +259,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
         } else ""
         if (syncTime.isEmpty()) {
             endTime = Instant.now()
-            startTime = endTime.minus(Duration.ofDays(20))
+            startTime = endTime.minus(Duration.ofDays(7))
         } else {
             endTime = Instant.now()
             startTime = convertUtcToInstant(syncTime)
@@ -311,7 +307,6 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                 stepsRecord = emptyList()
                 Log.d("HealthData", "Steps permission denied")
             }
-
             if (HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class) in grantedPermissions) {
                 val caloriesResponse = healthConnectClient.readRecords(
                     ReadRecordsRequest(
@@ -320,13 +315,17 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                     )
                 )
                 totalCaloriesBurnedRecord = caloriesResponse.records
-                val totalBurnedCalories = totalCaloriesBurnedRecord?.sumOf { it.energy.inKilocalories.toInt() } ?: 0
-                Log.d("HealthData", "Fetched ${totalCaloriesBurnedRecord?.size ?: 0} calories records, Total: $totalBurnedCalories kcal")
+                // Iterate each record individually
+                totalCaloriesBurnedRecord?.forEach { record ->
+                    val burnedCalories = record.energy.inKilocalories
+                    val start = record.startTime
+                    val end = record.endTime
+                    Log.d("HealthData", "Total Calories Burned: $burnedCalories kcal | From: $start To: $end")
+                }
             } else {
                 totalCaloriesBurnedRecord = emptyList()
-                Log.d("HealthData", "Calories permission denied")
+                Log.d("HealthData", "Total Calories Burned permission denied")
             }
-
             if (HealthPermission.getReadPermission(HeartRateRecord::class) in grantedPermissions) {
                 val response = healthConnectClient.readRecords(
                     ReadRecordsRequest(
@@ -437,20 +436,6 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
             } else {
                 exerciseSessionRecord = emptyList()
                 Log.d("HealthData", "Exercise session permission denied")
-            }
-
-            if (HealthPermission.getReadPermission(SpeedRecord::class) in grantedPermissions) {
-                val speedResponse = healthConnectClient.readRecords(
-                    ReadRecordsRequest(
-                        recordType = SpeedRecord::class,
-                        timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
-                    )
-                )
-                speedRecord = speedResponse.records
-                Log.d("HealthData", "Fetched ${speedRecord?.size ?: 0} speed records")
-            } else {
-                speedRecord = emptyList()
-                Log.d("HealthData", "Speed permission denied")
             }
 
             if (HealthPermission.getReadPermission(WeightRecord::class) in grantedPermissions) {
@@ -583,18 +568,34 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                 val userId = sharedPreferenceManager.userId ?: ""
                 val deviceName = sharedPreferenceManager.deviceName ?: "samsung"
 
-                val activeEnergyBurned = totalCaloriesBurnedRecord?.mapNotNull { record ->
-                    if (record.energy.inKilocalories > 0) {
-                        EnergyBurnedRequest(
-                            start_datetime = convertToTargetFormat(record.startTime.toString()),
-                            end_datetime = convertToTargetFormat(record.endTime.toString()),
-                            record_type = "ActiveEnergyBurned",
-                            unit = "kcal",
-                            value = record.energy.inKilocalories.toString(),
-                            source_name = deviceName
-                        )
-                    } else null
-                } ?: emptyList()
+                var activeEnergyBurned : List<EnergyBurnedRequest>? = null
+                if (activeCalorieBurnedRecord!!.isNotEmpty()){
+                    activeEnergyBurned = activeCalorieBurnedRecord?.mapNotNull { record ->
+                        if (record.energy.inKilocalories > 0) {
+                            EnergyBurnedRequest(
+                                start_datetime = convertToTargetFormat(record.startTime.toString()),
+                                end_datetime = convertToTargetFormat(record.endTime.toString()),
+                                record_type = "ActiveEnergyBurned",
+                                unit = "kcal",
+                                value = record.energy.inKilocalories.toString(),
+                                source_name = deviceName
+                            )
+                        } else null
+                    } ?: emptyList()
+                }else{
+                    activeEnergyBurned = totalCaloriesBurnedRecord?.mapNotNull { record ->
+                        if (record.energy.inKilocalories > 0) {
+                            EnergyBurnedRequest(
+                                start_datetime = convertToTargetFormat(record.startTime.toString()),
+                                end_datetime = convertToTargetFormat(record.endTime.toString()),
+                                record_type = "ActiveEnergyBurned",
+                                unit = "kcal",
+                                value = record.energy.inKilocalories.toString(),
+                                source_name = deviceName
+                            )
+                        } else null
+                    } ?: emptyList()
+                }
                 Log.d("ActivitySyncBottomSheet", "Prepared ${activeEnergyBurned.size} active energy records")
 
                 val basalEnergyBurned = basalMetabolicRateRecord?.map { record ->
@@ -810,11 +811,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                         ExerciseSessionRecord.EXERCISE_TYPE_BASEBALL -> "Baseball"
                         else -> "Other"
                     }
-                    val calories = 0//totalCaloriesBurnedRecord?.filter {
-//                        it.startTime >= record.startTime && it.endTime <= record.endTime
-//                    }?.sumOf { it.energy.inKilocalories.toInt() } ?: 0
                     val distance = record.metadata.dataOrigin?.let { 5.0 } ?: 0.0
-                    if (calories > 0) {
                         WorkoutRequest(
                             start_datetime = convertToTargetFormat(record.startTime.toString()),
                             end_datetime = convertToTargetFormat(record.endTime.toString()),
@@ -828,7 +825,6 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                             calories_unit = "kcal",
                             distance_unit = "km"
                         )
-                    } else null
                 } ?: emptyList()
                 Log.d("ActivitySyncBottomSheet", "Prepared ${workout.size} workout records")
 
@@ -891,18 +887,34 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                 val sharedPreferenceManager = SharedPreferenceManager.getInstance(context)
                 val deviceName = sharedPreferenceManager.deviceName ?: "samsung"
                 val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
-                val activeEnergyBurned = totalCaloriesBurnedRecord?.mapNotNull { record ->
-                    if (record.energy.inKilocalories > 0) {
-                        EnergyBurnedRequest(
-                            start_datetime = convertToSamsungFormat(record.startTime.toString()),
-                            end_datetime = convertToSamsungFormat(record.endTime.toString()),
-                            record_type = "ActiveEnergyBurned",
-                            unit = "kcal",
-                            value = record.energy.inKilocalories.toString(),
-                            source_name = SharedPreferenceManager.getInstance(requireActivity()).deviceName ?: "samsung"
-                        )
-                    } else null
-                } ?: emptyList()
+                var activeEnergyBurned : List<EnergyBurnedRequest>? = null
+                if (activeCalorieBurnedRecord!!.isNotEmpty()){
+                    activeEnergyBurned = activeCalorieBurnedRecord?.mapNotNull { record ->
+                        if (record.energy.inKilocalories > 0) {
+                            EnergyBurnedRequest(
+                                start_datetime = convertToSamsungFormat(record.startTime.toString()),
+                                end_datetime = convertToSamsungFormat(record.endTime.toString()),
+                                record_type = "ActiveEnergyBurned",
+                                unit = "kcal",
+                                value = record.energy.inKilocalories.toString(),
+                                source_name = deviceName
+                            )
+                        } else null
+                    } ?: emptyList()
+                }else{
+                    activeEnergyBurned = totalCaloriesBurnedRecord?.mapNotNull { record ->
+                        if (record.energy.inKilocalories > 0) {
+                            EnergyBurnedRequest(
+                                start_datetime = convertToSamsungFormat(record.startTime.toString()),
+                                end_datetime = convertToSamsungFormat(record.endTime.toString()),
+                                record_type = "ActiveEnergyBurned",
+                                unit = "kcal",
+                                value = record.energy.inKilocalories.toString(),
+                                source_name = deviceName
+                            )
+                        } else null
+                    } ?: emptyList()
+                }
                 val basalEnergyBurned = basalMetabolicRateRecord?.map { record ->
                     EnergyBurnedRequest(
                         start_datetime = convertToSamsungFormat(record.time.toString()),
@@ -1091,11 +1103,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                         ExerciseSessionRecord.EXERCISE_TYPE_BASEBALL -> "Baseball"
                         else -> "Other"
                     }
-                    val calories = 0//totalCaloriesBurnedRecord?.filter {
-//                        it.startTime >= record.startTime && it.endTime <= record.endTime
-//                    }?.sumOf { it.energy.inKilocalories.toInt() } ?: 0
                     val distance = record.metadata.dataOrigin?.let { 5.0 } ?: 0.0
-                    if (calories > 0) {
                         WorkoutRequest(
                             start_datetime = convertToSamsungFormat(record.startTime.toString()),
                             end_datetime = convertToSamsungFormat(record.endTime.toString()),
@@ -1109,7 +1117,6 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                             calories_unit = "kcal",
                             distance_unit = "km"
                         )
-                    } else null
                 } ?: emptyList()
                 val request = StoreHealthDataRequest(
                     user_id = userid,

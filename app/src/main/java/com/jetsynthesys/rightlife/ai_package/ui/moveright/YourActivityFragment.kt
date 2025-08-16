@@ -33,6 +33,10 @@ import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.ActivityModel
+import com.jetsynthesys.rightlife.ai_package.model.CardItem
+import com.jetsynthesys.rightlife.ai_package.model.HeartRateZoneMinutes
+import com.jetsynthesys.rightlife.ai_package.model.HeartRateZonePercentages
+import com.jetsynthesys.rightlife.ai_package.model.HeartRateZones
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutWeeklyDayModel
 import com.jetsynthesys.rightlife.ai_package.model.response.WorkoutHistoryResponse
 import com.jetsynthesys.rightlife.ai_package.model.response.WorkoutRecord
@@ -51,7 +55,6 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
@@ -99,7 +102,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
     }
 
     private val myActivityAdapter by lazy {
-        YourActivitiesAdapter(requireContext(), arrayListOf(), -1, null, false,::onDateRecyclerRefresh, ::onWorkoutItemClick,
+        YourActivitiesAdapter(requireContext(), arrayListOf() , arrayListOf(), -1, null, false,::onDateRecyclerRefresh, ::onWorkoutItemClick,
             onCirclePlusClick = { activityModel, position ->
                 val fragment = AddWorkoutSearchFragment()
                 val args = Bundle().apply {
@@ -370,6 +373,26 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                     val workouts = response.body()
                     workouts?.let {
                         // Map syncedWorkouts to CardItem objects
+                        val defaultHeartRateZones = HeartRateZones(
+                            lightZone = emptyList(),
+                            fatBurnZone = emptyList(),
+                            cardioZone = emptyList(),
+                            peakZone = emptyList()
+                        )
+                        val defaultHeartRateZoneMinutes = HeartRateZoneMinutes(
+                            belowLight = 0,
+                            lightZone = 0,
+                            fatBurnZone = 0,
+                            cardioZone = 0,
+                            peakZone = 0
+                        )
+                        val defaultHeartRateZonePercentages = HeartRateZonePercentages(
+                            belowLight = 0f,
+                            lightZone = 0f,
+                            fatBurnZone = 0f,
+                            cardioZone = 0f,
+                            peakZone = 0f
+                        )
                         val syncedCardItems = it.syncedWorkouts.map { workout ->
                             val durationDouble = workout.duration.toDoubleOrNull() ?: 0.0
                             val durationMinutes = durationDouble.toInt()
@@ -402,6 +425,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                                 activityId = workout.activity_id ?: "" // Handle null activity_id
                             )
                         }
+
                         // Map unsyncedWorkouts to CardItem objects
                         val unsyncedCardItems = it.unsyncedWorkouts.map { workout ->
                             val durationDouble = workout.duration.toDoubleOrNull() ?: 0.0
@@ -428,6 +452,35 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                                 activityId = workout.activity_id ?: "" // Handle null activity_id
                             )
                         }
+
+                        val syncedCardItemsView = it.syncedWorkouts.map { workout ->
+                            val durationDouble = workout.duration.toDoubleOrNull() ?: 0.0
+                            val durationMinutes = durationDouble.toInt()
+                            val hours = durationMinutes / 60
+                            val minutes = durationMinutes % 60
+                            val durationText = if (hours > 0) "$hours hr ${minutes.toString().padStart(2, '0')} mins" else "$minutes mins"
+                            val caloriesText = "${workout.caloriesBurned}"
+                            val avgHeartRate = if (workout.heartRateData.isNotEmpty()) {
+                                val totalHeartRate = workout.heartRateData.sumOf { it.heartRate }
+                                val count = workout.heartRateData.size
+                                "${(totalHeartRate / count).toInt()} bpm"
+                            } else "N/A"
+                            workout.heartRateData.forEach { heartRateData ->
+                                heartRateData.trendData.addAll(listOf(listOf(110, 112, 115, 118, 120, 122, 125).toString()))
+                            }
+                            CardItem(
+                                title = workout.workoutType,
+                                duration = durationText,
+                                caloriesBurned = caloriesText,
+                                icon = "",
+                                avgHeartRate = avgHeartRate,
+                                heartRateData = workout.heartRateData,
+                                heartRateZones = workout.heartRateZones ?: defaultHeartRateZones,
+                                heartRateZoneMinutes = workout.heartRateZoneMinutes ?: defaultHeartRateZoneMinutes,
+                                heartRateZonePercentages = workout.heartRateZonePercentages ?: defaultHeartRateZonePercentages,
+                                isSynced = true
+                            )
+                        }
                         // Combine synced and unsynced CardItems
                         val newActivities = ArrayList<ActivityModel>()
                         val allCardItems = syncedCardItems + unsyncedCardItems
@@ -441,7 +494,7 @@ class YourActivityFragment : BaseFragment<FragmentYourActivityBinding>() {
                             activityList.clear()
                             activityList.addAll(newActivities)
                             Log.d("FetchCalories", "Updated activityList with ${activityList.size} activities for date $formattedDate")
-                            myActivityAdapter.addAll(newActivities, -1, null, false)
+                            myActivityAdapter.addAll(newActivities, syncedCardItemsView,-1, null, false)
                             myActivityAdapter.notifyDataSetChanged()
                             // Update RecyclerView visibility
                             if (activityList.isNotEmpty()) {

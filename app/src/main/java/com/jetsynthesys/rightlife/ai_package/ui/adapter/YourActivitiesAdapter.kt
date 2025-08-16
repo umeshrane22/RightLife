@@ -2,6 +2,7 @@ package com.jetsynthesys.rightlife.ai_package.ui.adapter
 
 import android.content.Context
 import android.graphics.Typeface
+import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.text.style.AbsoluteSizeSpan
 import android.text.style.StyleSpan
@@ -15,9 +16,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.model.ActivityModel
+import com.jetsynthesys.rightlife.ai_package.model.CardItem
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.DeleteWorkoutBottomSheet
+import com.jetsynthesys.rightlife.ai_package.ui.moveright.WorkoutAnalyticsFragment
 
-class YourActivitiesAdapter(private val context: Context, private var dataLists: ArrayList<ActivityModel>,
+class YourActivitiesAdapter(private val context: Context, private var dataLists: ArrayList<ActivityModel>, private var syncedCardItems: List<CardItem>,
     private var clickPos: Int,
     private var workoutData: ActivityModel?,
     private var isClickView: Boolean, private val onRefreshDateClick: () -> Unit,
@@ -43,6 +46,7 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
            holder.bpmUnit.text = "bpm"
            holder.subtractionValue.text = item.averageHeartRate.toInt().toString()
            holder.subtraction.setImageResource(R.drawable.avg_heart_rate)
+           holder.layoutMain.isEnabled = true
        }else{
            holder.edit.visibility = View.VISIBLE
            holder.delete.visibility = View.VISIBLE
@@ -51,6 +55,7 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
            holder.bpmUnit.visibility = View.GONE
            holder.subtractionValue.text = item.intensity
            holder.subtraction.setImageResource(R.drawable.intensity_meter)
+           holder.layoutMain.isEnabled = false
        }
         val formattedTime = formatTimeString(item.duration!!)
         holder.duration.text = formattedTime
@@ -83,6 +88,25 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
 
         holder.edit.setOnClickListener {
             onCirclePlusClick(item, position)
+        }
+
+        holder.layoutMain.setOnClickListener {
+            if (syncedCardItems.isNotEmpty()){
+                 var cardItem: CardItem? = null
+                for (syncedItem in syncedCardItems){
+                    if (item.workoutType == syncedItem.title && item.duration == syncedItem.duration){
+                        cardItem = syncedItem
+                        val fragment = WorkoutAnalyticsFragment().apply {
+                            arguments = Bundle().apply { putSerializable("cardItem", cardItem) }
+                        }
+                        (context as AppCompatActivity).supportFragmentManager.beginTransaction()
+                            .replace(R.id.flFragment, fragment, "workoutAnalysisFragment")
+                            .addToBackStack(null)
+                            .commit()
+                        break
+                    }
+                }
+            }
         }
 
         Glide.with(context)
@@ -121,12 +145,20 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
         val dewpoint: ImageView = itemView.findViewById(R.id.image_dewpoint)
         val dewpointValue: TextView = itemView.findViewById(R.id.tv_dewpoint_value)
         val dewpointUnit: TextView = itemView.findViewById(R.id.tv_dewpoint_unit)
+        val layoutMain : androidx.constraintlayout.widget.ConstraintLayout = itemView.findViewById(R.id.layout_main)
     }
 
-    fun addAll(items: ArrayList<ActivityModel>?, pos: Int, workoutItem: ActivityModel?, isClick: Boolean) {
+    fun addAll(
+        items: ArrayList<ActivityModel>?,
+        syncedCardItemsView: List<CardItem>,
+        pos: Int,
+        workoutItem: ActivityModel?,
+        isClick: Boolean,
+    ) {
         dataLists.clear()
         if (items != null) {
             dataLists = items
+            syncedCardItems = syncedCardItemsView
             clickPos = pos
             workoutData = workoutItem
             isClickView = isClick
@@ -177,7 +209,6 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
                 minutes = parts[2].toIntOrNull() ?: 0
             }
         }
-
         // Step 2: Build the formatted string (e.g., "2 hr 1 mins")
         val formattedText = buildString {
             if (hours > 0) {
@@ -187,7 +218,6 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
                 append("$minutes mins")
             }
         }.trim()
-
         // Step 3: Create SpannableStringBuilder for styling
         val spannable = SpannableStringBuilder(formattedText)
 
@@ -241,7 +271,6 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
                 SpannableStringBuilder.SPAN_EXCLUSIVE_EXCLUSIVE
             )
         }
-
         return spannable
     }
 }
