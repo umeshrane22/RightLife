@@ -282,4 +282,8 @@
     <color name="macros_high_color">#B50200</color>
     <color name="border_height_weight">#74747480</color>
 
+    <color name="semitransparent_white">#1AFFFFFF</color>
+    <color name="semitransparent_black">#1A000000</color>
+
+
 </resources>
