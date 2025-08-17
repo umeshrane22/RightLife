@@ -932,7 +932,7 @@ class HomeNewActivity : BaseActivity() {
         }
     }
 
-    private fun updateBackendForPurchase(purchase: Purchase) {
+/*    private fun updateBackendForPurchase(purchase: Purchase) {
         Log.d(
             TAG,
             "Updating backend for purchase: token=${purchase.purchaseToken}, products=${purchase.products}"
@@ -961,7 +961,66 @@ class HomeNewActivity : BaseActivity() {
         }
 
         saveSubscriptionSuccess(paymentSuccessRequest)
+    }*/
+
+    private fun updateBackendForPurchase(purchase: Purchase) {
+        Log.d(
+            TAG,
+            "Updating backend for purchase: token=${purchase.purchaseToken}, products=${purchase.products}"
+        )
+
+        // ✅ Get user profile from SharedPreferences
+        val userProfileResponse = SharedPreferenceManager.getInstance(this).userProfile
+        val purchasedProductId = purchase.products.firstOrNull()
+
+        var resolvedPlanId = ""
+        var resolvedPlanName = ""
+
+        if (userProfileResponse != null && purchasedProductId != null) {
+            // check subscriptions
+            userProfileResponse.subscription?.firstOrNull {
+                it.productId.equals(purchasedProductId, ignoreCase = true)
+            }?.let {
+                resolvedPlanId = it.planId ?: ""
+                resolvedPlanName = it.planName ?: ""
+            }
+
+            // if not found in subscription, check boosters
+            if (resolvedPlanId.isEmpty()) {
+                userProfileResponse.booster?.firstOrNull {
+                    it.productId.equals(purchasedProductId, ignoreCase = true)
+                }?.let {
+                    resolvedPlanId = it.planId ?: ""
+                    resolvedPlanName = it.planName ?: ""
+                }
+            }
+        }
+
+        val paymentSuccessRequest = PaymentSuccessRequest().apply {
+            planId = resolvedPlanId
+            planName = resolvedPlanName
+            paymentGateway = "googlePlay"
+            orderId = purchase.orderId ?: ""
+            environment = "payment"
+            notifyType = "SDK"
+            couponId = ""
+            obfuscatedExternalAccountId = ""
+            price = purchasedProductId ?: ""
+
+            sdkDetail = SdkDetail().apply {
+                price = ""
+                orderId = purchase.orderId ?: ""
+                title = resolvedPlanName
+                environment = "payment"
+                description = ""
+                currencyCode = "INR"
+                currencySymbol = "₹"
+            }
+        }
+
+        saveSubscriptionSuccess(paymentSuccessRequest)
     }
+
 
     private fun saveSubscriptionSuccess(paymentSuccessRequest: PaymentSuccessRequest) {
         Log.d(
@@ -2107,4 +2166,45 @@ class HomeNewActivity : BaseActivity() {
 
         return "" // Unable to parse
     }
+
+
+    //get planid to send in subscription request
+
+    fun getPlanIdFromPurchase(context: Context, purchase: Purchase?): String? {
+        val userProfileResponse = SharedPreferenceManager.getInstance(context).userProfile
+            ?: return null // no profile saved
+
+        if (purchase == null || purchase.products.isEmpty()) {
+            return null
+        }
+
+        val purchasedProductId = purchase.products[0] // usually only 1 product
+        var planId: String? = null
+
+        // Check subscription list
+        userProfileResponse.subscription?.let { subs ->
+            for (sub in subs) {
+                if (sub.productId.equals(purchasedProductId, ignoreCase = true)) {
+                    planId = sub.planId
+                    break
+                }
+            }
+        }
+
+        // If not found in subscription, check booster
+        if (planId == null) {
+            userProfileResponse.booster?.let { boosters ->
+                for (booster in boosters) {
+                    if (booster.productId.equals(purchasedProductId, ignoreCase = true)) {
+                        planId = booster.planId
+                        break
+                    }
+                }
+            }
+        }
+
+        return planId
+    }
+
+
 }
