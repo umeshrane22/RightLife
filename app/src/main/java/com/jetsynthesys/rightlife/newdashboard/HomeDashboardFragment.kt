@@ -24,9 +24,17 @@ import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.permission.HealthPermission
+import androidx.health.connect.client.records.ActiveCaloriesBurnedRecord
+import androidx.health.connect.client.records.BasalMetabolicRateRecord
+import androidx.health.connect.client.records.BloodPressureRecord
+import androidx.health.connect.client.records.BodyFatRecord
 import androidx.health.connect.client.records.DistanceRecord
 import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.records.HeartRateRecord
+import androidx.health.connect.client.records.HeartRateVariabilityRmssdRecord
+import androidx.health.connect.client.records.OxygenSaturationRecord
+import androidx.health.connect.client.records.RespiratoryRateRecord
+import androidx.health.connect.client.records.RestingHeartRateRecord
 import androidx.health.connect.client.records.SleepSessionRecord
 import androidx.health.connect.client.records.SpeedRecord
 import androidx.health.connect.client.records.StepsRecord
@@ -106,13 +114,20 @@ class HomeDashboardFragment : BaseFragment() {
 
     private val allReadPermissions = setOf(
         HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class),
+        HealthPermission.getReadPermission(ActiveCaloriesBurnedRecord::class),
+        HealthPermission.getReadPermission(BasalMetabolicRateRecord::class),
+        HealthPermission.getReadPermission(DistanceRecord::class),
         HealthPermission.getReadPermission(StepsRecord::class),
         HealthPermission.getReadPermission(HeartRateRecord::class),
+        HealthPermission.getReadPermission(HeartRateVariabilityRmssdRecord::class),
+        HealthPermission.getReadPermission(RestingHeartRateRecord::class),
+        HealthPermission.getReadPermission(RespiratoryRateRecord::class),
+        HealthPermission.getReadPermission(OxygenSaturationRecord::class),
+        HealthPermission.getReadPermission(BloodPressureRecord::class),
+        HealthPermission.getReadPermission(WeightRecord::class),
+        HealthPermission.getReadPermission(BodyFatRecord::class),
         HealthPermission.getReadPermission(SleepSessionRecord::class),
         HealthPermission.getReadPermission(ExerciseSessionRecord::class),
-        HealthPermission.getReadPermission(SpeedRecord::class),
-        HealthPermission.getReadPermission(WeightRecord::class),
-        HealthPermission.getReadPermission(DistanceRecord::class)
     )
 
     override fun onCreateView(
@@ -448,6 +463,7 @@ class HomeDashboardFragment : BaseFragment() {
     }
 
     private fun handleChecklistResponse(checklistResponse: ChecklistResponse?) {
+        getDashboardChecklistStatus()
         // profile
         setStatusOfChecklist(
             checklistResponse?.data?.profile!!,
@@ -520,9 +536,9 @@ class HomeDashboardFragment : BaseFragment() {
                 AnalyticsEvent.CHECKLIST_COMPLETE,
                 mapOf(AnalyticsParam.CHECKLIST_COMPLETE to true)
             )
-
+/*
             val activity = requireActivity() as HomeNewActivity
-            activity.getUserDetails()
+            activity.getUserDetails()*/
         } else {
             binding.llDashboardMainData.visibility = View.GONE
             binding.includeChecklist.llLayoutChecklist.visibility = View.VISIBLE
@@ -531,6 +547,7 @@ class HomeDashboardFragment : BaseFragment() {
             sharedPreferenceManager.saveSnapMealId(snapMealId)
             this.snapMealId = snapMealId
         }
+
     }
 
     private fun setStatusOfChecklist(
@@ -659,6 +676,7 @@ class HomeDashboardFragment : BaseFragment() {
                                     binding.llDiscoverLayout.visibility = View.VISIBLE
                                 }
                                 (requireActivity() as? HomeNewActivity)?.showSubsribeLayout(DashboardChecklistManager.paymentStatus)
+                                (requireActivity() as? HomeNewActivity)?.getUserDetails()
                             } else {
                                 Toast.makeText(
                                     requireContext(),
