@@ -5,6 +5,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class RoutineWorkoutDisplayModel(
+    val id :String,
     val name: String,
     val icon: String,// Maps to moduleName in WorkoutSessionRecord
     val duration: String,      // Maps to durationMin (formatted as "X min")

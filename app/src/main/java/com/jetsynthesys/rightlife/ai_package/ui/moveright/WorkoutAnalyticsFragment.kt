@@ -117,20 +117,226 @@ class WorkoutAnalyticsFragment : BaseFragment<FragmentWorkoutAnalyticsBinding>()
                 }
             }
         })
-
         // Retrieve the CardItem from the Bundle
         cardItem = arguments?.getSerializable("cardItem") as? CardItem
-
         // Set the CardItem data to the UI
         cardItem?.let { item ->
             // Set the title
             view.findViewById<TextView>(R.id.functional_strength_text).text = item.title
+            when (item?.title) {
+                "American Football" -> {
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.american_football)// Handle American Football
+                }
+                "Archery" -> {
+                    // Handle Archery
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.archery)
+                }
+                "Athletics" -> {
+                    // Handle Athletics
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.athelete_search)
+                }
+                "Australian Football" -> {
+                    // Handle Australian Football
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.australian_football)
+                }
+                "Badminton" -> {
+                    // Handle Badminton
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.badminton)
+                }
+                "Barre" -> {
+                    // Handle Barre
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.barre)
+                }
+                "Baseball" -> {
+                    // Handle Baseball
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.baseball)
+                }
+                "Basketball" -> {
+                    // Handle Basketball
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.basketball)
+                }
+                "Boxing" -> {
+                    // Handle Boxing
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.boxing)
 
+                }
+                "Climbing" -> {
+                    // Handle Climbing
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.climbing)
+                }
+                "Core Training" -> {
+                    // Handle Core Training
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.core_training)
+                }
+                "Cycling" -> {
+                    // Handle Cycling
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.cycling)
+                }
+                "Cricket" -> {
+                    // Handle Cricket
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.cricket)
+                }
+                "Cross Training" -> {
+                    // Handle Cross Training
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.cross_training)
+                }
+                "Dance" -> {
+                    // Handle Dance
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.dance)
+                }
+                "Disc Sports" -> {
+                    // Handle Disc Sports
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.disc_sports)
+                }
+                "Elliptical" -> {
+                    // Handle Elliptical
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.elliptical)
+                }
+                "Football" -> {
+                    // Handle Football
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.football)
+                }
+                "Functional Strength Training" -> {
+                    // Handle Functional Strength Training
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.functional_strength_training)
+                }
+                "Golf" -> {
+                    // Handle Golf
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.golf)
+                }
+                "Gymnastics" -> {
+                    // Handle Gymnastics
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.gymnastics)
+                }
+                "Handball" -> {
+                    // Handle Handball
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.handball)
+                }
+                "Hiking" -> {
+                    // Handle Hiking
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.hiking)
+                }
+                "Hockey" -> {
+                    // Handle Hockey
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.hockey)
+                }
+                "HIIT" -> {
+                    // Handle HIIT
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.hiit)
+                }
+                "Kickboxing" -> {
+                    // Handle Kickboxing
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.kickboxing)
+                }
+                "Martial Arts" -> {
+                    // Handle Martial Arts
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.martial_arts)
+                }
+                "Other" -> {
+                    // Handle Other
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.other)
+                }
+                "Pickleball" -> {
+                    // Handle Pickleball
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.pickleball)
+                }
+                "Pilates" -> {
+                    // Handle Pilates
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.pilates)
+                }
+                "Power Yoga" -> {
+                    // Handle Power Yoga
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.power_yoga)
+                }
+                "Powerlifting" -> {
+                    // Handle Powerlifting
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.powerlifting)
+                }
+                "Pranayama" -> {
+                    // Handle Pranayama
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.pranayama)
+                }
+                "Running" -> {
+                    // Handle Running
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.running)
+                }
+                "Rowing Machine" -> {
+                    // Handle Rowing Machine
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.rowing_machine)
+                }
+                "Rugby" -> {
+                    // Handle Rugby
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.rugby)
+                }
+                "Skating" -> {
+                    // Handle Skating
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.skating)
+                }
+                "Skipping" -> {
+                    // Handle Skipping
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.skipping)
+                }
+                "Stairs" -> {
+                    // Handle Stairs
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.stairs)
+                }
+                "Squash" -> {
+                    // Handle Squash
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.squash)
+                }
+                "Traditional Strength Training" -> {
+                    // Handle Traditional Strength Training
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.traditional_strength_training)
+                }
+                "Stretching" -> {
+                    // Handle Stretching
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.stretching)
+                }
+                "Swimming" -> {
+                    // Handle Swimming
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.swimming)
+                }
+                "Table Tennis" -> {
+                    // Handle Table Tennis
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.table_tennis)
+                }
+                "Tennis" -> {
+                    // Handle Tennis
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.tennis)
+                }
+                "Track and Field Events" -> {
+                    // Handle Track and Field Events
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.track_field_events)
+                }
+                "Volleyball" -> {
+                    // Handle Volleyball
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.volleyball)
+                }
+                "Walking" -> {
+                    // Handle Walking
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.walking)
+                }
+                "Watersports" -> {
+                    // Handle Watersports
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.watersports)
+                }
+                "Wrestling" -> {
+                    // Handle Wrestling
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.wrestling)
+                }
+                "Yoga" -> {
+                    // Handle Yoga
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.yoga)
+                }
+                else -> {
+                    // Handle unknown or null workoutType
+                    view.findViewById<ImageView>(R.id.functional_strength_icon).setImageResource(R.drawable.other)
+                }
+            }
             // Set the timeline (start and end times)
             val startTime = item.heartRateData.firstOrNull()?.date?.let { convertUtcToSystemLocal(it) } ?: "N/A"
             val endTime = item.heartRateData.lastOrNull()?.date?.let { convertUtcToSystemLocal(it) } ?: "N/A"
             view.findViewById<TextView>(R.id.timeline_text).text = "$startTime to $endTime"
-
             // Set the duration, calories burned, and average heart rate
             view.findViewById<TextView>(R.id.duration_text).text = item.duration
             view.findViewById<TextView>(R.id.calories_text).text = item.caloriesBurned
@@ -190,7 +396,6 @@ class WorkoutAnalyticsFragment : BaseFragment<FragmentWorkoutAnalyticsBinding>()
                 layoutParams.marginStart = 0
                 transparentOverlayCardio.layoutParams = layoutParams
             }
-
             // Convert heartRateData to HRDataPoint and set it on the graph
             dataPoints.clear()
             item.heartRateData.forEach { heartRateData ->
@@ -234,7 +439,6 @@ class WorkoutAnalyticsFragment : BaseFragment<FragmentWorkoutAnalyticsBinding>()
             "N/A"
         }
     }
-
     // Helper function to parse the timestamp to a Long (milliseconds)
     private fun parseTime(timestamp: String): Long {
         return try {
