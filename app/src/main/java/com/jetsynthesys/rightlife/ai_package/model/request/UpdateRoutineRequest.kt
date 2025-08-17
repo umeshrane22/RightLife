@@ -3,6 +3,7 @@ package com.jetsynthesys.rightlife.ai_package.model.request
 data class UpdateRoutineRequest(
     val user_id: String,
     val routine_id: String,
+    val routine_name: String,
     val workouts: List<Workout>
 )
 

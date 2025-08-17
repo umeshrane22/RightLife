@@ -188,7 +188,9 @@ class AllWorkoutFragment : BaseFragment<FragmentAllWorkoutBinding>() {
                     adapter = WorkoutAdapter(requireContext(), workoutList) { selectedWorkout ->
                         if (routine.equals("routine")) {
                             openAddWorkoutFragmentRoutine(selectedWorkout)
-                        } else {
+                        }else if(routine.equals("edit_routine")){
+                            openAddWorkoutFragmentRoutine(selectedWorkout)
+                        }else {
                             openAddWorkoutFragment(selectedWorkout)
                         }
                     }
