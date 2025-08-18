@@ -1265,6 +1265,11 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
             e.printStackTrace()
             withContext(Dispatchers.Main) {
                 Toast.makeText(context, "Error fetching health data: ${e.message}", Toast.LENGTH_SHORT).show()
+                if (isAdded  && view != null){
+                    requireActivity().runOnUiThread {
+                        dismissLoader(requireView())
+                    }
+                }
             }
         }
     }
@@ -1377,15 +1382,14 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                 dataFilledworkout.visibility = View.VISIBLE
                                 nodataWorkout.visibility = View.GONE
                                 isSyncData = true
-
-                                step_forward_icon.visibility = View.VISIBLE
-                                stepNoDataLayout.visibility = View.GONE
-                                stepWithDataCardLayout.visibility = View.VISIBLE
-                                stepLineGraphView.clear()
-                                stepLineGraphView.addDataSet( FloatArray(24) { 0f }, 0xFFFD6967.toInt()) // Red
-                                stepLineGraphView.addDataSet( FloatArray(24) { 0f }, 0xFF707070.toInt()) // Gray
-                                stepLineGraphView.addDataSet( FloatArray(24) { 0f }, 0xFF03B27B.toInt()) // Green (dotted)
-                                stepLineGraphView.invalidate()
+//                                step_forward_icon.visibility = View.VISIBLE
+//                                stepNoDataLayout.visibility = View.GONE
+//                                stepWithDataCardLayout.visibility = View.VISIBLE
+//                                stepLineGraphView.clear()
+//                                stepLineGraphView.addDataSet( FloatArray(24) { 0f }, 0xFFFD6967.toInt()) // Red
+//                                stepLineGraphView.addDataSet( FloatArray(24) { 0f }, 0xFF707070.toInt()) // Gray
+//                                stepLineGraphView.addDataSet( FloatArray(24) { 0f }, 0xFF03B27B.toInt()) // Green (dotted)
+//                                stepLineGraphView.invalidate()
                                 val adapter = CarouselAdapter(allCardItems) { cardItem, position ->
                                     val fragment = WorkoutAnalyticsFragment().apply {
                                         arguments = Bundle().apply { putSerializable("cardItem", cardItem) }

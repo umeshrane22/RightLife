@@ -46,7 +46,11 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
             holder.bpmUnit.text = "bpm"
             holder.subtractionValue.text = item.averageHeartRate.toInt().toString()
             holder.subtraction.setImageResource(R.drawable.avg_heart_rate)
-            holder.layoutMain.isEnabled = true
+            if (item.averageHeartRate> 0){
+                holder.layoutMain.isEnabled = true
+            }else{
+                holder.layoutMain.isEnabled = false
+            }
             when (item?.workoutType) {
                 "American Football" -> {
                     holder.main_heading_icon.setImageResource(R.drawable.american_football)// Handle American Football
