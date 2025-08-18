@@ -147,6 +147,7 @@ class HomeNewActivity : BaseActivity() {
             permissionManager.handlePermissionResult(result)
         }
 
+    @SuppressLint("ClickableViewAccessibility")
     private val allReadPermissions = setOf(
         HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class),
         HealthPermission.getReadPermission(ActiveCaloriesBurnedRecord::class),
