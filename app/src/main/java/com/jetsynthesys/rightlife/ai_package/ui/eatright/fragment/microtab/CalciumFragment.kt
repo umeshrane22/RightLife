@@ -120,8 +120,16 @@ class CalciumFragment : BaseFragment<FragmentSugarBinding>() {
         // Set default selection to Week
         radioGroup.check(R.id.rbWeek)
         fetchActiveCalories("last_weekly")
+        radioGroup.setOnCheckedChangeListener { group, checkedId ->
+            for (i in 0 until group.childCount) {
+                val radioButton = group.getChildAt(i) as RadioButton
+                if (radioButton.id == checkedId) {
+                    radioButton.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.white))
+                } else {
+                    radioButton.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.black))
+                }
+            }
 
-        radioGroup.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
                 R.id.rbWeek -> fetchActiveCalories("last_weekly")
                 R.id.rbMonth -> fetchActiveCalories("last_monthly")
@@ -130,6 +138,7 @@ class CalciumFragment : BaseFragment<FragmentSugarBinding>() {
                 }
             }
         }
+
 
         backwardImage.setOnClickListener {
             val selectedId = radioGroup.checkedRadioButtonId
