@@ -229,8 +229,8 @@
                                 android:layout_height="wrap_content"
                                 android:text="50"
                                 android:textSize="20sp"
+                                android:layout_marginStart="10dp"
                                 android:textColor="@color/black"
-                                app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintTop_toBottomOf="@+id/tv_bar_date"
                                 app:layout_constraintStart_toStartOf="parent"/>
                             <TextView
@@ -238,18 +238,19 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="%"
-                                android:textSize="12sp"
-                                android:layout_marginStart="2dp"
+                                android:textSize="10sp"
+                                android:layout_marginStart="1dp"
                                 android:textColor="@color/black"
                                 app:layout_constraintTop_toTopOf="@+id/tv_bar_percent"
                                 app:layout_constraintBottom_toBottomOf="@+id/tv_bar_percent"
                                 app:layout_constraintStart_toEndOf="@+id/tv_bar_percent"/>
                             <ImageView
                                 android:id="@+id/percent_icon"
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:layout_marginStart="2dp"
-                                android:visibility="gone"
+                                android:layout_width="15dp"
+                                android:layout_height="15dp"
+                                android:layout_marginStart="1dp"
+                                android:visibility="visible"
+                                android:src="@drawable/sleep_timer_icon"
                                 app:layout_constraintTop_toTopOf="@+id/tv_bar_percent"
                                 app:layout_constraintBottom_toBottomOf="@+id/tv_bar_percent"
                                 app:layout_constraintStart_toEndOf="@+id/percent_text"/>
