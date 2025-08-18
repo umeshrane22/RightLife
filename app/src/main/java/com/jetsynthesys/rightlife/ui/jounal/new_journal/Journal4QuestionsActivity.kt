@@ -389,12 +389,29 @@ class Journal4QuestionsActivity : BaseActivity() {
             true
         }
 
+/*
         chip.setOnClickListener { view ->
             val position = chipGroup.indexOfChild(view) - 1
             when (type) {
                 1 -> selectedTags.add(tagsList1[position])
                 2 -> selectedTags.add(tagsList2[position])
                 3 -> selectedTags.add(tagsList3[position])
+            }
+        }
+*/
+
+        chip.setOnClickListener { view ->
+            val position = chipGroup.indexOfChild(view) - 1
+            when (type) {
+                1 -> if (selectedTags.contains(tagsList1[position])) selectedTags.remove(tagsList1[position]) else selectedTags.add(
+                    tagsList1[position]
+                )
+                2 -> if (selectedTags.contains(tagsList2[position])) selectedTags.remove(tagsList2[position]) else selectedTags.add(
+                    tagsList2[position]
+                )
+                3 -> if (selectedTags.contains(tagsList3[position])) selectedTags.remove(tagsList3[position]) else selectedTags.add(
+                    tagsList3[position]
+                )
             }
         }
 
