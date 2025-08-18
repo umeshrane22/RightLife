@@ -377,13 +377,13 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
             }
         }
         if (sleepPerformanceResponse?.progress_detail?.progress_sign == "plus"){
-            percentageIcon.visibility = View.VISIBLE
+          //  percentageIcon.visibility = View.VISIBLE
             percentageIcon.setImageResource(R.drawable.ic_up)
-            percentageText.visibility = View.VISIBLE
+           // percentageText.visibility = View.VISIBLE
             percentageText.text = " "+ sleepPerformanceResponse?.progress_detail?.progress_percentage + "% Past week"
         }else{
-            percentageIcon.visibility = View.VISIBLE
-            percentageText.visibility = View.VISIBLE
+        //    percentageIcon.visibility = View.VISIBLE
+        //    percentageText.visibility = View.VISIBLE
             percentageIcon.setImageResource(R.drawable.ic_down)
             percentageText.text = " "+ sleepPerformanceResponse?.progress_detail?.progress_percentage + "% Past week"
         }
