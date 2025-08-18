@@ -532,13 +532,13 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             val granted = healthConnectClient.permissionController.getGrantedPermissions()
             if (allReadPermissions.all { it in granted }) {
                 fetchAllHealthData()
-                val getVisit = SharedPreferenceManager.getInstance(requireContext()).syncFirstVisit
+                /*val getVisit = SharedPreferenceManager.getInstance(requireContext()).syncFirstVisit
                 if (getVisit == "") {
                     fetchSecondChunk()
                     fetchThirdChunk()
                     fetchForthChunk()
                     SharedPreferenceManager.getInstance(requireContext()).saveSyncFirstVisit("1")
-                }
+                }*/
             } else {
                 requestPermissionsLauncher.launch(allReadPermissions)
             }
@@ -553,13 +553,13 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         lifecycleScope.launch {
             if (granted.containsAll(allReadPermissions)) {
                 fetchAllHealthData()
-                val getVisit = SharedPreferenceManager.getInstance(requireContext()).syncFirstVisit
+               /* val getVisit = SharedPreferenceManager.getInstance(requireContext()).syncFirstVisit
                 if (getVisit == "") {
                     fetchSecondChunk()
                     fetchThirdChunk()
                     fetchForthChunk()
                     SharedPreferenceManager.getInstance(requireContext()).saveSyncFirstVisit("1")
-                }
+                }*/
 //                storeHealthData()
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, "Permissions Granted", Toast.LENGTH_SHORT).show()
@@ -569,13 +569,13 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                  //   Toast.makeText(context, "Some permissions denied, using available data", Toast.LENGTH_SHORT).show()
                 }
                 fetchAllHealthData()
-                val getVisit = SharedPreferenceManager.getInstance(requireContext()).syncFirstVisit
+                /*val getVisit = SharedPreferenceManager.getInstance(requireContext()).syncFirstVisit
                 if (getVisit == "") {
                     fetchSecondChunk()
                     fetchThirdChunk()
                     fetchForthChunk()
                     SharedPreferenceManager.getInstance(requireContext()).saveSyncFirstVisit("1")
-                }
+                }*/
                // storeHealthData()
             }
         }
