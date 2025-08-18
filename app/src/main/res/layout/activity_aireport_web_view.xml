@@ -34,6 +34,23 @@
             android:text="RightLife Report"
             android:textColor="@color/txt_color_mind"
             android:textSize="18sp" />
+        <TextView
+            android:id="@+id/tv_beta_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginHorizontal="10dp"
+            android:layout_centerVertical="true"
+            android:ellipsize="end"
+            android:fontFamily="@font/dmsans_bold"
+            android:gravity="center"
+            android:text="BETA\n V1.0"
+            android:elevation="5dp"
+            android:background="@drawable/grey_border_bg"
+            android:textColor="@color/txt_color_mind"
+            android:paddingHorizontal="5dp"
+            android:paddingVertical="2dp"
+            android:textSize="14sp" />
 
     </RelativeLayout>
 
