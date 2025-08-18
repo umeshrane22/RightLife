@@ -325,13 +325,13 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
                             consistencyTitle.setText(sleepConsistencyResponse.data?.sleepInsightDetail?.title)
                             consistencyMessage.setText(sleepConsistencyResponse.data?.sleepInsightDetail?.message)
                             if (sleepConsistencyResponse.data?.progress_detail?.progress_sign == "plus"){
-                                percentageIcon.visibility = View.VISIBLE
+                              //  percentageIcon.visibility = View.VISIBLE
                                 percentageIcon.setImageResource(R.drawable.ic_up)
-                                percentageText.visibility = View.VISIBLE
+                             //   percentageText.visibility = View.VISIBLE
                                 percentageText.text = " "+ sleepConsistencyResponse.data?.progress_detail?.progress_percentage + " past week"
                             }else{
-                                percentageIcon.visibility = View.VISIBLE
-                                percentageText.visibility = View.VISIBLE
+                           //     percentageIcon.visibility = View.VISIBLE
+                           //     percentageText.visibility = View.VISIBLE
                                 percentageIcon.setImageResource(R.drawable.ic_down)
                                 percentageIcon.setBackgroundColor(resources.getColor(R.color.red))
                                 percentageText.text = " "+ sleepConsistencyResponse.data?.progress_detail?.progress_percentage + " past week"
