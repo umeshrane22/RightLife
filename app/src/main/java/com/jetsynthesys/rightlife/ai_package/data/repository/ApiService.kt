@@ -219,7 +219,7 @@ interface ApiService {
     @POST("eat/recipes/create/")
     fun createRecipe(@Query("user_id") userId: String,@Body request: CreateRecipeRequest): Call<MealUpdateResponse>
 
-    @PUT("eat/recipes/update")
+    @PUT("eat/recipes/update/")
     fun updateRecipe(@Query("recipe_id") recipeId: String, @Query("user_id") userId: String,@Body request: CreateRecipeRequest): Call<MealUpdateResponse>
 
     @POST("eat/meals/log_meal/")

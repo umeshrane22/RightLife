@@ -143,13 +143,17 @@ class RoutineWorkoutListAdapter(
             }
             "Hockey" -> {
                 // Handle Hockey
-                holder.workoutIcon.setImageResource(R.drawable.hockey)
+                holder.workoutIcon.setImageResource(R.drawable.hiit)
 
             }
             "HIIT" -> {
                 // Handle HIIT
-                holder.workoutIcon.setImageResource(R.drawable.hiit)
+                holder.workoutIcon.setImageResource(R.drawable.hockey)
 
+            }
+            "High Intensity Interval Training" -> {
+                // Handle HIIT
+                holder.workoutIcon.setImageResource(R.drawable.hockey)
             }
             "Kickboxing" -> {
                 // Handle Kickboxing

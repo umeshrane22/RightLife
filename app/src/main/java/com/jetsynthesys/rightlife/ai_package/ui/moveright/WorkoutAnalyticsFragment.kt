@@ -339,6 +339,13 @@ class WorkoutAnalyticsFragment : BaseFragment<FragmentWorkoutAnalyticsBinding>()
             view.findViewById<TextView>(R.id.timeline_text).text = "$startTime to $endTime"
             // Set the duration, calories burned, and average heart rate
             view.findViewById<TextView>(R.id.duration_text).text = item.duration
+          /*  val convertedDurationText = run {
+                val parts = item.duration.split(" ")
+                val hours = if (parts.contains("hr")) parts[0].toIntOrNull() ?: 0 else 0
+                val minutes = if (parts.contains("hr")) parts[2].toIntOrNull() ?: 0 else parts[0].toIntOrNull() ?: 0
+                String.format("%02d:%02d:%02d", hours + (minutes / 60), minutes % 60, 0)
+            }
+            view.findViewById<TextView>(R.id.timeline_text).text = convertedDurationText*/
             view.findViewById<TextView>(R.id.calories_text).text = item.caloriesBurned
             view.findViewById<TextView>(R.id.avg_heart_rate_text_value).text = item.avgHeartRate
 

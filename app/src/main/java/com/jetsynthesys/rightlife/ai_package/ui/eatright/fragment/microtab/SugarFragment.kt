@@ -142,7 +142,16 @@ class SugarFragment : BaseFragment<FragmentSugarBinding>() {
          setupLineChart()*/
 
         // Handle Radio Button Selection
-        radioGroup.setOnCheckedChangeListener { _, checkedId ->
+        radioGroup.setOnCheckedChangeListener { group, checkedId ->
+            for (i in 0 until group.childCount) {
+                val radioButton = group.getChildAt(i) as RadioButton
+                if (radioButton.id == checkedId) {
+                    radioButton.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.white))
+                } else {
+                    radioButton.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.black))
+                }
+            }
+
             when (checkedId) {
                 R.id.rbWeek -> fetchActiveCalories("last_weekly")
                 R.id.rbMonth -> fetchActiveCalories("last_monthly")
@@ -152,6 +161,7 @@ class SugarFragment : BaseFragment<FragmentSugarBinding>() {
                 }
             }
         }
+
 
         backwardImage.setOnClickListener {
             val selectedId = radioGroup.checkedRadioButtonId
