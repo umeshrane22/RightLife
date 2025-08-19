@@ -5,6 +5,7 @@ import android.graphics.*
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import com.jetsynthesys.rightlife.R
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -154,10 +155,11 @@ class CustomHeartRateGraph @JvmOverloads constructor(
             val endY = height - paddingTop - ((endPoint.bpm - minBpm) / bpmRange) * graphHeight
             val avgBpm = (startPoint.bpm + endPoint.bpm) / 2f
             val color = when {
+                avgBpm < 118 -> resources.getColor(R.color.pink)
                 avgBpm <= 118 -> Color.BLUE
                 avgBpm in 121.0..134.0 -> Color.GREEN
-                avgBpm in 134.1..155.0 -> Color.YELLOW
-                avgBpm > 155 -> Color.RED
+                avgBpm in 134.1..159.0 -> Color.YELLOW
+                avgBpm > 159 -> Color.RED
                 else -> Color.BLUE
             }
             linePaint.color = color
