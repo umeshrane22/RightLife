@@ -865,7 +865,8 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
                 is_save = false,
                 is_snapped = true,
                 date = utcDateString,
-                dish = snapDishList
+                dish = snapDishList,
+                image_url = ""
             )
             val gson = Gson()
             val jsonString = gson.toJson(snapMealLogRequest) // snapMealLogRequest is your model instance

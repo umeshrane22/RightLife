@@ -313,7 +313,7 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
 
     private fun fetchSleepData(mEndDate: String,period: String) {
         progressDialog.show()
-        val userid = SharedPreferenceManager.getInstance(requireActivity()).userId ?: ""
+        val userid = "68a59e0f05fefa90ff4a7dce"//SharedPreferenceManager.getInstance(requireActivity()).userId ?: ""
         val source = "android"
         val date = mEndDate
         val call = ApiClient.apiServiceFastApi.fetchSleepConsistencyDetail(userid, source, period,mEndDate)
@@ -807,8 +807,11 @@ class SleepGraphView @JvmOverloads constructor(
 
         entries.forEachIndexed { i, e ->
             val left = leftPad + i * slotW + (slotW - barW) / 2
-            val topY = topPad + chartH / 12f * startFrac(e)
-            val botY = min(topY + chartH / 12f * e.durationHrs, topPad + chartH)
+            val start = startFrac(e)
+            val duration = e.durationHrs
+
+            val topY = topPad + chartH / 16f * start
+            val botY = min(topY + chartH / 16f * duration, topPad + chartH)
           //  val paint = if (i == entries.lastIndex) lastBarPaint else barPaint
             val paint = when {
                 e == selectedEntry     -> selectedBarPaint   // NEW
@@ -849,8 +852,11 @@ class SleepGraphView @JvmOverloads constructor(
         entries.forEachIndexed { i, e ->
             val wk   = i / 7
             val left = leftPad + i * dayW + wk * gap + (dayW - barW) / 2
-            val topY = topPad + chartH / 12f * startFrac(e)
-            val botY = min(topY + chartH / 12f * e.durationHrs, topPad + chartH)
+            val start = startFrac(e)
+            val duration = e.durationHrs
+
+            val topY = topPad + chartH / 16f * start
+            val botY = min(topY + chartH / 16f * duration, topPad + chartH)
          //   val paint = if (i == entries.lastIndex) lastBarPaint else barPaint
             val paint = when {
                 e == selectedEntry     -> selectedBarPaint   // NEW
@@ -889,15 +895,19 @@ class SleepGraphView @JvmOverloads constructor(
 
     /* ───────── helper: hour grid + AM/PM labels ─────────── */
     private fun drawHourGrid(c: Canvas, chartH: Float) {
-        for (step in 0..12 step 2) {
-            val y = topPad + chartH / 12f * step
+        for (step in 0..16 step 2) {
+            val y = topPad + chartH / 16f * step  // Now spans full 16 hours
+
+            // Draw grid line
             c.drawLine(leftPad, y, width.toFloat(), y, gridPaint)
 
+            // Compute and draw time label correctly
             val h24 = (20 + step) % 24
             val h12 = if (h24 == 0) 12 else if (h24 > 12) h24 - 12 else h24
-            val ampm= if (h24 < 12) "am" else "pm"
-            c.drawText("$h12", dp(4f), y + hourPaint.textSize / 3,   hourPaint)
-            c.drawText(ampm,   dp(4f), y + hourPaint.textSize * 1.4f, hourPaint)
+            val ampm = if (h24 < 12) "am" else "pm"
+
+            c.drawText("$h12", dp(4f), y + hourPaint.textSize / 3, hourPaint)
+            c.drawText(ampm, dp(4f), y + hourPaint.textSize * 1.4f, hourPaint)
         }
     }
 
@@ -907,12 +917,11 @@ class SleepGraphView @JvmOverloads constructor(
         val minutesOfDay =
             e.startLocal.hour * 60 +
                     e.startLocal.minute +
-                    e.startLocal.second / 60f          // keep the fraction for :30, :45 …
+                    e.startLocal.second / 60f
 
-        // 20 : 00 is the chart’s origin (= 1 200 minutes)
-        val offsetMin = (minutesOfDay - 20 * 60 + 24 * 60) % (12 * 60)
-        // convert back to hours as a float → 0‥11.99
-        return offsetMin / 60f
+        // Offset from 20:00 (8 PM)
+        val offsetMin = (minutesOfDay - 20 * 60 + 24 * 60) % (24 * 60)
+        return offsetMin / 60f  // Ranges from 0.0 (8 PM) to 16.0 (12 PM)
     }
 
     /* ───────── TOUCH HANDLING ───────── */

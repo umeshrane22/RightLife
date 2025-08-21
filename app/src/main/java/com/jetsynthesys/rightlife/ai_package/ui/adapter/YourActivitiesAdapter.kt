@@ -365,7 +365,7 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
             }
             "Hiking" -> {
                 // Handle Hiking
-                holder.main_heading_icon.setImageResource(R.drawable.hiking)
+                holder.main_heading_icon.setImageResource(R.drawable.hockey)
             }
             "Hockey" -> {
                 // Handle Hockey
@@ -373,11 +373,11 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
             }
             "HIIT" -> {
                 // Handle HIIT
-                holder.main_heading_icon.setImageResource(R.drawable.hockey)
+                holder.main_heading_icon.setImageResource(R.drawable.hiking)
             }
             "High Intensity Interval Training" -> {
                 // Handle HIIT
-                holder.main_heading_icon.setImageResource(R.drawable.hockey)
+                holder.main_heading_icon.setImageResource(R.drawable.hiking)
             }
             "Kickboxing" -> {
                 // Handle Kickboxing
