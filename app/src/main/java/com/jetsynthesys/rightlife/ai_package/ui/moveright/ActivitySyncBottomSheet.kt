@@ -261,7 +261,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
         } else ""
         if (syncTime.isEmpty()) {
             endTime = Instant.now()
-            startTime = endTime.minus(Duration.ofDays(7))
+            startTime = endTime.minus(Duration.ofDays(30))
         } else {
             endTime = Instant.now()
             startTime = convertUtcToInstant(syncTime)

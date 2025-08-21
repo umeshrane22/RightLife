@@ -598,7 +598,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             val syncTime = SharedPreferenceManager.getInstance(requireContext()).moveRightSyncTime ?: ""
             if (syncTime == "") {
                 endTime = Instant.now()
-                startTime = endTime.minus(Duration.ofDays(7))
+                startTime = endTime.minus(Duration.ofDays(30))
             }else{
                 endTime = Instant.now()
                 startTime = convertUtcToInstant(syncTime)
