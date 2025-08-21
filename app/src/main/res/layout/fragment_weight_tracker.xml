@@ -109,7 +109,7 @@
                             android:layout_weight="1"
                             android:text="Month"
                             android:textSize="14sp"
-                            android:textColor="@color/black"
+                            android:textColor="@color/white"
                             android:background="@drawable/tab_background_calorie"
                             android:gravity="center"
                             android:checked="true"
