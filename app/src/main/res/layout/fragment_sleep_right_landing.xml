@@ -163,6 +163,7 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintEnd_toEndOf="parent" />
             </androidx.constraintlayout.widget.ConstraintLayout>
+
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -374,8 +375,6 @@
                     </LinearLayout>
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
-
-
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/sleep_perform_layout"
@@ -678,6 +677,7 @@
                         android:id="@+id/tv_perform_message" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
+
             <androidx.cardview.widget.CardView
                 android:id="@+id/perform_nodata_layout"
                 android:layout_width="match_parent"
@@ -757,6 +757,7 @@
                         app:layout_constraintTop_toTopOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
@@ -796,6 +797,7 @@
                     android:src="@drawable/sleep_btn_bg"
                     android:layout_marginStart="5dp" />
             </LinearLayout>
+
             <androidx.cardview.widget.CardView
                 android:id="@+id/sleep_stage_layout"
                 android:layout_width="match_parent"
@@ -1303,6 +1305,7 @@
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </androidx.cardview.widget.CardView>
             </androidx.cardview.widget.CardView>
+
             <androidx.cardview.widget.CardView
                 android:id="@+id/lyt_sleep_stage_no_data"
                 android:layout_width="match_parent"
@@ -1877,6 +1880,7 @@
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
+
             <androidx.cardview.widget.CardView
                 android:id="@+id/restro_nodata_layout"
                 android:layout_width="match_parent"
@@ -2566,6 +2570,7 @@
                     android:layout_weight="3"
                     android:src="@drawable/sleep_sound_vibration" />
             </LinearLayout>
+
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

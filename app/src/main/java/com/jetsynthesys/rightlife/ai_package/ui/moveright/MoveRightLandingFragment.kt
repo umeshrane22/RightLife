@@ -943,8 +943,12 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
     }
 
     fun convertUtcToInstant(utcString: String): Instant {
-        return Instant.from(DateTimeFormatter.ISO_INSTANT.parse(utcString))
+        val zonedDateTime = ZonedDateTime.parse(utcString, DateTimeFormatter.ISO_ZONED_DATE_TIME)
+        return zonedDateTime.toInstant()
     }
+//    fun convertUtcToInstant(utcString: String): Instant {
+//        return Instant.from(DateTimeFormatter.ISO_INSTANT.parse(utcString))
+//    }
 
     private fun showPermissionDialog() {
         AlertDialog.Builder(requireContext())

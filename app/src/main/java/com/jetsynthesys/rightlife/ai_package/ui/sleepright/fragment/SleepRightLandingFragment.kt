@@ -582,8 +582,13 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     }
 
     fun convertUtcToInstant(utcString: String): Instant {
-        return Instant.from(DateTimeFormatter.ISO_INSTANT.parse(utcString))
+        val zonedDateTime = ZonedDateTime.parse(utcString, DateTimeFormatter.ISO_ZONED_DATE_TIME)
+        return zonedDateTime.toInstant()
     }
+
+//    fun convertUtcToInstant(utcString: String): Instant {
+//        return Instant.from(DateTimeFormatter.ISO_INSTANT.parse(utcString))
+//    }
 
     private suspend fun fetchAllHealthData() {
         try {
@@ -3412,7 +3417,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             }
         }else{
             restroDataCardView.visibility = View.GONE
-            restroNoDataCardView.visibility = View.VISIBLE
+            restroNoDataCardView.visibility = View.GONE
         }
     }
 
