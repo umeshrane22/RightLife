@@ -44,6 +44,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import java.util.concurrent.TimeUnit
+import kotlin.math.floor
 import kotlin.math.max
 
 class SleepStagesFragment : BaseFragment<FragmentSleepStagesBinding>() {
@@ -288,10 +289,25 @@ class SleepStagesFragment : BaseFragment<FragmentSleepStagesBinding>() {
     }
 
     private fun convertDecimalHoursToHrMinFormat(hoursDecimal: Double): String {
-        val totalMinutes = (hoursDecimal * 60).toInt()
-        val hours = totalMinutes / 60
-        val minutes = totalMinutes % 60
-        return String.format("%02dhr %02dmins", hours, minutes)
+        var result = "0"
+        if (hoursDecimal == 0.0 || hoursDecimal == null){
+            val totalMinutes = (hoursDecimal * 60).toInt()
+            val hours = totalMinutes / 60
+            val minutes = totalMinutes % 60
+            result = "0 mins"
+        }else {
+            // val totalMinutes = (hoursDecimal * 60).toInt()
+            val minutesDecimal = hoursDecimal * 60
+            val totalMinutes = if (minutesDecimal - floor(minutesDecimal) > 0.5) {
+                floor(minutesDecimal).toInt() + 1
+            } else {
+                floor(minutesDecimal).toInt()
+            }
+            val hours = totalMinutes / 60
+            val minutes = totalMinutes % 60
+            result = String.format("%02dhr %02dmins", hours, minutes)
+        }
+        return result
     }
 
     private fun convertMinutesToHHMMSS(minutes: Double): String {

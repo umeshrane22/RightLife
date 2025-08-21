@@ -52,6 +52,7 @@ import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.Calendar
 import java.util.Locale
+import kotlin.math.floor
 
 class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBinding>() {
 
@@ -556,7 +557,7 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
                     Log.d("TouchEvent", "Selected: xIndex=$xIndex, idealValue=$idealValue, actualValue=$actualValue")
                     sleep_actual_time_box.visibility = View.VISIBLE
                     tv_ideal_time.text = String.format("%d hr %d mins", idealHours, idealMinutes)
-                    tv_actual_time.text = String.format("%d hr %d mins", actualHours, actualMinutes)
+                    tv_actual_time.text = convertDecimalHoursToHrMinFormat(actualEntries.getOrNull(xIndex)?.y?.toDouble()!!) //String.format("%d hr %d mins", actualHours, actualMinutes)
                    // Log.d("TouchEvent", "Setting tvIdealTime to ${tvIdealTime.text}, tvActualTime to ${tvActualTime.text}")
 
                     // Update tv_ideal_actual_date with formatted date
@@ -581,6 +582,28 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
         })
 
         lineChart.invalidate()
+    }
+
+    private fun convertDecimalHoursToHrMinFormat(hoursDecimal: Double): String {
+        var result = "0"
+        if (hoursDecimal == 0.0 || hoursDecimal == null){
+            val totalMinutes = (hoursDecimal * 60).toInt()
+            val hours = totalMinutes / 60
+            val minutes = totalMinutes % 60
+            result = "0 mins"
+        }else {
+            // val totalMinutes = (hoursDecimal * 60).toInt()
+            val minutesDecimal = hoursDecimal * 60
+            val totalMinutes = if (minutesDecimal - floor(minutesDecimal) > 0.5) {
+                floor(minutesDecimal).toInt() + 1
+            } else {
+                floor(minutesDecimal).toInt()
+            }
+            val hours = totalMinutes / 60
+            val minutes = totalMinutes % 60
+            result = String.format("%02dhr %02dmins", hours, minutes)
+        }
+        return result
     }
     private fun Float.toHoursAndMinutes(): Pair<Int, Int> {
         val totalMinutes = (this * 60).toInt() // Convert to minutes
@@ -708,12 +731,12 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
         }
     }
 
-    private fun convertDecimalHoursToHrMinFormat(hoursDecimal: Double): String {
+    /*private fun convertDecimalHoursToHrMinFormat(hoursDecimal: Double): String {
         val totalMinutes = (hoursDecimal * 60).toInt()
         val hours = totalMinutes / 60
         val minutes = totalMinutes % 60
         return String.format("%02dhr %02dmins", hours, minutes)
-    }
+    }*/
 
 
     private fun navigateToFragment(fragment: androidx.fragment.app.Fragment, tag: String) {

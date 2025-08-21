@@ -139,6 +139,7 @@ import java.util.TimeZone
 import java.util.concurrent.TimeUnit
 import kotlin.math.max
 import java.time.ZoneId
+import kotlin.math.floor
 import kotlin.math.roundToInt
 
 class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>() {
@@ -2599,7 +2600,13 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             val minutes = totalMinutes % 60
             result = "0 mins"
         }else {
-            val totalMinutes = (hoursDecimal * 60).toInt()
+           // val totalMinutes = (hoursDecimal * 60).toInt()
+            val minutesDecimal = hoursDecimal * 60
+            val totalMinutes = if (minutesDecimal - floor(minutesDecimal) > 0.5) {
+                floor(minutesDecimal).toInt() + 1
+            } else {
+                floor(minutesDecimal).toInt()
+            }
             val hours = totalMinutes / 60
             val minutes = totalMinutes % 60
             result = String.format("%02dhr %02dmins", hours, minutes)
@@ -3059,7 +3066,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     Log.d("TouchEvent", "Selected: xIndex=$xIndex, idealValue=$idealValue, actualValue=$actualValue")
 
                     tvIdealTime.text = String.format("%d hr %d mins", idealHours, idealMinutes)
-                    tvActualTime.text = String.format("%d hr %d mins", actualHours, actualMinutes)
+                    tvActualTime.text = convertDecimalHoursToHrMinFormat(actualEntries.getOrNull(xIndex)?.y?.toDouble()!!)//String.format("%d hr %d mins", actualHours, actualMinutes)
                     Log.d("TouchEvent", "Setting tvIdealTime to ${tvIdealTime.text}, tvActualTime to ${tvActualTime.text}")
 
                     // Update tv_ideal_actual_date with formatted date

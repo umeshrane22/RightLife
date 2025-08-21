@@ -12,9 +12,12 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.provider.OpenableColumns
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -26,15 +29,19 @@ import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.datatransport.runtime.scheduling.persistence.EventStoreModule_PackageNameFactory.packageName
 import com.google.gson.Gson
 import com.jetsynthesys.rightlife.R
+import com.jetsynthesys.rightlife.RetrofitData.ApiService
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.ScanMealNutritionResponse
@@ -60,9 +67,14 @@ import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MacroNutrientsMod
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.MicroNutrientsModel
 import com.jetsynthesys.rightlife.ai_package.ui.eatright.model.SnapDishLocalListModel
 import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
+import com.jetsynthesys.rightlife.ai_package.utils.showToast
+import com.jetsynthesys.rightlife.apimodel.UploadImage
 import com.jetsynthesys.rightlife.databinding.FragmentMealScanResultsBinding
 import com.jetsynthesys.rightlife.newdashboard.HomeNewActivity
 import com.jetsynthesys.rightlife.ui.CommonAPICall
+import com.jetsynthesys.rightlife.ui.profile_new.ProfileNewActivity
+import com.jetsynthesys.rightlife.ui.profile_new.pojo.PreSignedUrlData
+import com.jetsynthesys.rightlife.ui.profile_new.pojo.PreSignedUrlResponse
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsEvent
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsLogger
 import com.jetsynthesys.rightlife.ui.utility.AnalyticsParam
@@ -71,6 +83,8 @@ import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.File
+import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDateTime
@@ -82,6 +96,8 @@ import java.util.Locale
 class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
     RatingMealBottomSheet.RatingSnapMealListener {
 
+    lateinit var apiService: ApiService
+    private var preSignedUrlData: PreSignedUrlData? = null
     private lateinit var macroItemRecyclerView: RecyclerView
     private lateinit var microItemRecyclerView: RecyclerView
     private lateinit var frequentlyLoggedRecyclerView: RecyclerView
@@ -117,6 +133,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
     private var snapMealLog : String = ""
     private var homeTab : String = ""
     private var selectedMealDate : String = ""
+    private var imageGeneratedUrl = ""
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentMealScanResultsBinding
         get() = FragmentMealScanResultsBinding::inflate
@@ -140,9 +157,98 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
         )
     }
 
+    private fun getUrlFromURI(uri: Uri) {
+        val uploadImage = UploadImage()
+        uploadImage.isPublic = false
+        uploadImage.fileType = "USER_FILES"
+        if (uri != null) {
+            val (fileName, fileSize) = getFileNameAndSize(requireContext(), uri) ?: return
+            uploadImage.fileSize = fileSize
+            uploadImage.fileName = fileName
+        }
+        uriToFile(uri)?.let { getPreSignedUrl(uploadImage, it) }
+    }
+    private fun uriToFile(uri: Uri): File? {
+        val contentResolver = requireContext().contentResolver
+        val fileName = getFileName(uri) ?: "temp_image_file"
+        val tempFile = File(requireContext().cacheDir, fileName)
+
+        return try {
+            val inputStream = contentResolver.openInputStream(uri)
+            val outputStream = FileOutputStream(tempFile)
+            inputStream?.copyTo(outputStream)
+            inputStream?.close()
+            outputStream.close()
+            tempFile
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+    private fun getFileName(uri: Uri): String? {
+        var name: String? = null
+        val returnCursor = requireContext().contentResolver.query(uri, null, null, null, null)
+        returnCursor?.use {
+            val nameIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            if (nameIndex != -1 && it.moveToFirst()) {
+                name = it.getString(nameIndex)
+            }
+        }
+        return name
+    }
+    private fun getFileNameAndSize(context: Context, uri: Uri): Pair<String, Long>? {
+        val returnCursor = context.contentResolver.query(uri, null, null, null, null)
+        returnCursor?.use {
+            val nameIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            val sizeIndex = it.getColumnIndex(OpenableColumns.SIZE)
+            if (it.moveToFirst()) {
+                val name = it.getString(nameIndex)
+                val size = it.getLong(sizeIndex)
+                return Pair(name, size)
+            }
+        }
+        return null
+    }
+
+    private fun getPreSignedUrl(uploadImage: UploadImage, file: File) {
+        val call: Call<PreSignedUrlResponse> = apiService.getPreSignedUrl(sharedPreferenceManager.accessToken, uploadImage)
+
+        call.enqueue(object : Callback<PreSignedUrlResponse?> {
+            override fun onResponse(
+                call: Call<PreSignedUrlResponse?>,
+                response: Response<PreSignedUrlResponse?>
+            ) {
+                if (response.isSuccessful && response.body() != null) {
+                    response.body()?.data?.let { preSignedUrlData = it }
+                    response.body()?.data?.url?.let {
+                        CommonAPICall.uploadImageToPreSignedUrl(
+                            requireContext(),
+                            file, it
+                        ) { success ->
+                            if (success) {
+                                showToast("Image uploaded successfully!")
+                                imageGeneratedUrl = it.split("?").get(0)
+                                ratingMealLogDialog(false)
+                            } else {
+                                showToast("Upload failed!")
+                            }
+                        }
+                    }
+                } else {
+                    showToast("Server Error: " + response.code())
+                }
+            }
+
+            override fun onFailure(call: Call<PreSignedUrlResponse?>, t: Throwable) {
+               // handleNoInternetView(t)
+            }
+        })
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         sharedPreferenceManager = SharedPreferenceManager.getInstance(context)
+        apiService = com.jetsynthesys.rightlife.RetrofitData.ApiClient.getClient(requireContext()).create(ApiService::class.java)
         macroItemRecyclerView = view.findViewById(R.id.recyclerview_macro_item)
         microItemRecyclerView = view.findViewById(R.id.recyclerview_micro_item)
         frequentlyLoggedRecyclerView = view.findViewById(R.id.recyclerview_frequently_logged_item)
@@ -508,7 +614,14 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
                 if (mealId != "null" && mealId != null) {
                     updateSnapMealsSave((snapRecipesList))
                 } else {
-                    ratingMealLogDialog(false)
+                    val file = File(currentPhotoPath)
+                    val uri = FileProvider.getUriForFile(
+                        requireContext(),
+                        "${requireContext().packageName}.fileprovider",
+                        file
+                    )
+                    getUrlFromURI(uri)
+                   // ratingMealLogDialog(false)
                 }
 //                requireActivity().supportFragmentManager.beginTransaction().apply {
 //                    val snapMealFragment = HomeBottomTabFragment()
@@ -523,7 +636,14 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
                 if (snapMealLog.equals("snapMealLog")) {
                     updateSnapMealLog(mealId, snapRecipesList)
                 } else {
-                    ratingMealLogDialog(false)
+                    val file = File(currentPhotoPath)
+                    val uri = FileProvider.getUriForFile(
+                        requireContext(),
+                        "${requireContext().packageName}.fileprovider",
+                        file
+                    )
+                    getUrlFromURI(uri)
+                   // ratingMealLogDialog(false)
                 }
             }
         }
@@ -1065,7 +1185,8 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
                 is_save = isSave,
                 is_snapped = true,
                 date = currentDateUtc,
-                dish = snapDishList
+                dish = snapDishList,
+                image_url = imageGeneratedUrl
             )
             val gson = Gson()
             val jsonString =
