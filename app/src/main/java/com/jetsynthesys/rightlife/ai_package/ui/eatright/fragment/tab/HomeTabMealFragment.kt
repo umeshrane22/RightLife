@@ -680,6 +680,13 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
             val chipView = LayoutInflater.from(context).inflate(R.layout.chip_ingredient, flexboxLayout, false)
             val tvIngredient: TextView = chipView.findViewById(R.id.tvIngredient)
             val btnRemove: ImageView = chipView.findViewById(R.id.btnRemove)
+            val layoutParams = FlexboxLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(8, 8, 8, 8)
+            }
+            chipView.layoutParams = layoutParams
             btnRemove.setColorFilter(ContextCompat.getColor(requireContext(), R.color.white), PorterDuff.Mode.SRC_IN)
             tvIngredient.text = ingredient
             btnRemove.setOnClickListener {
