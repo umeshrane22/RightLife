@@ -393,7 +393,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-                    ?: "680790d0a8d2c1b4456e5c7d"
+
                 val newRoutineId = routineIdworkout
                 val routineId = workoutLists?.routineId ?:routineIdworkout
                 ?: throw IllegalStateException("Routine ID is missing for edit")

@@ -332,6 +332,10 @@ class RestingHeartRateFragment : BaseFragment<FragmentRestingHeartRateBinding>()
 
         lineChart.axisRight.isEnabled = false
         lineChart.description.isEnabled = false
+        lineChart.setScaleEnabled(false)
+        lineChart.isDoubleTapToZoomEnabled = false
+        lineChart.isHighlightPerTapEnabled = true
+        lineChart.isHighlightPerDragEnabled = false
 
         // Description
         val description = Description().apply {
@@ -348,6 +352,7 @@ class RestingHeartRateFragment : BaseFragment<FragmentRestingHeartRateBinding>()
         // Legend
         val legend = lineChart.legend
         legend.setDrawInside(false)
+
 
         // Chart click listener
         lineChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
@@ -592,7 +597,7 @@ class RestingHeartRateFragment : BaseFragment<FragmentRestingHeartRateBinding>()
             calendar.add(Calendar.DAY_OF_YEAR, 1)
         }
         val labelsWithEmpty = generateLabeled30DayListWithEmpty(dateList[0])
-        val labels = generateWeeklyLabelsFor30Days(dateList[0])
+        val labels = formatDateList(dateList)
         weeklyLabels.addAll(labelsWithEmpty)
         labelsDate.addAll(labels)
         /*for (i in 0 until 30) {
@@ -672,6 +677,20 @@ class RestingHeartRateFragment : BaseFragment<FragmentRestingHeartRateBinding>()
         }
         return fullList
     }
+
+    private fun formatDateList(dates: List<String>): List<String> {
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("d MMM, yyyy", Locale.getDefault())
+        return dates.mapNotNull { dateStr ->
+            try {
+                val parsedDate = inputFormat.parse(dateStr)
+                parsedDate?.let { outputFormat.format(it) }
+            } catch (e: Exception) {
+                null
+            }
+        }
+    }
+
     private fun generateWeeklyLabelsFor30Days(startDateStr: String): List<String> {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val dayFormat = SimpleDateFormat("d", Locale.getDefault())

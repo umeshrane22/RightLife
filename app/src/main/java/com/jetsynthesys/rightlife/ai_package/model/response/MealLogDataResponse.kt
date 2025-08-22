@@ -69,6 +69,7 @@ data class SnapMeal(
     val meal_type : String?,
     val meal_name : String?,
     val date : String?,
+    val image_url : String,
     val dish : List<SnapDishList>?,
     val meal_nutrition_summary : SnapMealNutritionSummary
 ):Parcelable

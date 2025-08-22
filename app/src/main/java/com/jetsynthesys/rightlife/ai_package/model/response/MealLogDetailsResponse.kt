@@ -21,6 +21,7 @@ data class MealLogDetails(
     val dish: List<DishLists>,
     val createdAt: String,
     val updatedAt: String,
+    val image_url : String,
     val meal_nutrition_summary: NutritionSummary
 )
 
