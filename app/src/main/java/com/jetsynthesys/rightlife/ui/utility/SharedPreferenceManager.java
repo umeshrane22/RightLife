@@ -58,6 +58,17 @@ public class SharedPreferenceManager {
         return sharedPreferences.getString(SharedPreferenceConstants.FIRST_VISIT, "");
     }
 
+    public void saveSyncFirstVisit(String visit) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(SharedPreferenceConstants.FIRST_SYNC, visit);
+        editor.apply(); // Apply changes asynchronously
+    }
+
+    // Method to retrieve the access token
+    public String getSyncFirstVisit() {
+        return sharedPreferences.getString(SharedPreferenceConstants.FIRST_SYNC, "");
+    }
+
     // Method to save the user ID
     public void saveUserId(String userId) {
         SharedPreferences.Editor editor = sharedPreferences.edit();

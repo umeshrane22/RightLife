@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
@@ -127,6 +128,46 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
         val formatter = DateTimeFormatter.ofPattern("d MMM")
         dateRangeText.text = "${startOfWeek.format(formatter)} - ${endOfWeek.format(formatter)}, ${currentDateWeek.year}"
         setupListeners()
+        radioGroup.setOnCheckedChangeListener { group, checkedId ->
+            for (i in 0 until group.childCount) {
+                val radioButton = group.getChildAt(i) as RadioButton
+                if (radioButton.id == checkedId) {
+                    radioButton.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.white))
+                } else {
+                    radioButton.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.black))
+                }
+            }
+
+            when (checkedId) {
+                R.id.rbWeek -> {
+                    currentTab = 0
+                    val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                    val startDate = getOneWeekEarlierDate().format(dateFormatter)
+                    val endDate = getTodayDate().format(dateFormatter)
+                    val formatter = DateTimeFormatter.ofPattern("d MMM")
+                    dateRangeText.text = "${getOneWeekEarlierDate().format(formatter)} - ${getTodayDate().format(formatter)}, ${currentDateWeek.year}"
+                    fetchSleepData(endDate, "weekly")
+                }
+                R.id.rbMonth -> {
+                    currentTab = 1
+                    val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                    val startDate = getOneMonthEarlierDate().format(dateFormatter)
+                    val endDate = getTodayDate().format(dateFormatter)
+                    val formatter = DateTimeFormatter.ofPattern("d MMM")
+                    dateRangeText.text = "${getOneMonthEarlierDate().format(formatter)} - ${getTodayDate().format(formatter)}, ${currentDateMonth.year}"
+                    fetchSleepData(endDate, "monthly")
+                }
+                R.id.rbSixMonths -> {
+                    currentTab = 2
+                    val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                    val startDate = getSixMonthsEarlierDate().format(dateFormatter)
+                    val endDate = getTodayDate().format(dateFormatter)
+                    val formatter = DateTimeFormatter.ofPattern("d MMM")
+                    dateRangeText.text = "${getSixMonthsEarlierDate().format(formatter)} - ${getTodayDate().format(formatter)}, ${currentDateMonth.year}"
+                    fetchSleepData(endDate, "monthly")
+                }
+            }
+        }
         fetchSleepData(mEndDate,"weekly")
       //  val weekData = getDummyWeekSleepData()
      //   val monthData = getDummyMonthSleepData()
@@ -187,37 +228,9 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
     }
 
     private fun setupListeners() {
-        radioGroup.setOnCheckedChangeListener { _, checkedId ->
-            when (checkedId) {
-                R.id.rbWeek -> {
-                    currentTab = 0
-                    val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                    val startDate = getOneWeekEarlierDate().format(dateFormatter)
-                    val endDate = getTodayDate().format(dateFormatter)
-                    val formatter = DateTimeFormatter.ofPattern("d MMM")
-                    dateRangeText.text = "${getOneWeekEarlierDate().format(formatter)} - ${getTodayDate().format(formatter)}, ${currentDateWeek.year}"
-                    fetchSleepData(endDate, "weekly")
-                }
-                R.id.rbMonth -> {
-                    currentTab = 1
-                    val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                    val startDate = getOneMonthEarlierDate().format(dateFormatter)
-                    val endDate = getTodayDate().format(dateFormatter)
-                    val formatter = DateTimeFormatter.ofPattern("d MMM")
-                    dateRangeText.text = "${getOneMonthEarlierDate().format(formatter)} - ${getTodayDate().format(formatter)}, ${currentDateMonth.year}"
-                    fetchSleepData(endDate, "monthly")
-                }
-                R.id.rbSixMonths -> {
-                    currentTab = 2
-                    val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                    val startDate = getSixMonthsEarlierDate().format(dateFormatter)
-                    val endDate = getTodayDate().format(dateFormatter)
-                    val formatter = DateTimeFormatter.ofPattern("d MMM")
-                    dateRangeText.text = "${getSixMonthsEarlierDate().format(formatter)} - ${getTodayDate().format(formatter)}, ${currentDateMonth.year}"
-                    fetchSleepData(endDate, "monthly")
-                }
-            }
-        }
+       /* radioGroup.setOnCheckedChangeListener { _, checkedId ->
+
+        }*/
 
         btnPrevious.setOnClickListener {
             when (currentTab) {
@@ -391,45 +404,80 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
         tvRestoTitle.setText(restorativeSleepResponse?.sleepInsightDetail?.title)
         tvRestoMessage.setText(restorativeSleepResponse?.sleepInsightDetail?.message)
         if (restorativeSleepResponse?.restorativeSleepDetails!=null) {
-            if (restorativeSleepResponse.restorativeSleepDetails.getOrNull(0)?.sleepStages!=null) {
+            var dataSize = restorativeSleepResponse?.restorativeSleepDetails?.size!! - 1
+            if (restorativeSleepResponse.restorativeSleepDetails.getOrNull(0)?.sleepStages != null) {
 
-                var dataSize = restorativeSleepResponse.restorativeSleepDetails.size -1
+
                 for (i in 0 until restorativeSleepResponse.restorativeSleepDetails.size) {
                     var startDateTime = LocalDateTime.now()
                     var endDateTime = LocalDateTime.now()
-                    if(restorativeSleepResponse.restorativeSleepDetails[dataSize].sleepStartTime != null) {
-                        startDateTime = LocalDateTime.parse(restorativeSleepResponse.restorativeSleepDetails[dataSize].sleepStartTime, formatters)
+                    if (restorativeSleepResponse.restorativeSleepDetails[dataSize].sleepStartTime != null) {
+                        startDateTime = LocalDateTime.parse(
+                            restorativeSleepResponse.restorativeSleepDetails[dataSize].sleepStartTime,
+                            formatters
+                        )
                     }
                     if (restorativeSleepResponse.restorativeSleepDetails[dataSize].sleepEndTime != null) {
-                         endDateTime = LocalDateTime.parse(restorativeSleepResponse.restorativeSleepDetails[dataSize].sleepStartTime, formatters)
+                        endDateTime = LocalDateTime.parse(
+                            restorativeSleepResponse.restorativeSleepDetails[dataSize].sleepStartTime,
+                            formatters
+                        )
                     }
                     val duration =
                         java.time.Duration.between(startDateTime, endDateTime).toMinutes()
                             .toFloat() / 60f // Convert to hours
 
-                    if(restorativeSleepResponse.restorativeSleepDetails[dataSize].sleepStages?.remSleep != null)
-                         {
-                            totalRemDuration += duration
-                        }else if (restorativeSleepResponse.restorativeSleepDetails[dataSize].sleepStages?.deepSleep != null)
-                        {
-                            totalDeepDuration += duration
-                        }
+                    if (restorativeSleepResponse.restorativeSleepDetails[dataSize].sleepStages?.remSleep != null) {
+                        totalRemDuration += duration
+                    } else if (restorativeSleepResponse.restorativeSleepDetails[dataSize].sleepStages?.deepSleep != null) {
+                        totalDeepDuration += duration
                     }
                 }
             }
-            tvRemSleep.setText(convertDecimalHoursToHrMinFormat(totalRemDuration))
-            tvDeepSleep.setText(convertDecimalHoursToHrMinFormat(totalDeepDuration))
-            tvRestoDate.setText(convertDateToNormalDate(restorativeSleepResponse?.restorativeSleepDetails?.getOrNull(restorativeSleepResponse.restorativeSleepDetails.size.minus(1))?.date!!))
+            tvRemSleep.setText(
+                convertDecimalHoursToHrMinFormat(
+                    restorativeSleepResponse?.restorativeSleepDetails?.getOrNull(
+                        dataSize
+                    )?.sleepStages?.remSleep!!
+                )
+            )
+            tvDeepSleep.setText(
+                convertDecimalHoursToHrMinFormat(
+                    restorativeSleepResponse?.restorativeSleepDetails?.getOrNull(
+                        dataSize
+                    )?.sleepStages?.deepSleep!!
+                )
+            )
+            tvRestoDate.setText(
+                convertDateToNormalDate(
+                    restorativeSleepResponse?.restorativeSleepDetails?.getOrNull(
+                        restorativeSleepResponse.restorativeSleepDetails.size.minus(1)
+                    )?.date!!
+                )
+            )
             tvAverageSleep.setText(convertDecimalHoursToHrMinFormat(restorativeSleepResponse.averageSleepDuration!!))
-            tvAveragePercentage.setText(""+restorativeSleepResponse?.averageRestorativeSleepPercentage?.roundToDecimals(2)+"%")
-            if (restorativeSleepResponse.restorativeSleepDetails.size > 8){
-                val formattedData = mapToMonthlySleepChartData(restorativeSleepResponse.startDate!!,restorativeSleepResponse.endDate!!,restorativeSleepResponse.restorativeSleepDetails!!)
-                renderMonthStackedChart(formattedData,restorativeSleepResponse.startDate!!,restorativeSleepResponse.endDate!!)
-            }else {
-                val formattedData = mapToSleepChartData(restorativeSleepResponse.startDate!!,restorativeSleepResponse.endDate!!,restorativeSleepResponse.restorativeSleepDetails!!)
+            tvAveragePercentage.setText("" + restorativeSleepResponse?.averageRestorativeSleepPercentage?.roundToDecimals(2) + "%")
+            if (restorativeSleepResponse.restorativeSleepDetails.size > 8) {
+                val formattedData = mapToMonthlySleepChartData(
+                    restorativeSleepResponse.startDate!!,
+                    restorativeSleepResponse.endDate!!,
+                    restorativeSleepResponse.restorativeSleepDetails!!
+                )
+                renderMonthStackedChart(
+                    formattedData,
+                    restorativeSleepResponse.startDate!!,
+                    restorativeSleepResponse.endDate!!
+                )
+            } else {
+                val formattedData = mapToSleepChartData(
+                    restorativeSleepResponse.startDate!!,
+                    restorativeSleepResponse.endDate!!,
+                    restorativeSleepResponse.restorativeSleepDetails!!
+                )
                 renderStackedChart(formattedData)
             }
         }
+    }
 
     fun convertDateToNormalDate(dateStr: String): String{
         val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -659,8 +707,8 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
                    // val msg = "$dateStr · %.1fh (REM %.1f, Deep %.1f)"
                    //     .format(total, rem, deep)
                     tvRestoDate.setText(dateStr)
-                    tvRemSleep.setText(convertDecimalHoursToHrMinFormat(rem))
-                    tvDeepSleep.setText(convertDecimalHoursToHrMinFormat(deep))
+                    tvRemSleep.setText(convertDecimalHoursToHrMinFormat1(rem))
+                    tvDeepSleep.setText(convertDecimalHoursToHrMinFormat1(deep))
                   //  Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                 }
                 override fun onNothingSelected() = Unit
@@ -758,8 +806,8 @@ class RestorativeSleepFragment(): BaseFragment<FragmentRestorativeSleepBinding>(
                     // val msg = "$dateStr · %.1fh (REM %.1f, Deep %.1f)"
                     //     .format(total, rem, deep)
                     tvRestoDate.setText(dateStr)
-                    tvRemSleep.setText(convertDecimalHoursToHrMinFormat(rem))
-                    tvDeepSleep.setText(convertDecimalHoursToHrMinFormat(deep))
+                    tvRemSleep.setText(convertDecimalHoursToHrMinFormat1(rem))
+                    tvDeepSleep.setText(convertDecimalHoursToHrMinFormat1(deep))
                     //  Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                 }
                 override fun onNothingSelected() = Unit

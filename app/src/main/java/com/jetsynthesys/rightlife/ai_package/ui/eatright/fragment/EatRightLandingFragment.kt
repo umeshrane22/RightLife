@@ -1,18 +1,13 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment
 
-import android.Manifest
 import android.animation.ValueAnimator
 import android.content.Intent
 import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.Animation
-import android.view.animation.LinearInterpolator
-import android.view.animation.RotateAnimation
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -30,7 +25,6 @@ import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SnapHelper
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.card.MaterialCardView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.PermissionManager
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
@@ -157,6 +151,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
     private var loadingOverlay : FrameLayout? = null
     private var waterIntakeValue : Float = 0f
     private lateinit var rightLifeReportCard : FrameLayout
+    private lateinit var microsLayoutBtn : ConstraintLayout
     private lateinit var permissionManager: PermissionManager
     private lateinit var userData: Userdata
     private lateinit var userDataResponse: UserProfileResponse
@@ -239,6 +234,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
         logMealNoDataButton = view.findViewById(R.id.logMealNoDataButton)
         snapMealNoData = view.findViewById(R.id.lyt_snap_meal_no_data)
         microIc = view.findViewById(R.id.microIc)
+        microsLayoutBtn = view.findViewById(R.id.microsLayoutBtn)
         energyTypeTv = view.findViewById(R.id.energyTypeTv)
         microValueTv = view.findViewById(R.id.microValueTv)
         unitMicroTv = view.findViewById(R.id.unitMicroTv)
@@ -383,7 +379,6 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
             }
         }
 
-
         snapMealNoData.setOnClickListener {
             permissionManager = PermissionManager(
                 activity = requireActivity(), // or just `this` in Activity
@@ -419,7 +414,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
             }
         }
 
-        microIc.setOnClickListener {
+        microsLayoutBtn.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 val mealSearchFragment = MicrosTabFragment()
                 val args = Bundle()

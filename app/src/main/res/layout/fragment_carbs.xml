@@ -57,7 +57,7 @@
                             android:layout_weight="1"
                             android:text="Week"
                             android:textSize="14sp"
-                            android:textColor="@color/black"
+                            android:textColor="@color/white"
                             android:background="@drawable/tab_background_calorie"
                             android:gravity="center"
                             android:button="@null"
@@ -178,6 +178,7 @@
                             android:layout_width="12dp"
                             android:layout_height="12dp"
                             android:src="@drawable/ic_up"
+                            android:visibility="gone"
                             app:layout_constraintTop_toBottomOf="@+id/average_number"
                             app:layout_constraintStart_toStartOf="parent" />
 
@@ -187,6 +188,7 @@
                             android:layout_height="wrap_content"
                             android:text="50% past week"
                             android:textSize="10sp"
+                            android:visibility="gone"
                             android:layout_marginStart="4dp"
                             android:fontFamily="@font/dmsans_regular"
                             android:textColor="@color/green_text"
@@ -242,6 +244,7 @@
                             android:layout_width="12dp"
                             android:layout_height="12dp"
                             android:src="@drawable/ic_up"
+                            android:visibility="gone"
                             app:layout_constraintTop_toBottomOf="@+id/totalCalorie"
                             app:layout_constraintStart_toStartOf="parent" />
 
@@ -251,6 +254,7 @@
                             android:layout_height="wrap_content"
                             android:text="50% past week"
                             android:textSize="10sp"
+                            android:visibility="gone"
                             android:layout_marginStart="4dp"
                             android:fontFamily="@font/dmsans_regular"
                             android:textColor="@color/green_text"

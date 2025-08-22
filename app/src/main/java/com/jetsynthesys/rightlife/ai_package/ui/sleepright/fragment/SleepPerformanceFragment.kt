@@ -14,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
@@ -138,6 +139,46 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
         val formatter = DateTimeFormatter.ofPattern("d MMM")
         dateRangeText.text = "${startOfWeek.format(formatter)} - ${endOfWeek.format(formatter)}, ${currentDateWeek.year}"
         setupListeners()
+        radioGroup.setOnCheckedChangeListener { group, checkedId ->
+            for (i in 0 until group.childCount) {
+                val radioButton = group.getChildAt(i) as RadioButton
+                if (radioButton.id == checkedId) {
+                    radioButton.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.white))
+                } else {
+                    radioButton.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.black))
+                }
+            }
+
+            when (checkedId) {
+                R.id.rbWeek -> {
+                    currentTab = 0
+                    val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                    val startDate = getOneWeekEarlierDate().format(dateFormatter)
+                    val endDate = getTodayDate().format(dateFormatter)
+                    val formatter = DateTimeFormatter.ofPattern("d MMM")
+                    dateRangeText.text = "${getOneWeekEarlierDate().format(formatter)} - ${getTodayDate().format(formatter)}, ${currentDateWeek.year}"
+                    fetchSleepData(endDate, "weekly")
+                }
+                R.id.rbMonth -> {
+                    currentTab = 1
+                    val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                    val startDate = getOneMonthEarlierDate().format(dateFormatter)
+                    val endDate = getTodayDate().format(dateFormatter)
+                    val formatter = DateTimeFormatter.ofPattern("d MMM")
+                    dateRangeText.text = "${getOneMonthEarlierDate().format(formatter)} - ${getTodayDate().format(formatter)}, ${currentDateMonth.year}"
+                    fetchSleepData(endDate, "monthly")
+                }
+                R.id.rbSixMonths -> {
+                    currentTab = 2
+                    val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                    val startDate = getSixMonthsEarlierDate().format(dateFormatter)
+                    val endDate = getTodayDate().format(dateFormatter)
+                    val formatter = DateTimeFormatter.ofPattern("d MMM")
+                    dateRangeText.text = "${getSixMonthsEarlierDate().format(formatter)} - ${getTodayDate().format(formatter)}, ${currentDateMonth.year}"
+                    fetchSleepData(endDate, "monthly")
+                }
+            }
+        }
         fetchSleepData(mEndDate,"weekly")
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
@@ -190,37 +231,8 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
     }
 
     private fun setupListeners() {
-        radioGroup.setOnCheckedChangeListener { _, checkedId ->
-            when (checkedId) {
-                R.id.rbWeek -> {
-                    currentTab = 0
-                    val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                    val startDate = getOneWeekEarlierDate().format(dateFormatter)
-                    val endDate = getTodayDate().format(dateFormatter)
-                    val formatter = DateTimeFormatter.ofPattern("d MMM")
-                    dateRangeText.text = "${getOneWeekEarlierDate().format(formatter)} - ${getTodayDate().format(formatter)}, ${currentDateWeek.year}"
-                    fetchSleepData(endDate, "weekly")
-                }
-                R.id.rbMonth -> {
-                    currentTab = 1
-                    val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                    val startDate = getOneMonthEarlierDate().format(dateFormatter)
-                    val endDate = getTodayDate().format(dateFormatter)
-                    val formatter = DateTimeFormatter.ofPattern("d MMM")
-                    dateRangeText.text = "${getOneMonthEarlierDate().format(formatter)} - ${getTodayDate().format(formatter)}, ${currentDateMonth.year}"
-                    fetchSleepData(endDate, "monthly")
-                }
-                R.id.rbSixMonths -> {
-                    currentTab = 2
-                    val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                    val startDate = getSixMonthsEarlierDate().format(dateFormatter)
-                    val endDate = getTodayDate().format(dateFormatter)
-                    val formatter = DateTimeFormatter.ofPattern("d MMM")
-                    dateRangeText.text = "${getSixMonthsEarlierDate().format(formatter)} - ${getTodayDate().format(formatter)}, ${currentDateMonth.year}"
-                    fetchSleepData(endDate, "monthly")
-                }
-            }
-        }
+
+
 
         btnPrevious.setOnClickListener {
             when (currentTab) {
@@ -377,13 +389,13 @@ class SleepPerformanceFragment : BaseFragment<FragmentSleepPerformanceBinding>()
             }
         }
         if (sleepPerformanceResponse?.progress_detail?.progress_sign == "plus"){
-            percentageIcon.visibility = View.VISIBLE
+          //  percentageIcon.visibility = View.VISIBLE
             percentageIcon.setImageResource(R.drawable.ic_up)
-            percentageText.visibility = View.VISIBLE
+           // percentageText.visibility = View.VISIBLE
             percentageText.text = " "+ sleepPerformanceResponse?.progress_detail?.progress_percentage + "% Past week"
         }else{
-            percentageIcon.visibility = View.VISIBLE
-            percentageText.visibility = View.VISIBLE
+        //    percentageIcon.visibility = View.VISIBLE
+        //    percentageText.visibility = View.VISIBLE
             percentageIcon.setImageResource(R.drawable.ic_down)
             percentageText.text = " "+ sleepPerformanceResponse?.progress_detail?.progress_percentage + "% Past week"
         }

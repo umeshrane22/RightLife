@@ -46,8 +46,12 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
             holder.bpmUnit.text = "bpm"
             holder.subtractionValue.text = item.averageHeartRate.toInt().toString()
             holder.subtraction.setImageResource(R.drawable.avg_heart_rate)
-            holder.layoutMain.isEnabled = true
-            when (item?.workoutType) {
+            if (item.averageHeartRate> 0){
+                holder.layoutMain.isEnabled = true
+            }else{
+                holder.layoutMain.isEnabled = false
+            }
+            /*when (item?.workoutType) {
                 "American Football" -> {
                     holder.main_heading_icon.setImageResource(R.drawable.american_football)// Handle American Football
                 }
@@ -256,7 +260,7 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
                     // Handle unknown or null workoutType
                     holder.main_heading_icon.setImageResource(R.drawable.other)
                 }
-            }
+            }*/
         }else{
             holder.edit.visibility = View.VISIBLE
             holder.delete.visibility = View.VISIBLE
@@ -266,9 +270,223 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
             holder.subtractionValue.text = item.intensity
             holder.subtraction.setImageResource(R.drawable.intensity_meter)
             holder.layoutMain.isEnabled = false
-            Glide.with(context)
+            /*Glide.with(context)
                 .load(item.icon) // <-- your image URL string
-                .into(holder.main_heading_icon)
+                .into(holder.main_heading_icon)*/
+        }
+        when (item?.workoutType) {
+            "American Football" -> {
+                holder.main_heading_icon.setImageResource(R.drawable.american_football)// Handle American Football
+            }
+            "Archery" -> {
+                // Handle Archery
+                holder.main_heading_icon.setImageResource(R.drawable.archery)
+            }
+            "Athletics" -> {
+                // Handle Athletics
+                holder.main_heading_icon.setImageResource(R.drawable.athelete_search)
+            }
+            "Australian Football" -> {
+                // Handle Australian Football
+                holder.main_heading_icon.setImageResource(R.drawable.australian_football)
+            }
+            "Badminton" -> {
+                // Handle Badminton
+                holder.main_heading_icon.setImageResource(R.drawable.badminton)
+            }
+            "Barre" -> {
+                // Handle Barre
+                holder.main_heading_icon.setImageResource(R.drawable.barre)
+            }
+            "Baseball" -> {
+                // Handle Baseball
+                holder.main_heading_icon.setImageResource(R.drawable.baseball)
+            }
+            "Basketball" -> {
+                // Handle Basketball
+                holder.main_heading_icon.setImageResource(R.drawable.basketball)
+            }
+            "Boxing" -> {
+                // Handle Boxing
+                holder.main_heading_icon.setImageResource(R.drawable.boxing)
+
+            }
+            "Climbing" -> {
+                // Handle Climbing
+                holder.main_heading_icon.setImageResource(R.drawable.climbing)
+            }
+            "Core Training" -> {
+                // Handle Core Training
+                holder.main_heading_icon.setImageResource(R.drawable.core_training)
+            }
+            "Cycling" -> {
+                // Handle Cycling
+                holder.main_heading_icon.setImageResource(R.drawable.cycling)
+            }
+            "Cricket" -> {
+                // Handle Cricket
+                holder.main_heading_icon.setImageResource(R.drawable.cricket)
+            }
+            "Cross Training" -> {
+                // Handle Cross Training
+                holder.main_heading_icon.setImageResource(R.drawable.cross_training)
+            }
+            "Dance" -> {
+                // Handle Dance
+                holder.main_heading_icon.setImageResource(R.drawable.dance)
+            }
+            "Disc Sports" -> {
+                // Handle Disc Sports
+                holder.main_heading_icon.setImageResource(R.drawable.disc_sports)
+            }
+            "Elliptical" -> {
+                // Handle Elliptical
+                holder.main_heading_icon.setImageResource(R.drawable.elliptical)
+            }
+            "Football" -> {
+                // Handle Football
+                holder.main_heading_icon.setImageResource(R.drawable.football)
+            }
+            "Functional Strength Training" -> {
+                // Handle Functional Strength Training
+                holder.main_heading_icon.setImageResource(R.drawable.functional_strength_training)
+            }
+            "Golf" -> {
+                // Handle Golf
+                holder.main_heading_icon.setImageResource(R.drawable.golf)
+            }
+            "Gymnastics" -> {
+                // Handle Gymnastics
+                holder.main_heading_icon.setImageResource(R.drawable.gymnastics)
+            }
+            "Handball" -> {
+                // Handle Handball
+                holder.main_heading_icon.setImageResource(R.drawable.handball)
+            }
+            "Hiking" -> {
+                // Handle Hiking
+                holder.main_heading_icon.setImageResource(R.drawable.hockey)
+            }
+            "Hockey" -> {
+                // Handle Hockey
+                holder.main_heading_icon.setImageResource(R.drawable.hiit)
+            }
+            "HIIT" -> {
+                // Handle HIIT
+                holder.main_heading_icon.setImageResource(R.drawable.hiking)
+            }
+            "High Intensity Interval Training" -> {
+                // Handle HIIT
+                holder.main_heading_icon.setImageResource(R.drawable.hiking)
+            }
+            "Kickboxing" -> {
+                // Handle Kickboxing
+                holder.main_heading_icon.setImageResource(R.drawable.kickboxing)
+            }
+            "Martial Arts" -> {
+                // Handle Martial Arts
+                holder.main_heading_icon.setImageResource(R.drawable.martial_arts)
+            }
+            "Other" -> {
+                // Handle Other
+                holder.main_heading_icon.setImageResource(R.drawable.other)
+            }
+            "Pickleball" -> {
+                // Handle Pickleball
+                holder.main_heading_icon.setImageResource(R.drawable.pickleball)
+            }
+            "Pilates" -> {
+                // Handle Pilates
+                holder.main_heading_icon.setImageResource(R.drawable.pilates)
+            }
+            "Power Yoga" -> {
+                // Handle Power Yoga
+                holder.main_heading_icon.setImageResource(R.drawable.power_yoga)
+            }
+            "Powerlifting" -> {
+                // Handle Powerlifting
+                holder.main_heading_icon.setImageResource(R.drawable.powerlifting)
+            }
+            "Pranayama" -> {
+                // Handle Pranayama
+                holder.main_heading_icon.setImageResource(R.drawable.pranayama)
+            }
+            "Running" -> {
+                // Handle Running
+                holder.main_heading_icon.setImageResource(R.drawable.running)
+            }
+            "Rowing Machine" -> {
+                // Handle Rowing Machine
+                holder.main_heading_icon.setImageResource(R.drawable.rowing_machine)
+            }
+            "Rugby" -> {
+                // Handle Rugby
+                holder.main_heading_icon.setImageResource(R.drawable.rugby)
+            }
+            "Skating" -> {
+                // Handle Skating
+                holder.main_heading_icon.setImageResource(R.drawable.skating)
+            }
+            "Skipping" -> {
+                // Handle Skipping
+                holder.main_heading_icon.setImageResource(R.drawable.skipping)
+            }
+            "Stairs" -> {
+                // Handle Stairs
+                holder.main_heading_icon.setImageResource(R.drawable.stairs)
+            }
+            "Squash" -> {
+                // Handle Squash
+                holder.main_heading_icon.setImageResource(R.drawable.squash)
+            }
+            "Traditional Strength Training" -> {
+                // Handle Traditional Strength Training
+                holder.main_heading_icon.setImageResource(R.drawable.traditional_strength_training)
+            }
+            "Stretching" -> {
+                // Handle Stretching
+                holder.main_heading_icon.setImageResource(R.drawable.stretching)
+            }
+            "Swimming" -> {
+                // Handle Swimming
+                holder.main_heading_icon.setImageResource(R.drawable.swimming)
+            }
+            "Table Tennis" -> {
+                // Handle Table Tennis
+                holder.main_heading_icon.setImageResource(R.drawable.table_tennis)
+            }
+            "Tennis" -> {
+                // Handle Tennis
+                holder.main_heading_icon.setImageResource(R.drawable.tennis)
+            }
+            "Track and Field Events" -> {
+                // Handle Track and Field Events
+                holder.main_heading_icon.setImageResource(R.drawable.track_field_events)
+            }
+            "Volleyball" -> {
+                // Handle Volleyball
+                holder.main_heading_icon.setImageResource(R.drawable.volleyball)
+            }
+            "Walking" -> {
+                // Handle Walking
+                holder.main_heading_icon.setImageResource(R.drawable.walking)
+            }
+            "Watersports" -> {
+                // Handle Watersports
+                holder.main_heading_icon.setImageResource(R.drawable.watersports)
+            }
+            "Wrestling" -> {
+                // Handle Wrestling
+                holder.main_heading_icon.setImageResource(R.drawable.wrestling)
+            }
+            "Yoga" -> {
+                // Handle Yoga
+                holder.main_heading_icon.setImageResource(R.drawable.yoga)
+            }
+            else -> {
+                // Handle unknown or null workoutType
+                holder.main_heading_icon.setImageResource(R.drawable.other)
+            }
         }
         val formattedTime = formatTimeString(item.duration!!)
         holder.duration.text = formattedTime

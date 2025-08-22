@@ -14,12 +14,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
@@ -50,6 +52,7 @@ import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.Calendar
 import java.util.Locale
+import kotlin.math.floor
 
 class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBinding>() {
 
@@ -120,6 +123,46 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
         dateRangeText.text = "${startOfWeek.format(formatter)} - ${endOfWeek.format(formatter)}, ${currentDateWeek.year}"
         setupListeners()
         fetchSleepData(mEndDate,"weekly")
+        radioGroup.setOnCheckedChangeListener { group, checkedId ->
+            for (i in 0 until group.childCount) {
+                val radioButton = group.getChildAt(i) as RadioButton
+                if (radioButton.id == checkedId) {
+                    radioButton.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.white))
+                } else {
+                    radioButton.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.black))
+                }
+            }
+
+            when (checkedId) {
+                R.id.rbWeek -> {
+                    currentTab = 0
+                    val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                    val startDate = getOneWeekEarlierDate().format(dateFormatter)
+                    val endDate = getTodayDate().format(dateFormatter)
+                    val formatter = DateTimeFormatter.ofPattern("d MMM")
+                    dateRangeText.text = "${getOneWeekEarlierDate().format(formatter)} - ${getTodayDate().format(formatter)}, ${currentDateWeek.year}"
+                    fetchSleepData(endDate, "weekly")
+                }
+                R.id.rbMonth -> {
+                    currentTab = 1
+                    val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                    val startDate = getOneMonthEarlierDate().format(dateFormatter)
+                    val endDate = getTodayDate().format(dateFormatter)
+                    val formatter = DateTimeFormatter.ofPattern("d MMM")
+                    dateRangeText.text = "${getOneMonthEarlierDate().format(formatter)} - ${getTodayDate().format(formatter)}, ${currentDateMonth.year}"
+                    fetchSleepData(endDate, "monthly")
+                }
+                R.id.rbSixMonths -> {
+                    currentTab = 2
+                    val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                    val startDate = getSixMonthsEarlierDate().format(dateFormatter)
+                    val endDate = getTodayDate().format(dateFormatter)
+                    val formatter = DateTimeFormatter.ofPattern("d MMM")
+                    dateRangeText.text = "${getSixMonthsEarlierDate().format(formatter)} - ${getTodayDate().format(formatter)}, ${currentDateMonth.year}"
+                    fetchSleepData(endDate, "monthly")
+                }
+            }
+        }
 
         backBtn.setOnClickListener {
             val fragment = HomeBottomTabFragment()
@@ -166,37 +209,9 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
     }
 
     private fun setupListeners() {
-        radioGroup.setOnCheckedChangeListener { _, checkedId ->
-            when (checkedId) {
-                R.id.rbWeek -> {
-                    currentTab = 0
-                    val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                    val startDate = getOneWeekEarlierDate().format(dateFormatter)
-                    val endDate = getTodayDate().format(dateFormatter)
-                    val formatter = DateTimeFormatter.ofPattern("d MMM")
-                    dateRangeText.text = "${getOneWeekEarlierDate().format(formatter)} - ${getTodayDate().format(formatter)}, ${currentDateWeek.year}"
-                    fetchSleepData(endDate, "weekly")
-                }
-                R.id.rbMonth -> {
-                    currentTab = 1
-                    val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                    val startDate = getOneMonthEarlierDate().format(dateFormatter)
-                    val endDate = getTodayDate().format(dateFormatter)
-                    val formatter = DateTimeFormatter.ofPattern("d MMM")
-                    dateRangeText.text = "${getOneMonthEarlierDate().format(formatter)} - ${getTodayDate().format(formatter)}, ${currentDateMonth.year}"
-                    fetchSleepData(endDate, "monthly")
-                }
-                R.id.rbSixMonths -> {
-                    currentTab = 2
-                    val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                    val startDate = getSixMonthsEarlierDate().format(dateFormatter)
-                    val endDate = getTodayDate().format(dateFormatter)
-                    val formatter = DateTimeFormatter.ofPattern("d MMM")
-                    dateRangeText.text = "${getSixMonthsEarlierDate().format(formatter)} - ${getTodayDate().format(formatter)}, ${currentDateMonth.year}"
-                    fetchSleepData(endDate, "monthly")
-                }
-            }
-        }
+      /*  radioGroup.setOnCheckedChangeListener { _, checkedId ->
+
+        }*/
 
         btnPrevious.setOnClickListener {
             when (currentTab) {
@@ -542,7 +557,7 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
                     Log.d("TouchEvent", "Selected: xIndex=$xIndex, idealValue=$idealValue, actualValue=$actualValue")
                     sleep_actual_time_box.visibility = View.VISIBLE
                     tv_ideal_time.text = String.format("%d hr %d mins", idealHours, idealMinutes)
-                    tv_actual_time.text = String.format("%d hr %d mins", actualHours, actualMinutes)
+                    tv_actual_time.text = convertDecimalHoursToHrMinFormat(actualEntries.getOrNull(xIndex)?.y?.toDouble()!!) //String.format("%d hr %d mins", actualHours, actualMinutes)
                    // Log.d("TouchEvent", "Setting tvIdealTime to ${tvIdealTime.text}, tvActualTime to ${tvActualTime.text}")
 
                     // Update tv_ideal_actual_date with formatted date
@@ -567,6 +582,28 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
         })
 
         lineChart.invalidate()
+    }
+
+    private fun convertDecimalHoursToHrMinFormat(hoursDecimal: Double): String {
+        var result = "0"
+        if (hoursDecimal == 0.0 || hoursDecimal == null){
+            val totalMinutes = (hoursDecimal * 60).toInt()
+            val hours = totalMinutes / 60
+            val minutes = totalMinutes % 60
+            result = "0 mins"
+        }else {
+            // val totalMinutes = (hoursDecimal * 60).toInt()
+            val minutesDecimal = hoursDecimal * 60
+            val totalMinutes = if (minutesDecimal - floor(minutesDecimal) > 0.5) {
+                floor(minutesDecimal).toInt() + 1
+            } else {
+                floor(minutesDecimal).toInt()
+            }
+            val hours = totalMinutes / 60
+            val minutes = totalMinutes % 60
+            result = String.format("%02dhr %02dmins", hours, minutes)
+        }
+        return result
     }
     private fun Float.toHoursAndMinutes(): Pair<Int, Int> {
         val totalMinutes = (this * 60).toInt() // Convert to minutes
@@ -694,12 +731,12 @@ class SleepIdealActualFragment : BaseFragment<FragmentIdealActualSleepTimeBindin
         }
     }
 
-    private fun convertDecimalHoursToHrMinFormat(hoursDecimal: Double): String {
+    /*private fun convertDecimalHoursToHrMinFormat(hoursDecimal: Double): String {
         val totalMinutes = (hoursDecimal * 60).toInt()
         val hours = totalMinutes / 60
         val minutes = totalMinutes % 60
         return String.format("%02dhr %02dmins", hours, minutes)
-    }
+    }*/
 
 
     private fun navigateToFragment(fragment: androidx.fragment.app.Fragment, tag: String) {

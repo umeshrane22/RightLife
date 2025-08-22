@@ -20,9 +20,11 @@ import com.jetsynthesys.rightlife.ai_package.ui.home.HomeBottomTabFragment
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.customProgressBar.CardioStrippedProgressBar
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.customProgressBar.FatBurnStrippedProgressBar
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.customProgressBar.LightStrippedprogressBar
+import com.jetsynthesys.rightlife.ai_package.ui.moveright.customProgressBar.RestingProgressBar
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.customProgressBar.StripedProgressBar
 import com.jetsynthesys.rightlife.databinding.FragmentWorkoutAnalyticsBinding
 import java.text.SimpleDateFormat
+import java.time.Duration
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -40,17 +42,22 @@ class WorkoutAnalyticsFragment : BaseFragment<FragmentWorkoutAnalyticsBinding>()
     private lateinit var transparentOverlayCardio: View
     private lateinit var customProgressBarLight: LightStrippedprogressBar
     private lateinit var transparentOverlayLight: View
+    private lateinit var restingProgressBar: RestingProgressBar
+    private lateinit var transparentRestingOverlay: View
     private lateinit var customProgressBarFatBurn: FatBurnStrippedProgressBar
     private lateinit var transparentOverlayFatBurn: View
     private lateinit var light_percentage_value: TextView
+    private lateinit var resting_percentage_value: TextView
     private lateinit var yourHeartRateZone : ImageView
     private lateinit var light_time_value: TextView
+    private lateinit var resting_time_value: TextView
     private lateinit var fat_burn_time_value: TextView
     private lateinit var fat_burn_percentage_value: TextView
     private lateinit var cardio_text_time_value: TextView
     private lateinit var cardio_text_percentage_value: TextView
     private lateinit var peak_text_time_value: TextView
     private lateinit var light_text_percentage: TextView
+    private lateinit var resting_text_percentage: TextView
     private var cardItem: CardItem? = null
     private var loadingOverlay: FrameLayout? = null
 
@@ -76,17 +83,22 @@ class WorkoutAnalyticsFragment : BaseFragment<FragmentWorkoutAnalyticsBinding>()
         transparentOverlayCardio = view.findViewById(R.id.transparentOverlayCardio)
         customProgressBarLight = view.findViewById(R.id.customProgressBarLight)
         transparentOverlayLight = view.findViewById(R.id.transparentOverlayLight)
+        restingProgressBar = view.findViewById(R.id.customProgressBarResting)
+        transparentRestingOverlay = view.findViewById(R.id.transparentOverlayResting)
         customProgressBarFatBurn = view.findViewById(R.id.customProgressBarFatBurn)
         transparentOverlayFatBurn = view.findViewById(R.id.transparentOverlayFatBurn)
         workOutsAnalyticsBackButton = view.findViewById(R.id.back_button)
         light_percentage_value = view.findViewById(R.id.light_percentage_value)
         light_time_value = view.findViewById(R.id.light_time_value)
+        resting_percentage_value = view.findViewById(R.id.resting_text_percentage)
+        resting_time_value = view.findViewById(R.id.resting_time_value)
         fat_burn_time_value = view.findViewById(R.id.fat_burn_time_value)
         fat_burn_percentage_value = view.findViewById(R.id.fat_burn_percentage_value)
         cardio_text_time_value = view.findViewById(R.id.cardio_text_time_value)
         cardio_text_percentage_value = view.findViewById(R.id.cardio_text_percentage_value)
         peak_text_time_value = view.findViewById(R.id.peak_text_time_value)
         light_text_percentage = view.findViewById(R.id.light_text_percentage)
+        resting_text_percentage = view.findViewById(R.id.resting_text_percentage)
         yourHeartRateZone = view.findViewById(R.id.yourHeartRateZone)
 
         workOutsAnalyticsBackButton.setOnClickListener {
@@ -334,13 +346,23 @@ class WorkoutAnalyticsFragment : BaseFragment<FragmentWorkoutAnalyticsBinding>()
                 }
             }
             // Set the timeline (start and end times)
-            val startTime = item.heartRateData.firstOrNull()?.date?.let { convertUtcToSystemLocal(it) } ?: "N/A"
-            val endTime = item.heartRateData.lastOrNull()?.date?.let { convertUtcToSystemLocal(it) } ?: "N/A"
-            view.findViewById<TextView>(R.id.timeline_text).text = "$startTime to $endTime"
+         //   val startTime = item.heartRateData.firstOrNull()?.date?.let { convertUtcToSystemLocal(it) } ?: "N/A"
+          //  val endTime = item.heartRateData.lastOrNull()?.date?.let { convertUtcToSystemLocal(it) } ?: "N/A"
+         //   view.findViewById<TextView>(R.id.timeline_text).text = "$startTime to $endTime"
+            if (item.heartRateData.lastOrNull()?.date != null && item.heartRateData.firstOrNull()?.date != null) {
+                view.findViewById<TextView>(R.id.timeline_text).text = getTimeDifference(item.heartRateData.lastOrNull()?.date!!, item.heartRateData.firstOrNull()?.date!!)
+            }
             // Set the duration, calories burned, and average heart rate
             view.findViewById<TextView>(R.id.duration_text).text = item.duration
+          /*  val convertedDurationText = run {
+                val parts = item.duration.split(" ")
+                val hours = if (parts.contains("hr")) parts[0].toIntOrNull() ?: 0 else 0
+                val minutes = if (parts.contains("hr")) parts[2].toIntOrNull() ?: 0 else parts[0].toIntOrNull() ?: 0
+                String.format("%02d:%02d:%02d", hours + (minutes / 60), minutes % 60, 0)
+            }
+            view.findViewById<TextView>(R.id.timeline_text).text = convertedDurationText*/
             view.findViewById<TextView>(R.id.calories_text).text = item.caloriesBurned
-            view.findViewById<TextView>(R.id.avg_heart_rate_text_value).text = item.avgHeartRate
+            view.findViewById<TextView>(R.id.avg_heart_rate_text_value).text = item.avgHeartRate.split(" ").getOrNull(0)
 
             // Set heart rate zone percentages and minutes
             light_text_percentage.text = "${item.heartRateZonePercentages.lightZone}%"
@@ -351,6 +373,8 @@ class WorkoutAnalyticsFragment : BaseFragment<FragmentWorkoutAnalyticsBinding>()
             cardio_text_time_value.text = "${item.heartRateZoneMinutes.cardioZone}min"
             fat_burn_time_value.text = "${item.heartRateZoneMinutes.fatBurnZone}min"
             light_time_value.text = "${item.heartRateZoneMinutes.lightZone}min"
+            resting_time_value.text = "${item.heartRateZoneMinutes.belowLight}min"
+            resting_text_percentage.text = "${item.heartRateZonePercentages.belowLight}%"
 
             // Set progress bar percentages and overlay widths from heartRateZonePercentages
             customProgressBar.post {
@@ -373,6 +397,17 @@ class WorkoutAnalyticsFragment : BaseFragment<FragmentWorkoutAnalyticsBinding>()
                 layoutParams.startToStart = customProgressBarLight.id
                 layoutParams.marginStart = 0
                 transparentOverlayLight.layoutParams = layoutParams
+            }
+
+            restingProgressBar.post {
+                restingProgressBar.progress = item.heartRateZonePercentages.belowLight
+                val progressBarWidth = restingProgressBar.width
+                val filledWidth = (progressBarWidth * (item.heartRateZonePercentages.belowLight / 100.0)).toInt()
+                val layoutParams = transparentOverlayLight.layoutParams as ConstraintLayout.LayoutParams
+                layoutParams.width = filledWidth
+                layoutParams.startToStart = restingProgressBar.id
+                layoutParams.marginStart = 0
+                transparentRestingOverlay.layoutParams = layoutParams
             }
 
             customProgressBarFatBurn.post {
@@ -417,6 +452,19 @@ class WorkoutAnalyticsFragment : BaseFragment<FragmentWorkoutAnalyticsBinding>()
             yourHeartRateZonesInfoBottomSheet.isCancelable = true
             parentFragment.let { yourHeartRateZonesInfoBottomSheet.show(childFragmentManager, "YourHeartRateZonesInfoBottomSheet") }
         }
+    }
+
+    fun getTimeDifference(isoTime1: String, isoTime2: String): String {
+        val time1 = ZonedDateTime.parse(isoTime1)
+        val time2 = ZonedDateTime.parse(isoTime2)
+
+        val duration = Duration.between(time2, time1).abs()
+
+        val hours = duration.toHours()
+        val minutes = duration.toMinutes() % 60
+        val seconds = duration.seconds % 60
+
+        return "%02d:%02d:%02d".format(hours, minutes, seconds)
     }
 
     // Helper function to format the timestamp to a time string (e.g., "6:30 am")

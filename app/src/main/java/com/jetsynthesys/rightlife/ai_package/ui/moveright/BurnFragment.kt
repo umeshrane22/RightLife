@@ -134,15 +134,24 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
         radioGroup.check(R.id.rbWeek)
         fetchActiveCalories("last_weekly")
        // setupLineChart()
+        radioGroup.setOnCheckedChangeListener { group, checkedId ->
+            for (i in 0 until group.childCount) {
+                val radioButton = group.getChildAt(i) as RadioButton
+                if (radioButton.id == checkedId) {
+                    radioButton.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.white))
+                } else {
+                    radioButton.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.black))
+                }
+            }
 
-        // Handle Radio Button Selection
-        radioGroup.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
                 R.id.rbWeek -> fetchActiveCalories("last_weekly")
                 R.id.rbMonth -> fetchActiveCalories("last_monthly")
                 R.id.rbSixMonths -> fetchActiveCalories("last_six_months")
             }
         }
+        // Handle Radio Button Selection
+
 
         backwardImage.setOnClickListener {
             val selectedId = radioGroup.checkedRadioButtonId

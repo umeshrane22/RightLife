@@ -1001,6 +1001,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
         super.onResume()
         fetchAffirmationsList()
         getBreathingData()
+        fetchJournalAnswerData()
     }
 
     private fun fetchThinkRecomendedData() {

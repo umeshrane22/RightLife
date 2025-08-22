@@ -384,7 +384,8 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>(), DeleteMealBottomSh
                 is_save = false,
                 is_snapped = true,
                 date = currentDateUtc,
-                dish = snapDishList
+                dish = snapDishList,
+                image_url = ""
             )
             val parent = parentFragment as? HomeTabMealFragment
             parent?.setSelectedFrequentlyLog(mealLogData, true, null, snapMealLogRequest)

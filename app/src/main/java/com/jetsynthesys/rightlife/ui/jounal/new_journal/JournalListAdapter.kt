@@ -38,10 +38,22 @@ class JournalListAdapter(
 
             chip2.text = entry.title
 
+        /*    if (entry.tags.isNullOrEmpty()){
+                chip3.visibility = View.GONE
+                chipMore.visibility = View.GONE
+            }else {
+                chip3.text = entry.tags?.get(0)
+                chipMore.text = "${entry.tags?.size?.minus(1)}+"
+            }*/
             if (entry.tags.isNullOrEmpty()){
                 chip3.visibility = View.GONE
                 chipMore.visibility = View.GONE
             }else {
+                chip3.visibility = View.VISIBLE
+                if (entry.tags?.size == 1)
+                    chipMore.visibility = View.GONE
+                else
+                    chipMore.visibility = View.VISIBLE
                 chip3.text = entry.tags?.get(0)
                 chipMore.text = "${entry.tags?.size?.minus(1)}+"
             }
