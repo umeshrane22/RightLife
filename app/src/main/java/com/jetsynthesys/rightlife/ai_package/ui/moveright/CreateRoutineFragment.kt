@@ -167,6 +167,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
                 val fragment = SearchWorkoutFragment()
                 val args = Bundle().apply {
                     putString("routine", "edit_routine")
+                    putString("routineId",routineIdworkout)
                     putString("routineName", textViewRoutine.text.toString())
                     putParcelableArrayList("workoutList", workoutList)
                 }
@@ -410,7 +411,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
 
                 val request = UpdateRoutineRequest(
                     user_id = userId,
-                    routine_id = routineId,
+                    routine_id = routineIdworkout,
                     routine_name = routineName, // Include routine name in the request
                     workouts = workouts
                 )
