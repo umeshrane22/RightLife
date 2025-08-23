@@ -134,6 +134,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
     private var homeTab : String = ""
     private var selectedMealDate : String = ""
     private var imageGeneratedUrl = ""
+    private var isSaveClick : Boolean = false
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentMealScanResultsBinding
         get() = FragmentMealScanResultsBinding::inflate
@@ -155,94 +156,6 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
             requireContext(), arrayListOf(), -1,
             null, false, ::onMenuEditItem, ::onMenuDeleteItem
         )
-    }
-
-    private fun getUrlFromURI(uri: Uri) {
-        val uploadImage = UploadImage()
-        uploadImage.isPublic = false
-        uploadImage.fileType = "USER_FILES"
-        if (uri != null) {
-            val (fileName, fileSize) = getFileNameAndSize(requireContext(), uri) ?: return
-            uploadImage.fileSize = fileSize
-            uploadImage.fileName = fileName
-        }
-        uriToFile(uri)?.let { getPreSignedUrl(uploadImage, it) }
-    }
-    private fun uriToFile(uri: Uri): File? {
-        val contentResolver = requireContext().contentResolver
-        val fileName = getFileName(uri) ?: "temp_image_file"
-        val tempFile = File(requireContext().cacheDir, fileName)
-
-        return try {
-            val inputStream = contentResolver.openInputStream(uri)
-            val outputStream = FileOutputStream(tempFile)
-            inputStream?.copyTo(outputStream)
-            inputStream?.close()
-            outputStream.close()
-            tempFile
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        }
-    }
-    private fun getFileName(uri: Uri): String? {
-        var name: String? = null
-        val returnCursor = requireContext().contentResolver.query(uri, null, null, null, null)
-        returnCursor?.use {
-            val nameIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-            if (nameIndex != -1 && it.moveToFirst()) {
-                name = it.getString(nameIndex)
-            }
-        }
-        return name
-    }
-    private fun getFileNameAndSize(context: Context, uri: Uri): Pair<String, Long>? {
-        val returnCursor = context.contentResolver.query(uri, null, null, null, null)
-        returnCursor?.use {
-            val nameIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-            val sizeIndex = it.getColumnIndex(OpenableColumns.SIZE)
-            if (it.moveToFirst()) {
-                val name = it.getString(nameIndex)
-                val size = it.getLong(sizeIndex)
-                return Pair(name, size)
-            }
-        }
-        return null
-    }
-
-    private fun getPreSignedUrl(uploadImage: UploadImage, file: File) {
-        val call: Call<PreSignedUrlResponse> = apiService.getPreSignedUrl(sharedPreferenceManager.accessToken, uploadImage)
-
-        call.enqueue(object : Callback<PreSignedUrlResponse?> {
-            override fun onResponse(
-                call: Call<PreSignedUrlResponse?>,
-                response: Response<PreSignedUrlResponse?>
-            ) {
-                if (response.isSuccessful && response.body() != null) {
-                    response.body()?.data?.let { preSignedUrlData = it }
-                    response.body()?.data?.url?.let {
-                        CommonAPICall.uploadImageToPreSignedUrl(
-                            requireContext(),
-                            file, it
-                        ) { success ->
-                            if (success) {
-                                showToast("Image uploaded successfully!")
-                                imageGeneratedUrl = it.split("?").get(0)
-                                ratingMealLogDialog(false)
-                            } else {
-                                showToast("Upload failed!")
-                            }
-                        }
-                    }
-                } else {
-                    showToast("Server Error: " + response.code())
-                }
-            }
-
-            override fun onFailure(call: Call<PreSignedUrlResponse?>, t: Throwable) {
-               // handleNoInternetView(t)
-            }
-        })
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -321,11 +234,12 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
         //currentPhotoPathsecound = arguments?.get("ImagePathsecound") as Uri
         descriptionName = arguments?.getString("description").toString()
         checkBox.setOnCheckedChangeListener { buttonView, isChecked ->
+            isSaveClick = true
             if (isChecked) {
                 if (mealId != "null" && mealId != null) {
                     updateSnapMealsSave((snapRecipesList))
                 }else{
-                    createSnapMealLog(snapRecipesList, true)
+                    currentPhotoPathsecound?.let { getUrlFromURI(it) }
                 }
             }
         }
@@ -455,13 +369,13 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
                         name = foodData.name,
                         category = "",
                         photo_url = "",
-                        servings = 0,
+                        servings = 1,
                         cooking_time_in_seconds = 0,
                         calories = 0.0,
                         nutrients = nutrientsData,
                         source = "",
                         unit = "",
-                        mealQuantity = 0.0
+                        mealQuantity = 1.0
                     )
                     snapRecipesListScan.add(snapRecipeData)
                 }
@@ -607,20 +521,14 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
         }
 
         addToLogLayout.setOnClickListener {
-            //  Toast.makeText(context, "Added To Log", Toast.LENGTH_SHORT).show()
+            isSaveClick = false
             if (moduleName.contentEquals("EatRight")) {
                 // ratingMealLogDialog()
                 // sharedPreferenceManager.setFirstTimeUserForSnapMealRating(true)
                 if (mealId != "null" && mealId != null) {
                     updateSnapMealsSave((snapRecipesList))
                 } else {
-                    val file = File(currentPhotoPath)
-                    val uri = FileProvider.getUriForFile(
-                        requireContext(),
-                        "${requireContext().packageName}.fileprovider",
-                        file
-                    )
-                    getUrlFromURI(uri)
+                    currentPhotoPathsecound?.let { getUrlFromURI(it) }
                    // ratingMealLogDialog(false)
                 }
 //                requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -636,14 +544,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
                 if (snapMealLog.equals("snapMealLog")) {
                     updateSnapMealLog(mealId, snapRecipesList)
                 } else {
-                    val file = File(currentPhotoPath)
-                    val uri = FileProvider.getUriForFile(
-                        requireContext(),
-                        "${requireContext().packageName}.fileprovider",
-                        file
-                    )
-                    getUrlFromURI(uri)
-                   // ratingMealLogDialog(false)
+                    currentPhotoPathsecound?.let { getUrlFromURI(it) }
                 }
             }
         }
@@ -671,6 +572,121 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
                 view.findViewById<View>(R.id.view_micro).visibility = View.VISIBLE
             }
         }
+    }
+
+    private fun getUrlFromURI(uri: Uri) {
+        val uploadImage = UploadImage()
+        uploadImage.isPublic = false
+        uploadImage.fileType = "USER_FILES"
+        if (uri != null) {
+            val (fileName, fileSize) = getFileNameAndSize(requireContext(), uri) ?: return
+            uploadImage.fileSize = fileSize
+            uploadImage.fileName = fileName
+        }
+        uriToFile(uri)?.let { getPreSignedUrl(uploadImage, it) }
+    }
+    private fun uriToFile(uri: Uri): File? {
+        val contentResolver = requireContext().contentResolver
+        val fileName = getFileName(uri) ?: "temp_image_file"
+        val tempFile = File(requireContext().cacheDir, fileName)
+
+        return try {
+            val inputStream = contentResolver.openInputStream(uri)
+            val outputStream = FileOutputStream(tempFile)
+            inputStream?.copyTo(outputStream)
+            inputStream?.close()
+            outputStream.close()
+            tempFile
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+    private fun getFileName(uri: Uri): String? {
+        var name: String? = null
+        val returnCursor = requireContext().contentResolver.query(uri, null, null, null, null)
+        returnCursor?.use {
+            val nameIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            if (nameIndex != -1 && it.moveToFirst()) {
+                name = it.getString(nameIndex)
+            }
+        }
+        return name
+    }
+    private fun getFileNameAndSize(context: Context, uri: Uri): Pair<String, Long>? {
+        val returnCursor = context.contentResolver.query(uri, null, null, null, null)
+        returnCursor?.use {
+            val nameIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+            val sizeIndex = it.getColumnIndex(OpenableColumns.SIZE)
+            if (it.moveToFirst()) {
+                val name = it.getString(nameIndex)
+                val size = it.getLong(sizeIndex)
+                return Pair(name, size)
+            }
+        }
+        return null
+    }
+
+    private fun getPreSignedUrl(uploadImage: UploadImage, file: File) {
+        if (isAdded && view != null) {
+            requireActivity().runOnUiThread {
+                showLoader(requireView())
+            }
+        }
+        val call: Call<PreSignedUrlResponse> = apiService.getPreSignedUrl(sharedPreferenceManager.accessToken, uploadImage)
+        call.enqueue(object : Callback<PreSignedUrlResponse?> {
+            override fun onResponse(
+                call: Call<PreSignedUrlResponse?>,
+                response: Response<PreSignedUrlResponse?>
+            ) {
+                if (response.isSuccessful && response.body() != null) {
+                    response.body()?.data?.let { preSignedUrlData = it }
+                    response.body()?.data?.url?.let {
+                        CommonAPICall.uploadImageToPreSignedUrl(
+                            requireContext(),
+                            file, it
+                        ) { success ->
+                            if (success) {
+                                if (isAdded && view != null) {
+                                    requireActivity().runOnUiThread {
+                                        dismissLoader(requireView())
+                                    }
+                                }
+                                showToast("Image uploaded successfully!")
+                                imageGeneratedUrl = it.split("?").get(0)
+                                if (isSaveClick){
+                                    createSnapMealLog(snapRecipesList, true)
+                                }else{
+                                    ratingMealLogDialog(false)
+                                }
+                            } else {
+                                if (isAdded && view != null) {
+                                    requireActivity().runOnUiThread {
+                                        dismissLoader(requireView())
+                                    }
+                                }
+                                showToast("Upload failed!")
+                            }
+                        }
+                    }
+                } else {
+                    if (isAdded && view != null) {
+                        requireActivity().runOnUiThread {
+                            dismissLoader(requireView())
+                        }
+                    }
+                    showToast("Server Error: " + response.code())
+                }
+            }
+            override fun onFailure(call: Call<PreSignedUrlResponse?>, t: Throwable) {
+                // handleNoInternetView(t)
+                if (isAdded && view != null) {
+                    requireActivity().runOnUiThread {
+                        dismissLoader(requireView())
+                    }
+                }
+            }
+        })
     }
 
     private fun onMicroNutrientsList(nutrition: ArrayList<SearchResultItem>) {
@@ -841,7 +857,6 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
         position: Int,
         isRefresh: Boolean
     ) {
-
     }
 
     private fun onMealLogDateItem(
@@ -849,7 +864,6 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
         position: Int,
         isRefresh: Boolean
     ) {
-
     }
 
     private fun onMacroNutrientsList(nutritionList: ArrayList<SearchResultItem>) {
@@ -1174,7 +1188,11 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
                     vitamin_e_mg = snapDish.nutrients.micros.vitamin_e_mg,
                     vitamin_k_mcg = snapDish.nutrients.micros.Vitamin_K,
                     zinc_mg = snapDish.nutrients.micros.Zinc,
-                    mealQuantity = snapDish.mealQuantity
+                    mealQuantity = if (snapDish.mealQuantity!! > 0.0){
+                        snapDish.mealQuantity
+                    }else{
+                        1.0
+                    }
                 )
                 snapDishList.add(snapDishRequest)
             }
@@ -1300,7 +1318,6 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
         }
     }
 
-
     private fun updateSnapMealsSave(snapRecipeList: ArrayList<SearchResultItem>) {
         if (isAdded && view != null) {
             requireActivity().runOnUiThread {
@@ -1394,7 +1411,6 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
                     }
                 }
             }
-
             override fun onFailure(call: Call<MealUpdateResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
@@ -1531,7 +1547,6 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
                     }
                 }
             }
-
             override fun onFailure(call: Call<MealUpdateResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(context, "Failure", Toast.LENGTH_SHORT).show()

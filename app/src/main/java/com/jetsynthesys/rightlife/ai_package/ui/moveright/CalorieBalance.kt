@@ -161,7 +161,6 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
         }
         // Handle Radio Button Selection
 
-
         backwardImage.setOnClickListener {
             val selectedId = radioGroup.checkedRadioButtonId
             var selectedTab: String = "Week"
@@ -499,15 +498,12 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
                         style = Paint.Style.STROKE
                         pathEffect = DashPathEffect(floatArrayOf(10f, 5f), 0f)
                     }
-
                     // Get chart bounds
                     val chartRect = barChart.contentRect
-
                     // Convert chart value to pixel position
                     val transformer = barChart.getTransformer(YAxis.AxisDependency.LEFT)
                     val pts = floatArrayOf(xPosition, 0f)
                     transformer.pointValuesToPixel(pts)
-
                     // Draw vertical line
                     c.drawLine(
                         pts[0],
@@ -719,7 +715,7 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
             calendar.add(Calendar.DAY_OF_YEAR, 1)
         }
         val labelsWithEmpty = generateLabeled30DayListWithEmpty(dateList[0])
-        val labels = generateWeeklyLabelsFor30Days(dateList[0])
+        val labels = formatDateList(dateList)
         weeklyLabels.addAll(labelsWithEmpty)
         labelsDate.addAll(labels)
         /* for (i in 0 until 30) {
@@ -757,6 +753,20 @@ class CalorieBalance : BaseFragment<FragmentCalorieBalanceBinding>() {
         val entries = calorieMap.entries.mapIndexed { index, entry -> BarEntry(index.toFloat(), entry.value) }
         return Triple(entries, weeklyLabels, labelsDate)
     }
+
+    private fun formatDateList(dates: List<String>): List<String> {
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("d MMM, yyyy", Locale.getDefault())
+        return dates.mapNotNull { dateStr ->
+            try {
+                val parsedDate = inputFormat.parse(dateStr)
+                parsedDate?.let { outputFormat.format(it) }
+            } catch (e: Exception) {
+                null
+            }
+        }
+    }
+
     private fun generateWeeklyLabelsFor30Days(startDateStr: String): List<String> {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val dayFormat = SimpleDateFormat("d", Locale.getDefault())

@@ -332,6 +332,10 @@ class HeartRateVariabilityFragment : BaseFragment<FragmentHeartRateVariabilityBi
 
         lineChart.axisRight.isEnabled = false
         lineChart.description.isEnabled = false
+        lineChart.setScaleEnabled(false)
+        lineChart.isDoubleTapToZoomEnabled = false
+        lineChart.isHighlightPerTapEnabled = true
+        lineChart.isHighlightPerDragEnabled = false
 
         // Description
         val description = Description().apply {
@@ -596,33 +600,9 @@ class HeartRateVariabilityFragment : BaseFragment<FragmentHeartRateVariabilityBi
             calendar.add(Calendar.DAY_OF_YEAR, 1)
         }
         val labelsWithEmpty = generateLabeled30DayListWithEmpty(dateList[0])
-        val labels = generateWeeklyLabelsFor30Days(dateList[0])
+        val labels = formatDateList(dateList)
         weeklyLabels.addAll(labelsWithEmpty)
         labelsDate.addAll(labels)
-       /* for (i in 0 until 30) {
-            weeklyLabels.add(
-                when (i) {
-                    2 -> "1-7"
-                    9 -> "8-14"
-                    15 -> "15-21"
-                    22 -> "22-28"
-                    29 -> "29-31"
-                    else -> "" // empty string hides the label
-                }
-            )
-            val dateLabel = (convertMonth(dateStrLabel.toString()) + "," + year)
-            if (i < 7){
-                labelsDate.add("1-7 $dateLabel")
-            }else if (i < 14){
-                labelsDate.add("8-14 $dateLabel")
-            }else if (i < 21){
-                labelsDate.add("15-21 $dateLabel")
-            }else if (i < 28){
-                labelsDate.add("22-28 $dateLabel")
-            }else{
-                labelsDate.add("29-31 $dateLabel")
-            }
-        }*/
         // Aggregate calories by week
         if ( restingHeartRateResponse.heartRateVariability.isNotEmpty()){
             restingHeartRateResponse.heartRateVariability.forEach { calorie ->
@@ -637,6 +617,20 @@ class HeartRateVariabilityFragment : BaseFragment<FragmentHeartRateVariabilityBi
         val entries = hrvMap.values.mapIndexed { index, value -> BarEntry(index.toFloat(), value) }
         return Triple(entries, weeklyLabels, labelsDate)
     }
+
+    private fun formatDateList(dates: List<String>): List<String> {
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("d MMM, yyyy", Locale.getDefault())
+        return dates.mapNotNull { dateStr ->
+            try {
+                val parsedDate = inputFormat.parse(dateStr)
+                parsedDate?.let { outputFormat.format(it) }
+            } catch (e: Exception) {
+                null
+            }
+        }
+    }
+
     private fun generateWeeklyLabelsFor30Days(startDateStr: String): List<String> {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val dayFormat = SimpleDateFormat("d", Locale.getDefault())

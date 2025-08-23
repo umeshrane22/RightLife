@@ -284,18 +284,28 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                val fragment = HomeBottomTabFragment()
-                val args = Bundle()
                 if (moduleName.contentEquals("EatRightLanding")){
+                    val fragment = HomeBottomTabFragment()
+                    val args = Bundle()
                     args.putString("ModuleName", "EatRight")
+                    fragment.arguments = args
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.flFragment, fragment, "landing")
+                        addToBackStack("landing")
+                        commit()
+                    }
+                }else if (moduleName.contentEquals("HomeDashboard")){
+                    activity?.finish()
                 }else{
+                    val fragment = HomeBottomTabFragment()
+                    val args = Bundle()
                     args.putString("ModuleName", "MoveRight")
-                }
-                fragment.arguments = args
-                requireActivity().supportFragmentManager.beginTransaction().apply {
-                    replace(R.id.flFragment, fragment, "landing")
-                    addToBackStack("landing")
-                    commit()
+                    fragment.arguments = args
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.flFragment, fragment, "landing")
+                        addToBackStack("landing")
+                        commit()
+                    }
                 }
             }
         })
@@ -408,18 +418,29 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
         }
 
         backButton.setOnClickListener {
-            val fragment = HomeBottomTabFragment()
-            val args = Bundle()
+
             if (moduleName.contentEquals("EatRightLanding")){
+                val fragment = HomeBottomTabFragment()
+                val args = Bundle()
                 args.putString("ModuleName", "EatRight")
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "landing")
+                    addToBackStack("landing")
+                    commit()
+                }
+            }else if (moduleName.contentEquals("HomeDashboard")){
+                activity?.finish()
             }else{
+                val fragment = HomeBottomTabFragment()
+                val args = Bundle()
                 args.putString("ModuleName", "MoveRight")
-            }
-            fragment.arguments = args
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                replace(R.id.flFragment, fragment, "landing")
-                addToBackStack("landing")
-                commit()
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "landing")
+                    addToBackStack("landing")
+                    commit()
+                }
             }
         }
 

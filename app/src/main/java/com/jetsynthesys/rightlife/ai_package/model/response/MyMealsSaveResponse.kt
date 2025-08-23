@@ -31,7 +31,8 @@ data class SnapMealDetail(
     val total_sugar: Double,
     val total_cholesterol: Double,
     val total_iron: Double,
-    val total_magnesium: Double
+    val total_magnesium: Double,
+    val image_url : String
 )
 
 data class SnapDish(

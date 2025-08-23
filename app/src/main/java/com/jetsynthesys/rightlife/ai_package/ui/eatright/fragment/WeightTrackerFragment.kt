@@ -952,6 +952,10 @@ class WeightTrackerFragment : BaseFragment<FragmentWeightTrackerBinding>() {
 
             lineChart.axisRight.isEnabled = false
             lineChart.description.isEnabled = false
+            lineChart.setScaleEnabled(false)
+            lineChart.isDoubleTapToZoomEnabled = false
+            lineChart.isHighlightPerTapEnabled = true
+            lineChart.isHighlightPerDragEnabled = false
             // Optional chart description
             val description = Description().apply {
                 text = ""

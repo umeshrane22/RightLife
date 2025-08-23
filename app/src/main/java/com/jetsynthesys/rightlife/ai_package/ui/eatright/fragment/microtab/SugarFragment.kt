@@ -287,69 +287,6 @@ class SugarFragment : BaseFragment<FragmentSugarBinding>() {
         }
     }
 
-    /** Update BarChart with new data */
-//    private fun updateChart(entries: List<BarEntry>, labels: List<String>, labelsDate: List<String>) {
-//        val dataSet = BarDataSet(entries, "Calories Burned")
-//        dataSet.color = ContextCompat.getColor(requireContext(),R.color.light_green)
-//        dataSet.valueTextColor = ContextCompat.getColor(requireContext(),R.color.black_no_meals)
-//        dataSet.valueTextSize = 12f
-//        if (entries.size > 7){
-//            dataSet.setDrawValues(false)
-//        }else{
-//            dataSet.setDrawValues(true)
-//        }
-//        dataSet.barShadowColor = Color.TRANSPARENT
-//        dataSet.highLightColor = ContextCompat.getColor(requireContext(),R.color.light_green)
-//        val barData = BarData(dataSet)
-//        barData.barWidth = 0.4f
-//        barChart.data = barData
-//        barChart.setFitBars(true)
-//        //    barChart.renderer = CurvedBarChartRenderer(barChart, barChart.animator, barChart.viewPortHandler)
-////        val parts = label.split("\n")
-////        val day = parts.getOrNull(0) ?: ""
-////        val date = parts.getOrNull(1) ?: ""
-//        val xAxis = barChart.xAxis
-//        xAxis.valueFormatter = IndexAxisValueFormatter(labels) // Set custom labels
-//        xAxis.position = XAxis.XAxisPosition.BOTTOM
-//        xAxis.textSize = 10f
-//        xAxis.granularity = 1f
-//        xAxis.labelCount = labels.size
-//        xAxis.setDrawLabels(true)
-//        //  xAxis.labelRotationAngle = -45f
-//        xAxis.labelRotationAngle = 0f // optional, for vertical display
-//        xAxis.setDrawGridLines(false)
-//        xAxis.textColor = ContextCompat.getColor(requireContext(),R.color.black_no_meals)
-//        xAxis.yOffset = 15f // Move labels down
-//        //   barChart.extraBottomOffset = 15f // Adjust as needed
-//        val leftYAxis: YAxis = barChart.axisLeft
-//        leftYAxis.textSize = 12f
-//        leftYAxis.textColor = ContextCompat.getColor(requireContext(),R.color.black_no_meals)
-//        leftYAxis.setDrawGridLines(true)
-//        barChart.axisRight.isEnabled = false
-//        barChart.description.isEnabled = false
-//        barChart.setExtraOffsets(0f, 0f, 0f, 0f)
-//        val legend = barChart.legend
-//        legend.setDrawInside(false)
-//        barChart.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
-//            override fun onValueSelected(e: Entry?, h: Highlight?) {
-//                selectHeartRateLayout.visibility = View.VISIBLE
-//                if (e != null) {
-//                    val x = e.x.toInt()
-//                    val y = e.y
-//                    Log.d("ChartClick", "Clicked X: $x, Y: $y")
-//                    selectedItemDate.text = labelsDate.get(x)
-//                    selectedCalorieTv.text = y.toInt().toString()
-//                }
-//            }
-//            override fun onNothingSelected() {
-//                Log.d("ChartClick", "Nothing selected")
-//                selectHeartRateLayout.visibility = View.INVISIBLE
-//            }
-//        })
-//        barChart.animateY(1000)
-//        barChart.invalidate()
-//    }
-
     private fun updateChart(entries: List<BarEntry>, labels: List<String>, labelsDate: List<String>,
                             activeCaloriesResponse: ConsumedSugarResponse) {
         val dataSet = BarDataSet(entries, "")
@@ -365,6 +302,10 @@ class SugarFragment : BaseFragment<FragmentSugarBinding>() {
         barData.barWidth = 0.4f
         barChart.data = barData
         barChart.setFitBars(true)
+        barChart.setScaleEnabled(false)
+        barChart.isDoubleTapToZoomEnabled = false
+        barChart.isHighlightPerTapEnabled = true
+        barChart.isHighlightPerDragEnabled = false
 
         // X-axis label handling
         val combinedLabels = if (entries.size == 30) {

@@ -142,7 +142,6 @@ class VitaminKFragment : BaseFragment<FragmentSugarBinding>() {
             }
         }
 
-
         backwardImage.setOnClickListener {
             val selectedId = radioGroup.checkedRadioButtonId
             var selectedTab : String = "Week"
@@ -274,6 +273,10 @@ class VitaminKFragment : BaseFragment<FragmentSugarBinding>() {
         barData.barWidth = 0.4f
         barChart.data = barData
         barChart.setFitBars(true)
+        barChart.setScaleEnabled(false)
+        barChart.isDoubleTapToZoomEnabled = false
+        barChart.isHighlightPerTapEnabled = true
+        barChart.isHighlightPerDragEnabled = false
 
         // X-axis label handling
         val combinedLabels = if (entries.size == 30) {

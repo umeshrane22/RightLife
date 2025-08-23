@@ -89,6 +89,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
     private var snapMealLogRequestList : ArrayList<SnapMealLogRequest> = ArrayList()
     private var snapMealRequestCount : Int = 0
     private var loadingOverlay : FrameLayout? = null
+    private lateinit var tvIngredientsCount : TextView
     private var tabType : String = ""
     private var moduleName : String = ""
     private var selectedMealDate : String = ""
@@ -124,6 +125,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
         layoutTitle = view.findViewById(R.id.layout_title)
         checkCircle = view.findViewById(R.id.check_circle_icon)
         loggedSuccess = view.findViewById(R.id.tv_logged_success)
+        tvIngredientsCount = view.findViewById(R.id.tvIngredientsCount)
 
         moduleName = arguments?.getString("ModuleName").toString()
         searchType = arguments?.getString("searchType").toString()
@@ -678,6 +680,13 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
             val chipView = LayoutInflater.from(context).inflate(R.layout.chip_ingredient, flexboxLayout, false)
             val tvIngredient: TextView = chipView.findViewById(R.id.tvIngredient)
             val btnRemove: ImageView = chipView.findViewById(R.id.btnRemove)
+            val layoutParams = FlexboxLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                setMargins(8, 8, 8, 8)
+            }
+            chipView.layoutParams = layoutParams
             btnRemove.setColorFilter(ContextCompat.getColor(requireContext(), R.color.white), PorterDuff.Mode.SRC_IN)
             tvIngredient.text = ingredient
             btnRemove.setOnClickListener {
@@ -717,8 +726,13 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
             }
             flexboxLayout.addView(chipView)
         }
+        tvIngredientsCount.text = ""+ ingredientsList.size + " Dishes/ Ingredients Added"
         if (ingredientsList.isEmpty()){
             frequentlyAddDishBottomSheetLayout.visibility = View.GONE
+            snapDishLocalListModel = null
+            mealLogRequests = null
+            snapMealLogRequests = null
+            snapMealRequestLocalListModel = null
         }
     }
 

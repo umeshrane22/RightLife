@@ -44,6 +44,7 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
 
         val selectedDate = arguments?.getString("selected_date")
         val routine = arguments?.getString("routine")
+        val routineid = arguments?.getString("routineId")
         val routineName = arguments?.getString("routineName")
         workoutList = arguments?.getParcelableArrayList("workoutList") ?: ArrayList()
         workoutLists = arguments?.getParcelable<WorkoutRoutineItem>("WORKOUT_MODEL")
@@ -83,6 +84,7 @@ class SearchWorkoutFragment : BaseFragment<FragmentSearchWorkoutBinding>() {
                     arguments = Bundle().apply {
                         putString("routine", routine)
                         putString("routineName", routineName)
+                        putString("routineId",routineid)
                         putString("selected_date", mSelectedDate)
                         putParcelableArrayList("workoutList", workoutList)
                     }

@@ -48,6 +48,7 @@ import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlin.math.roundToInt
 
 class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>() {
 
@@ -58,6 +59,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
     private lateinit var intensityProgressBar: CustomProgressBar
     private lateinit var caloriesText: TextView
     private lateinit var addLog: LinearLayoutCompat
+    private var isPickerChanged = false
     private var selectedTime: String = "1 hr 0 min"
     private var selectedIntensity: String = "Low" // Default to API-accepted value
     private var edit: String = ""
@@ -122,6 +124,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
         if (mSelectedDate.isNullOrEmpty()){
             mSelectedDate = getCurrentDate()
         }
+
         if (edit == "edit") {
             if (activityModel == null) {
                 Toast.makeText(requireContext(), "No activity data provided for editing", Toast.LENGTH_SHORT).show()
@@ -475,6 +478,272 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                 //   calculateUserCalories(60, selectedIntensity, workout.activityId) // 1 hr default
                 addLog.isEnabled = true
             }
+        }
+        if(editWorkoutRoutine.equals("editworkoutRoutine")){
+            selectedIntensity = normalizeIntensity(editWorkoutRoutineItem?.intensity ?: "Low")
+            // Set progress based on intensity (progress range is 0 to 1)
+            when (selectedIntensity) {
+                "Low" -> intensityProgressBar.progress = 0.0f
+                "Moderate" -> intensityProgressBar.progress = 0.3333f
+                "High" -> intensityProgressBar.progress = 0.6666f
+                "Very High" -> intensityProgressBar.progress = 1.0f
+            }
+            //editWorkoutRoutineItem
+            val durationMinutes = editWorkoutRoutineItem?.duration?.replace(" min", "")?.toIntOrNull() ?: 0
+            val hours = durationMinutes / 60
+            val minutes = durationMinutes % 60
+            hourPicker.value = hours // Set to 2
+            minutePicker.value = minutes // Set to 1
+            caloriesText.text = editWorkoutRoutineItem?.caloriesBurned
+                ?.toDoubleOrNull()
+                ?.roundToInt()
+                ?.toString() ?: "0" // Set to "1966"
+            workoutName.text = editWorkoutRoutineItem?.name
+           // Set to "Martial Arts"
+            when (editWorkoutRoutineItem?.name) {
+                "American Football" -> {
+                    workoutIcon.setImageResource(R.drawable.american_football)// Handle American Football
+                }
+                "Archery" -> {
+                    // Handle Archery
+                    workoutIcon.setImageResource(R.drawable.archery)
+                }
+                "Athletics" -> {
+                    // Handle Athletics
+                    workoutIcon.setImageResource(R.drawable.athelete_search)
+                }
+                "Australian Football" -> {
+                    // Handle Australian Football
+                    workoutIcon.setImageResource(R.drawable.australian_football)
+                }
+                "Badminton" -> {
+                    // Handle Badminton
+                    workoutIcon.setImageResource(R.drawable.badminton)
+                }
+                "Barre" -> {
+                    // Handle Barre
+                    workoutIcon.setImageResource(R.drawable.barre)
+                }
+                "Baseball" -> {
+                    // Handle Baseball
+                    workoutIcon.setImageResource(R.drawable.baseball)
+                }
+                "Basketball" -> {
+                    // Handle Basketball
+                    workoutIcon.setImageResource(R.drawable.basketball)
+                }
+                "Boxing" -> {
+                    // Handle Boxing
+                    workoutIcon.setImageResource(R.drawable.boxing)
+
+                }
+                "Climbing" -> {
+                    // Handle Climbing
+                    workoutIcon.setImageResource(R.drawable.climbing)
+                }
+                "Core Training" -> {
+                    // Handle Core Training
+                    workoutIcon.setImageResource(R.drawable.core_training)
+                }
+                "Cycling" -> {
+                    // Handle Cycling
+                    workoutIcon.setImageResource(R.drawable.cycling)
+                }
+                "Cricket" -> {
+                    // Handle Cricket
+                    workoutIcon.setImageResource(R.drawable.cricket)
+                }
+                "Cross Training" -> {
+                    // Handle Cross Training
+                    workoutIcon.setImageResource(R.drawable.cross_training)
+                }
+                "Dance" -> {
+                    // Handle Dance
+                    workoutIcon.setImageResource(R.drawable.dance)
+                }
+                "Disc Sports" -> {
+                    // Handle Disc Sports
+                    workoutIcon.setImageResource(R.drawable.disc_sports)
+                }
+                "Elliptical" -> {
+                    // Handle Elliptical
+                    workoutIcon.setImageResource(R.drawable.elliptical)
+                }
+                "Football" -> {
+                    // Handle Football
+                    workoutIcon.setImageResource(R.drawable.football)
+                }
+                "Functional Strength Training" -> {
+                    // Handle Functional Strength Training
+                    workoutIcon.setImageResource(R.drawable.functional_strength_training)
+                }
+                "Golf" -> {
+                    // Handle Golf
+                    workoutIcon.setImageResource(R.drawable.golf)
+                }
+                "Gymnastics" -> {
+                    // Handle Gymnastics
+                    workoutIcon.setImageResource(R.drawable.gymnastics)
+                }
+                "Handball" -> {
+                    // Handle Handball
+                    workoutIcon.setImageResource(R.drawable.handball)
+                }
+                "Hiking" -> {
+                    // Handle Hiking
+                    workoutIcon.setImageResource(R.drawable.hockey)
+                }
+                "Hockey" -> {
+                    // Handle Hockey
+                    workoutIcon.setImageResource(R.drawable.hiit)
+
+                }
+                "HIIT" -> {
+                    // Handle HIIT
+                    workoutIcon.setImageResource(R.drawable.hiking)
+
+                }
+                "High Intensity Interval Training" -> {
+                    // Handle HIIT
+                    workoutIcon.setImageResource(R.drawable.hiking)
+                }
+                "Kickboxing" -> {
+                    // Handle Kickboxing
+                    workoutIcon.setImageResource(R.drawable.kickboxing)
+
+                }
+                "Martial Arts" -> {
+                    // Handle Martial Arts
+                    workoutIcon.setImageResource(R.drawable.martial_arts)
+
+                }
+                "Other" -> {
+                    // Handle Other
+                    workoutIcon.setImageResource(R.drawable.other)
+
+                }
+                "Pickleball" -> {
+                    // Handle Pickleball
+                    workoutIcon.setImageResource(R.drawable.pickleball)
+
+                }
+                "Pilates" -> {
+                    // Handle Pilates
+                    workoutIcon.setImageResource(R.drawable.pilates)
+
+                }
+                "Power Yoga" -> {
+                    // Handle Power Yoga
+                    workoutIcon.setImageResource(R.drawable.power_yoga)
+
+                }
+                "Powerlifting" -> {
+                    // Handle Powerlifting
+                    workoutIcon.setImageResource(R.drawable.powerlifting)
+
+                }
+                "Pranayama" -> {
+                    // Handle Pranayama
+                    workoutIcon.setImageResource(R.drawable.pranayama)
+
+                }
+                "Running" -> {
+                    // Handle Running
+                    workoutIcon.setImageResource(R.drawable.running)
+
+                }
+                "Rowing Machine" -> {
+                    // Handle Rowing Machine
+                    workoutIcon.setImageResource(R.drawable.rowing_machine)
+
+                }
+                "Rugby" -> {
+                    // Handle Rugby
+                    workoutIcon.setImageResource(R.drawable.rugby)
+
+                }
+                "Skating" -> {
+                    // Handle Skating
+                    workoutIcon.setImageResource(R.drawable.skating)
+
+                }
+                "Skipping" -> {
+                    // Handle Skipping
+                    workoutIcon.setImageResource(R.drawable.skipping)
+
+                }
+                "Stairs" -> {
+                    // Handle Stairs
+                    workoutIcon.setImageResource(R.drawable.stairs)
+
+                }
+                "Squash" -> {
+                    // Handle Squash
+                    workoutIcon.setImageResource(R.drawable.squash)
+
+                }
+                "Traditional Strength Training" -> {
+                    // Handle Traditional Strength Training
+                    workoutIcon.setImageResource(R.drawable.traditional_strength_training)
+
+                }
+                "Stretching" -> {
+                    // Handle Stretching
+                    workoutIcon.setImageResource(R.drawable.stretching)
+
+                }
+                "Swimming" -> {
+                    // Handle Swimming
+                    workoutIcon.setImageResource(R.drawable.swimming)
+
+                }
+                "Table Tennis" -> {
+                    // Handle Table Tennis
+                    workoutIcon.setImageResource(R.drawable.table_tennis)
+
+                }
+                "Tennis" -> {
+                    // Handle Tennis
+                    workoutIcon.setImageResource(R.drawable.tennis)
+
+                }
+                "Track and Field Events" -> {
+                    // Handle Track and Field Events
+                    workoutIcon.setImageResource(R.drawable.track_field_events)
+
+                }
+                "Volleyball" -> {
+                    // Handle Volleyball
+                    workoutIcon.setImageResource(R.drawable.volleyball)
+
+                }
+                "Walking" -> {
+                    // Handle Walking
+                    workoutIcon.setImageResource(R.drawable.walking)
+
+                }
+                "Watersports" -> {
+                    // Handle Watersports
+                    workoutIcon.setImageResource(R.drawable.watersports)
+
+                }
+                "Wrestling" -> {
+                    // Handle Wrestling
+                    workoutIcon.setImageResource(R.drawable.wrestling)
+
+                }
+                "Yoga" -> {
+                    // Handle Yoga
+                    workoutIcon.setImageResource(R.drawable.yoga)
+
+                }
+                else -> {
+                    // Handle unknown or null workoutType
+                    workoutIcon.setImageResource(R.drawable.other)
+
+                }
+            }
+            //selectedTime = "$hours hr ${minutes.toString().padStart(2, '0')} min"
         }
     }
 
