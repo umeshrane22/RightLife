@@ -443,6 +443,10 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
                 // Handle Traditional Strength Training
                 holder.main_heading_icon.setImageResource(R.drawable.traditional_strength_training)
             }
+            "Strength Training" -> {
+                // Handle Traditional Strength Training
+                holder.main_heading_icon.setImageResource(R.drawable.traditional_strength_training)
+            }
             "Stretching" -> {
                 // Handle Stretching
                 holder.main_heading_icon.setImageResource(R.drawable.stretching)
@@ -528,7 +532,10 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
                     if (item.workoutType == syncedItem.title && item.duration == syncedItem.duration){
                         cardItem = syncedItem
                         val fragment = WorkoutAnalyticsFragment().apply {
-                            arguments = Bundle().apply { putSerializable("cardItem", cardItem) }
+                            arguments = Bundle().apply {
+                                putString("YourActivity", "YourActivity")
+                                putSerializable("cardItem", cardItem)
+                            }
                         }
                         (context as AppCompatActivity).supportFragmentManager.beginTransaction()
                             .replace(R.id.flFragment, fragment, "workoutAnalysisFragment")

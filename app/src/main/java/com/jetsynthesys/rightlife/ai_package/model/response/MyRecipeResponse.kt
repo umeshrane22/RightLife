@@ -34,7 +34,8 @@ data class MyRecipe(
     val potassium: Double,
     val recipe_id: String,
     val hits: Int,
-    val createdAt: String
+    val createdAt: String,
+    var isRecipeLog : Boolean = false
 )
 
 data class Ingredient(

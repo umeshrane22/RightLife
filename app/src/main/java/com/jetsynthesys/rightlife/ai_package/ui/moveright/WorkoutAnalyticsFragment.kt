@@ -3,6 +3,7 @@ package com.jetsynthesys.rightlife.ai_package.ui.moveright
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.LayerDrawable
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +13,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
@@ -74,6 +76,7 @@ class WorkoutAnalyticsFragment : BaseFragment<FragmentWorkoutAnalyticsBinding>()
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         heartRateGraph = view.findViewById(R.id.heartRateGraph)
@@ -101,22 +104,18 @@ class WorkoutAnalyticsFragment : BaseFragment<FragmentWorkoutAnalyticsBinding>()
         resting_text_percentage = view.findViewById(R.id.resting_text_percentage)
         yourHeartRateZone = view.findViewById(R.id.yourHeartRateZone)
 
-        workOutsAnalyticsBackButton.setOnClickListener {
-            val fragment = HomeBottomTabFragment()
-            val args = Bundle().apply {
-                putString("ModuleName", "MoveRight")
-            }
-            fragment.arguments = args
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
-                addToBackStack(null)
-                commit()
-            }
-        }
+        val yourActivity = arguments?.getString("YourActivity").toString()
 
-        // Back press handling
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
+        workOutsAnalyticsBackButton.setOnClickListener {
+            if (yourActivity.equals("YourActivity")){
+                val fragment = YourActivityFragment()
+                val args = Bundle()
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction()
+                    .replace(R.id.flFragment, fragment, "YourActivityFragment")
+                    .addToBackStack("YourActivityFragment")
+                    .commit()
+            }else{
                 val fragment = HomeBottomTabFragment()
                 val args = Bundle().apply {
                     putString("ModuleName", "MoveRight")
@@ -126,6 +125,32 @@ class WorkoutAnalyticsFragment : BaseFragment<FragmentWorkoutAnalyticsBinding>()
                     replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
                     addToBackStack(null)
                     commit()
+                }
+            }
+        }
+
+        // Back press handling
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (yourActivity.equals("YourActivity")){
+                    val fragment = YourActivityFragment()
+                    val args = Bundle()
+                    fragment.arguments = args
+                    requireActivity().supportFragmentManager.beginTransaction()
+                        .replace(R.id.flFragment, fragment, "YourActivityFragment")
+                        .addToBackStack("YourActivityFragment")
+                        .commit()
+                }else{
+                    val fragment = HomeBottomTabFragment()
+                    val args = Bundle().apply {
+                        putString("ModuleName", "MoveRight")
+                    }
+                    fragment.arguments = args
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.flFragment, fragment, "SearchWorkoutFragment")
+                        addToBackStack(null)
+                        commit()
+                    }
                 }
             }
         })

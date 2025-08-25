@@ -678,6 +678,8 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                     stepLineGraphView.addDataSet(todayStepsData, 0xFFFD6967.toInt()) // Red
                                     stepLineGraphView.addDataSet(averageStepsData, 0xFF707070.toInt()) // Gray
                                     stepLineGraphView.addDataSet(goalStepsData, 0xFF03B27B.toInt()) // Green (dotted)
+                                    val blackLineData = FloatArray(goalStepsData.size) { 0f } // 7 zeros
+                                    stepLineGraphView.addDataSet(blackLineData, 0xFFA7A7A7.toInt())
                                     stepLineGraphView.invalidate()
                                     todayStepsTv.text = todayStepCount.toString()
                                     averageStepsTv.text = averageStepCount.toString()
@@ -692,7 +694,9 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                            stepLineGraphView.clear()
                                            stepLineGraphView.addDataSet(todayStepsData, 0xFFFD6967.toInt()) // Red
                                            stepLineGraphView.addDataSet(averageStepsData, 0xFF707070.toInt()) // Gray
-                                           stepLineGraphView.addDataSet(goalStepsData, 0xFF03B27B.toInt()) // Green (dotted)
+                                           stepLineGraphView.addDataSet(goalStepsData, 0xFF03B27B.toInt())
+                                           val blackLineData = FloatArray(goalStepsData.size) { 0f } // 7 zeros
+                                           stepLineGraphView.addDataSet(blackLineData, 0xFFA7A7A7.toInt())
                                            stepLineGraphView.invalidate()
                                            todayStepsTv.text = todayStepCount.toString()
                                            averageStepsTv.text = averageStepCount.toString()
@@ -709,7 +713,9 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
                                        stepLineGraphView.clear()
                                        stepLineGraphView.addDataSet(todayStepsData, 0xFFFD6967.toInt()) // Red
                                        stepLineGraphView.addDataSet(averageStepsData, 0xFF707070.toInt()) // Gray
-                                       stepLineGraphView.addDataSet(goalStepsData, 0xFF03B27B.toInt()) // Green (dotted)
+                                       stepLineGraphView.addDataSet(goalStepsData, 0xFF03B27B.toInt())
+                                       val blackLineData = FloatArray(goalStepsData.size) { 0f } // 7 zeros
+                                       stepLineGraphView.addDataSet(blackLineData, 0xFFA7A7A7.toInt())
                                        stepLineGraphView.invalidate()
                                        todayStepsTv.text = todayStepCount.toString()
                                        averageStepsTv.text = averageStepCount.toString()

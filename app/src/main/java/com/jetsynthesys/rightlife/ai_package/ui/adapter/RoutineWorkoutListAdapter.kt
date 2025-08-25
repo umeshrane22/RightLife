@@ -235,6 +235,11 @@ class RoutineWorkoutListAdapter(
                 holder.workoutIcon.setImageResource(R.drawable.traditional_strength_training)
 
             }
+            "Strength Training" -> {
+                // Handle Traditional Strength Training
+                holder.workoutIcon.setImageResource(R.drawable.traditional_strength_training)
+
+            }
             "Stretching" -> {
                 // Handle Stretching
                 holder.workoutIcon.setImageResource(R.drawable.stretching)

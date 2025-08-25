@@ -2,7 +2,6 @@ package com.jetsynthesys.rightlife.ai_package.ui.moveright
 
 import android.graphics.Color
 import android.graphics.Typeface
-import android.media.Image
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -34,8 +33,6 @@ import com.jetsynthesys.rightlife.ai_package.model.WorkoutRoutineItem
 import com.jetsynthesys.rightlife.ai_package.model.WorkoutSessionRecord
 import com.jetsynthesys.rightlife.ai_package.model.request.CreateWorkoutRequest
 import com.jetsynthesys.rightlife.ai_package.model.request.UpdateCaloriesRequest
-import com.jetsynthesys.rightlife.ai_package.model.request.UpdateRoutineRequest
-import com.jetsynthesys.rightlife.ai_package.model.request.Workout
 import com.jetsynthesys.rightlife.ai_package.ui.moveright.customProgressBar.CustomProgressBar
 import com.jetsynthesys.rightlife.databinding.FragmentAddWorkoutSearchBinding
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
@@ -76,6 +73,8 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
     private var routineName: String = ""
     private var mSelectedDate: String = ""
     var moduleIcon: String? = null
+    private var hourSelectedValue = 0
+    private var minuteSelectedValue = 0
     private lateinit var workoutName : TextView
     private lateinit var workoutIcon : ImageView
     private var workoutListRoutine = ArrayList<WorkoutSessionRecord>()
@@ -264,7 +263,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                             ).show()
                         }
                     }
-                    if (durationMinutes > 0){
+                    if (durationMinutes > 0 && caloriesText.text != "0"){
                         createWorkout(lastWorkoutRecord)
                     }else{
                         Toast.makeText(requireContext(), "Please select a duration", Toast.LENGTH_SHORT).show()
@@ -385,7 +384,7 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
             }
         }
 
-        val timeListener = NumberPicker.OnValueChangeListener { _, _, _ ->
+        /*val timeListener = NumberPicker.OnValueChangeListener { _, _, _ ->
             val hours = hourPicker.value
             val minutes = minutePicker.value
             selectedTime = "$hours hr ${minutes.toString().padStart(2, '0')} min"
@@ -403,10 +402,69 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
             //       addLog.isEnabled = false
             //   }
             refreshPickers()
+        }*/
+
+        fun timeListener(hours: Int, minutes: Int) {
+            selectedTime = "$hours hr ${minutes.toString().padStart(2, '0')} min"
+            val durationMinutes = hours * 60 + minutes
+            //  if (durationMinutes > 0) {
+            val activityId = if (edit == "edit") activityModel?.activityId else if(editWorkoutRoutine.equals("editworkoutRoutine")) editWorkoutRoutineItem?.id else if (routine.equals("edit_routine")) workoutListRoutine.last?.activityId else if(routine.equals("routine")&&editWorkoutRoutine.equals("editworkoutRoutine")) editWorkoutRoutineItem?.id else workout?._id
+            if (activityId != null) {
+                val normalizedIntensity = normalizeIntensity(selectedIntensity)
+                calculateUserCalories(durationMinutes, normalizedIntensity, activityId)
+                addLog.isEnabled = true
+            } else {
+                Toast.makeText(requireContext(), "Activity ID is missing", Toast.LENGTH_SHORT).show()
+            }
+            //   } else {
+            //       addLog.isEnabled = false
+            //   }
+            refreshPickers()
         }
 
-        hourPicker.setOnValueChangedListener(timeListener)
-        minutePicker.setOnValueChangedListener(timeListener)
+        val debounceDelay = 300L // 300ms
+        val handler = Handler(Looper.getMainLooper())
+
+        val debouncedRunnable = Runnable {
+            timeListener(hourSelectedValue,minuteSelectedValue)
+        }
+
+        hourPicker.setOnScrollListener { _, scrollState ->
+            if (scrollState == NumberPicker.OnScrollListener.SCROLL_STATE_IDLE) {
+                // This is called when the user stops scrolling
+                // Now you can use selectedValue safely
+                Log.d("NumberPicker", "User stopped scrolling. Final value: $hourSelectedValue")
+                // Call your timeListener or whatever needs to happen
+                handler.removeCallbacks(debouncedRunnable)
+
+                // Post a new delayed call
+                handler.postDelayed(debouncedRunnable, debounceDelay)
+            }
+        }
+
+        minutePicker.setOnScrollListener { _, scrollState ->
+            if (scrollState == NumberPicker.OnScrollListener.SCROLL_STATE_IDLE) {
+                // This is called when the user stops scrolling
+                // Now you can use selectedValue safely
+                Log.d("NumberPicker", "User stopped scrolling. Final value: $minuteSelectedValue")
+                // Call your timeListener or whatever needs to happen
+                handler.removeCallbacks(debouncedRunnable)
+
+                // Post a new delayed call
+                handler.postDelayed(debouncedRunnable, debounceDelay)
+            }
+        }
+
+        hourPicker.setOnValueChangedListener { _, _, newVal ->
+            hourSelectedValue = newVal
+        }
+
+        minutePicker.setOnValueChangedListener { _, _, newVal ->
+            minuteSelectedValue = newVal
+        }
+
+      //  hourPicker.setOnValueChangedListener(timeListener)
+     //   minutePicker.setOnValueChangedListener(timeListener)
         refreshPickers()
 
         // Set initial progress for non-edit mode
@@ -683,6 +741,11 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
 
                 }
                 "Traditional Strength Training" -> {
+                    // Handle Traditional Strength Training
+                    workoutIcon.setImageResource(R.drawable.traditional_strength_training)
+
+                }
+                "Strength Training" -> {
                     // Handle Traditional Strength Training
                     workoutIcon.setImageResource(R.drawable.traditional_strength_training)
 

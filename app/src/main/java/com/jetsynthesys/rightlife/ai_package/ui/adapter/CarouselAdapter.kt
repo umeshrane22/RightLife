@@ -512,6 +512,10 @@ class CarouselAdapter(
                     // Handle Traditional Strength Training
                     workout_function_icon.setImageResource(R.drawable.traditional_strength_training)
                 }
+                "Strength Training" -> {
+                    // Handle Traditional Strength Training
+                    workout_function_icon.setImageResource(R.drawable.traditional_strength_training)
+                }
                 "Stretching" -> {
                     // Handle Stretching
                     workout_function_icon.setImageResource(R.drawable.stretching)
