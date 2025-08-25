@@ -451,9 +451,9 @@ class MoveRightLandingFragment : BaseFragment<FragmentLandingBinding>() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 if (isAdded  && view != null){
-                    requireActivity().runOnUiThread {
+                   // requireActivity().runOnUiThread {
                         showLoader(requireView())
-                    }
+                  //  }
                 }
                 val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
                 val currentDateTime = LocalDateTime.now()

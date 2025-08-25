@@ -2866,9 +2866,10 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     }
                 }
                 if (!isRepeat){
-                    val availabilityStatus = HealthConnectClient.getSdkStatus(requireContext())
+                    val ctx = context ?: return
+                    val availabilityStatus = HealthConnectClient.getSdkStatus(ctx)
                     if (availabilityStatus == HealthConnectClient.SDK_AVAILABLE) {
-                        healthConnectClient = HealthConnectClient.getOrCreate(requireContext())
+                        healthConnectClient = HealthConnectClient.getOrCreate(ctx)
                         lifecycleScope.launch {
                             requestPermissionsAndReadAllData()
                         }
