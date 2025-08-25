@@ -913,9 +913,9 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             withContext(Dispatchers.Main) {
                 Toast.makeText(context, "Error fetching health data: ${e.message}", Toast.LENGTH_SHORT).show()
                 if (isAdded  && view != null){
-                    requireActivity().runOnUiThread {
+               //     requireActivity().runOnUiThread {
                         dismissLoader(requireView())
-                    }
+              //      }
                 }
             }
         }
@@ -2784,9 +2784,9 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
 
     private fun fetchSleepLandingData() {
         if (isAdded  && view != null){
-            requireActivity().runOnUiThread {
+        //    requireActivity().runOnUiThread {
                 showLoader(requireView())
-            }
+         //   }
         }
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId ?: ""
         val date = getCurrentDate()
@@ -2797,9 +2797,9 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             override fun onResponse(call: Call<SleepLandingResponse>, response: Response<SleepLandingResponse>) {
                 if (response.isSuccessful) {
                     if (isAdded  && view != null){
-                        requireActivity().runOnUiThread {
+                    //    requireActivity().runOnUiThread {
                             dismissLoader(requireView())
-                        }
+                    //    }
                     }
                     landingPageResponse = response.body()!!
                     setSleepRightLandingData(landingPageResponse)
@@ -2881,9 +2881,9 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             override fun onFailure(call: Call<SleepLandingResponse>, t: Throwable) {
                 Log.e("Error", "API call failed: ${t.message}")
                 if (isAdded  && view != null){
-                    requireActivity().runOnUiThread {
+                  //  requireActivity().runOnUiThread {
                         dismissLoader(requireView())
-                    }
+                  //  }
                 }
                 stageNoDataCardView.visibility = View.VISIBLE
                 sleepStagesView.visibility = View.GONE

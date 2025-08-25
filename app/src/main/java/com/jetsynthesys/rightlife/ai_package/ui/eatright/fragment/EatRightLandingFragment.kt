@@ -573,9 +573,9 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
 
     private fun getMealLandingSummary(halfCurveProgressBar: HalfCurveProgressBar) {
         if (isAdded  && view != null){
-            requireActivity().runOnUiThread {
+          //  requireActivity().runOnUiThread {
                 showLoader(requireView())
-            }
+         //   }
         }
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val currentDateTime = LocalDateTime.now()
@@ -586,9 +586,9 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
             override fun onResponse(call: Call<EatRightLandingPageDataResponse>, response: Response<EatRightLandingPageDataResponse>) {
                 if (response.isSuccessful) {
                     if (isAdded  && view != null){
-                        requireActivity().runOnUiThread {
+                     //   requireActivity().runOnUiThread {
                             dismissLoader(requireView())
-                        }
+                     //   }
                     }
                     landingPageResponse = response.body()!!
                     setMealSummaryData(landingPageResponse, halfCurveProgressBar)
@@ -597,9 +597,9 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
                     if (isAdded  && view != null){
-                        requireActivity().runOnUiThread {
+                     //   requireActivity().runOnUiThread {
                             dismissLoader(requireView())
-                        }
+                  //      }
                     }
                 }
             }
@@ -607,9 +607,9 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
                 if (isAdded  && view != null){
-                    requireActivity().runOnUiThread {
+                  //  requireActivity().runOnUiThread {
                         dismissLoader(requireView())
-                    }
+//}
                 }
             }
         })
@@ -1183,7 +1183,9 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
 
     private fun getMealsLogList() {
        // LoaderUtil.showLoader(requireView())
-        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+        val safeActivity = activity ?: return  // if not attached, just skip
+
+        val userId = SharedPreferenceManager.getInstance(safeActivity).userId
         val currentDateTime = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val formattedDate = currentDateTime.format(formatter)
