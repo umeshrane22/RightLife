@@ -532,7 +532,10 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
                     if (item.workoutType == syncedItem.title && item.duration == syncedItem.duration){
                         cardItem = syncedItem
                         val fragment = WorkoutAnalyticsFragment().apply {
-                            arguments = Bundle().apply { putSerializable("cardItem", cardItem) }
+                            arguments = Bundle().apply {
+                                putString("YourActivity", "YourActivity")
+                                putSerializable("cardItem", cardItem)
+                            }
                         }
                         (context as AppCompatActivity).supportFragmentManager.beginTransaction()
                             .replace(R.id.flFragment, fragment, "workoutAnalysisFragment")
