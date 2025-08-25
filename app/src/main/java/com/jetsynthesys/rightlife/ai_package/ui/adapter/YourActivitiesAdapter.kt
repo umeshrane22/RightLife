@@ -443,6 +443,10 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
                 // Handle Traditional Strength Training
                 holder.main_heading_icon.setImageResource(R.drawable.traditional_strength_training)
             }
+            "Strength Training" -> {
+                // Handle Traditional Strength Training
+                holder.main_heading_icon.setImageResource(R.drawable.traditional_strength_training)
+            }
             "Stretching" -> {
                 // Handle Stretching
                 holder.main_heading_icon.setImageResource(R.drawable.stretching)

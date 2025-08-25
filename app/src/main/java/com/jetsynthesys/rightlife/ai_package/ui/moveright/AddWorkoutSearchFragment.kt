@@ -687,6 +687,11 @@ class AddWorkoutSearchFragment : BaseFragment<FragmentAddWorkoutSearchBinding>()
                     workoutIcon.setImageResource(R.drawable.traditional_strength_training)
 
                 }
+                "Strength Training" -> {
+                    // Handle Traditional Strength Training
+                    workoutIcon.setImageResource(R.drawable.traditional_strength_training)
+
+                }
                 "Stretching" -> {
                     // Handle Stretching
                     workoutIcon.setImageResource(R.drawable.stretching)
