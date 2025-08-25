@@ -355,14 +355,14 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
 
         btnLogMeal.setOnClickListener {
             if (snapDishLocalListModel != null){
-                if (mealType.isNotEmpty()){
+                if (mealType.isNotEmpty() && !mealType.equals("null")){
                     if (dishLists.size > 0){
                         createDishLog()
                     }
                 }
             }else{
                 if (mealLogRequests != null){
-                    if (mealType.isNotEmpty()){
+                    if (mealType.isNotEmpty() && !mealType.equals("null")){
                         if (selectedMealLogList.size > 0){
                             createDishLog()
                         }
@@ -372,7 +372,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
 
             if (isSnaps){
                 if (snapMealLogRequests != null){
-                    if (mealType.isNotEmpty()){
+                    if (mealType.isNotEmpty() && !mealType.equals("null")){
                         if (selectedSnapMealLogList.size > 0){
                            // createSnapMealLog()
                             if (snapMealLogRequestList.size > 0){
@@ -540,7 +540,7 @@ class HomeTabMealFragment : BaseFragment<FragmentHomeTabMealBinding>() {
             }
         }
         val dishLogRequest = SaveDishLogRequest(
-            meal_type = mealType,
+            meal_type = mealType ?: "dd",
             meal_log = dishLogList
         )
         val call = ApiClient.apiServiceFastApi.createSaveMealsToLog(userId, formattedDate, dishLogRequest)

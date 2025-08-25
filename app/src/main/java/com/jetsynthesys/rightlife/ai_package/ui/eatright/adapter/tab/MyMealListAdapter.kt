@@ -122,11 +122,26 @@ class MyMealListAdapter(private val context: Context, private var dataLists: Arr
             baguetteValue.text = item.total_carbs.toInt().toString()
             dewpointValue.text = item.total_fat.toInt().toString()
 
+            if (item.isSnapMealLog) {
+                if (clickPos == position && snapMealDetail == item && isClickView == true){
+                   circlePlus.setImageResource(R.drawable.circle_check)
+                }
+            }else{
+                if (clickPos == position && snapMealDetail == item && isClickView == true){
+                    circlePlus.setImageResource(R.drawable.ic_plus_circle)
+                }
+            }
+
             delete.setOnClickListener {
                 onDeleteSnapMealItem(item, bindingAdapterPosition, true)
             }
 
             circlePlus.setOnClickListener {
+                if (item.isSnapMealLog){
+                    item.isSnapMealLog = false
+                }else{
+                    item.isSnapMealLog = true
+                }
                 onAddSnapMealLogItem(item, bindingAdapterPosition, true)
             }
 
@@ -165,6 +180,16 @@ class MyMealListAdapter(private val context: Context, private var dataLists: Arr
             baguetteValue.text = item.total_carbs.toInt().toString()
             dewpointValue.text = item.total_fat.toInt().toString()
 
+            if (item.isMealLog) {
+                if (clickPos == position && mealDetails == item && isClickView == true){
+                    circlePlus.setImageResource(R.drawable.circle_check)
+                }
+            }else{
+                if (clickPos == position && mealDetails == item && isClickView == true){
+                    circlePlus.setImageResource(R.drawable.ic_plus_circle)
+                }
+            }
+
             delete.setOnClickListener {
                 onDeleteMealItem(item, bindingAdapterPosition, true)
             }
@@ -174,6 +199,11 @@ class MyMealListAdapter(private val context: Context, private var dataLists: Arr
             }
 
             circlePlus.setOnClickListener {
+                if (item.isMealLog){
+                    item.isMealLog = false
+                }else{
+                    item.isMealLog = true
+                }
                 onAddMealLogItem(item, bindingAdapterPosition, true)
             }
 

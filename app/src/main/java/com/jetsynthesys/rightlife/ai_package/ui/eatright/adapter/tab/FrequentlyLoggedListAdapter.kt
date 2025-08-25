@@ -36,10 +36,12 @@ class FrequentlyLoggedListAdapter(private val context: Context, private var data
 //            holder.mealDay.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
 //            holder.mealDate.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
 //            holder.circlePlus.setImageResource(R.drawable.circle_check)
-        if (mealLogListData != null){
+        if (item.isFrequentLog) {
             if (clickPos == position && mealLogListData == item && isClickView == true){
                 holder.circlePlus.setImageResource(R.drawable.circle_check)
-            }else{
+            }
+        }else{
+            if (clickPos == position && mealLogListData == item && isClickView == true){
                 holder.circlePlus.setImageResource(R.drawable.ic_plus_circle)
             }
         }
@@ -57,6 +59,11 @@ class FrequentlyLoggedListAdapter(private val context: Context, private var data
   //      }
 
         holder.circlePlus.setOnClickListener {
+            if (item.isFrequentLog){
+                item.isFrequentLog = false
+            }else{
+                item.isFrequentLog = true
+            }
             onFrequentlyLoggedItem(item, position, true)
         }
 

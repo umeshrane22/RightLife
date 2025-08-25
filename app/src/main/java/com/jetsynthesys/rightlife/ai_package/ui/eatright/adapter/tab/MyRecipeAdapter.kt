@@ -48,34 +48,27 @@ class MyRecipeAdapter(private val context: Context, private var dataLists: Array
             holder.baguetteValue.text = item.carbs.toInt().toString()
             holder.dewpointValue.text = item.fat.toInt().toString()
         }
-//        if (item.status == true) {
-//            holder.mealDay.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
-//            holder.mealDate.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
-//            holder.circleStatus.setImageResource(R.drawable.circle_check)
-//            if (mealLogListData != null){
-//                if (clickPos == position && mealLogListData == item && isClickView == true){
-//                    holder.layoutMain.setBackgroundResource(R.drawable.green_meal_date_bg)
-//                }else{
-//                    holder.layoutMain.setBackgroundResource(R.drawable.white_meal_date_bg)
-//                }
-//            }
-//        }else{
-//            holder.mealDay.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
-//            holder.mealDate.setTextColor(ContextCompat.getColor(context,R.color.black_no_meals))
-//            holder.circleStatus.setImageResource(R.drawable.circle_uncheck)
-//            if (mealLogListData != null){
-//                if (clickPos == position && mealLogListData == item && isClickView == true){
-//                    holder.layoutMain.setBackgroundResource(R.drawable.green_meal_date_bg)
-//                }else{
-//                    holder.layoutMain.setBackgroundResource(R.drawable.white_meal_date_bg)
-//                }
-//            }
-   //     }
+
+        if (item.isRecipeLog) {
+            if (clickPos == position && mealLogListData == item && isClickView == true){
+                holder.circlePlus.setImageResource(R.drawable.circle_check)
+            }
+        }else{
+            if (clickPos == position && mealLogListData == item && isClickView == true){
+                holder.circlePlus.setImageResource(R.drawable.ic_plus_circle)
+            }
+        }
+
         holder.delete.setOnClickListener {
             onDeleteRecipeItem(item, position, true)
         }
 
         holder.circlePlus.setOnClickListener {
+            if (item.isRecipeLog){
+                item.isRecipeLog = false
+            }else{
+                item.isRecipeLog = true
+            }
             onLogRecipeItem(item, position, true)
         }
 
@@ -88,29 +81,29 @@ class MyRecipeAdapter(private val context: Context, private var dataLists: Array
         return dataLists.size
     }
 
-     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-         val mealTitle: TextView = itemView.findViewById(R.id.tv_meal_title)
-         val delete: ImageView = itemView.findViewById(R.id.image_delete)
-         val edit: ImageView = itemView.findViewById(R.id.image_edit)
-         val circlePlus : ImageView = itemView.findViewById(R.id.image_circle_plus)
-         val mealName: TextView = itemView.findViewById(R.id.tv_meal_name)
-         val serve: ImageView = itemView.findViewById(R.id.image_serve)
-         val serves: TextView = itemView.findViewById(R.id.tv_serves)
-         val servesCount: TextView = itemView.findViewById(R.id.tv_serves_count)
-         val cal: ImageView = itemView.findViewById(R.id.image_cal)
-         val calValue: TextView = itemView.findViewById(R.id.tv_cal_value)
-         val calUnit: TextView = itemView.findViewById(R.id.tv_cal_unit)
-         val subtraction: ImageView = itemView.findViewById(R.id.image_subtraction)
-         val subtractionValue: TextView = itemView.findViewById(R.id.tv_subtraction_value)
-         val subtractionUnit: TextView = itemView.findViewById(R.id.tv_subtraction_unit)
-         val baguette: ImageView = itemView.findViewById(R.id.image_baguette)
-         val baguetteValue: TextView = itemView.findViewById(R.id.tv_baguette_value)
-         val baguetteUnit: TextView = itemView.findViewById(R.id.tv_baguette_unit)
-         val dewpoint: ImageView = itemView.findViewById(R.id.image_dewpoint)
-         val dewpointValue: TextView = itemView.findViewById(R.id.tv_dewpoint_value)
-         val dewpointUnit: TextView = itemView.findViewById(R.id.tv_dewpoint_unit)
-     }
+        val mealTitle: TextView = itemView.findViewById(R.id.tv_meal_title)
+        val delete: ImageView = itemView.findViewById(R.id.image_delete)
+        val edit: ImageView = itemView.findViewById(R.id.image_edit)
+        val circlePlus : ImageView = itemView.findViewById(R.id.image_circle_plus)
+        val mealName: TextView = itemView.findViewById(R.id.tv_meal_name)
+        val serve: ImageView = itemView.findViewById(R.id.image_serve)
+        val serves: TextView = itemView.findViewById(R.id.tv_serves)
+        val servesCount: TextView = itemView.findViewById(R.id.tv_serves_count)
+        val cal: ImageView = itemView.findViewById(R.id.image_cal)
+        val calValue: TextView = itemView.findViewById(R.id.tv_cal_value)
+        val calUnit: TextView = itemView.findViewById(R.id.tv_cal_unit)
+        val subtraction: ImageView = itemView.findViewById(R.id.image_subtraction)
+        val subtractionValue: TextView = itemView.findViewById(R.id.tv_subtraction_value)
+        val subtractionUnit: TextView = itemView.findViewById(R.id.tv_subtraction_unit)
+        val baguette: ImageView = itemView.findViewById(R.id.image_baguette)
+        val baguetteValue: TextView = itemView.findViewById(R.id.tv_baguette_value)
+        val baguetteUnit: TextView = itemView.findViewById(R.id.tv_baguette_unit)
+        val dewpoint: ImageView = itemView.findViewById(R.id.image_dewpoint)
+        val dewpointValue: TextView = itemView.findViewById(R.id.tv_dewpoint_value)
+        val dewpointUnit: TextView = itemView.findViewById(R.id.tv_dewpoint_unit)
+    }
 
     fun addAll(item : ArrayList<MyRecipe>?, pos: Int, mealLogItem : MyRecipe?, isClick : Boolean) {
         dataLists.clear()

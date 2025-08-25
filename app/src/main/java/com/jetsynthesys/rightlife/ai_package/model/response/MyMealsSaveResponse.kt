@@ -32,7 +32,8 @@ data class SnapMealDetail(
     val total_cholesterol: Double,
     val total_iron: Double,
     val total_magnesium: Double,
-    val image_url : String
+    val image_url : String,
+    var isSnapMealLog : Boolean = false
 )
 
 data class SnapDish(
@@ -93,7 +94,8 @@ data class MealDetails(
     val total_sugar: Double,
     val total_cholesterol: Double,
     val total_iron: Double,
-    val total_magnesium: Double
+    val total_magnesium: Double,
+    var isMealLog : Boolean = false
 )
 
 data class RecipeData(
