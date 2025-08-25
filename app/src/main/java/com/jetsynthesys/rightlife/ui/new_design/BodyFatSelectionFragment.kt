@@ -61,9 +61,9 @@ class BodyFatSelectionFragment : Fragment() {
 
         gendar =
             SharedPreferenceManager.getInstance(requireContext()).onboardingQuestionRequest.gender.toString()
-        if (!(activity as OnboardingQuestionnaireActivity).forProfileChecklist) {
+        /*if (!(activity as OnboardingQuestionnaireActivity).forProfileChecklist) {
             (activity as OnboardingQuestionnaireActivity).tvSkip.visibility = VISIBLE
-        }
+        }*/
 
         val sharedPreferenceManager = SharedPreferenceManager.getInstance(requireContext())
         AnalyticsLogger.logEvent(

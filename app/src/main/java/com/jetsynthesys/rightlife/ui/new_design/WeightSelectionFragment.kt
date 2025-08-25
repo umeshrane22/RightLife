@@ -83,9 +83,9 @@ class WeightSelectionFragment : Fragment() {
         tvSelectedWeight = view.findViewById(R.id.tv_selected_weight)
         tvDescription = view.findViewById(R.id.tv_description)
         cardViewSelection = view.findViewById(R.id.card_view_age_selector)
-        if (!(activity as OnboardingQuestionnaireActivity).forProfileChecklist) {
+        /*if (!(activity as OnboardingQuestionnaireActivity).forProfileChecklist) {
             (activity as OnboardingQuestionnaireActivity).tvSkip.visibility = VISIBLE
-        }
+        }*/
 
         val sharedPreferenceManager = SharedPreferenceManager.getInstance(requireContext())
         AnalyticsLogger.logEvent(

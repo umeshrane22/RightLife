@@ -68,9 +68,9 @@ class StressManagementSelectionFragment : Fragment() {
 
         recyclerView = view.findViewById(R.id.rv_stress_management)
         tvStressManagementHeader = view.findViewById(R.id.tv_header_stress_management)
-        if (!(activity as OnboardingQuestionnaireActivity).forProfileChecklist) {
+        /*if (!(activity as OnboardingQuestionnaireActivity).forProfileChecklist) {
             (activity as OnboardingQuestionnaireActivity).tvSkip.visibility = VISIBLE
-        }
+        }*/
 
         val sharedPreferenceManager = SharedPreferenceManager.getInstance(requireContext())
         AnalyticsLogger.logEvent(
