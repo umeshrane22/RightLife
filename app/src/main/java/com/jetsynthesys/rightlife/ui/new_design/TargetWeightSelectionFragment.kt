@@ -66,7 +66,7 @@ class TargetWeightSelectionFragment : Fragment() {
         tvCurrentWeight = view.findViewById(R.id.tv_current_weight)
         tvLabel = view.findViewById(R.id.tv_label)
 
-        (activity as OnboardingQuestionnaireActivity).tvSkip.visibility = VISIBLE
+        //(activity as OnboardingQuestionnaireActivity).tvSkip.visibility = VISIBLE
 
         //---------
         val recyclerView = view.findViewById<RecyclerView>(R.id.rulerView)

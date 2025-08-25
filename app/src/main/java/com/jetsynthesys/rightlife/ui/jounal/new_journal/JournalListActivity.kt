@@ -36,6 +36,7 @@ import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 
 class JournalListActivity : BaseActivity() {
@@ -60,10 +61,15 @@ class JournalListActivity : BaseActivity() {
         isFromThinkRight = intent.getBooleanExtra("FROM_THINK_RIGHT", false)
 
         binding.addEntryButton.setOnClickListener {
-            startActivity(Intent(this, JournalNewActivity::class.java).apply {
-                putExtra("StartDate", startDate)
-                putExtra("FROM_THINK_RIGHT", isFromThinkRight)
-            })
+            val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val formattedDate = sdf.format(Date())
+            if (selectedDate == null || formattedDate == selectedDate?.dateString) {
+                startActivity(Intent(this, JournalNewActivity::class.java).apply {
+                    putExtra("StartDate", startDate)
+                    putExtra("FROM_THINK_RIGHT", isFromThinkRight)
+                })
+            } else
+                showCustomToast("You can create entry for current date only")
         }
 
         binding.btnBack.setOnClickListener {
