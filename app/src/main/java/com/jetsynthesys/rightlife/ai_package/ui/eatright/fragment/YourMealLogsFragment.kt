@@ -760,8 +760,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             if (breakfastCombinedList.size > 0) {
                 breakfastListLayout.visibility = View.VISIBLE
                 if (breakfastMealNutritionSummary.size > 0) {
-                    calValueTv.text =
-                        breakfastMealNutritionSummary.get(0).calories.toInt().toString()
+                    calValueTv.text = breakfastMealNutritionSummary.get(0).calories.toInt().toString()
                 }
                 breakfastMealLogsAdapter.updateList(breakfastCombinedList, -1, regularRecipeData, snapMealData, false)
             } else {

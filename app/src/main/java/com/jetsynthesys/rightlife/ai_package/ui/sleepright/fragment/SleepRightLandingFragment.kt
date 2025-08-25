@@ -153,11 +153,16 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
     private lateinit var tv_todays_sleep_start_time_top: TextView
     private lateinit var tvStageSleepStartTime: TextView
     private lateinit var tvStageSleepEndTime: TextView
-    private lateinit var tvStageSleepTotalTime: TextView
-    private lateinit var tvStageCoreTime: TextView
-    private lateinit var tvStageDeepTime: TextView
-    private lateinit var tvStageRemTime: TextView
-    private lateinit var tvStageAwakeTime: TextView
+    private lateinit var tvStageSleepTotalTimeHr: TextView
+    private lateinit var tvStageSleepTotalTimeMin: TextView
+    private lateinit var tvStageCoreTimeHr: TextView
+    private lateinit var tvStageDeepTimeHr: TextView
+    private lateinit var tvStageRemTimeHr: TextView
+    private lateinit var tvStageAwakeTimeHr: TextView
+    private lateinit var tvStageCoreTimeMin: TextView
+    private lateinit var tvStageDeepTimeMin: TextView
+    private lateinit var tvStageRemTimeMin: TextView
+    private lateinit var tvStageAwakeTimeMin: TextView
     private lateinit var todaysWakeupTime: TextView
     private lateinit var tvPerformStartTime: TextView
     private lateinit var tvPerformWakeTime: TextView
@@ -348,11 +353,16 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
         tvRestoDeepTime = view.findViewById(R.id.tv_resto_deep_time)
         tvConsistencyDate = view.findViewById(R.id.tv_consistency_date)
         tvConsistencyTime = view.findViewById(R.id.tv_consistency_time)
-        tvStageSleepTotalTime = view.findViewById(R.id.tv_stage_total_time)
-        tvStageRemTime = view.findViewById(R.id.tv_stage_rem_time)
-        tvStageCoreTime = view.findViewById(R.id.tv_stage_core_time)
-        tvStageDeepTime = view.findViewById(R.id.tv_stage_deep_time)
-        tvStageAwakeTime = view.findViewById(R.id.tv_stage_awake_time)
+        tvStageSleepTotalTimeHr = view.findViewById(R.id.tv_stage_total_time_hr)
+        tvStageSleepTotalTimeMin = view.findViewById(R.id.tv_stage_total_time_min)
+        tvStageRemTimeHr = view.findViewById(R.id.tv_stage_rem_time_hr)
+        tvStageCoreTimeHr = view.findViewById(R.id.tv_stage_core_time_hr)
+        tvStageDeepTimeHr = view.findViewById(R.id.tv_stage_deep_time_hr)
+        tvStageAwakeTimeHr = view.findViewById(R.id.tv_stage_awake_time_hr)
+        tvStageRemTimeMin = view.findViewById(R.id.tv_stage_rem_time_min)
+        tvStageCoreTimeMin = view.findViewById(R.id.tv_stage_core_time_min)
+        tvStageDeepTimeMin = view.findViewById(R.id.tv_stage_deep_time_min)
+        tvStageAwakeTimeMin = view.findViewById(R.id.tv_stage_awake_time_min)
         imgSleepInfo = view.findViewById(R.id.img_sleep_infos)
         rightLifeReportCard = view.findViewById(R.id.rightLifeReportCard)
 
@@ -2930,7 +2940,14 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
             setSleepRightStageData(sleepStageData)
             tvStageSleepStartTime.setText(convertTo12HourZoneFormat(sleepLandingResponse.sleepLandingAllData?.sleepStagesDetail?.sleepStartTime!!))
             tvStageSleepEndTime.setText(convertTo12HourZoneFormat(sleepLandingResponse.sleepLandingAllData?.sleepStagesDetail?.sleepEndTime!!))
-            tvStageSleepTotalTime.text = convertDecimalMinutesToHrMinFormat(sleepLandingResponse.sleepLandingAllData?.sleepStagesDetail?.totalSleepDurationMinutes!!)
+            val timeHr = convertDecimalMinutesToHrMinFormat(sleepLandingResponse.sleepLandingAllData?.sleepStagesDetail?.totalSleepDurationMinutes!!)
+            val hourRegex = Regex("(\\d+)\\s*hr")
+            val minRegex = Regex("(\\d+)\\s*min")
+
+            val hours = hourRegex.find(timeHr)?.groupValues?.getOrNull(1)?.toIntOrNull() ?: 0
+            val minutes = minRegex.find(timeHr)?.groupValues?.getOrNull(1)?.toIntOrNull() ?: 0
+            tvStageSleepTotalTimeHr.text = hours.toString()
+            tvStageSleepTotalTimeMin.text = minutes.toString()
         }else{
             stageNoDataCardView.visibility = View.VISIBLE
             sleepStagesView.visibility = View.GONE
@@ -3309,10 +3326,29 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     }
                 }
             }
-            tvStageCoreTime.text = formatDuration(totalCoreDuration)
-            tvStageAwakeTime.text = formatDuration(totalAwakeDuration)
-            tvStageDeepTime.text = formatDuration(totalDeepDuration)
-            tvStageRemTime.text = formatDuration(totalRemDuration)
+            val timeCore = formatDuration(totalCoreDuration)
+            val hourRegex = Regex("(\\d+)\\s*hr")
+            val minRegex = Regex("(\\d+)\\s*mins")
+            val coreHours = hourRegex.find(timeCore)?.groupValues?.getOrNull(1)?.toIntOrNull() ?: 0
+            val coreMinutes = minRegex.find(timeCore)?.groupValues?.getOrNull(1)?.toIntOrNull() ?: 0
+            tvStageCoreTimeHr.text = coreHours.toString()
+            tvStageCoreTimeMin.text = coreMinutes.toString()
+            val timeAwake = formatDuration(totalAwakeDuration)
+            val awakeHours = hourRegex.find(timeAwake)?.groupValues?.getOrNull(1)?.toIntOrNull() ?: 0
+            val awakeMinutes = minRegex.find(timeAwake)?.groupValues?.getOrNull(1)?.toIntOrNull() ?: 0
+            tvStageAwakeTimeHr.text = awakeHours.toString()
+            tvStageAwakeTimeMin.text = awakeMinutes.toString()
+            val timeDeep = formatDuration(totalDeepDuration)
+            val deepHours = hourRegex.find(timeDeep)?.groupValues?.getOrNull(1)?.toIntOrNull() ?: 0
+            val deepMinutes = minRegex.find(timeDeep)?.groupValues?.getOrNull(1)?.toIntOrNull() ?: 0
+            tvStageDeepTimeHr.text = deepHours.toString()
+            tvStageDeepTimeMin.text = deepMinutes.toString()
+            val timeRem = formatDuration(totalRemDuration)
+            val remHours = hourRegex.find(timeRem)?.groupValues?.getOrNull(1)?.toIntOrNull() ?: 0
+            val remMinutes = minRegex.find(timeRem)?.groupValues?.getOrNull(1)?.toIntOrNull() ?: 0
+            tvStageRemTimeHr.text = remHours.toString()
+            tvStageRemTimeMin.text = remMinutes.toString()
+
             setStageGraph(sleepStageResponse)
         }else{
             stageNoDataCardView.visibility = View.VISIBLE
