@@ -740,21 +740,44 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
         weightLastLogDateTv.text = convertedDate
 
         if (landingPageResponse.total_protein.toInt() >  landingPageResponse.max_protein.toInt()) {
-            tvProteinValue.setTextColor(ContextCompat.getColor(requireContext(), R.color.macros_high_color))
+           // tvProteinValue.setTextColor(ContextCompat.getColor(requireContext(), R.color.macros_high_color))
+            val color = context?.let { ContextCompat.getColor(it, R.color.macros_high_color) }
+            if (color != null) {
+                tvProteinValue.setTextColor(color)
+            }
         }else{
-            tvProteinValue.setTextColor(ContextCompat.getColor(requireContext(), R.color.black_no_meals))
+            val color = context?.let { ContextCompat.getColor(it, R.color.black_no_meals) }
+            if (color != null) {
+                tvProteinValue.setTextColor(color)
+            }
         }
 
         if (landingPageResponse.total_carbs.toInt() >  landingPageResponse.max_carbs.toInt()) {
-            tvCabsValue.setTextColor(ContextCompat.getColor(requireContext(), R.color.macros_high_color))
+           // tvCabsValue.setTextColor(ContextCompat.getColor(requireContext(), R.color.macros_high_color))
+            val color = context?.let { ContextCompat.getColor(it, R.color.macros_high_color) }
+            if (color != null) {
+                tvCabsValue.setTextColor(color)
+            }
         }else{
-            tvCabsValue.setTextColor(ContextCompat.getColor(requireContext(), R.color.black_no_meals))
+          //  tvCabsValue.setTextColor(ContextCompat.getColor(requireContext(), R.color.black_no_meals))
+            val color = context?.let { ContextCompat.getColor(it, R.color.black_no_meals) }
+            if (color != null) {
+                tvCabsValue.setTextColor(color)
+            }
         }
 
         if (landingPageResponse.total_fat.toInt() >  landingPageResponse.max_fat.toInt()) {
-            tvFatsValue.setTextColor(ContextCompat.getColor(requireContext(), R.color.macros_high_color))
+            val color = context?.let { ContextCompat.getColor(it, R.color.macros_high_color) }
+            if (color != null) {
+                tvFatsValue.setTextColor(color)
+            }
+          //  tvFatsValue.setTextColor(ContextCompat.getColor(requireContext(), R.color.macros_high_color))
         }else{
-            tvFatsValue.setTextColor(ContextCompat.getColor(requireContext(), R.color.black_no_meals))
+          //  tvFatsValue.setTextColor(ContextCompat.getColor(requireContext(), R.color.black_no_meals))
+            val color = context?.let { ContextCompat.getColor(it, R.color.black_no_meals) }
+            if (color != null) {
+                tvFatsValue.setTextColor(color)
+            }
         }
 
       //  tvCaloriesValue.text = landingPageResponse.total_calories.toString()
@@ -765,16 +788,17 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
         proteinUnitTv.text = " / " + landingPageResponse.max_protein.toInt().toString() +" g"
         fatsUnitTv.text = " / " + landingPageResponse.max_fat.toInt().toString() +" g"
 
-        SharedPreferenceManager.getInstance(requireActivity())
+        val safeActivity = activity ?: return  // if not attached, just skip
+        SharedPreferenceManager.getInstance(safeActivity)
             .setMaxCalories(landingPageResponse.max_calories.toInt())
 
-        SharedPreferenceManager.getInstance(requireActivity())
+        SharedPreferenceManager.getInstance(safeActivity)
             .setMaxCarbs(landingPageResponse.max_carbs.toInt())
 
-        SharedPreferenceManager.getInstance(requireActivity())
+        SharedPreferenceManager.getInstance(safeActivity)
             .setMaxProtein(landingPageResponse.max_protein.toInt())
 
-        SharedPreferenceManager.getInstance(requireActivity())
+        SharedPreferenceManager.getInstance(safeActivity)
             .setMaxFats(landingPageResponse.max_fat.toInt())
 
         cabsProgressBar.max = landingPageResponse.max_carbs.toInt()
