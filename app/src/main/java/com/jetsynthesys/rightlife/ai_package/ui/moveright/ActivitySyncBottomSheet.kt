@@ -600,6 +600,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                 Log.d("ActivitySyncBottomSheet", "Storing health data")
                 val context: Context = context ?: return@launch
                 val sharedPreferenceManager = SharedPreferenceManager.getInstance(context)
+                val timeZone = ZoneId.systemDefault().id
                 val userId = sharedPreferenceManager.userId ?: ""
                 val deviceName = sharedPreferenceManager.deviceName ?: "samsung"
 
@@ -881,7 +882,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                     body_fat_percentage = bodyFatPercentage,
                     sleep_stage = sleepStage,
                     workout = workout,
-                    time_zone = "Asia/Kolkata"
+                    time_zone = timeZone
                 )
                 Log.d("ActivitySyncBottomSheet", "Sending store health data request for user_id: $userId")
 
@@ -928,7 +929,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                         body_fat_percentage = batch.filterIsInstance<BodyFatPercentage>(),
                         sleep_stage = batch.filterIsInstance<SleepStageJson>(),
                         workout = batch.filterIsInstance<WorkoutRequest>(),
-                        time_zone = "Asia/Kolkata"
+                        time_zone = timeZone
                     )
                     val response = ApiClient.apiServiceFastApi.storeHealthData(req)
                     if (!response.isSuccessful) {
@@ -973,6 +974,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
             try {
                 val sharedPreferenceManager = SharedPreferenceManager.getInstance(context)
                 val deviceName = sharedPreferenceManager.deviceName ?: "samsung"
+                val timeZone = ZoneId.systemDefault().id
                 val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
                 var activeEnergyBurned : List<EnergyBurnedRequest>? = null
                 if (activeCalorieBurnedRecord!!.isNotEmpty()){
@@ -1223,7 +1225,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                     body_fat_percentage = bodyFatPercentage,
                     sleep_stage = sleepStage,
                     workout = workout,
-                    time_zone = "Asia/Kolkata"
+                    time_zone = timeZone
                 )
                 val gson = Gson()
                 val allRecords = mutableListOf<Any>()
@@ -1268,7 +1270,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                         body_fat_percentage = batch.filterIsInstance<BodyFatPercentage>(),
                         sleep_stage = batch.filterIsInstance<SleepStageJson>(),
                         workout = batch.filterIsInstance<WorkoutRequest>(),
-                        time_zone = "Asia/Kolkata"
+                        time_zone = timeZone
                     )
                     val response = ApiClient.apiServiceFastApi.storeHealthData(req)
                     if (!response.isSuccessful) {

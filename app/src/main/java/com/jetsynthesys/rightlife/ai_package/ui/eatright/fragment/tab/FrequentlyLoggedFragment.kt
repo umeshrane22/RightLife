@@ -182,7 +182,8 @@ class FrequentlyLoggedFragment : BaseFragment<FragmentFrequentlyLoggedBinding>()
             recipe_name = mealLogDateModel.recipe_name,
             meal_quantity = 1,
             unit = "g",
-            measure = "Bowl"
+            measure = "Bowl",
+            isMealLogSelect = mealLogDateModel.isFrequentLog
         )
 //        mealLogList.add(mealLogData)
 //        val mealLogRequest = SelectedMealLogList(
