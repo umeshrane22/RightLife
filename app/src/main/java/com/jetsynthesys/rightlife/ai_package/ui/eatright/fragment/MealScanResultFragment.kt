@@ -38,6 +38,7 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.google.android.datatransport.runtime.scheduling.persistence.EventStoreModule_PackageNameFactory.packageName
 import com.google.gson.Gson
 import com.jetsynthesys.rightlife.R
@@ -126,6 +127,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
     private lateinit var selectedMealType: String
     private var mealId: String = ""
     private var mealName: String = ""
+    private var snapImageUrl: String = ""
     private var moduleName: String = ""
     private var quantity = 1
     private var loadingOverlay : FrameLayout? = null
@@ -202,6 +204,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
         moduleName = arguments?.getString("ModuleName").toString()
         mealId = arguments?.getString("mealId").toString()
         mealName = arguments?.getString("mealName").toString()
+        snapImageUrl = arguments?.getString("snapImageUrl").toString()
         mealType = arguments?.getString("mealType").toString()
         snapMealLog = arguments?.getString("snapMealLog").toString()
         selectedMealDate = arguments?.getString("selectedMealDate").toString()
@@ -489,6 +492,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
             args.putString("ModuleName", moduleName)
             args.putString("mealId", mealId)
             args.putString("mealName", foodNameEdit.text.toString())
+            args.putString("snapImageUrl", snapImageUrl)
             args.putString("mealType", mealType)
             args.putString("homeTab", homeTab)
             args.putString("selectedMealDate", selectedMealDate)
@@ -585,6 +589,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
         }
         uriToFile(uri)?.let { getPreSignedUrl(uploadImage, it) }
     }
+
     private fun uriToFile(uri: Uri): File? {
         val contentResolver = requireContext().contentResolver
         val fileName = getFileName(uri) ?: "temp_image_file"
@@ -602,6 +607,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
             null
         }
     }
+
     private fun getFileName(uri: Uri): String? {
         var name: String? = null
         val returnCursor = requireContext().contentResolver.query(uri, null, null, null, null)
@@ -613,6 +619,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
         }
         return name
     }
+
     private fun getFileNameAndSize(context: Context, uri: Uri): Pair<String, Long>? {
         val returnCursor = context.contentResolver.query(uri, null, null, null, null)
         returnCursor?.use {
@@ -916,6 +923,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
             val args = Bundle()
             args.putString("mealId", mealId)
             args.putString("mealName", foodNameEdit.text.toString())
+            args.putString("snapImageUrl", snapImageUrl)
             args.putString("ModuleName", moduleName)
             args.putString("searchType", "MealScanResult")
             args.putString("mealType", mealType)
@@ -945,6 +953,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
         args.putString("ModuleName", moduleName)
         args.putString("mealId", mealId)
         args.putString("mealName", foodNameEdit.text.toString())
+        args.putString("snapImageUrl", snapImageUrl)
         args.putString("mealType", mealType)
         args.putString("homeTab", homeTab)
         args.putString("selectedMealDate", selectedMealDate)
@@ -1018,18 +1027,28 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
                             imageFood.visibility = View.VISIBLE
                             imageFood.setImageBitmap(rotatedBitmap)
                         } else {
-                            Toast.makeText(
-                                requireContext(),
-                                "Failed to decode image",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            Toast.makeText(requireContext(), "Failed to decode image", Toast.LENGTH_SHORT).show()
                         }
+                    }else if (!snapImageUrl.equals("") && !snapImageUrl.equals("null")){
+                        imageFood.visibility = View.VISIBLE
+                        Glide.with(requireContext())
+                            .load(snapImageUrl)
+                            .placeholder(R.drawable.ic_view_meal_place)
+                            .error(R.drawable.ic_view_meal_place)
+                            .into(imageFood)
                     } else {
                         Log.e("ImageCapture", "File does not exist at $currentPhotoPath")
                     }
                 } catch (e: Exception) {
                     Log.e("ImageLoad", "Error loading image from file path: $currentPhotoPath", e)
                 }
+            }else if (!snapImageUrl.equals("") && !snapImageUrl.equals("null")){
+                imageFood.visibility = View.VISIBLE
+                Glide.with(requireContext())
+                    .load(snapImageUrl)
+                    .placeholder(R.drawable.ic_view_meal_place)
+                    .error(R.drawable.ic_view_meal_place)
+                    .into(imageFood)
             }
             // Set food name
             if (!mealName.equals("null") && !mealName.equals("")) {
@@ -1377,6 +1396,7 @@ class MealScanResultFragment : BaseFragment<FragmentMealScanResultsBinding>(),
         }
         val updateMealRequest = UpdateSnapMealRequest(
             meal_name = foodNameEdit.text.toString(),
+            image_url = snapImageUrl,
             meal_log = snapMealLogList
         )
         val call = ApiClient.apiServiceFastApi.updateSnapSaveMeal(mealId, userId, updateMealRequest)

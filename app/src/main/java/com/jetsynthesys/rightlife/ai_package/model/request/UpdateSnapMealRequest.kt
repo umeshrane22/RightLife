@@ -2,6 +2,7 @@ package com.jetsynthesys.rightlife.ai_package.model.request
 
 data class UpdateSnapMealRequest(
     val meal_name: String,
+    val image_url : String,
     val meal_log: List<SnapMealLogItem>
 )
 
