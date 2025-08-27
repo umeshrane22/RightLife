@@ -2536,7 +2536,7 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 if (sleepPerformanceDetail.idealSleepDuration == null) {
                     tvPerformIdealDuration.text = "7 hr 30 min"
                 }
-                if (!isRepeat) {
+                if (!isRepeat && !bottomSeatName.contentEquals("LogLastNightSleep")) {
                     val dialog = LogYourNapDialogFragment(
                         requireContext = requireContext(),
                         listener = object : OnLogYourNapSelectedListener {
