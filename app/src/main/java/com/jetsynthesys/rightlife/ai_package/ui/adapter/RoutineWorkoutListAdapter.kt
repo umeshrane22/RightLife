@@ -42,9 +42,9 @@ class RoutineWorkoutListAdapter(
             // For non-HTTPS URLs, prepend the jetsynthesisqa base URL
             imageUrl = "https://jetsynthesisqa-us-east-1.s3-accelerate.amazonaws.com/" + item.icon
         }
-        Glide.with(context)
+       /* Glide.with(context)
             .load(imageUrl)
-            .into(holder.workoutIcon)
+            .into(holder.workoutIcon)*/
         holder.servesCount.text = item.duration
         holder.calValue.text = item.caloriesBurned.toBigDecimal().setScale(2, RoundingMode.HALF_UP).toString()
         holder.subtractionValue.text = item.intensity
