@@ -467,6 +467,7 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>(), DeleteMealBottomSh
             args.putString("selectedMealDate", selectedMealDate)
             args.putString("mealId", snapMealDetail._id)
             args.putString("mealName", snapMealDetail.meal_name)
+            args.putString("snapImageUrl", snapMealDetail.image_url)
             args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {

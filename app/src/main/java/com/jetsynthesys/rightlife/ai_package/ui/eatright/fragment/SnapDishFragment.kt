@@ -84,6 +84,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
     private var currentPhotoPathsecound : Uri? = null
     private var mealId : String = ""
     private var mealName : String = ""
+    private var snapImageUrl: String = ""
     private var mealType : String = ""
     private var snapMealLog : String = ""
     private var homeTab : String = ""
@@ -125,6 +126,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
 
         mealId = arguments?.getString("mealId").toString()
         mealName = arguments?.getString("mealName").toString()
+        snapImageUrl = arguments?.getString("snapImageUrl").toString()
         val mealQuantitys = arguments?.getString("mealQuantity").toString()
         mealType = arguments?.getString("mealType").toString()
         snapMealLog = arguments?.getString("snapMealLog").toString()
@@ -259,6 +261,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
                     fragment.arguments = args
                     args.putString("mealId", mealId)
                     args.putString("mealName", mealName)
+                    args.putString("snapImageUrl", snapImageUrl)
                     args.putString("mealType", mealType)
                     args.putString("snapMealLog", snapMealLog)
                     args.putString("searchType", searchType)
@@ -304,6 +307,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
                 fragment.arguments = args
                 args.putString("mealId", mealId)
                 args.putString("mealName", mealName)
+                args.putString("snapImageUrl", snapImageUrl)
                 args.putString("mealType", mealType)
                 args.putString("snapMealLog", snapMealLog)
                 args.putString("searchType", searchType)
@@ -472,6 +476,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
                         val args = Bundle()
                         args.putString("mealId", mealId)
                         args.putString("mealName", mealName)
+                        args.putString("snapImageUrl", snapImageUrl)
                         args.putString("mealType", mealType)
                         args.putString("snapMealLog", snapMealLog)
                         args.putString("homeTab", homeTab)
@@ -567,6 +572,7 @@ class SnapDishFragment : BaseFragment<FragmentDishBinding>() {
                                         val args = Bundle()
                                         args.putString("mealId", mealId)
                                         args.putString("mealName", mealName)
+                                        args.putString("snapImageUrl", snapImageUrl)
                                         args.putString("mealType", mealType)
                                         args.putString("snapMealLog", snapMealLog)
                                         args.putString("homeTab", homeTab)

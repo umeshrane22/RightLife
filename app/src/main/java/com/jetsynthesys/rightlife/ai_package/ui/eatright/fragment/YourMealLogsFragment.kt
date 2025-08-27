@@ -941,6 +941,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             args.putString("mealId", snapMealDetail._id)
             args.putString("mealType", "Breakfast")
             args.putString("snapMealLog", "snapMealLog")
+            args.putString("snapImageUrl", snapMealDetail.image_url)
             args.putString("mealName", snapMealDetail.meal_name)
             args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
             fragment.arguments = args
@@ -1076,6 +1077,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             args.putString("mealId", snapMealDetail._id)
             args.putString("mealType", "Morning Snack")
             args.putString("snapMealLog", "snapMealLog")
+            args.putString("snapImageUrl", snapMealDetail.image_url)
             args.putString("mealName", snapMealDetail.meal_name)
             args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
             fragment.arguments = args
@@ -1212,6 +1214,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             args.putString("mealId", snapMealDetail._id)
             args.putString("mealType", "Lunch")
             args.putString("snapMealLog", "snapMealLog")
+            args.putString("snapImageUrl", snapMealDetail.image_url)
             args.putString("mealName", snapMealDetail.meal_name)
             args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
             fragment.arguments = args
@@ -1347,6 +1350,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             args.putString("mealId", snapMealDetail._id)
             args.putString("mealType", "Evening Snacks")
             args.putString("snapMealLog", "snapMealLog")
+            args.putString("snapImageUrl", snapMealDetail.image_url)
             args.putString("mealName", snapMealDetail.meal_name)
             args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
             fragment.arguments = args
@@ -1482,6 +1486,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             args.putString("mealId", snapMealDetail._id)
             args.putString("mealType", "Dinner")
             args.putString("snapMealLog", "snapMealLog")
+            args.putString("snapImageUrl", snapMealDetail.image_url)
             args.putString("mealName", snapMealDetail.meal_name)
             args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
             fragment.arguments = args

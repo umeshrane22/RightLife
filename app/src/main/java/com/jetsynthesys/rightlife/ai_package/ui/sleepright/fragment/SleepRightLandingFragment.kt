@@ -616,13 +616,33 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                 btnSync.visibility = View.GONE
             }
             if (HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class) in grantedPermissions) {
-                val caloriesResponse = healthConnectClient.readRecords(
-                    ReadRecordsRequest(
-                        recordType = TotalCaloriesBurnedRecord::class,
-                        timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                if (syncTime == "") {
+                    val totalCaloroieResponse = mutableListOf<TotalCaloriesBurnedRecord>()
+                    val totalDuration = Duration.between(startTime, endTime)
+                    val chunkDuration = totalDuration.dividedBy(15)
+                    var chunkStart = startTime
+                    repeat(15) { i ->
+                        val chunkEnd = if (i == 14) endTime else chunkStart.plus(chunkDuration)
+                        val response = healthConnectClient.readRecords(
+                            ReadRecordsRequest(
+                                recordType = TotalCaloriesBurnedRecord::class,
+                                timeRangeFilter = TimeRangeFilter.between(chunkStart, chunkEnd)
+                            )
+                        )
+                        totalCaloroieResponse.addAll(response.records)
+                        Log.d("HealthData", "Chunk $i → ${response.records.size} Step records")
+                        chunkStart = chunkEnd
+                    }
+                    totalCaloriesBurnedRecord = totalCaloroieResponse
+                }else{
+                    val caloriesResponse = healthConnectClient.readRecords(
+                        ReadRecordsRequest(
+                            recordType = TotalCaloriesBurnedRecord::class,
+                            timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                        )
                     )
-                )
-                totalCaloriesBurnedRecord = caloriesResponse.records
+                    totalCaloriesBurnedRecord = caloriesResponse.records
+                }
                 // Iterate each record individually
                 totalCaloriesBurnedRecord?.forEach { record ->
                     val burnedCalories = record.energy.inKilocalories
@@ -2115,8 +2135,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     body_mass = bodyMass,
                     body_fat_percentage = bodyFatPercentage,
                     sleep_stage = sleepStage,
-                    workout = workout
-
+                    workout = workout,
+                    time_zone = "Asia/Kolkata"
                 )
                 val gson = Gson()
                 val allRecords = mutableListOf<Any>()
@@ -2160,7 +2180,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                         body_mass = batch.filterIsInstance<BodyMass>(),
                         body_fat_percentage = batch.filterIsInstance<BodyFatPercentage>(),
                         sleep_stage = batch.filterIsInstance<SleepStageJson>(),
-                        workout = batch.filterIsInstance<WorkoutRequest>()
+                        workout = batch.filterIsInstance<WorkoutRequest>(),
+                        time_zone = "Asia/Kolkata"
                     )
                     val response = ApiClient.apiServiceFastApi.storeHealthData(req)
                     if (!response.isSuccessful) {
@@ -2453,7 +2474,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                     body_mass = bodyMass,
                     body_fat_percentage = bodyFatPercentage,
                     sleep_stage = sleepStage,
-                    workout = workout
+                    workout = workout,
+                    time_zone = "Asia/Kolkata"
                 )
                 val gson = Gson()
                 val allRecords = mutableListOf<Any>()
@@ -2497,7 +2519,8 @@ class SleepRightLandingFragment : BaseFragment<FragmentSleepRightLandingBinding>
                         body_mass = batch.filterIsInstance<BodyMass>(),
                         body_fat_percentage = batch.filterIsInstance<BodyFatPercentage>(),
                         sleep_stage = batch.filterIsInstance<SleepStageJson>(),
-                        workout = batch.filterIsInstance<WorkoutRequest>()
+                        workout = batch.filterIsInstance<WorkoutRequest>(),
+                        time_zone = "Asia/Kolkata"
                     )
                     val response = ApiClient.apiServiceFastApi.storeHealthData(req)
                     if (!response.isSuccessful) {
