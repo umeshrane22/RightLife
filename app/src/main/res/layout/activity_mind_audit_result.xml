@@ -379,7 +379,6 @@
                                     android:gravity="start"
                                     android:textColor="@color/text_color_app"
                                     android:text="1"
-
                                     android:layout_weight="1" />
 
                                 <TextView

@@ -1,7 +1,10 @@
 package com.jetsynthesys.rightlife.ui.breathwork
 
+import android.content.res.ColorStateList
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.R
@@ -38,9 +41,22 @@ class BreathworkAdapter(
                 .error(R.drawable.rl_placeholder)
                 .into(imageView)
 
-            plusButton.setImageResource(
-                if (item.isAddedToToolKit) R.drawable.greentick else R.drawable.add_journal
-            )
+          /*  plusButton.setImageResource(
+                if (item.isAddedToToolKit) {
+                    R.drawable.greentick
+                } else
+                { R.drawable.ic_bookmark_breathing}
+            )*/
+
+            if (item.isAddedToToolKit) {
+                plusButton.setImageResource(R.drawable.ic_save_article_active)
+                plusButton.imageTintList =
+                    ColorStateList.valueOf(ContextCompat.getColor(plusButton.context, R.color.color_eat_right))
+            } else {
+                plusButton.setImageResource(R.drawable.ic_save_article)
+                plusButton.imageTintList =
+                    ColorStateList.valueOf(ContextCompat.getColor(plusButton.context, R.color.black))
+            }
 
             plusButton.setOnClickListener {
                 val sharedPreferenceManager =
@@ -62,7 +78,40 @@ class BreathworkAdapter(
             cardView.setOnClickListener {
                 onItemClick.onClick(item)
             }
+
+            // ✅ Background color based on breathing type
+            val resColor = when (item.title?.trim()) {
+                "Box Breathing" -> R.color.box_breathing_card_color
+                "Alternate Nostril Breathing" -> R.color.alternate_breathing_card_color
+                "4-7-8 Breathing" -> R.color.four_seven_breathing_card_color
+                "Custom" -> R.color.custom_breathing_card_color
+                else -> R.color.white
+            }
+            val colorInt = ContextCompat.getColor(holder.itemView.context, resColor)
+            cardView.setCardBackgroundColor(ColorStateList.valueOf(colorInt))
+
+            // Debug log (optional)
+            Log.d("BreathworkAdapter", "position=$position title=${item.title} -> color=$resColor")
+            /*when (item.title) {
+                "Box Breathing" -> {
+                    cardView.setCardBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.box_breathing_card_color))
+
+                }
+                "Alternate Nostril Breathing" -> {
+                    cardView.setCardBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.alternate_breathing_card_color))
+
+                }
+                "4-7-8 Breathing" -> {
+                    cardView.setCardBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.four_seven_breathing_card_color))
+
+                }
+                else -> {
+                    cardView.setCardBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.custom_breathing_card_color))
+
+                }
+            }*/
         }
+
     }
 
     override fun getItemCount() = items.size
