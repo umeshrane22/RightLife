@@ -1,17 +1,20 @@
 package com.jetsynthesys.rightlife.newdashboard
 
+import android.annotation.SuppressLint
 import android.app.ComponentCaller
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.Rect
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
@@ -87,12 +90,9 @@ import com.jetsynthesys.rightlife.subscriptions.SubscriptionPlanListActivity
 import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentSuccessRequest
 import com.jetsynthesys.rightlife.subscriptions.pojo.PaymentSuccessResponse
 import com.jetsynthesys.rightlife.subscriptions.pojo.SdkDetail
+import com.jetsynthesys.rightlife.ui.ActivityUtils
 import com.jetsynthesys.rightlife.ui.DialogUtils
-import com.jetsynthesys.rightlife.ui.NewSleepSounds.NewSleepSoundActivity
-import com.jetsynthesys.rightlife.ui.affirmation.TodaysAffirmationActivity
 import com.jetsynthesys.rightlife.ui.aireport.AIReportWebViewActivity
-import com.jetsynthesys.rightlife.ui.breathwork.BreathworkActivity
-import com.jetsynthesys.rightlife.ui.healthcam.HealthCamActivity
 import com.jetsynthesys.rightlife.ui.healthcam.NewHealthCamReportActivity
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalListActivity
 import com.jetsynthesys.rightlife.ui.profile_new.ProfileSettingsActivity
@@ -147,6 +147,7 @@ class HomeNewActivity : BaseActivity() {
             permissionManager.handlePermissionResult(result)
         }
 
+    @SuppressLint("ClickableViewAccessibility")
     private val allReadPermissions = setOf(
         HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class),
         HealthPermission.getReadPermission(ActiveCaloriesBurnedRecord::class),
@@ -165,6 +166,7 @@ class HomeNewActivity : BaseActivity() {
         HealthPermission.getReadPermission(ExerciseSessionRecord::class),
     )
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeNewBinding.inflate(layoutInflater)
@@ -197,6 +199,7 @@ class HomeNewActivity : BaseActivity() {
         onBackPressedDispatcher.addCallback {
             if (binding.includedhomebottomsheet.bottomSheet.visibility == View.VISIBLE) {
                 binding.includedhomebottomsheet.bottomSheet.visibility = View.GONE
+                binding.includedhomebottomsheet.bottomSheetParent.setBackgroundColor(Color.TRANSPARENT)
                 val currentFragment =
                     supportFragmentManager.findFragmentById(R.id.fragmentContainer)
                 when (currentFragment) {
@@ -241,6 +244,7 @@ class HomeNewActivity : BaseActivity() {
 
             if (binding.includedhomebottomsheet.bottomSheet.visibility == View.VISIBLE) {
                 bottom_sheet.visibility = View.GONE
+                binding.includedhomebottomsheet.bottomSheetParent.setBackgroundColor(Color.TRANSPARENT)
                 val currentFragment =
                     supportFragmentManager.findFragmentById(R.id.fragmentContainer)
                 when (currentFragment) {
@@ -249,6 +253,11 @@ class HomeNewActivity : BaseActivity() {
                 }
             } else {
                 bottom_sheet.visibility = View.VISIBLE
+                binding.includedhomebottomsheet.bottomSheetParent.setBackgroundColor(
+                    Color.parseColor(
+                        "#CC000000"
+                    )
+                )
             }
             v.isSelected = !v.isSelected
 
@@ -286,58 +295,104 @@ class HomeNewActivity : BaseActivity() {
 
         // Handle menu item clicks
         binding.menuHome.setOnClickListener {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainer, HomeDashboardFragment())
-                .commit()
-            updateMenuSelection(R.id.menu_home)
+            if (binding.includedhomebottomsheet.bottomSheet.visibility == View.VISIBLE) {
+                bottom_sheet.visibility = View.GONE
+                binding.includedhomebottomsheet.bottomSheetParent.setBackgroundColor(Color.TRANSPARENT)
+                binding.fab.animate().rotationBy(180f).setDuration(60)
+                    .setInterpolator(DecelerateInterpolator()).withEndAction {
+                        // Change icon after rotation
+                        if (isAdd) {
+                            binding.fab.setImageResource(R.drawable.icon_quicklink_plus_black) // Change to close icon
+                            binding.fab.backgroundTintList = ContextCompat.getColorStateList(
+                                this, R.color.rightlife
+                            )
+                            binding.fab.imageTintList = ColorStateList.valueOf(
+                                resources.getColor(
+                                    R.color.black
+                                )
+                            )
+                        } else {
+                            binding.fab.setImageResource(R.drawable.icon_quicklink_plus) // Change back to add icon
+                            binding.fab.backgroundTintList = ContextCompat.getColorStateList(
+                                this, R.color.white
+                            )
+                            binding.fab.imageTintList = ColorStateList.valueOf(
+                                resources.getColor(
+                                    R.color.rightlife
+                                )
+                            )
+                        }
+                        isAdd = !isAdd // Toggle the state
+                    }.start()
+            } else {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragmentContainer, HomeDashboardFragment())
+                    .commit()
+                updateMenuSelection(R.id.menu_home)
+            }
         }
 
         binding.menuExplore.setOnClickListener {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainer, HomeExploreFragment())
-                .commit()
-            updateMenuSelection(R.id.menu_explore)
+            if (binding.includedhomebottomsheet.bottomSheet.visibility == View.VISIBLE) {
+                bottom_sheet.visibility = View.GONE
+                binding.includedhomebottomsheet.bottomSheetParent.setBackgroundColor(Color.TRANSPARENT)
+                binding.fab.animate().rotationBy(180f).setDuration(60)
+                    .setInterpolator(DecelerateInterpolator()).withEndAction {
+                        // Change icon after rotation
+                        if (isAdd) {
+                            binding.fab.setImageResource(R.drawable.icon_quicklink_plus_black) // Change to close icon
+                            binding.fab.backgroundTintList = ContextCompat.getColorStateList(
+                                this, R.color.rightlife
+                            )
+                            binding.fab.imageTintList = ColorStateList.valueOf(
+                                resources.getColor(
+                                    R.color.black
+                                )
+                            )
+                        } else {
+                            binding.fab.setImageResource(R.drawable.icon_quicklink_plus) // Change back to add icon
+                            binding.fab.backgroundTintList = ContextCompat.getColorStateList(
+                                this, R.color.white
+                            )
+                            binding.fab.imageTintList = ColorStateList.valueOf(
+                                resources.getColor(
+                                    R.color.rightlife
+                                )
+                            )
+                        }
+                        isAdd = !isAdd // Toggle the state
+                    }.start()
+            } else {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragmentContainer, HomeExploreFragment())
+                    .commit()
+                updateMenuSelection(R.id.menu_explore)
+            }
         }
 
         with(binding) {
             includedhomebottomsheet.llJournal.setOnClickListener {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_JOURNALING_CLICK)
                 if (checkTrailEndedAndShowDialog()) {
-                    startActivity(
-                        Intent(
-                            this@HomeNewActivity, JournalListActivity::class.java
-                        )
-                    )
+                    ActivityUtils.startJournalListActivity(this@HomeNewActivity)
                 }
             }
             includedhomebottomsheet.llAffirmations.setOnClickListener {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_AFFIRMATION_CLICK)
                 if (checkTrailEndedAndShowDialog()) {
-                    startActivity(
-                        Intent(
-                            this@HomeNewActivity, TodaysAffirmationActivity::class.java
-                        )
-                    )
+                    ActivityUtils.startTodaysAffirmationActivity(this@HomeNewActivity)
                 }
             }
             includedhomebottomsheet.llSleepsounds.setOnClickListener {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_SLEEP_SOUNDS)
                 if (checkTrailEndedAndShowDialog()) {
-                    startActivity(
-                        Intent(
-                            this@HomeNewActivity, NewSleepSoundActivity::class.java
-                        )
-                    )
+                    ActivityUtils.startSleepSoundActivity(this@HomeNewActivity)
                 }
             }
             includedhomebottomsheet.llBreathwork.setOnClickListener {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_BREATH_WORK_CLICK)
                 if (checkTrailEndedAndShowDialog()) {
-                    startActivity(
-                        Intent(
-                            this@HomeNewActivity, BreathworkActivity::class.java
-                        )
-                    )
+                    ActivityUtils.startBreathWorkActivity(this@HomeNewActivity)
                 }
             }
             includedhomebottomsheet.llHealthCamQl.setOnClickListener {
@@ -349,32 +404,15 @@ class HomeNewActivity : BaseActivity() {
                         )
                     )
                 } else {
-                    startActivity(Intent(this@HomeNewActivity, HealthCamActivity::class.java))
+                    ActivityUtils.startFaceScanActivity(this@HomeNewActivity)
                 }
             }
             includedhomebottomsheet.llMealplan.setOnClickListener {
                 AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.EOS_SNAP_MEAL_CLICK)
-                permissionManager = PermissionManager(
-                    activity = this@HomeNewActivity, // or just `this` in Activity
-                    launcher = permissionLauncher,
-                    onPermissionGranted = {
-                        startActivity(Intent(this@HomeNewActivity, MainAIActivity::class.java).apply {
-                            putExtra("ModuleName", "EatRight")
-                            putExtra("BottomSeatName", "SnapMealTypeEat")
-                            if (sharedPreferenceManager.snapMealId.isNotEmpty()) {
-                                intent.putExtra(
-                                    "snapMealId",
-                                    sharedPreferenceManager.snapMealId
-                                ) // make sure snapMealId is declared and initialized
-                            }
-                        })
-                    },
-                    onPermissionDenied = {
-                        // ❌ Show user-facing message or disable features
-                        Toast.makeText(this@HomeNewActivity, "Permission denied", Toast.LENGTH_SHORT).show()
-                    }
-                )
-                permissionManager.checkAndRequestPermissions()
+                ActivityUtils.startEatRightReportsActivity(
+                    this@HomeNewActivity,
+                    "SnapMealTypeEat",
+                    sharedPreferenceManager.snapMealId.ifEmpty { "" })
             }
 
         }
@@ -382,23 +420,16 @@ class HomeNewActivity : BaseActivity() {
         binding.includedhomebottomsheet.llFoodLog.setOnClickListener {
             AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.LYA_FOOD_LOG_CLICK)
             if (checkTrailEndedAndShowDialog()) {
-                startActivity(Intent(
-                    this@HomeNewActivity, MainAIActivity::class.java
-                ).apply {
-                    putExtra("ModuleName", "EatRight")
-                    putExtra("BottomSeatName", "MealLogTypeEat")
-                })
+                ActivityUtils.startEatRightReportsActivity(this@HomeNewActivity, "MealLogTypeEat")
             }
         }
         binding.includedhomebottomsheet.llActivityLog.setOnClickListener {
             AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.LYA_ACTIVITY_LOG_CLICK)
             if (checkTrailEndedAndShowDialog()) {
-                startActivity(Intent(
-                    this@HomeNewActivity, MainAIActivity::class.java
-                ).apply {
-                    putExtra("ModuleName", "MoveRight")
-                    putExtra("BottomSeatName", "SearchActivityLogMove")
-                })
+                ActivityUtils.startMoveRightReportsActivity(
+                    this@HomeNewActivity,
+                    "SearchActivityLogMove"
+                )
             }
         }
         binding.includedhomebottomsheet.llMoodLog.setOnClickListener {
@@ -409,34 +440,25 @@ class HomeNewActivity : BaseActivity() {
         binding.includedhomebottomsheet.llSleepLog.setOnClickListener {
             AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.LYA_SLEEP_LOG_CLICK)
             if (checkTrailEndedAndShowDialog()) {
-                startActivity(Intent(
-                    this@HomeNewActivity, MainAIActivity::class.java
-                ).apply {
-                    putExtra("ModuleName", "SleepRight")
-                    putExtra("BottomSeatName", "LogLastNightSleep")
-                })
+                ActivityUtils.startSleepRightReportsActivity(
+                    this@HomeNewActivity,
+                    "LogLastNightSleep"
+                )
             }
         }
         binding.includedhomebottomsheet.llWeightLog.setOnClickListener {
             AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.LYA_WEIGHT_LOG_CLICK)
             if (checkTrailEndedAndShowDialog()) {
-                startActivity(Intent(
-                    this@HomeNewActivity, MainAIActivity::class.java
-                ).apply {
-                    putExtra("ModuleName", "EatRight")
-                    putExtra("BottomSeatName", "LogWeightEat")
-                })
+                ActivityUtils.startEatRightReportsActivity(this@HomeNewActivity, "LogWeightEat")
             }
         }
         binding.includedhomebottomsheet.llWaterLog.setOnClickListener {
             AnalyticsLogger.logEvent(this@HomeNewActivity, AnalyticsEvent.LYA_WATER_LOG_CLICK)
             if (checkTrailEndedAndShowDialog()) {
-                startActivity(Intent(
-                    this@HomeNewActivity, MainAIActivity::class.java
-                ).apply {
-                    putExtra("ModuleName", "EatRight")
-                    putExtra("BottomSeatName", "LogWaterIntakeEat")
-                })
+                ActivityUtils.startEatRightReportsActivity(
+                    this@HomeNewActivity,
+                    "LogWaterIntakeEat"
+                )
             }
         }
 
@@ -483,11 +505,17 @@ class HomeNewActivity : BaseActivity() {
             startActivity(Intent(this, ProfileSettingsActivity::class.java))
         } else if (intent.getBooleanExtra("finish_MindAudit", false)) {
             if (intent.getBooleanExtra("FROM_THINK_RIGHT", false)) {
-                startActivity(Intent(this, MainAIActivity::class.java))
+                startActivity(Intent(this, MainAIActivity::class.java).apply {
+                    putExtra("ModuleName", "ThinkRight")
+                    putExtra("BottomSeatName", "Not")
+                })
             }
         } else if (intent.getBooleanExtra("finish_Journal", false)) {
             if (intent.getBooleanExtra("FROM_THINK_RIGHT", false)) {
-                startActivity(Intent(this, MainAIActivity::class.java))
+                startActivity(Intent(this, MainAIActivity::class.java).apply {
+                    putExtra("ModuleName", "ThinkRight")
+                    putExtra("BottomSeatName", "Not")
+                })
             }
         }
     }
@@ -824,7 +852,6 @@ class HomeNewActivity : BaseActivity() {
         val params = QueryPurchasesParams.newBuilder()
             .setProductType(BillingClient.ProductType.INAPP)
             .build()
-
 
         billingClient.queryPurchasesAsync(params) { billingResult, purchases ->
             Log.d(

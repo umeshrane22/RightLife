@@ -5,7 +5,6 @@ import android.app.Dialog
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.app.ProgressDialog
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
@@ -47,7 +46,6 @@ import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.flexbox.FlexboxLayout
-import com.google.android.material.card.MaterialCardView
 import com.google.android.material.snackbar.Snackbar
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
@@ -78,18 +76,16 @@ import com.jetsynthesys.rightlife.ai_package.ui.thinkright.adapter.ToolAdapter
 import com.jetsynthesys.rightlife.ai_package.ui.thinkright.adapter.ToolsAdapter
 import com.jetsynthesys.rightlife.apimodel.userdata.UserProfileResponse
 import com.jetsynthesys.rightlife.databinding.FragmentThinkRightLandingBinding
+import com.jetsynthesys.rightlife.ui.ActivityUtils
 import com.jetsynthesys.rightlife.ui.affirmation.PractiseAffirmationPlaylistActivity
 import com.jetsynthesys.rightlife.ui.affirmation.TodaysAffirmationActivity
 import com.jetsynthesys.rightlife.ui.aireport.AIReportWebViewActivity
 import com.jetsynthesys.rightlife.ui.breathwork.BreathworkActivity
 import com.jetsynthesys.rightlife.ui.breathwork.BreathworkSessionActivity
 import com.jetsynthesys.rightlife.ui.breathwork.pojo.BreathingData
-import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalListActivity
 import com.jetsynthesys.rightlife.ui.jounal.new_journal.JournalNewActivity
 import com.jetsynthesys.rightlife.ui.mindaudit.MASuggestedAssessmentActivity
-import com.jetsynthesys.rightlife.ui.mindaudit.MindAuditActivity
 import com.jetsynthesys.rightlife.ui.utility.SharedPreferenceManager
-import okhttp3.internal.notify
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -325,35 +321,25 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
             startActivity(Intent(requireContext(), PractiseAffirmationPlaylistActivity::class.java))
         }
         view.findViewById<LinearLayout>(R.id.play_now_mind_audit).setOnClickListener {
-            startActivity(Intent(requireContext(), MindAuditActivity::class.java).apply {
-                putExtra("FROM_THINK_RIGHT", true)
-            })
+            ActivityUtils.startMindAuditActivity(requireContext(), true)
         }
         reassessYourMental.setOnClickListener {
-            startActivity(Intent(requireContext(), MindAuditActivity::class.java).apply {
-                putExtra("FROM_THINK_RIGHT", true)
-            })
+            ActivityUtils.startMindAuditActivity(requireContext(), true)
         }
         view.findViewById<LinearLayout>(R.id.lyt_journaling).setOnClickListener {
-            startActivity(Intent(requireContext(), JournalListActivity::class.java).apply {
-                putExtra("FROM_THINK_RIGHT", true)
-            })
+            ActivityUtils.startJournalListActivity(requireContext(), true)
         }
         view.findViewById<LinearLayout>(R.id.lyt_add_new).setOnClickListener {
-            startActivity(Intent(requireContext(), JournalNewActivity::class.java).apply {
-                putExtra("FROM_THINK_RIGHT", true)
-            })
+            ActivityUtils.startJournalNewActivity(requireContext(), true)
         }
         view.findViewById<LinearLayout>(R.id.lyt_breathing).setOnClickListener {
-            startActivity(Intent(requireContext(), BreathworkActivity::class.java))
+            ActivityUtils.startBreathWorkActivity(requireContext())
         }
         view.findViewById<ConstraintLayout>(R.id.lyt_top_header).setOnClickListener {
-            startActivity(Intent(requireContext(), MindAuditActivity::class.java).apply {
-                putExtra("FROM_THINK_RIGHT", true)
-            })
+            ActivityUtils.startMindAuditActivity(requireContext(), true)
         }
         view.findViewById<ImageView>(R.id.ivSetting).setOnClickListener {
-            startActivity(Intent(requireContext(), TodaysAffirmationActivity::class.java))
+            ActivityUtils.startTodaysAffirmationActivity(requireContext())
         }
 
         view.findViewById<ImageView>(R.id.img_happy_icon).setOnClickListener {
@@ -602,7 +588,7 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
 
         tagFlexbox.removeAllViews()
 
-        for (tag in list.tags!!) {
+        for (tag in list.tags) {
             val chip = TextView(requireContext()).apply {
                 text = tag
                 setPadding(24, 12, 24, 12)
@@ -1223,13 +1209,13 @@ class ThinkRightReportFragment : BaseFragment<FragmentThinkRightLandingBinding>(
     private fun onToolsItem(toolsData: ToolGridData, position: Int, isRefresh: Boolean) {
 
         if (toolsData.moduleName.contentEquals("Breathwork")) {
-            startActivity(Intent(requireContext(), BreathworkActivity::class.java))
+            ActivityUtils.startBreathWorkActivity(requireContext())
         } else if (toolsData.moduleName.contentEquals("Journalling")) {
             startActivity(Intent(requireContext(), JournalNewActivity::class.java).apply {
-                putExtra("FROM_THINK_RIGHT",true)
+                putExtra("FROM_THINK_RIGHT", true)
             })
         } else if (toolsData.moduleName.contentEquals("Affirmation")) {
-            startActivity(Intent(requireContext(), TodaysAffirmationActivity::class.java))
+            ActivityUtils.startTodaysAffirmationActivity(requireContext())
         }
     }
 

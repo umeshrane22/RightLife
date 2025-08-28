@@ -427,7 +427,7 @@ class JournalListActivity : BaseActivity() {
     private fun closeActivity() {
         if (isFromThinkRight) {
             val intent = Intent(this, HomeNewActivity::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
                 putExtra("finish_Journal", true)
                 putExtra("FROM_THINK_RIGHT", isFromThinkRight)
             }
