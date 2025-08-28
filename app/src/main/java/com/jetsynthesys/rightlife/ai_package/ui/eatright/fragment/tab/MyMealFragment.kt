@@ -11,6 +11,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
@@ -69,6 +70,7 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>(), DeleteMealBottomSh
     private var loadingOverlay : FrameLayout? = null
     private var moduleName : String = ""
     private var selectedMealDate : String = ""
+    private val sharedViewModel: SharedMealViewModel by activityViewModels()
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentMyMealBinding
         get() = FragmentMyMealBinding::inflate
@@ -98,6 +100,16 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>(), DeleteMealBottomSh
 
         myMealRecyclerView.layoutManager = LinearLayoutManager(context)
         myMealRecyclerView.adapter = myMealListAdapter
+
+        sharedViewModel.mealData.observe(viewLifecycleOwner) { data ->
+            // Update RecyclerView / UI with latest meal data
+            println(data)
+        }
+
+        sharedViewModel.snapMealData.observe(viewLifecycleOwner) { data ->
+            // Update RecyclerView / UI with latest meal data
+            println(data)
+        }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
