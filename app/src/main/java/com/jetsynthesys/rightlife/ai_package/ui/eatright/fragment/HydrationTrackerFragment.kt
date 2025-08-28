@@ -135,8 +135,16 @@ class HydrationTrackerFragment : BaseFragment<FragmentHydrationTrackerBinding>()
             showWaterIntakeBottomSheet()
         }
         // Handle Radio Button Selection
-        radioGroup.setOnCheckedChangeListener { _, checkedId ->
-            today_water_intake_layout.visibility = if (checkedId == R.id.rbWeek) View.VISIBLE else View.GONE
+        radioGroup.setOnCheckedChangeListener { group, checkedId ->
+            for (i in 0 until group.childCount) {
+                val radioButton = group.getChildAt(i) as RadioButton
+                if (radioButton.id == checkedId) {
+                    radioButton.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.white))
+                } else {
+                    radioButton.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.black))
+                }
+            }
+
             when (checkedId) {
                 R.id.rbWeek ->{
                     layoutLineChart.visibility =View.VISIBLE
@@ -700,6 +708,10 @@ class HydrationTrackerFragment : BaseFragment<FragmentHydrationTrackerBinding>()
 
         lineChart.axisRight.isEnabled = false
         lineChart.description.isEnabled = false
+        lineChart.setScaleEnabled(false)
+        lineChart.isDoubleTapToZoomEnabled = false
+        lineChart.isHighlightPerTapEnabled = true
+        lineChart.isHighlightPerDragEnabled = false
         // Optional chart description
         val description = Description().apply {
             text = ""

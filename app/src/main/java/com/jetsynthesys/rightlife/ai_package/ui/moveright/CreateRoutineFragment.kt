@@ -167,6 +167,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
                 val fragment = SearchWorkoutFragment()
                 val args = Bundle().apply {
                     putString("routine", "edit_routine")
+                    putString("routineId",routineIdworkout)
                     putString("routineName", textViewRoutine.text.toString())
                     putParcelableArrayList("workoutList", workoutList)
                 }
@@ -393,7 +394,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
-                    ?: "680790d0a8d2c1b4456e5c7d"
+
                 val newRoutineId = routineIdworkout
                 val routineId = workoutLists?.routineId ?:routineIdworkout
                 ?: throw IllegalStateException("Routine ID is missing for edit")
@@ -410,7 +411,7 @@ class CreateRoutineFragment : BaseFragment<FragmentCreateRoutineBinding>() {
 
                 val request = UpdateRoutineRequest(
                     user_id = userId,
-                    routine_id = routineId,
+                    routine_id = routineIdworkout,
                     routine_name = routineName, // Include routine name in the request
                     workouts = workouts
                 )

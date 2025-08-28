@@ -151,6 +151,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
                 args.putString("ModuleName", moduleName)
                 args.putString("mealType", mealType)
                 args.putString("selectedMealDate", selectedMealDate)
+                args.putString("tabType", "MyMeal")
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
                     replace(R.id.flFragment, fragment, "landing")
@@ -166,6 +167,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
             args.putString("ModuleName", moduleName)
             args.putString("mealType", mealType)
             args.putString("selectedMealDate", selectedMealDate)
+            args.putString("tabType", "MyMeal")
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "landing")
@@ -246,6 +248,7 @@ class CreateMealFragment : BaseFragment<FragmentCreateMealBinding>() {
             addedMealListLayout.visibility = View.GONE
             saveMealLayout.visibility = View.GONE
             continueLayout.visibility = View.VISIBLE
+            etAddName.setText(addedNameTv.text.toString())
             if (etAddName.text.length > 0){
                 continueLayout.isEnabled = true
                 continueLayout.setBackgroundResource(R.drawable.green_meal_bg)

@@ -70,6 +70,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
     private var searchMealList : ArrayList<SearchResultItem> = ArrayList()
     private var mealId : String = ""
     private var mealName : String = ""
+    private var snapImageUrl: String = ""
     private lateinit var mealType : String
     private var loadingOverlay : FrameLayout? = null
     private var moduleName : String = ""
@@ -109,6 +110,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
         searchType = arguments?.getString("searchType").toString()
         mealId = arguments?.getString("mealId").toString()
         mealName = arguments?.getString("mealName").toString()
+        snapImageUrl = arguments?.getString("snapImageUrl").toString()
         mealType = arguments?.getString("mealType").toString()
         homeTab = arguments?.getString("homeTab").toString()
         selectedMealDate = arguments?.getString("selectedMealDate").toString()
@@ -158,6 +160,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                         args.putString("ModuleName", arguments?.getString("ModuleName").toString())
                         args.putString("mealId", mealId)
                         args.putString("mealName", mealName)
+                        args.putString("snapImageUrl", snapImageUrl)
                         args.putString("mealType", mealType)
                         args.putString("homeTab", homeTab)
                         args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
@@ -177,6 +180,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                         args.putString("mealId", mealId)
                         args.putString("mealType", mealType)
                         args.putString("mealName", mealName)
+                        args.putString("snapImageUrl", snapImageUrl)
                         args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
                         fragment.arguments = args
                         requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -197,6 +201,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                 args.putString("ModuleName", arguments?.getString("ModuleName").toString())
                 args.putString("mealId", mealId)
                 args.putString("mealName", mealName)
+                args.putString("snapImageUrl", snapImageUrl)
                 args.putString("mealType", mealType)
                 args.putString("homeTab", homeTab)
                 args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
@@ -216,6 +221,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                 args.putString("mealId", mealId)
                 args.putString("mealType", mealType)
                 args.putString("mealName", mealName)
+                args.putString("snapImageUrl", snapImageUrl)
                 args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
@@ -294,6 +300,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                 args.putString("ModuleName", arguments?.getString("ModuleName").toString())
                 args.putString("mealId", mealId)
                 args.putString("mealName", mealName)
+                args.putString("snapImageUrl", snapImageUrl)
                 args.putString("mealType", mealType)
                 args.putString("homeTab", homeTab)
                 args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
@@ -314,6 +321,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                 args.putString("searchType", searchType)
                 args.putString("mealId", mealId)
                 args.putString("mealName", mealName)
+                args.putString("snapImageUrl", snapImageUrl)
                 args.putString("mealType", mealType)
                 args.putParcelable("searchResultItem", recipesModel)
                 args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
@@ -339,6 +347,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                 args.putString("selectedMealDate", selectedMealDate)
                 args.putString("mealId", mealId)
                 args.putString("mealName", mealName)
+                args.putString("snapImageUrl", snapImageUrl)
                 args.putString("mealType", mealType)
                 args.putString("homeTab", homeTab)
                 args.putString("ImagePathsecound", currentPhotoPathsecound.toString())
@@ -360,6 +369,7 @@ class SearchDishFragment : BaseFragment<FragmentSearchDishBinding>() {
                 args.putString("searchType", "SearchDish")
                 args.putString("mealId", mealId)
                 args.putString("mealName", mealName)
+                args.putString("snapImageUrl", snapImageUrl)
                 args.putString("mealType", mealType)
                 args.putParcelable("searchResultItem", recipesModel)
                 args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)

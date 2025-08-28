@@ -11,6 +11,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
@@ -69,6 +70,7 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>(), DeleteMealBottomSh
     private var loadingOverlay : FrameLayout? = null
     private var moduleName : String = ""
     private var selectedMealDate : String = ""
+    private val sharedViewModel: SharedMealViewModel by activityViewModels()
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentMyMealBinding
         get() = FragmentMyMealBinding::inflate
@@ -98,6 +100,16 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>(), DeleteMealBottomSh
 
         myMealRecyclerView.layoutManager = LinearLayoutManager(context)
         myMealRecyclerView.adapter = myMealListAdapter
+
+        sharedViewModel.mealData.observe(viewLifecycleOwner) { data ->
+            // Update RecyclerView / UI with latest meal data
+            println(data)
+        }
+
+        sharedViewModel.snapMealData.observe(viewLifecycleOwner) { data ->
+            // Update RecyclerView / UI with latest meal data
+            println(data)
+        }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -206,14 +218,16 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>(), DeleteMealBottomSh
                 recipe_name = selectedDish.receipe.recipe_name,
                 meal_quantity = 1,
                 unit = "g",
-                measure = "Bowl"
+                measure = "Bowl",
+                isMealLogSelect = mealDetails.isMealLog
             )
             mealLogList.add(mealLogData)
         }
         val mealLogRequest = SelectedMealLogList(
             meal_name =  mealDetails.meal_name,
             meal_type = mealDetails.meal_name,
-            meal_log = mealLogList
+            meal_log = mealLogList,
+            isMealLog = mealDetails.isMealLog
         )
         val parent = parentFragment as? HomeTabMealFragment
         parent?.setSelectedFrequentlyLog(null, false, mealLogRequest, null)
@@ -326,7 +340,8 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>(), DeleteMealBottomSh
             recipe_name = snapMealDetail.meal_name,
             meal_quantity = 1,
             unit = "g",
-            measure = "Bowl"
+            measure = "Bowl",
+            isMealLogSelect = snapMealDetail.isSnapMealLog
         )
         val currentDateUtc: String = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
         val snapDishList: ArrayList<SnapDish> = ArrayList()
@@ -384,7 +399,9 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>(), DeleteMealBottomSh
                 is_save = false,
                 is_snapped = true,
                 date = currentDateUtc,
-                dish = snapDishList
+                dish = snapDishList,
+                image_url = "",
+                isSnapMealLogSelect = snapMealDetail.isSnapMealLog
             )
             val parent = parentFragment as? HomeTabMealFragment
             parent?.setSelectedFrequentlyLog(mealLogData, true, null, snapMealLogRequest)
@@ -466,6 +483,7 @@ class MyMealFragment : BaseFragment<FragmentMyMealBinding>(), DeleteMealBottomSh
             args.putString("selectedMealDate", selectedMealDate)
             args.putString("mealId", snapMealDetail._id)
             args.putString("mealName", snapMealDetail.meal_name)
+            args.putString("snapImageUrl", snapMealDetail.image_url)
             args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {

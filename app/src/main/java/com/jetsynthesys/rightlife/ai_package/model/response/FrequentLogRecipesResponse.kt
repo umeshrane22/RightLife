@@ -37,5 +37,6 @@ data class FrequentRecipe(
     val cholesterol: Double,
     val sodium: Double,
     val potassium: Double,
-    val recipe_id: String
+    val recipe_id: String,
+    var isFrequentLog : Boolean = false
 )

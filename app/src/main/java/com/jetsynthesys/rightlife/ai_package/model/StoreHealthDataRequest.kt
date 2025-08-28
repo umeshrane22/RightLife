@@ -20,7 +20,8 @@ data class StoreHealthDataRequest(
     val body_mass: List<BodyMass>?,
     val body_fat_percentage: List<BodyFatPercentage>?,
     val sleep_stage: List<SleepStageJson>,
-    val workout: List<WorkoutRequest>?
+    val workout: List<WorkoutRequest>?,
+    val time_zone : String
 )
 
 @kotlinx.serialization.Serializable

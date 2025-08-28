@@ -42,9 +42,9 @@ class RoutineWorkoutListAdapter(
             // For non-HTTPS URLs, prepend the jetsynthesisqa base URL
             imageUrl = "https://jetsynthesisqa-us-east-1.s3-accelerate.amazonaws.com/" + item.icon
         }
-        Glide.with(context)
+       /* Glide.with(context)
             .load(imageUrl)
-            .into(holder.workoutIcon)
+            .into(holder.workoutIcon)*/
         holder.servesCount.text = item.duration
         holder.calValue.text = item.caloriesBurned.toBigDecimal().setScale(2, RoundingMode.HALF_UP).toString()
         holder.subtractionValue.text = item.intensity
@@ -139,7 +139,7 @@ class RoutineWorkoutListAdapter(
             }
             "Hiking" -> {
                 // Handle Hiking
-                holder.workoutIcon.setImageResource(R.drawable.hiking)
+                holder.workoutIcon.setImageResource(R.drawable.hockey)
             }
             "Hockey" -> {
                 // Handle Hockey
@@ -148,12 +148,12 @@ class RoutineWorkoutListAdapter(
             }
             "HIIT" -> {
                 // Handle HIIT
-                holder.workoutIcon.setImageResource(R.drawable.hockey)
+                holder.workoutIcon.setImageResource(R.drawable.hiking)
 
             }
             "High Intensity Interval Training" -> {
                 // Handle HIIT
-                holder.workoutIcon.setImageResource(R.drawable.hockey)
+                holder.workoutIcon.setImageResource(R.drawable.hiking)
             }
             "Kickboxing" -> {
                 // Handle Kickboxing
@@ -231,6 +231,11 @@ class RoutineWorkoutListAdapter(
 
             }
             "Traditional Strength Training" -> {
+                // Handle Traditional Strength Training
+                holder.workoutIcon.setImageResource(R.drawable.traditional_strength_training)
+
+            }
+            "Strength Training" -> {
                 // Handle Traditional Strength Training
                 holder.workoutIcon.setImageResource(R.drawable.traditional_strength_training)
 

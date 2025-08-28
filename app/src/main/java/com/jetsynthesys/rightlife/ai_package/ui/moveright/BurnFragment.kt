@@ -358,6 +358,10 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
 
         barChart.axisRight.isEnabled = false
         barChart.description.isEnabled = false
+        barChart.setScaleEnabled(false)
+        barChart.isDoubleTapToZoomEnabled = false
+        barChart.isHighlightPerTapEnabled = true
+        barChart.isHighlightPerDragEnabled = false
 
         // Description
         val description = Description().apply {
@@ -584,7 +588,7 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
             calendar.add(Calendar.DAY_OF_YEAR, 1)
         }
         val labelsWithEmpty = generateLabeled30DayListWithEmpty(dateList[0])
-        val labels = generateWeeklyLabelsFor30Days(dateList[0])
+        val labels = formatDateList(dateList)
         weeklyLabels.addAll(labelsWithEmpty)
         labelsDate.addAll(labels)
        /* for (i in 0 until 30) {
@@ -625,6 +629,20 @@ class BurnFragment : BaseFragment<FragmentBurnBinding>() {
         val entries = calorieMap.values.mapIndexed { index, value -> BarEntry(index.toFloat(), value) }
         return Triple(entries, weeklyLabels, labelsDate)
     }
+
+    private fun formatDateList(dates: List<String>): List<String> {
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("d MMM, yyyy", Locale.getDefault())
+        return dates.mapNotNull { dateStr ->
+            try {
+                val parsedDate = inputFormat.parse(dateStr)
+                parsedDate?.let { outputFormat.format(it) }
+            } catch (e: Exception) {
+                null
+            }
+        }
+    }
+
     private fun generateWeeklyLabelsFor30Days(startDateStr: String): List<String> {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val dayFormat = SimpleDateFormat("d", Locale.getDefault())

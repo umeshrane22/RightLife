@@ -142,7 +142,6 @@ class VitaminCFragment : BaseFragment<FragmentSugarBinding>() {
             }
         }
 
-
         backwardImage.setOnClickListener {
             val selectedId = radioGroup.checkedRadioButtonId
             var selectedTab : String = "Week"
@@ -274,6 +273,10 @@ class VitaminCFragment : BaseFragment<FragmentSugarBinding>() {
         barData.barWidth = 0.4f
         barChart.data = barData
         barChart.setFitBars(true)
+        barChart.setScaleEnabled(false)
+        barChart.isDoubleTapToZoomEnabled = false
+        barChart.isHighlightPerTapEnabled = true
+        barChart.isHighlightPerDragEnabled = false
 
         // X-axis label handling
         val combinedLabels = if (entries.size == 30) {
@@ -607,7 +610,7 @@ class VitaminCFragment : BaseFragment<FragmentSugarBinding>() {
             calendar.add(Calendar.DAY_OF_YEAR, 1)
         }
         val labelsWithEmpty = generateLabeled30DayListWithEmpty(dateList[0])
-        val labels = generateWeeklyLabelsFor30Days(dateList[0])
+        val labels = formatDateList(dateList)
         weeklyLabels.addAll(labelsWithEmpty)
         labelsDate.addAll(labels)
         // Aggregate calories by week
@@ -628,6 +631,19 @@ class VitaminCFragment : BaseFragment<FragmentSugarBinding>() {
         setLastAverageValue(activeCaloriesResponse, "% Past Month")
         val entries = calorieMap.values.mapIndexed { index, value -> BarEntry(index.toFloat(), value) }
         return Triple(entries, weeklyLabels, labelsDate)
+    }
+
+    private fun formatDateList(dates: List<String>): List<String> {
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("d MMM, yyyy", Locale.getDefault())
+        return dates.mapNotNull { dateStr ->
+            try {
+                val parsedDate = inputFormat.parse(dateStr)
+                parsedDate?.let { outputFormat.format(it) }
+            } catch (e: Exception) {
+                null
+            }
+        }
     }
 
     private fun generateWeeklyLabelsFor30Days(startDateStr: String): List<String> {

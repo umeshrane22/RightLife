@@ -284,18 +284,28 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                val fragment = HomeBottomTabFragment()
-                val args = Bundle()
                 if (moduleName.contentEquals("EatRightLanding")){
+                    val fragment = HomeBottomTabFragment()
+                    val args = Bundle()
                     args.putString("ModuleName", "EatRight")
+                    fragment.arguments = args
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.flFragment, fragment, "landing")
+                        addToBackStack("landing")
+                        commit()
+                    }
+                }else if (moduleName.contentEquals("HomeDashboard")){
+                    activity?.finish()
                 }else{
+                    val fragment = HomeBottomTabFragment()
+                    val args = Bundle()
                     args.putString("ModuleName", "MoveRight")
-                }
-                fragment.arguments = args
-                requireActivity().supportFragmentManager.beginTransaction().apply {
-                    replace(R.id.flFragment, fragment, "landing")
-                    addToBackStack("landing")
-                    commit()
+                    fragment.arguments = args
+                    requireActivity().supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.flFragment, fragment, "landing")
+                        addToBackStack("landing")
+                        commit()
+                    }
                 }
             }
         })
@@ -408,18 +418,29 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
         }
 
         backButton.setOnClickListener {
-            val fragment = HomeBottomTabFragment()
-            val args = Bundle()
+
             if (moduleName.contentEquals("EatRightLanding")){
+                val fragment = HomeBottomTabFragment()
+                val args = Bundle()
                 args.putString("ModuleName", "EatRight")
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "landing")
+                    addToBackStack("landing")
+                    commit()
+                }
+            }else if (moduleName.contentEquals("HomeDashboard")){
+                activity?.finish()
             }else{
+                val fragment = HomeBottomTabFragment()
+                val args = Bundle()
                 args.putString("ModuleName", "MoveRight")
-            }
-            fragment.arguments = args
-            requireActivity().supportFragmentManager.beginTransaction().apply {
-                replace(R.id.flFragment, fragment, "landing")
-                addToBackStack("landing")
-                commit()
+                fragment.arguments = args
+                requireActivity().supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.flFragment, fragment, "landing")
+                    addToBackStack("landing")
+                    commit()
+                }
             }
         }
 
@@ -739,8 +760,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             if (breakfastCombinedList.size > 0) {
                 breakfastListLayout.visibility = View.VISIBLE
                 if (breakfastMealNutritionSummary.size > 0) {
-                    calValueTv.text =
-                        breakfastMealNutritionSummary.get(0).calories.toInt().toString()
+                    calValueTv.text = breakfastMealNutritionSummary.get(0).calories.toInt().toString()
                 }
                 breakfastMealLogsAdapter.updateList(breakfastCombinedList, -1, regularRecipeData, snapMealData, false)
             } else {
@@ -921,6 +941,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             args.putString("mealId", snapMealDetail._id)
             args.putString("mealType", "Breakfast")
             args.putString("snapMealLog", "snapMealLog")
+            args.putString("snapImageUrl", snapMealDetail.image_url)
             args.putString("mealName", snapMealDetail.meal_name)
             args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
             fragment.arguments = args
@@ -1056,6 +1077,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             args.putString("mealId", snapMealDetail._id)
             args.putString("mealType", "Morning Snack")
             args.putString("snapMealLog", "snapMealLog")
+            args.putString("snapImageUrl", snapMealDetail.image_url)
             args.putString("mealName", snapMealDetail.meal_name)
             args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
             fragment.arguments = args
@@ -1192,6 +1214,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             args.putString("mealId", snapMealDetail._id)
             args.putString("mealType", "Lunch")
             args.putString("snapMealLog", "snapMealLog")
+            args.putString("snapImageUrl", snapMealDetail.image_url)
             args.putString("mealName", snapMealDetail.meal_name)
             args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
             fragment.arguments = args
@@ -1327,6 +1350,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             args.putString("mealId", snapMealDetail._id)
             args.putString("mealType", "Evening Snacks")
             args.putString("snapMealLog", "snapMealLog")
+            args.putString("snapImageUrl", snapMealDetail.image_url)
             args.putString("mealName", snapMealDetail.meal_name)
             args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
             fragment.arguments = args
@@ -1462,6 +1486,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
             args.putString("mealId", snapMealDetail._id)
             args.putString("mealType", "Dinner")
             args.putString("snapMealLog", "snapMealLog")
+            args.putString("snapImageUrl", snapMealDetail.image_url)
             args.putString("mealName", snapMealDetail.meal_name)
             args.putParcelable("snapDishLocalListModel", snapDishLocalListModel)
             fragment.arguments = args
@@ -1543,7 +1568,7 @@ class YourMealLogsFragment : BaseFragment<FragmentYourMealLogsBinding>(), Delete
                 showLoader(requireView())
             }
         }
-        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+        lifecycleScope.launch(Dispatchers.IO) {
             val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
             val call = ApiClient.apiServiceFastApi.getMealsLogByDate(userId, formattedDate)
             call.enqueue(object : Callback<MealLogDataResponse> {

@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -316,6 +317,11 @@ public class ArticlesDetailActivity extends BaseActivity {
                 public void onClick(View widget) {
                     // Handle the click event and get the position
                     //Toast.makeText(ArticlesDetailActivity.this, "Clicked: " + tocItems.get(position) + " at position: " + position, Toast.LENGTH_SHORT).show();
+                    // Handle the click event and get the position
+                    View targetView = binding.recyclerViewArticle.getLayoutManager().findViewByPosition(position);
+                    if (targetView != null) {
+                        binding.scrollviewarticle.smoothScrollTo(0, targetView.getTop());
+                    }
                 }
 
                 @Override

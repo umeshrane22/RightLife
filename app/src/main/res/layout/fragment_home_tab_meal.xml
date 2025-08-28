@@ -214,6 +214,8 @@
                 android:visibility="gone"
                 android:paddingVertical="8dp"
                 app:flexWrap="wrap"
+                android:clipChildren="false"
+                android:clipToPadding="false"
                 app:justifyContent="flex_start" />
 
             <!-- Log Your Meal Button -->

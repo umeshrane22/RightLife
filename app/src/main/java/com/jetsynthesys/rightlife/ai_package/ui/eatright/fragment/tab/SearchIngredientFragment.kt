@@ -117,7 +117,7 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
             viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    if (searchType.contentEquals("createRecipe")){
+             //       if (searchType.contentEquals("createRecipe")){
                         val fragment = CreateRecipeFragment()
                         val args = Bundle()
                         args.putString("ModuleName", moduleName)
@@ -132,12 +132,12 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
                             addToBackStack("landing")
                             commit()
                         }
-                    }
+       //             }
                 }
             })
 
         backButton.setOnClickListener {
-            if (searchType.contentEquals("createRecipe")){
+        //    if (searchType.contentEquals("createRecipe")){
                 val fragment = CreateRecipeFragment()
                 val args = Bundle()
                 args.putString("ModuleName", moduleName)
@@ -152,7 +152,7 @@ class SearchIngredientFragment : BaseFragment<FragmentSearchDishBinding>() {
                     addToBackStack("landing")
                     commit()
                 }
-            }
+      //      }
         }
 
         dishesViewModel.searchQuery.observe(viewLifecycleOwner) { query ->

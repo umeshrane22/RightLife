@@ -117,10 +117,6 @@ class FatsFragment : BaseFragment<FragmentFatsBinding>() {
         goalLayout = view.findViewById(R.id.goalLayout)
         averageGoalLayout = view.findViewById(R.id.averageGoalLayout)
 
-        // Initial chart setup with sample data
-        //updateChart(getWeekData(), getWeekLabels())
-
-
         // Set default selection to Week
         radioGroup.check(R.id.rbWeek)
          fetchActiveCalories("last_weekly")
@@ -134,7 +130,6 @@ class FatsFragment : BaseFragment<FragmentFatsBinding>() {
                     radioButton.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.black))
                 }
             }
-
             when (checkedId) {
                 R.id.rbWeek -> fetchActiveCalories("last_weekly")
                 R.id.rbMonth -> fetchActiveCalories("last_monthly")
@@ -144,8 +139,6 @@ class FatsFragment : BaseFragment<FragmentFatsBinding>() {
                 }
             }
         }
-        // Handle Radio Button Selection
-
 
         backwardImage.setOnClickListener {
             val selectedId = radioGroup.checkedRadioButtonId
@@ -154,7 +147,6 @@ class FatsFragment : BaseFragment<FragmentFatsBinding>() {
                 val selectedRadioButton = view.findViewById<RadioButton>(selectedId)
                 selectedTab = selectedRadioButton.text.toString()
             }
-
             if (selectedTab.contentEquals("Week")){
                 val dateFormat = SimpleDateFormat("yyyy-MM-dd",  Locale.getDefault())
                 val calendar = Calendar.getInstance()
@@ -343,6 +335,10 @@ class FatsFragment : BaseFragment<FragmentFatsBinding>() {
         barData.barWidth = 0.4f
         barChart.data = barData
         barChart.setFitBars(true)
+        barChart.setScaleEnabled(false)
+        barChart.isDoubleTapToZoomEnabled = false
+        barChart.isHighlightPerTapEnabled = true
+        barChart.isHighlightPerDragEnabled = false
 
         // X-axis label handling
         val combinedLabels = if (entries.size == 30) {
@@ -655,7 +651,7 @@ class FatsFragment : BaseFragment<FragmentFatsBinding>() {
             calendar.add(Calendar.DAY_OF_YEAR, 1)
         }
         val labelsWithEmpty = generateLabeled30DayListWithEmpty(dateList[0])
-        val labels = generateWeeklyLabelsFor30Days(dateList[0])
+        val labels = formatDateList(dateList)
         weeklyLabels.addAll(labelsWithEmpty)
         labelsDate.addAll(labels)
         // Aggregate calories by week
@@ -676,6 +672,19 @@ class FatsFragment : BaseFragment<FragmentFatsBinding>() {
         setLastAverageValue(activeCaloriesResponse, "% Past Month")
         val entries = calorieMap.values.mapIndexed { index, value -> BarEntry(index.toFloat(), value) }
         return Triple(entries, weeklyLabels, labelsDate)
+    }
+
+    private fun formatDateList(dates: List<String>): List<String> {
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("d MMM, yyyy", Locale.getDefault())
+        return dates.mapNotNull { dateStr ->
+            try {
+                val parsedDate = inputFormat.parse(dateStr)
+                parsedDate?.let { outputFormat.format(it) }
+            } catch (e: Exception) {
+                null
+            }
+        }
     }
 
     private fun generateWeeklyLabelsFor30Days(startDateStr: String): List<String> {

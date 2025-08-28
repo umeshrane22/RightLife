@@ -138,6 +138,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
                 val args = Bundle()
                 args.putString("ModuleName", moduleName)
                 args.putString("selectedMealDate", selectedMealDate)
+                args.putString("tabType", "MyRecipe")
                 fragment.arguments = args
                 requireActivity().supportFragmentManager.beginTransaction().apply {
                     replace(R.id.flFragment, fragment, "landing")
@@ -242,6 +243,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
             addedRecipeListLayout.visibility = View.GONE
             saveRecipeLayout.visibility = View.GONE
             continueLayout.visibility = View.VISIBLE
+            etAddName.setText( addedNameTv.text)
             if (etAddName.text.length > 0){
                 continueLayout.isEnabled = true
                 continueLayout.setBackgroundResource(R.drawable.green_meal_bg)
@@ -274,6 +276,7 @@ class CreateRecipeFragment : BaseFragment<FragmentCreateRecipeBinding>() {
             val args = Bundle()
             args.putString("ModuleName", moduleName)
             args.putString("selectedMealDate", selectedMealDate)
+            args.putString("tabType", "MyRecipe")
             fragment.arguments = args
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 replace(R.id.flFragment, fragment, "landing")

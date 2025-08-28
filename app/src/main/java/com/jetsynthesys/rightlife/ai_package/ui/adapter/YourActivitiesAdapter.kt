@@ -365,7 +365,7 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
             }
             "Hiking" -> {
                 // Handle Hiking
-                holder.main_heading_icon.setImageResource(R.drawable.hiking)
+                holder.main_heading_icon.setImageResource(R.drawable.hockey)
             }
             "Hockey" -> {
                 // Handle Hockey
@@ -373,11 +373,11 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
             }
             "HIIT" -> {
                 // Handle HIIT
-                holder.main_heading_icon.setImageResource(R.drawable.hockey)
+                holder.main_heading_icon.setImageResource(R.drawable.hiking)
             }
             "High Intensity Interval Training" -> {
                 // Handle HIIT
-                holder.main_heading_icon.setImageResource(R.drawable.hockey)
+                holder.main_heading_icon.setImageResource(R.drawable.hiking)
             }
             "Kickboxing" -> {
                 // Handle Kickboxing
@@ -440,6 +440,10 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
                 holder.main_heading_icon.setImageResource(R.drawable.squash)
             }
             "Traditional Strength Training" -> {
+                // Handle Traditional Strength Training
+                holder.main_heading_icon.setImageResource(R.drawable.traditional_strength_training)
+            }
+            "Strength Training" -> {
                 // Handle Traditional Strength Training
                 holder.main_heading_icon.setImageResource(R.drawable.traditional_strength_training)
             }
@@ -528,7 +532,10 @@ class YourActivitiesAdapter(private val context: Context, private var dataLists:
                     if (item.workoutType == syncedItem.title && item.duration == syncedItem.duration){
                         cardItem = syncedItem
                         val fragment = WorkoutAnalyticsFragment().apply {
-                            arguments = Bundle().apply { putSerializable("cardItem", cardItem) }
+                            arguments = Bundle().apply {
+                                putString("YourActivity", "YourActivity")
+                                putSerializable("cardItem", cardItem)
+                            }
                         }
                         (context as AppCompatActivity).supportFragmentManager.beginTransaction()
                             .replace(R.id.flFragment, fragment, "workoutAnalysisFragment")

@@ -208,10 +208,10 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/meal_log_title"
+                        android:textColor="@color/black_no_meals"
                         android:text="Today's Macros"
-                        android:textStyle="bold"
-                        android:textSize="16dp"
+                        android:fontFamily="@font/dmsans_semibold"
+                        android:textSize="16sp"
                         android:layout_marginStart="6dp"
                         app:layout_constraintBottom_toBottomOf="@+id/balance_icon"
                         app:layout_constraintStart_toEndOf="@+id/balance_icon"/>
@@ -851,7 +851,7 @@
                 android:background="@color/white"
                 app:cardCornerRadius="10dp"
                 android:paddingBottom="5dp"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
                 android:layout_marginTop="20dp"
@@ -1036,96 +1036,121 @@
                 android:layout_height="wrap_content">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/meal_plan_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="37dp"
-                    android:layout_marginStart="20dp"
+                    android:id="@+id/microsLayoutBtn"
+                    android:layout_width="0dp"
+                    android:layout_height="45dp"
                     android:layout_marginTop="20dp"
-                    android:visibility="gone"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="10dp"
+                    android:visibility="visible"
                     android:background="@drawable/white_meal_date_bg"
                     android:gravity="center"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent">
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/recipes_button"
+                    app:layout_constraintHorizontal_chainStyle="spread"
+                    app:layout_constraintHorizontal_weight="1">
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
+                        android:gravity="center"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent">
 
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:id="@+id/microIcon"
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
                             android:src="@drawable/meal_plan_green_icon"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginEnd="8dp" /> <!-- Space between icon and text -->
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Meal Plan"
-                            android:textColor="@color/dark_green_meal_background"
+                            android:text="Micros"
+                            app:layout_constraintStart_toEndOf="@+id/microIcon"
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:layout_marginStart="10dp"
+                            android:fontFamily="@font/dmsans_semibold"
+                            android:textColor="@color/black_no_meals"
                             android:textSize="16sp" />
 
                         <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:visibility="invisible"
+                            android:layout_marginStart="10dp"
+                            android:visibility="visible"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
                             android:src="@drawable/forward_green_color_meal"
-                            android:layout_marginEnd="8dp" />
-                    </LinearLayout>
+                            />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/recipes_button"
-                    android:layout_width="match_parent"
-                    android:layout_height="37dp"
-                    android:layout_marginEnd="20dp"
-                    android:layout_marginStart="20dp"
-                    android:visibility="visible"
+                    android:layout_width="0dp"
+                    android:layout_height="45dp"
                     android:layout_marginTop="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginStart="10dp"
+                    android:visibility="visible"
                     app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/microsLayoutBtn"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_weight="1"
                     android:background="@drawable/white_meal_date_bg"
                     android:gravity="center">
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginStart="5dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:gravity="center"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent">
 
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:id="@+id/reicpeIcon"
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
                             android:src="@drawable/recipe_green_color_icon"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginEnd="8dp" /> <!-- Space between icon and text -->
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:layout_marginEnd="8dp" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Recipes"
-                            android:textColor="@color/black"
+                            android:fontFamily="@font/dmsans_semibold"
+                            android:textColor="@color/black_no_meals"
+                            app:layout_constraintStart_toEndOf="@+id/reicpeIcon"
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:layout_marginStart="10dp"
                             android:textSize="16sp" />
 
-                    </LinearLayout>
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_marginStart="10dp"
+                            android:src="@drawable/forward_green_color_meal"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
 
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginEnd="15dp"
-                        android:src="@drawable/forward_green_color_meal"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -1191,24 +1216,20 @@
                         <ImageView
                             android:layout_width="26dp"
                             android:layout_height="26dp"
-                            android:text="15"
-                            android:textSize="20sp"
                             android:src="@drawable/today_meal_icon"
-                            android:textStyle="bold"
                             android:layout_gravity="center"
-                            android:textColor="@color/meal_log_title"
                             />
 
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:text="Today’s Meal Log"
-                            android:textSize="18sp"
+                            android:textSize="16sp"
                             android:layout_weight="0.7"
                             android:layout_marginStart="5dp"
-                            android:textStyle="bold"
+                            android:fontFamily="@font/dmsans_semibold"
+                            android:textColor="@color/black_no_meals"
                             android:layout_gravity="center"
-                            android:textColor="@color/meal_log_title"
                             />
                     </LinearLayout>
 
@@ -3273,10 +3294,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="50dp"
                     android:layout_weight="9"
-                    android:textStyle="bold"
                     android:text="Other Recipes You Might Like"
                     android:textSize="18sp"
-                    android:textColor="@color/black"
+                    android:fontFamily="@font/dmsans_bold"
+                    android:textColor="@color/meal_log_title"
                     />
 
                 <ImageView
@@ -3319,15 +3340,16 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="15dp"
                 android:orientation="horizontal">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="50dp"
                     android:layout_weight="9"
                     android:layout_marginTop="4dp"
-                    android:textStyle="bold"
                     android:text="Hydration Tracker"
+                    android:fontFamily="@font/dmsans_bold"
                     android:textSize="18sp"
-                    android:textColor="@color/black"
+                    android:textColor="@color/meal_log_title"
                     />
                 <ImageView
                     android:id="@+id/hydration_tracker_forward_image"
@@ -3581,11 +3603,8 @@
                             android:layout_width="25dp"
                             android:layout_height="25dp"
                             android:layout_weight="1"
-                            android:textSize="20sp"
                             android:src="@drawable/last_logged_icon"
-                            android:textStyle="bold"
                             android:layout_gravity="center"
-                            android:textColor="@color/meal_log_title"
                             />
 
                         <TextView

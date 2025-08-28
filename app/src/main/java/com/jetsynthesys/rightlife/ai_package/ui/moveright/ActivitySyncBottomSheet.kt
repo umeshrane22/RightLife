@@ -33,6 +33,7 @@ import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.gson.Gson
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient
 import com.jetsynthesys.rightlife.ai_package.model.BloodPressure
@@ -243,7 +244,8 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
     }
 
     fun convertUtcToInstant(utcString: String): Instant {
-        return Instant.from(DateTimeFormatter.ISO_INSTANT.parse(utcString))
+        val zonedDateTime = ZonedDateTime.parse(utcString, DateTimeFormatter.ISO_ZONED_DATE_TIME)
+        return zonedDateTime.toInstant()
     }
 
     private suspend fun fetchAllHealthData() {
@@ -259,7 +261,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
         } else ""
         if (syncTime.isEmpty()) {
             endTime = Instant.now()
-            startTime = endTime.minus(Duration.ofDays(7))
+            startTime = endTime.minus(Duration.ofDays(30))
         } else {
             endTime = Instant.now()
             startTime = convertUtcToInstant(syncTime)
@@ -268,53 +270,35 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
         try {
             // Fetch device info
             val grantedPermissions = healthConnectClient.permissionController.getGrantedPermissions()
-            try {
-                if (HealthPermission.getReadPermission(SleepSessionRecord::class) in grantedPermissions) {
-                    val response = healthConnectClient.readRecords(
+
+            if (HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class) in grantedPermissions) {
+                if (syncTime == "") {
+                    val totalCaloroieResponse = mutableListOf<TotalCaloriesBurnedRecord>()
+                    val totalDuration = Duration.between(startTime, endTime)
+                    val chunkDuration = totalDuration.dividedBy(15)
+                    var chunkStart = startTime
+                    repeat(15) { i ->
+                        val chunkEnd = if (i == 14) endTime else chunkStart.plus(chunkDuration)
+                        val response = healthConnectClient.readRecords(
+                            ReadRecordsRequest(
+                                recordType = TotalCaloriesBurnedRecord::class,
+                                timeRangeFilter = TimeRangeFilter.between(chunkStart, chunkEnd)
+                            )
+                        )
+                        totalCaloroieResponse.addAll(response.records)
+                        Log.d("HealthData", "Chunk $i → ${response.records.size} Step records")
+                        chunkStart = chunkEnd
+                    }
+                    totalCaloriesBurnedRecord = totalCaloroieResponse
+                }else{
+                    val caloriesResponse = healthConnectClient.readRecords(
                         ReadRecordsRequest(
-                            recordType = SleepSessionRecord::class,
-                            timeRangeFilter = TimeRangeFilter.after(Instant.EPOCH)
+                            recordType = TotalCaloriesBurnedRecord::class,
+                            timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
                         )
                     )
-                    for (record in response.records) {
-                        val deviceInfo = record.metadata.device
-                        if (deviceInfo != null) {
-                            SharedPreferenceManager.getInstance(requireContext()).saveDeviceName(deviceInfo.manufacturer)
-                            Log.d("Device Info", """ Manufacturer: ${deviceInfo.manufacturer}
-                Model: ${deviceInfo.model} Type: ${deviceInfo.type} """.trimIndent())
-                        } else {
-                            Log.d("Device Info", "No device info available")
-                        }
-                    }
+                    totalCaloriesBurnedRecord = caloriesResponse.records
                 }
-            } catch (e: Exception) {
-                Log.e("HealthData", "Error fetching device info: ${e.message}", e)
-            }
-
-            if (HealthPermission.getReadPermission(StepsRecord::class) in grantedPermissions) {
-                val stepsResponse = healthConnectClient.readRecords(
-                    ReadRecordsRequest(
-                        recordType = StepsRecord::class,
-                        timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
-                    )
-                )
-                if (stepsResponse.records.isEmpty()) {
-                    Log.d("HealthData", "No steps data found")
-                } else {
-                    stepsRecord = stepsResponse.records
-                }
-            } else {
-                stepsRecord = emptyList()
-                Log.d("HealthData", "Steps permission denied")
-            }
-            if (HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class) in grantedPermissions) {
-                val caloriesResponse = healthConnectClient.readRecords(
-                    ReadRecordsRequest(
-                        recordType = TotalCaloriesBurnedRecord::class,
-                        timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
-                    )
-                )
-                totalCaloriesBurnedRecord = caloriesResponse.records
                 // Iterate each record individually
                 totalCaloriesBurnedRecord?.forEach { record ->
                     val burnedCalories = record.energy.inKilocalories
@@ -326,20 +310,71 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                 totalCaloriesBurnedRecord = emptyList()
                 Log.d("HealthData", "Total Calories Burned permission denied")
             }
-            if (HealthPermission.getReadPermission(HeartRateRecord::class) in grantedPermissions) {
-                val response = healthConnectClient.readRecords(
-                    ReadRecordsRequest(
-                        recordType = HeartRateRecord::class,
-                        timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+            if (HealthPermission.getReadPermission(StepsRecord::class) in grantedPermissions) {
+                if (syncTime == "") {
+                    val stepsResponse = mutableListOf<StepsRecord>()
+                    val totalDuration = Duration.between(startTime, endTime)
+                    val chunkDuration = totalDuration.dividedBy(15)
+                    var chunkStart = startTime
+                    repeat(15) { i ->
+                        val chunkEnd = if (i == 14) endTime else chunkStart.plus(chunkDuration)
+                        val response = healthConnectClient.readRecords(
+                            ReadRecordsRequest(
+                                recordType = StepsRecord::class,
+                                timeRangeFilter = TimeRangeFilter.between(chunkStart, chunkEnd)
+                            )
+                        )
+                        stepsResponse.addAll(response.records)
+                        Log.d("HealthData", "Chunk $i → ${response.records.size} Step records")
+                        chunkStart = chunkEnd
+                    }
+                    stepsRecord = stepsResponse
+                }else{
+                    val stepsResponse = healthConnectClient.readRecords(
+                        ReadRecordsRequest(
+                            recordType = StepsRecord::class,
+                            timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                        )
                     )
-                )
-                heartRateRecord = response.records
-                Log.d("HealthData", "Fetched ${heartRateRecord?.size ?: 0} heart rate records")
+                    stepsRecord = stepsResponse.records
+                }
             } else {
+                stepsRecord = emptyList()
+                Log.d("HealthData", "Steps permission denied")
+            }
+            if (HealthPermission.getReadPermission(HeartRateRecord::class) in grantedPermissions) {
+                if (syncTime == "") {
+                    val results = mutableListOf<HeartRateRecord>()
+                    val totalDuration = Duration.between(startTime, endTime)
+                    val chunkDuration = totalDuration.dividedBy(15)
+                    var chunkStart = startTime
+                    repeat(15) { i ->
+                        val chunkEnd = if (i == 14) endTime else chunkStart.plus(chunkDuration)
+                        val response = healthConnectClient.readRecords(
+                            ReadRecordsRequest(
+                                recordType = HeartRateRecord::class,
+                                timeRangeFilter = TimeRangeFilter.between(chunkStart, chunkEnd)
+                            )
+                        )
+                        results.addAll(response.records)
+                        Log.d("HealthData", "Chunk $i → ${results.size} HR records")
+                        chunkStart = chunkEnd
+                    }
+                    heartRateRecord = results
+                }else{
+                    val response = healthConnectClient.readRecords(
+                        ReadRecordsRequest(
+                            recordType = HeartRateRecord::class,
+                            timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
+                        )
+                    )
+                    heartRateRecord = response.records
+                    Log.d("HealthData", "Total HR records fetched: ${response.records.size}")
+                }
+            }else {
                 heartRateRecord = emptyList()
                 Log.d("HealthData", "Heart rate permission denied")
             }
-
             if (HealthPermission.getReadPermission(RestingHeartRateRecord::class) in grantedPermissions) {
                 val restingHRResponse = healthConnectClient.readRecords(
                     ReadRecordsRequest(
@@ -565,6 +600,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                 Log.d("ActivitySyncBottomSheet", "Storing health data")
                 val context: Context = context ?: return@launch
                 val sharedPreferenceManager = SharedPreferenceManager.getInstance(context)
+                val timeZone = ZoneId.systemDefault().id
                 val userId = sharedPreferenceManager.userId ?: ""
                 val deviceName = sharedPreferenceManager.deviceName ?: "samsung"
 
@@ -845,34 +881,86 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                     body_mass = bodyMass,
                     body_fat_percentage = bodyFatPercentage,
                     sleep_stage = sleepStage,
-                    workout = workout
+                    workout = workout,
+                    time_zone = timeZone
                 )
                 Log.d("ActivitySyncBottomSheet", "Sending store health data request for user_id: $userId")
 
-                val response = ApiClient.apiServiceFastApi.storeHealthData(request)
-                if (isAdded) {
-                    withContext(Dispatchers.Main) {
-                        if (response.isSuccessful) {
-                            val todaysTime = Instant.now()
-                           // val syncTime = convertToTargetFormat(todaysTime.toString())
-                            val syncTime = ZonedDateTime.parse(todaysTime.toString(), DateTimeFormatter.ISO_DATE_TIME)
-                            sharedPreferenceManager.saveMoveRightSyncTime(syncTime.toString())
-                            Log.d("ActivitySyncBottomSheet", "Health data stored successfully, syncTime: $syncTime")
-                            Toast.makeText(context, "Health data stored successfully", Toast.LENGTH_SHORT).show()
-                        } else {
-                            Log.e("ActivitySyncBottomSheet", "Error storing data: ${response.code()} - ${response.message()}")
-                            Toast.makeText(context, "Error storing data: ${response.code()}", Toast.LENGTH_SHORT).show()
-                        }
+                val gson = Gson()
+                val allRecords = mutableListOf<Any>()
+                allRecords.addAll(activeEnergyBurned)
+                allRecords.addAll(basalEnergyBurned)
+                allRecords.addAll(distanceWalkingRunning)
+                allRecords.addAll(stepCount)
+                allRecords.addAll(heartRate)
+                allRecords.addAll(heartRateVariability)
+                allRecords.addAll(restingHeartRate)
+                allRecords.addAll(respiratoryRate)
+                allRecords.addAll(oxygenSaturation)
+                allRecords.addAll(bloodPressureSystolic)
+                allRecords.addAll(bloodPressureDiastolic)
+                allRecords.addAll(bodyMass)
+                allRecords.addAll(bodyFatPercentage)
+                allRecords.addAll(sleepStage)
+                allRecords.addAll(workout)
+
+                // Chunk upload variables
+                var currentBatch = mutableListOf<Any>()
+                var currentSize = 0
+                val maxSize = 10 * 1024 * 1024 // 10MB
+
+                suspend fun uploadBatch(batch: List<Any>) {
+                    if (batch.isEmpty()) return
+                    val req = StoreHealthDataRequest(
+                        user_id = userId,
+                        source = "android",
+                        active_energy_burned = batch.filterIsInstance<EnergyBurnedRequest>().filter { it.record_type == "ActiveEnergyBurned" },
+                        basal_energy_burned = batch.filterIsInstance<EnergyBurnedRequest>().filter { it.record_type == "BasalMetabolic" },
+                        distance_walking_running = batch.filterIsInstance<Distance>(),
+                        step_count = batch.filterIsInstance<StepCountRequest>(),
+                        heart_rate = batch.filterIsInstance<HeartRateRequest>().filter { it.record_type == "HeartRate" },
+                        heart_rate_variability_SDNN = batch.filterIsInstance<HeartRateVariabilityRequest>(),
+                        resting_heart_rate = batch.filterIsInstance<HeartRateRequest>().filter { it.record_type == "RestingHeartRate" },
+                        respiratory_rate = batch.filterIsInstance<RespiratoryRate>(),
+                        oxygen_saturation = batch.filterIsInstance<OxygenSaturation>(),
+                        blood_pressure_systolic = batch.filterIsInstance<BloodPressure>().filter { it.record_type == "BloodPressureSystolic" },
+                        blood_pressure_diastolic = batch.filterIsInstance<BloodPressure>().filter { it.record_type == "BloodPressureDiastolic" },
+                        body_mass = batch.filterIsInstance<BodyMass>(),
+                        body_fat_percentage = batch.filterIsInstance<BodyFatPercentage>(),
+                        sleep_stage = batch.filterIsInstance<SleepStageJson>(),
+                        workout = batch.filterIsInstance<WorkoutRequest>(),
+                        time_zone = timeZone
+                    )
+                    val response = ApiClient.apiServiceFastApi.storeHealthData(req)
+                    if (!response.isSuccessful) {
+                        throw Exception("Batch upload failed with code: ${response.code()}")
                     }
                 }
-                Log.d("ActivitySyncBottomSheet", "Health data store completed")
+                // Loop through all records and split into chunks
+                for (record in allRecords) {
+                    val json = gson.toJson(record)
+                    val size = json.toByteArray().size
+                    if (currentSize + size > maxSize) {
+                        uploadBatch(currentBatch)
+                        currentBatch = mutableListOf()
+                        currentSize = 0
+                    }
+                    currentBatch.add(record)
+                    currentSize += size
+                }
+                // Upload remaining batch
+                if (currentBatch.isNotEmpty()) {
+                    uploadBatch(currentBatch)
+                }
+                // ✅ Done, update sync time
+                withContext(Dispatchers.Main) {
+                    val syncTime = ZonedDateTime.now().toString()
+                    SharedPreferenceManager.getInstance(requireContext()).saveMoveRightSyncTime(syncTime)
+                }
             } catch (e: Exception) {
-                if (isAdded) {
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
-                    }
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
-                Log.e("ActivitySyncBottomSheet", "Store error: ${e.message}", e)
             }
         }
     }
@@ -886,6 +974,7 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
             try {
                 val sharedPreferenceManager = SharedPreferenceManager.getInstance(context)
                 val deviceName = sharedPreferenceManager.deviceName ?: "samsung"
+                val timeZone = ZoneId.systemDefault().id
                 val userid = SharedPreferenceManager.getInstance(requireActivity()).userId
                 var activeEnergyBurned : List<EnergyBurnedRequest>? = null
                 if (activeCalorieBurnedRecord!!.isNotEmpty()){
@@ -1135,32 +1224,84 @@ class ActivitySyncBottomSheet : BottomSheetDialogFragment() {
                     body_mass = bodyMass,
                     body_fat_percentage = bodyFatPercentage,
                     sleep_stage = sleepStage,
-                    workout = workout
+                    workout = workout,
+                    time_zone = timeZone
                 )
-                val response = ApiClient.apiServiceFastApi.storeHealthData(request)
-                if (isAdded) {
-                    withContext(Dispatchers.Main) {
-                        if (response.isSuccessful) {
-                            val todaysTime = Instant.now()
-                            // val syncTime = convertToTargetFormat(todaysTime.toString())
-                            val syncTime = ZonedDateTime.parse(todaysTime.toString(), DateTimeFormatter.ISO_DATE_TIME)
-                            sharedPreferenceManager.saveMoveRightSyncTime(syncTime.toString())
-                            Log.d("ActivitySyncBottomSheet", "Health data stored successfully, syncTime: $syncTime")
-                            Toast.makeText(context, "Health data stored successfully", Toast.LENGTH_SHORT).show()
-                        } else {
-                            Log.e("ActivitySyncBottomSheet", "Error storing data: ${response.code()} - ${response.message()}")
-                            Toast.makeText(context, "Error storing data: ${response.code()}", Toast.LENGTH_SHORT).show()
-                        }
+                val gson = Gson()
+                val allRecords = mutableListOf<Any>()
+                allRecords.addAll(activeEnergyBurned)
+                allRecords.addAll(basalEnergyBurned)
+                allRecords.addAll(distanceWalkingRunning)
+                allRecords.addAll(stepCount)
+                allRecords.addAll(heartRate)
+                allRecords.addAll(heartRateVariability)
+                allRecords.addAll(restingHeartRate)
+                allRecords.addAll(respiratoryRate)
+                allRecords.addAll(oxygenSaturation)
+                allRecords.addAll(bloodPressureSystolic)
+                allRecords.addAll(bloodPressureDiastolic)
+                allRecords.addAll(bodyMass)
+                allRecords.addAll(bodyFatPercentage)
+                allRecords.addAll(sleepStage)
+                allRecords.addAll(workout)
+
+                // Chunk upload variables
+                var currentBatch = mutableListOf<Any>()
+                var currentSize = 0
+                val maxSize = 10 * 1024 * 1024 // 10MB
+
+                suspend fun uploadBatch(batch: List<Any>) {
+                    if (batch.isEmpty()) return
+                    val req = StoreHealthDataRequest(
+                        user_id = userid,
+                        source = "android",
+                        active_energy_burned = batch.filterIsInstance<EnergyBurnedRequest>().filter { it.record_type == "ActiveEnergyBurned" },
+                        basal_energy_burned = batch.filterIsInstance<EnergyBurnedRequest>().filter { it.record_type == "BasalMetabolic" },
+                        distance_walking_running = batch.filterIsInstance<Distance>(),
+                        step_count = batch.filterIsInstance<StepCountRequest>(),
+                        heart_rate = batch.filterIsInstance<HeartRateRequest>().filter { it.record_type == "HeartRate" },
+                        heart_rate_variability_SDNN = batch.filterIsInstance<HeartRateVariabilityRequest>(),
+                        resting_heart_rate = batch.filterIsInstance<HeartRateRequest>().filter { it.record_type == "RestingHeartRate" },
+                        respiratory_rate = batch.filterIsInstance<RespiratoryRate>(),
+                        oxygen_saturation = batch.filterIsInstance<OxygenSaturation>(),
+                        blood_pressure_systolic = batch.filterIsInstance<BloodPressure>().filter { it.record_type == "BloodPressureSystolic" },
+                        blood_pressure_diastolic = batch.filterIsInstance<BloodPressure>().filter { it.record_type == "BloodPressureDiastolic" },
+                        body_mass = batch.filterIsInstance<BodyMass>(),
+                        body_fat_percentage = batch.filterIsInstance<BodyFatPercentage>(),
+                        sleep_stage = batch.filterIsInstance<SleepStageJson>(),
+                        workout = batch.filterIsInstance<WorkoutRequest>(),
+                        time_zone = timeZone
+                    )
+                    val response = ApiClient.apiServiceFastApi.storeHealthData(req)
+                    if (!response.isSuccessful) {
+                        throw Exception("Batch upload failed with code: ${response.code()}")
                     }
                 }
-                Log.d("ActivitySyncBottomSheet", "Health data store completed")
+                // Loop through all records and split into chunks
+                for (record in allRecords) {
+                    val json = gson.toJson(record)
+                    val size = json.toByteArray().size
+                    if (currentSize + size > maxSize) {
+                        uploadBatch(currentBatch)
+                        currentBatch = mutableListOf()
+                        currentSize = 0
+                    }
+                    currentBatch.add(record)
+                    currentSize += size
+                }
+                // Upload remaining batch
+                if (currentBatch.isNotEmpty()) {
+                    uploadBatch(currentBatch)
+                }
+                // ✅ Done, update sync time
+                withContext(Dispatchers.Main) {
+                    val syncTime = ZonedDateTime.now().toString()
+                    SharedPreferenceManager.getInstance(requireContext()).saveMoveRightSyncTime(syncTime)
+                }
             } catch (e: Exception) {
-                if (isAdded) {
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
-                    }
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(requireContext(), "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
-                Log.e("ActivitySyncBottomSheet", "Store error: ${e.message}", e)
             }
         }
     }

@@ -11,7 +11,9 @@ data class SnapMealLogRequest(
     val is_save: Boolean?,
     val is_snapped: Boolean?,
     val date: String?,
-    val dish: List<SnapDish>
+    val dish: List<SnapDish>,
+    val image_url: String,
+    val isSnapMealLogSelect : Boolean = false
 ):Parcelable
 
 @Parcelize

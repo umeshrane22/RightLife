@@ -183,7 +183,6 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
                     addToBackStack(null)
                     commit()
                 }
-
             }
         })
         val backBtn = view.findViewById<ImageView>(R.id.img_back)
@@ -218,7 +217,6 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
     @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
     private fun setupListeners() {
       /*  radioGroup.setOnCheckedChangeListener { _, checkedId ->
-
         }*/
 
         btnPrevious.setOnClickListener {
@@ -263,14 +261,10 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
     private fun loadWeekData() {
         val endOfWeek = currentDateWeek
         val startOfWeek = endOfWeek.minusDays(6)
-
         val formatter = DateTimeFormatter.ofPattern("d MMM")
         dateRangeText.text = "${startOfWeek.format(formatter)} - ${endOfWeek.format(formatter)}, ${currentDateWeek.year}"
-
         val formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-
         fetchSleepData(endOfWeek.format(formatter1),"weekly")
-
     }
 
     private fun loadMonthData() {
@@ -278,37 +272,17 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
         val startOfMonth = endOfMonth.minusMonths(1)
         val formatter = DateTimeFormatter.ofPattern("d MMM")
         dateRangeText.text = "${startOfMonth.format(formatter)} - ${endOfMonth.format(formatter)}, ${currentDateMonth.year}"
-
         val formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-
         fetchSleepData(endOfMonth.format(formatter1),"monthly")
     }
 
     private fun loadSixMonthsData() {
         val startDate = getSixMonthsEarlierDate()
         val endDate = getTodayDate()
-
         val formatter = DateTimeFormatter.ofPattern("MMM yyyy")
         dateRangeText.text = "${startDate.format(formatter)} - ${endDate.format(formatter)}"
-
         val formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-
         fetchSleepData(endDate.format(formatter1),"monthly")
-    }
-
-    private fun loadStepData(): SleepJson {
-        //D:\Client Project\RightLifeAiApp28March\RightLife\app\src\main\assets\fit\alldata\derived_com.google.heart_rate.bpm_com.google.a(1).json
-        val json = context?.assets?.open("assets/fit/alldata/derived_com.google.sleep.segment_com.google.an.json")?.bufferedReader().use { it?.readText() }
-        return Gson().fromJson(json, object : TypeToken<SleepJson>() {}.type)
-//        val json = context?.assets.open("derived_com.google.active_minutes_com.google.a.json").readText()
-//
-
-//        val jsonString = json/* load JSON file as string */
-//        val activeMinutesData = gson.fromJson(jsonString, HeartRateFitData::class.java)
-//
-//     //   D:\Client Project\RightLifeAiApp28March\RightLife\app\src\main\assets\Fit\All data\derived_com.google.active_minutes_com.google.a(4).json
-
-//
     }
 
     private fun fetchSleepData(mEndDate: String,period: String) {
@@ -395,13 +369,10 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
         // Parse the UTC date-time string
         val utcFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
         val utcLocalDateTime = LocalDateTime.parse(utcTimeString, utcFormatter)
-
         // Attach UTC time zone
         val utcZoned = utcLocalDateTime.atZone(ZoneId.of("UTC"))
-
         // Convert to local time zone
         val localZoned = utcZoned.withZoneSameInstant(ZoneId.systemDefault())
-
         // Format the local time as desired
         val outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
         return localZoned.format(outputFormatter)
@@ -414,31 +385,24 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
         return dateTime.format(outputFormat)
     }
 
-
     fun convertTo12HourLocalTime(input: String): String {
         val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
         val localDateTime = LocalDateTime.parse(input, inputFormatter)
-
         val utcZoned = localDateTime.atZone(ZoneId.of("UTC"))
         val localZoned = utcZoned.withZoneSameInstant(ZoneId.systemDefault())
-
         val outputFormatter = DateTimeFormatter.ofPattern("hh:mm a") // 12-hour with AM/PM
         return localZoned.format(outputFormatter)
     }
 
-
     private fun formatUtcToLocal12HourTime(utcDateTime: String): String {
         val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
         val utcLocalDateTime = LocalDateTime.parse(utcDateTime, inputFormatter)
-
         val utcZoned = utcLocalDateTime.atZone(ZoneId.of("UTC"))
         val localZoned = utcZoned.withZoneSameInstant(ZoneId.systemDefault())
-
         // Output in 12-hour time format: 07:57 PM
         val outputFormatter = DateTimeFormatter.ofPattern("hh:mm a")
         return localZoned.format(outputFormatter)
     }
-
 
     fun convertTo12HourFormat(datetimeStr: String): String {
         val inputFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
@@ -488,256 +452,7 @@ class SleepConsistencyFragment : BaseFragment<FragmentSleepConsistencyBinding>()
             commit()
         }
     }
-
 }
-
-/*class SleepGraphView @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
-) : View(context, attrs, defStyleAttr) {
-
-    private val sleepData = mutableListOf<SleepEntry>()
-
-    *//** ---------- paints ---------- *//*
-    private val gridPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#E5E5E5")
-        strokeWidth = resources.displayMetrics.density          // 1 dp
-    }
-
-    private val barPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#70A1FF")
-        style = Paint.Style.FILL
-    }
-
-    private val lastBarPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#007BFF")
-        style = Paint.Style.FILL
-    }
-
-    private val axisTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#7A7A7A")
-        textSize = 12f * resources.displayMetrics.scaledDensity
-        textAlign = Paint.Align.CENTER
-    }
-
-    private val hourTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#9B9B9B")
-        textSize = 11f * resources.displayMetrics.scaledDensity
-        textAlign = Paint.Align.LEFT
-    }
-
-    private val weekDividerPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#E5E5E5")
-        strokeWidth = resources.displayMetrics.density
-    }
-
-    private val todayDashPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.parseColor("#9B9B9B")
-        strokeWidth = resources.displayMetrics.density
-        pathEffect = DashPathEffect(floatArrayOf(8f, 8f), 0f)
-    }
-
-    *//** ---------- public API ---------- *//*
-    fun setSleepData(data: List<SleepEntry>) {
-        sleepData.clear()
-        sleepData.addAll(data.sortedBy { it.getStartLocalDateTime() }) // just in case
-        invalidate()
-    }
-
-    *//** ---------- drawing ---------- *//*
-    override fun onDraw(canvas: Canvas) {
-        super.onDraw(canvas)
-
-        if (sleepData.isEmpty()) return
-
-        if (sleepData.size <= 8) {
-            drawWeek(canvas)
-        } else {
-            drawMonth(canvas)
-        }
-    }
-
-    *//** ============== WEEK GRAPH (≤ 7 entries) ============== *//*
-    private fun drawWeek(canvas: Canvas) {
-        val leftPad = 18f * resources.displayMetrics.density       // space for AM/PM
-        val bottomPad = 40f * resources.displayMetrics.density
-        val topPad = 12f * resources.displayMetrics.density
-
-        val chartW = width - leftPad
-        val chartH = height - bottomPad - topPad
-
-        // 12-hour window: 8 pm to 8 am next day (20->8)
-        val hourWindow = 12
-        val hourStep = 2                                             // grid every 2 h
-        val hoursToShow = (0..hourWindow).step(hourStep).toList()
-
-        *//** ---- horizontal hour grid ---- *//*
-        hoursToShow.forEach { step ->
-            val y = topPad + (chartH / hourWindow) * step
-            canvas.drawLine(leftPad, y, width.toFloat(), y, gridPaint)
-
-            val labelHour24 = (20 + step) % 24
-            val displayHour = when {
-                labelHour24 == 0 -> 12
-                labelHour24 > 12 -> labelHour24 - 12
-                else -> labelHour24
-            }
-            val ampm = if (labelHour24 < 12) "am" else "pm"
-            canvas.drawText(
-                " $displayHour",
-                4f,
-                y + hourTextPaint.textSize / 3f,
-                hourTextPaint
-            )
-            canvas.drawText(
-                ampm,
-                4f,
-                y + hourTextPaint.textSize * 1.4f,
-                hourTextPaint
-            )
-        }
-
-        *//** ---- bars ---- *//*
-        val dayWidth = chartW / sleepData.size
-        val barWidth = dayWidth * .6f
-        val radius = 12f * resources.displayMetrics.density
-
-        sleepData.forEachIndexed { idx, entry ->
-            val start = entry.getStartLocalDateTime()
-            val barLeft = leftPad + dayWidth * idx + (dayWidth - barWidth) / 2f
-            val startHourFrac = ((start.hour + start.minute / 60f) - 20f)
-                .let { if (it < 0f) it + 24f else it }      // shift to window origin
-            val topY = topPad + chartH / hourWindow * startHourFrac
-            val bottomY = topY + chartH / hourWindow * entry.value
-
-            val paint = if (idx == sleepData.lastIndex) lastBarPaint else barPaint
-            canvas.drawRoundRect(
-                barLeft,
-                topY,
-                barLeft + barWidth,
-                bottomY,
-                radius,
-                radius,
-                paint
-            )
-
-            // ---- day & date labels ----
-            val topLbl = start.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())
-            val btmLbl = start.format(DateTimeFormatter.ofPattern("d MMM"))
-            val cx = barLeft + barWidth / 2f
-            canvas.drawText(topLbl, cx, height - bottomPad / 1.6f, axisTextPaint)
-            canvas.drawText(btmLbl, cx, height - 4f, axisTextPaint)
-        }
-    }
-
-    *//** ============== MONTH GRAPH (> 7 entries) ============== *//*
-    private fun drawMonth(canvas: Canvas) {
-        val leftPad  = 18f * resources.displayMetrics.density   // give the labels room
-        val topPad   = 12f * resources.displayMetrics.density
-        val bottomPad= 36f * resources.displayMetrics.density
-
-        val chartW   = width  - leftPad
-        val chartH   = height - topPad - bottomPad
-
-        // 20:00 → 08:00 window (= 12 h)
-        val hourWindow = 12
-        val hourStep   = 2
-        val hoursToShow = (0..hourWindow).step(hourStep)
-
-        *//* ── horizontal grid + Y-axis labels ───────────────── *//*
-        hoursToShow.forEach { step ->
-            val y = topPad + chartH / hourWindow * step
-            // grid line
-            canvas.drawLine(leftPad, y, width.toFloat(), y, gridPaint)
-
-            // hour label (two lines)
-            val hour24 = (20 + step) % 24
-            val hour12 = when {
-                hour24 == 0 -> 12
-                hour24 > 12 -> hour24 - 12
-                else        -> hour24
-            }
-            val ampm = if (hour24 < 12) "am" else "pm"
-
-            canvas.drawText("$hour12", 4f, y + hourTextPaint.textSize / 3, hourTextPaint)
-            canvas.drawText(ampm,     4f, y + hourTextPaint.textSize * 1.4f, hourTextPaint)
-        }
-
-        *//** ---- vertical week guides ---- *//*
-        val totalDays = sleepData.size
-        val weekCount = (totalDays + 6) / 7                     // ceiling
-        val groupGap = 8f * resources.displayMetrics.density
-        val dayWidth = (chartW - groupGap * (weekCount - 1)) / totalDays
-        val barWidth = dayWidth * .5f
-        val radius = 8f * resources.displayMetrics.density
-
-        repeat(weekCount) { wk ->
-            if (wk > 0) {                                       // skip leftmost
-                val x = leftPad + (wk * 7) * dayWidth + (wk - 0.5f) * groupGap
-                canvas.drawLine(x, topPad, x, topPad + chartH, weekDividerPaint)
-            }
-        }
-
-        *//** ---- bars ---- *//*
-        sleepData.forEachIndexed { idx, entry ->
-            val weekIdx = idx / 7
-            val barLeft = leftPad +
-                    idx * dayWidth +
-                    weekIdx * groupGap +
-                    (dayWidth - barWidth) / 2f
-
-            val start = entry.getStartLocalDateTime()
-            val startHourFrac = ((start.hour + start.minute / 60f) - 20f)
-                .let { if (it < 0f) it + 24f else it }
-            val topY = topPad + chartH / hourWindow * startHourFrac
-            val bottomY = topY + chartH / hourWindow * entry.value
-
-            val paint = if (idx == sleepData.lastIndex) lastBarPaint else barPaint
-            canvas.drawRoundRect(
-                barLeft,
-                topY,
-                barLeft + barWidth,
-                bottomY,
-                radius,
-                radius,
-                paint
-            )
-        }
-
-        *//** ---- dashed line on newest entry ---- *//*
-        sleepData.lastOrNull()?.let { last ->
-            val lastIdx = sleepData.lastIndex
-            val weekIdx = lastIdx / 7
-            val x = leftPad +
-                    lastIdx * dayWidth +
-                    weekIdx * groupGap +
-                    barWidth / 2f + (dayWidth - barWidth) / 2f
-            canvas.drawLine(x, topPad, x, topPad + chartH, todayDashPaint)
-        }
-
-        *//** ---- week range labels ---- *//*
-        val textYTop = height - bottomPad / 1.6f
-        val textYBottom = height - 4f
-        repeat(weekCount) { wk ->
-            val firstIdx = wk * 7
-            val lastIdx = minOf(firstIdx + 6, totalDays - 1)
-            val firstDate = sleepData[firstIdx].getStartLocalDateTime().toLocalDate()
-            val lastDate = sleepData[lastIdx].getStartLocalDateTime().toLocalDate()
-            val rangeLabel = "${firstDate.dayOfMonth}-${lastDate.dayOfMonth}"
-            val monthLabel = firstDate.month.getDisplayName(TextStyle.SHORT, Locale.getDefault())
-
-            // centre under this block of 7
-            val blockStartX = leftPad + firstIdx * dayWidth + wk * groupGap
-            val blockEndX =
-                leftPad + (lastIdx + 1) * dayWidth + wk * groupGap + (groupGap.takeIf { wk < weekCount - 1 } ?: 0f)
-            val cx = (blockStartX + blockEndX) / 2f
-
-            canvas.drawText(rangeLabel, cx, textYTop, axisTextPaint)
-            canvas.drawText(monthLabel, cx, textYBottom, axisTextPaint)
-        }
-    }
-}*/
 
 fun interface OnBarClickListener {
     fun onBarClick(entry: SleepEntry)
@@ -807,8 +522,11 @@ class SleepGraphView @JvmOverloads constructor(
 
         entries.forEachIndexed { i, e ->
             val left = leftPad + i * slotW + (slotW - barW) / 2
-            val topY = topPad + chartH / 12f * startFrac(e)
-            val botY = min(topY + chartH / 12f * e.durationHrs, topPad + chartH)
+            val start = startFrac(e)
+            val duration = e.durationHrs
+
+            val topY = topPad + chartH / 16f * start
+            val botY = min(topY + chartH / 16f * duration, topPad + chartH)
           //  val paint = if (i == entries.lastIndex) lastBarPaint else barPaint
             val paint = when {
                 e == selectedEntry     -> selectedBarPaint   // NEW
@@ -849,8 +567,11 @@ class SleepGraphView @JvmOverloads constructor(
         entries.forEachIndexed { i, e ->
             val wk   = i / 7
             val left = leftPad + i * dayW + wk * gap + (dayW - barW) / 2
-            val topY = topPad + chartH / 12f * startFrac(e)
-            val botY = min(topY + chartH / 12f * e.durationHrs, topPad + chartH)
+            val start = startFrac(e)
+            val duration = e.durationHrs
+
+            val topY = topPad + chartH / 16f * start
+            val botY = min(topY + chartH / 16f * duration, topPad + chartH)
          //   val paint = if (i == entries.lastIndex) lastBarPaint else barPaint
             val paint = when {
                 e == selectedEntry     -> selectedBarPaint   // NEW
@@ -889,15 +610,19 @@ class SleepGraphView @JvmOverloads constructor(
 
     /* ───────── helper: hour grid + AM/PM labels ─────────── */
     private fun drawHourGrid(c: Canvas, chartH: Float) {
-        for (step in 0..12 step 2) {
-            val y = topPad + chartH / 12f * step
+        for (step in 0..16 step 2) {
+            val y = topPad + chartH / 16f * step  // Now spans full 16 hours
+
+            // Draw grid line
             c.drawLine(leftPad, y, width.toFloat(), y, gridPaint)
 
+            // Compute and draw time label correctly
             val h24 = (20 + step) % 24
             val h12 = if (h24 == 0) 12 else if (h24 > 12) h24 - 12 else h24
-            val ampm= if (h24 < 12) "am" else "pm"
-            c.drawText("$h12", dp(4f), y + hourPaint.textSize / 3,   hourPaint)
-            c.drawText(ampm,   dp(4f), y + hourPaint.textSize * 1.4f, hourPaint)
+            val ampm = if (h24 < 12) "am" else "pm"
+
+            c.drawText("$h12", dp(4f), y + hourPaint.textSize / 3, hourPaint)
+            c.drawText(ampm, dp(4f), y + hourPaint.textSize * 1.4f, hourPaint)
         }
     }
 
@@ -907,12 +632,11 @@ class SleepGraphView @JvmOverloads constructor(
         val minutesOfDay =
             e.startLocal.hour * 60 +
                     e.startLocal.minute +
-                    e.startLocal.second / 60f          // keep the fraction for :30, :45 …
+                    e.startLocal.second / 60f
 
-        // 20 : 00 is the chart’s origin (= 1 200 minutes)
-        val offsetMin = (minutesOfDay - 20 * 60 + 24 * 60) % (12 * 60)
-        // convert back to hours as a float → 0‥11.99
-        return offsetMin / 60f
+        // Offset from 20:00 (8 PM)
+        val offsetMin = (minutesOfDay - 20 * 60 + 24 * 60) % (24 * 60)
+        return offsetMin / 60f  // Ranges from 0.0 (8 PM) to 16.0 (12 PM)
     }
 
     /* ───────── TOUCH HANDLING ───────── */
@@ -957,8 +681,6 @@ class SleepGraphView @JvmOverloads constructor(
         val hrs = dur.toHours()
         val mins = dur.minusHours(hrs).toMinutes()
         //val msg = "$dateStr · ${hrs}hr ${mins}mins"
-
-
     }
 
     /* px helpers */
@@ -1002,54 +724,14 @@ data class SleepEntry(
 
             val fixedend = endutcIso.takeIf { it.endsWith('Z') || it.contains('+') || it.contains('-') }
                 ?: "${endutcIso}Z"
-
             val instantend: Instant = runCatching { Instant.parse(fixedend) }
                 .getOrElse {
                     // fallback: parse as OffsetDateTime without offset → add UTC offset
                     val noZone = LocalDateTime.parse(endutcIso)
                     noZone.toInstant(ZoneOffset.UTC)
                 }
-
             val localend = instantend.atZone(ZoneId.systemDefault()).toLocalDateTime()
             return SleepEntry(local,localend, duration.toFloat())
         }
     }
 }
-
-/*data class SleepEntry(val start: LocalDateTime, val durationHrs: Float          // e.g. 6.75
-) {
-    companion object {
-        fun fromIso(startIso: String, duration: Double) =
-            SleepEntry(LocalDateTime.parse(startIso), duration.toFloat())
-    }
-}*/
-
-/*data class SleepEntry(val startDatetime: String, val endDatetime: String, val value: Float) {
-    fun getStartLocalDateTime(): LocalDateTime {
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
-        return LocalDateTime.parse(startDatetime, formatter)
-    }
-
-    fun getEndLocalDateTime(): LocalDateTime {
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
-        return LocalDateTime.parse(endDatetime, formatter)
-    }
-
-    companion object {
-        fun fromJson(json: String): List<SleepEntry> {
-            val entries = mutableListOf<SleepEntry>()
-            val jsonArray = org.json.JSONArray(json)
-
-            for (i in 0 until jsonArray.length()) {
-                val obj = jsonArray.getJSONObject(i)
-
-                val startDateTime = obj.getString("start_datetime")
-                val endDateTime = obj.getString("end_datetime")
-                val value = obj.getDouble("value").toFloat()
-
-                entries.add(SleepEntry(startDateTime, endDateTime, value))
-            }
-            return entries
-        }
-    }
-}*/

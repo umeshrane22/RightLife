@@ -434,7 +434,7 @@ class CarouselAdapter(
                 }
                 "Hiking" -> {
                     // Handle Hiking
-                    workout_function_icon.setImageResource(R.drawable.hiking)
+                    workout_function_icon.setImageResource(R.drawable.hockey)
                 }
                 "Hockey" -> {
                     // Handle Hockey
@@ -442,11 +442,11 @@ class CarouselAdapter(
                 }
                 "HIIT" -> {
                     // Handle HIIT
-                    workout_function_icon.setImageResource(R.drawable.hockey)
+                    workout_function_icon.setImageResource(R.drawable.hiking)
                 }
                 "High Intensity Interval Training" -> {
                     // Handle HIIT
-                    workout_function_icon.setImageResource(R.drawable.hockey)
+                    workout_function_icon.setImageResource(R.drawable.hiking)
                 }
                 "Kickboxing" -> {
                     // Handle Kickboxing
@@ -509,6 +509,10 @@ class CarouselAdapter(
                     workout_function_icon.setImageResource(R.drawable.squash)
                 }
                 "Traditional Strength Training" -> {
+                    // Handle Traditional Strength Training
+                    workout_function_icon.setImageResource(R.drawable.traditional_strength_training)
+                }
+                "Strength Training" -> {
                     // Handle Traditional Strength Training
                     workout_function_icon.setImageResource(R.drawable.traditional_strength_training)
                 }

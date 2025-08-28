@@ -1,18 +1,13 @@
 package com.jetsynthesys.rightlife.ai_package.ui.eatright.fragment
 
-import android.Manifest
 import android.animation.ValueAnimator
 import android.content.Intent
 import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.Animation
-import android.view.animation.LinearInterpolator
-import android.view.animation.RotateAnimation
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -30,7 +25,6 @@ import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SnapHelper
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.card.MaterialCardView
 import com.jetsynthesys.rightlife.R
 import com.jetsynthesys.rightlife.ai_package.PermissionManager
 import com.jetsynthesys.rightlife.ai_package.base.BaseFragment
@@ -157,6 +151,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
     private var loadingOverlay : FrameLayout? = null
     private var waterIntakeValue : Float = 0f
     private lateinit var rightLifeReportCard : FrameLayout
+    private lateinit var microsLayoutBtn : ConstraintLayout
     private lateinit var permissionManager: PermissionManager
     private lateinit var userData: Userdata
     private lateinit var userDataResponse: UserProfileResponse
@@ -239,6 +234,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
         logMealNoDataButton = view.findViewById(R.id.logMealNoDataButton)
         snapMealNoData = view.findViewById(R.id.lyt_snap_meal_no_data)
         microIc = view.findViewById(R.id.microIc)
+        microsLayoutBtn = view.findViewById(R.id.microsLayoutBtn)
         energyTypeTv = view.findViewById(R.id.energyTypeTv)
         microValueTv = view.findViewById(R.id.microValueTv)
         unitMicroTv = view.findViewById(R.id.unitMicroTv)
@@ -383,7 +379,6 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
             }
         }
 
-
         snapMealNoData.setOnClickListener {
             permissionManager = PermissionManager(
                 activity = requireActivity(), // or just `this` in Activity
@@ -419,7 +414,7 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
             }
         }
 
-        microIc.setOnClickListener {
+        microsLayoutBtn.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction().apply {
                 val mealSearchFragment = MicrosTabFragment()
                 val args = Bundle()
@@ -578,9 +573,9 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
 
     private fun getMealLandingSummary(halfCurveProgressBar: HalfCurveProgressBar) {
         if (isAdded  && view != null){
-            requireActivity().runOnUiThread {
+          //  requireActivity().runOnUiThread {
                 showLoader(requireView())
-            }
+         //   }
         }
         val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
         val currentDateTime = LocalDateTime.now()
@@ -591,9 +586,9 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
             override fun onResponse(call: Call<EatRightLandingPageDataResponse>, response: Response<EatRightLandingPageDataResponse>) {
                 if (response.isSuccessful) {
                     if (isAdded  && view != null){
-                        requireActivity().runOnUiThread {
+                     //   requireActivity().runOnUiThread {
                             dismissLoader(requireView())
-                        }
+                     //   }
                     }
                     landingPageResponse = response.body()!!
                     setMealSummaryData(landingPageResponse, halfCurveProgressBar)
@@ -602,9 +597,9 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
                     Log.e("Error", "Response not successful: ${response.errorBody()?.string()}")
                     Toast.makeText(activity, "Something went wrong", Toast.LENGTH_SHORT).show()
                     if (isAdded  && view != null){
-                        requireActivity().runOnUiThread {
+                     //   requireActivity().runOnUiThread {
                             dismissLoader(requireView())
-                        }
+                  //      }
                     }
                 }
             }
@@ -612,9 +607,9 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
                 Log.e("Error", "API call failed: ${t.message}")
                 Toast.makeText(activity, "Failure", Toast.LENGTH_SHORT).show()
                 if (isAdded  && view != null){
-                    requireActivity().runOnUiThread {
+                  //  requireActivity().runOnUiThread {
                         dismissLoader(requireView())
-                    }
+//}
                 }
             }
         })
@@ -745,21 +740,44 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
         weightLastLogDateTv.text = convertedDate
 
         if (landingPageResponse.total_protein.toInt() >  landingPageResponse.max_protein.toInt()) {
-            tvProteinValue.setTextColor(ContextCompat.getColor(requireContext(), R.color.macros_high_color))
+           // tvProteinValue.setTextColor(ContextCompat.getColor(requireContext(), R.color.macros_high_color))
+            val color = context?.let { ContextCompat.getColor(it, R.color.macros_high_color) }
+            if (color != null) {
+                tvProteinValue.setTextColor(color)
+            }
         }else{
-            tvProteinValue.setTextColor(ContextCompat.getColor(requireContext(), R.color.black_no_meals))
+            val color = context?.let { ContextCompat.getColor(it, R.color.black_no_meals) }
+            if (color != null) {
+                tvProteinValue.setTextColor(color)
+            }
         }
 
         if (landingPageResponse.total_carbs.toInt() >  landingPageResponse.max_carbs.toInt()) {
-            tvCabsValue.setTextColor(ContextCompat.getColor(requireContext(), R.color.macros_high_color))
+           // tvCabsValue.setTextColor(ContextCompat.getColor(requireContext(), R.color.macros_high_color))
+            val color = context?.let { ContextCompat.getColor(it, R.color.macros_high_color) }
+            if (color != null) {
+                tvCabsValue.setTextColor(color)
+            }
         }else{
-            tvCabsValue.setTextColor(ContextCompat.getColor(requireContext(), R.color.black_no_meals))
+          //  tvCabsValue.setTextColor(ContextCompat.getColor(requireContext(), R.color.black_no_meals))
+            val color = context?.let { ContextCompat.getColor(it, R.color.black_no_meals) }
+            if (color != null) {
+                tvCabsValue.setTextColor(color)
+            }
         }
 
         if (landingPageResponse.total_fat.toInt() >  landingPageResponse.max_fat.toInt()) {
-            tvFatsValue.setTextColor(ContextCompat.getColor(requireContext(), R.color.macros_high_color))
+            val color = context?.let { ContextCompat.getColor(it, R.color.macros_high_color) }
+            if (color != null) {
+                tvFatsValue.setTextColor(color)
+            }
+          //  tvFatsValue.setTextColor(ContextCompat.getColor(requireContext(), R.color.macros_high_color))
         }else{
-            tvFatsValue.setTextColor(ContextCompat.getColor(requireContext(), R.color.black_no_meals))
+          //  tvFatsValue.setTextColor(ContextCompat.getColor(requireContext(), R.color.black_no_meals))
+            val color = context?.let { ContextCompat.getColor(it, R.color.black_no_meals) }
+            if (color != null) {
+                tvFatsValue.setTextColor(color)
+            }
         }
 
       //  tvCaloriesValue.text = landingPageResponse.total_calories.toString()
@@ -770,16 +788,17 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
         proteinUnitTv.text = " / " + landingPageResponse.max_protein.toInt().toString() +" g"
         fatsUnitTv.text = " / " + landingPageResponse.max_fat.toInt().toString() +" g"
 
-        SharedPreferenceManager.getInstance(requireActivity())
+        val safeActivity = activity ?: return  // if not attached, just skip
+        SharedPreferenceManager.getInstance(safeActivity)
             .setMaxCalories(landingPageResponse.max_calories.toInt())
 
-        SharedPreferenceManager.getInstance(requireActivity())
+        SharedPreferenceManager.getInstance(safeActivity)
             .setMaxCarbs(landingPageResponse.max_carbs.toInt())
 
-        SharedPreferenceManager.getInstance(requireActivity())
+        SharedPreferenceManager.getInstance(safeActivity)
             .setMaxProtein(landingPageResponse.max_protein.toInt())
 
-        SharedPreferenceManager.getInstance(requireActivity())
+        SharedPreferenceManager.getInstance(safeActivity)
             .setMaxFats(landingPageResponse.max_fat.toInt())
 
         cabsProgressBar.max = landingPageResponse.max_carbs.toInt()
@@ -1164,7 +1183,9 @@ class EatRightLandingFragment : BaseFragment<FragmentEatRightLandingBinding>(), 
 
     private fun getMealsLogList() {
        // LoaderUtil.showLoader(requireView())
-        val userId = SharedPreferenceManager.getInstance(requireActivity()).userId
+        val safeActivity = activity ?: return  // if not attached, just skip
+
+        val userId = SharedPreferenceManager.getInstance(safeActivity).userId
         val currentDateTime = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val formattedDate = currentDateTime.format(formatter)
