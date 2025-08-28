@@ -49,6 +49,11 @@ class WorkoutAnalyticsFragment : BaseFragment<FragmentWorkoutAnalyticsBinding>()
     private lateinit var customProgressBarFatBurn: FatBurnStrippedProgressBar
     private lateinit var transparentOverlayFatBurn: View
     private lateinit var light_percentage_value: TextView
+    private lateinit var peak_bpm_text: TextView
+    private lateinit var cardio_bpm_text: TextView
+    private lateinit var fat_burn_bpm_text: TextView
+    private lateinit var light_bpm_text: TextView
+    private lateinit var resting_bpm_text: TextView
     private lateinit var resting_percentage_value: TextView
     private lateinit var yourHeartRateZone : ImageView
     private lateinit var light_time_value: TextView
@@ -93,6 +98,11 @@ class WorkoutAnalyticsFragment : BaseFragment<FragmentWorkoutAnalyticsBinding>()
         workOutsAnalyticsBackButton = view.findViewById(R.id.back_button)
         light_percentage_value = view.findViewById(R.id.light_percentage_value)
         light_time_value = view.findViewById(R.id.light_time_value)
+        peak_bpm_text = view.findViewById(R.id.peak_bpm_text)
+        cardio_bpm_text = view.findViewById(R.id.cardio_bpm_text)
+        fat_burn_bpm_text = view.findViewById(R.id.fat_burn_bpm_text)
+        light_bpm_text = view.findViewById(R.id.light_bpm_text)
+        resting_bpm_text = view.findViewById(R.id.resting_bpm_text)
         resting_percentage_value = view.findViewById(R.id.resting_text_percentage)
         resting_time_value = view.findViewById(R.id.resting_time_value)
         fat_burn_time_value = view.findViewById(R.id.fat_burn_time_value)
@@ -400,6 +410,22 @@ class WorkoutAnalyticsFragment : BaseFragment<FragmentWorkoutAnalyticsBinding>()
             light_time_value.text = "${item.heartRateZoneMinutes.lightZone}min"
             resting_time_value.text = "${item.heartRateZoneMinutes.belowLight}min"
             resting_text_percentage.text = "${item.heartRateZonePercentages.belowLight}%"
+            val bpmValue = item.heartRateZones.lightZone.firstOrNull()
+            resting_bpm_text.text = bpmValue?.let { "< $it BPM" } ?: "--"
+            val lightzoneend = item.heartRateZones.lightZone[1]
+            light_bpm_text.text = "${bpmValue}-${lightzoneend} BPM"
+            val firstFat = item.heartRateZones.fatBurnZone[0]
+            val fatSecond = item.heartRateZones.fatBurnZone[1]
+            fat_burn_bpm_text.text = "${firstFat}-${fatSecond} BPM"
+            val cardioFirst = item.heartRateZones.cardioZone[0]
+            val cardioSecond = item.heartRateZones.cardioZone[1]
+            cardio_bpm_text.text = "${cardioFirst}-${cardioSecond} BPM"
+            val peakFirst = item.heartRateZones.peakZone[0]
+            val peakSecond = item.heartRateZones.peakZone[1]
+            peak_bpm_text.text = "${peakFirst}-${peakSecond} BPM"
+
+
+
 
             // Set progress bar percentages and overlay widths from heartRateZonePercentages
             customProgressBar.post {
@@ -466,6 +492,7 @@ class WorkoutAnalyticsFragment : BaseFragment<FragmentWorkoutAnalyticsBinding>()
                 dataPoints.add(HRDataPoint(millis, bpm))
             }
             heartRateGraph.setData(dataPoints)
+            heartRateGraph.setWorkoutData(item)
         } ?: run {
             // Handle the case where no CardItem is provided
             view.findViewById<TextView>(R.id.functional_strength_text).text = "No Data"

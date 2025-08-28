@@ -222,7 +222,8 @@ class MyRecipeFragment : BaseFragment<FragmentMyRecipeBinding>() , DeleteRecipeB
         val recipeLogRequest = SelectedMealLogList(
             meal_name =  myRecipe.recipe_name,
             meal_type = myRecipe.recipe_name,
-            meal_log = ingredientsLogList
+            meal_log = ingredientsLogList,
+            isMealLog = myRecipe.isRecipeLog
         )
         val parent = parentFragment as? HomeTabMealFragment
         parent?.setSelectedFrequentlyLog(null, false, recipeLogRequest, null)

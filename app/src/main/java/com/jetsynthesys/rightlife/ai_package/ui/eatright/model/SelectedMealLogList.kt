@@ -7,6 +7,7 @@ import kotlinx.parcelize.Parcelize
 data class SelectedMealLogList(
     val meal_name: String?,
     val meal_type: String,
+    var isMealLog : Boolean = false,
     val meal_log: List<MealLogItems>
 ):Parcelable
 
@@ -16,5 +17,6 @@ data class MealLogItems(
     val recipe_name: String?,
     val meal_quantity: Int? = null,
     val unit: String? = null,
-    val measure: String? = null
+    val measure: String? = null,
+    val isMealLogSelect : Boolean = false
 ):Parcelable

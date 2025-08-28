@@ -1494,6 +1494,7 @@ class HomeNewActivity : BaseActivity() {
     private fun storeHealthData() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
+                val timeZone = ZoneId.systemDefault().id
                 val userid = SharedPreferenceManager.getInstance(this@HomeNewActivity).userId
                 var activeEnergyBurned : List<EnergyBurnedRequest>? = null
                 if (activeCalorieBurnedRecord!!.isNotEmpty()){
@@ -1744,7 +1745,7 @@ class HomeNewActivity : BaseActivity() {
                     body_fat_percentage = bodyFatPercentage,
                     sleep_stage = sleepStage,
                     workout = workout,
-                    time_zone = "Asia/Kolkata"
+                    time_zone = timeZone
                 )
                 val gson = Gson()
                 val allRecords = mutableListOf<Any>()
@@ -1789,7 +1790,7 @@ class HomeNewActivity : BaseActivity() {
                         body_fat_percentage = batch.filterIsInstance<BodyFatPercentage>(),
                         sleep_stage = batch.filterIsInstance<SleepStageJson>(),
                         workout = batch.filterIsInstance<WorkoutRequest>(),
-                        time_zone = "Asia/Kolkata"
+                        time_zone = timeZone
                     )
                     val response = com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient.apiServiceFastApi.storeHealthData(req)
                     if (!response.isSuccessful) {
@@ -1828,6 +1829,7 @@ class HomeNewActivity : BaseActivity() {
     private fun storeSamsungHealthData() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
+                val timeZone = ZoneId.systemDefault().id
                 val userid = SharedPreferenceManager.getInstance(this@HomeNewActivity).userId
                 var activeEnergyBurned : List<EnergyBurnedRequest>? = null
                 if (activeCalorieBurnedRecord!!.isNotEmpty()){
@@ -2091,7 +2093,7 @@ class HomeNewActivity : BaseActivity() {
                     body_fat_percentage = bodyFatPercentage,
                     sleep_stage = sleepStage,
                     workout = workout,
-                    time_zone = "Asia/Kolkata"
+                    time_zone = timeZone
                 )
                 val gson = Gson()
                 val allRecords = mutableListOf<Any>()
@@ -2136,7 +2138,7 @@ class HomeNewActivity : BaseActivity() {
                         body_fat_percentage = batch.filterIsInstance<BodyFatPercentage>(),
                         sleep_stage = batch.filterIsInstance<SleepStageJson>(),
                         workout = batch.filterIsInstance<WorkoutRequest>(),
-                        time_zone = "Asia/Kolkata"
+                        time_zone = timeZone
                     )
                     val response = com.jetsynthesys.rightlife.ai_package.data.repository.ApiClient.apiServiceFastApi.storeHealthData(req)
                     if (!response.isSuccessful) {

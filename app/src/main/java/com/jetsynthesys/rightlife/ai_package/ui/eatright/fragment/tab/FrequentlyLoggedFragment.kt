@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.jetsynthesys.rightlife.R
@@ -37,6 +38,8 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class FrequentlyLoggedFragment : BaseFragment<FragmentFrequentlyLoggedBinding>() {
+
+    private val sharedViewModel: SharedMealViewModel by activityViewModels()
 
     private lateinit var frequentlyLoggedRecyclerView : RecyclerView
     private lateinit var layoutNoMeals : LinearLayoutCompat
@@ -102,6 +105,11 @@ class FrequentlyLoggedFragment : BaseFragment<FragmentFrequentlyLoggedBinding>()
             }
         })
 
+        sharedViewModel.mealData.observe(viewLifecycleOwner) { data ->
+            // Update RecyclerView / UI with latest meal data
+            println(data)
+        }
+
         getFrequentlyLog()
 
         layoutCreateMeal.setOnClickListener {
@@ -116,8 +124,6 @@ class FrequentlyLoggedFragment : BaseFragment<FragmentFrequentlyLoggedBinding>()
                 commit()
             }
         }
-
-        //updateIngredientChips()
 
         // Add button clicked (For demonstration, adding a dummy ingredient)
         btnAdd.setOnClickListener {
@@ -182,7 +188,8 @@ class FrequentlyLoggedFragment : BaseFragment<FragmentFrequentlyLoggedBinding>()
             recipe_name = mealLogDateModel.recipe_name,
             meal_quantity = 1,
             unit = "g",
-            measure = "Bowl"
+            measure = "Bowl",
+            isMealLogSelect = mealLogDateModel.isFrequentLog
         )
 //        mealLogList.add(mealLogData)
 //        val mealLogRequest = SelectedMealLogList(
