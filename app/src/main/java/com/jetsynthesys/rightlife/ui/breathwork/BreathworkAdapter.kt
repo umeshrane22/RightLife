@@ -41,9 +41,22 @@ class BreathworkAdapter(
                 .error(R.drawable.rl_placeholder)
                 .into(imageView)
 
-            plusButton.setImageResource(
-                if (item.isAddedToToolKit) R.drawable.greentick else R.drawable.ic_bookmark_breathing
-            )
+          /*  plusButton.setImageResource(
+                if (item.isAddedToToolKit) {
+                    R.drawable.greentick
+                } else
+                { R.drawable.ic_bookmark_breathing}
+            )*/
+
+            if (item.isAddedToToolKit) {
+                plusButton.setImageResource(R.drawable.ic_save_article_active)
+                plusButton.imageTintList =
+                    ColorStateList.valueOf(ContextCompat.getColor(plusButton.context, R.color.color_eat_right))
+            } else {
+                plusButton.setImageResource(R.drawable.ic_save_article)
+                plusButton.imageTintList =
+                    ColorStateList.valueOf(ContextCompat.getColor(plusButton.context, R.color.black))
+            }
 
             plusButton.setOnClickListener {
                 val sharedPreferenceManager =

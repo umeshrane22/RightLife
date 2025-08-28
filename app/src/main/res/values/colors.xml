@@ -289,5 +289,10 @@
     <color name="four_seven_breathing_card_color">#E3C4D2</color>
     <color name="custom_breathing_card_color">#D2E2CC</color>
 
+    <color name="box_breathing_card_color_text">#2A3A5E</color>
+    <color name="alternate_breathing_card_color_text">#984C01</color>
+    <color name="four_seven_breathing_card_color_text">#4A2E3A</color>
+    <color name="custom_breathing_card_color_text">#3B4A36</color>
+
 
 </resources>

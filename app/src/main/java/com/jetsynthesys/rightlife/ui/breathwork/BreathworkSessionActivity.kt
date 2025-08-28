@@ -2,7 +2,9 @@ package com.jetsynthesys.rightlife.ui.breathwork
 
 
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.jetsynthesys.rightlife.BaseActivity
@@ -11,6 +13,7 @@ import com.jetsynthesys.rightlife.RetrofitData.ApiClient
 import com.jetsynthesys.rightlife.databinding.ActivityBreathworkSessionBinding
 import com.jetsynthesys.rightlife.ui.CommonAPICall
 import com.jetsynthesys.rightlife.ui.breathwork.pojo.BreathingData
+import com.shawnlin.numberpicker.NumberPicker
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 
@@ -42,6 +45,7 @@ class BreathworkSessionActivity : BaseActivity() {
         setupUI()
         setupListeners(breathingData!!)
         calculateSessiontime()
+        setBreathingTypeColors()
     }
 
     private fun setupUI() {
@@ -55,8 +59,39 @@ class BreathworkSessionActivity : BaseActivity() {
             .placeholder(R.drawable.rl_placeholder)
             .error(R.drawable.rl_placeholder)
             .into(binding.ivBreathworkImage)
+
+
+        if (breathingData?.title == "Custom") {
+            binding.layoutCustomPicker.visibility = View.VISIBLE
+
+            setupNumberPicker(binding.pickerInhale, 1, 16,  4)
+            setupNumberPicker(binding.pickerHold, 1, 16, 4)
+            setupNumberPicker(binding.pickerExhale, 1, 16, 4)
+
+            // Update data when user changes picker
+            binding.pickerInhale.setOnValueChangedListener { _, _, newVal ->
+                breathingData?.breathInhaleTime = newVal.toString()
+                calculateSessiontime()
+            }
+            binding.pickerHold.setOnValueChangedListener { _, _, newVal ->
+                breathingData?.breathHoldTime = newVal.toString()
+                calculateSessiontime()
+            }
+            binding.pickerExhale.setOnValueChangedListener { _, _, newVal ->
+                breathingData?.breathExhaleTime = newVal.toString()
+                calculateSessiontime()
+            }
+        }else{
+            binding.layoutCustomPicker.visibility = View.GONE
+        }
     }
 
+    private fun setupNumberPicker(picker: NumberPicker, min: Int, max: Int, defaultVal: Int) {
+        picker.minValue = min
+        picker.maxValue = max
+        picker.value = defaultVal
+        picker.wrapSelectorWheel = false
+    }
     private fun setupListeners(breathWorData: BreathingData) {
         binding.ivBack.setOnClickListener { finish() }
 
@@ -128,5 +163,44 @@ class BreathworkSessionActivity : BaseActivity() {
         val minutes = (millisUntilFinished / 1000) / 60
         val seconds = (millisUntilFinished / 1000) % 60
         binding.tvSettime.text = String.format("%02d:%02d", minutes, seconds)
+    }
+
+
+    private fun setBreathingTypeColors() {
+        // Get the breathing type from the breathingData
+        val breathingType = breathingData?.title?.trim() ?: ""
+
+        // Get the color resource based on breathing type
+        val colorResource = when (breathingType) {
+            "Box Breathing" -> R.color.box_breathing_card_color
+            "Alternate Nostril Breathing" -> R.color.alternate_breathing_card_color
+            "4-7-8 Breathing" -> R.color.four_seven_breathing_card_color
+            "Custom" -> R.color.custom_breathing_card_color
+            else -> R.color.alternate_breathing_card_color
+        }
+        val colorResourceText = when (breathingType) {
+            "Box Breathing" -> R.color.box_breathing_card_color_text
+            "Alternate Nostril Breathing" -> R.color.alternate_breathing_card_color_text
+            "4-7-8 Breathing" -> R.color.four_seven_breathing_card_color_text
+            "Custom" -> R.color.custom_breathing_card_color_text
+            else -> R.color.alternate_breathing_card_color_text
+        }
+
+        // Get the actual color value
+        val mainColor = resources.getColor(colorResource, null)
+
+        // Apply color to the Continue button
+        binding.btnContinue.backgroundTintList = ColorStateList.valueOf(mainColor)
+        binding.btnContinue.setTextColor(resources.getColor(colorResourceText, null))
+        binding.btnPlus.backgroundTintList = ColorStateList.valueOf(mainColor)
+        binding.btnMinus.backgroundTintList = ColorStateList.valueOf(mainColor)
+        binding.ivBreathworkImage.imageTintList = ColorStateList.valueOf(mainColor)
+        binding.tvSettime.setTextColor(resources.getColor(colorResourceText, null))
+        binding.tvSessionCount.setTextColor(resources.getColor(colorResourceText, null))
+        binding.tvTitle.setTextColor(resources.getColor(colorResourceText, null))
+        binding.tvDescription.setTextColor(resources.getColor(colorResourceText, null))
+        binding.tvSetInfo.setTextColor(resources.getColor(colorResourceText, null))
+        binding.tvSessionSets.setTextColor(resources.getColor(colorResourceText, null))
+
     }
 }

@@ -1,9 +1,17 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/white"
     android:padding="16dp">
 
+    <RelativeLayout
+        android:id="@+id/rl_breathing_practice_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:background="@color/white"
+        >
     <!-- Back Button -->
     <ImageButton
         android:id="@+id/backButton"
@@ -113,5 +121,109 @@
         android:backgroundTint="@color/white"
         android:textColor="@color/text_color_app"
         android:layout_marginBottom="32dp"/>
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:id="@+id/rl_prepare_main"
+        android:visibility="gone"
+        android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/tv_prepare_Timer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="3"
+            android:layout_centerInParent="true"
+            android:textSize="96sp"
+            android:textColor="@color/black"
+            android:fontFamily="@font/dmsans_semibold"
+            android:layout_gravity="center"/>
+        <TextView
+            android:id="@+id/tv_prepare_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_prepare_Timer"
+            android:text="Relax and Settle In"
+            android:layout_centerInParent="true"
+            android:textSize="32sp"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:fontFamily="@font/dmsans_semibold"
+            android:layout_gravity="center"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:id="@+id/rl_practice_complete"
+        android:visibility="gone"
+        android:layout_height="match_parent">
+        <ImageView
+            android:id="@+id/img_complete_tick"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:src="@drawable/ic_checklist_complete"
+            android:layout_centerInParent="true"
+            android:scaleType="centerCrop"
+            android:layout_gravity="center"/>
+        <TextView
+            android:id="@+id/tv_compete_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/img_complete_tick"
+            android:text="Breathing \nCycle \nCompleted"
+            android:layout_centerInParent="true"
+            android:textSize="32sp"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:fontFamily="@font/dmsans_bold"
+            android:layout_gravity="center"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_height="wrap_content">
+            <!-- The "Exit" button on the left side -->
+            <TextView
+                android:id="@+id/btnExit"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:text="Exit"
+                android:gravity="center"
+                android:textSize="@dimen/textsize_medium"
+                android:fontFamily="@font/dmsans_bold"
+                android:textColor="@color/text_color_app"
+                android:background="@drawable/rounded_corder_border_gray"
+                android:backgroundTint="@color/gray_light_bg"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btnRepeat"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintHorizontal_weight="1"
+                android:layout_marginEnd="8dp" />
+
+            <!-- The "Repeat" button on the right side -->
+            <TextView
+                android:id="@+id/btnRepeat"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:text="Repeat"
+                android:gravity="center"
+                android:textSize="@dimen/textsize_medium"
+                android:fontFamily="@font/dmsans_bold"
+                android:textColor="@color/text_color_app"
+                android:background="@drawable/rounded_corder_border_gray"
+                android:backgroundTint="@color/box_breathing_card_color"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/btnExit"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_weight="1"
+                android:layout_marginStart="8dp" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </RelativeLayout>
+
 
 </RelativeLayout>
